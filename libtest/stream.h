@@ -111,6 +111,37 @@ template<class Ch, class Tr, class A>
     }
   };
 
+template<class Ch, class Tr, class A>
+  class channelfl {
+  private:
+
+  public:
+    typedef std::basic_ostringstream<Ch, Tr, A> stream_buffer;
+
+  public:
+    void operator()(const stream_buffer& s, std::ostream& _out,
+                    const char* filename, int line_number, const char* func)
+    {
+      if (filename)
+      {
+        _out
+          << filename
+          << ":"
+          << line_number
+          << ": in "
+          << func << "() "
+          << s.str()
+          << std::flush;
+      }
+      else
+      {
+        _out
+          << s.str()
+          << std::flush;
+      }
+    }
+  };
+
 template<template <class Ch, class Tr, class A> class OutputPolicy, class Ch = char, class Tr = std::char_traits<Ch>, class A = std::allocator<Ch> >
   class log {
   private:
@@ -207,10 +238,22 @@ private:
   const cout& operator=( const cout& );
 };
 
+class cecho : public detail::log<detail::channelfl> {
+public:
+  cecho(const char* filename, int line_number, const char* func) :
+    detail::log<detail::channelfl>(std::cout, filename, line_number, func)
+  { }
+
+private:
+  cecho( const cecho& );
+  const cecho& operator=( const cecho& );
+};
 
 } // namespace stream
 
 #define Error stream::cerr(__FILE__, __LINE__, __func__)
+
+#define Echo stream::cecho(NULL, __LINE__, __func__)
 
 #define Out stream::cout(NULL, __LINE__, __func__)
 

@@ -41,7 +41,8 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
-  
+#include <ostream>
+
 namespace libtest {
 
 std::string& escape4XML(std::string const& arg, std::string& escaped_string)
@@ -159,11 +160,14 @@ TestCase* Formatter::current()
 
 void Formatter::skipped()
 {
+  assert(current());
   current()->result(TEST_SKIPPED);
-  Out << name() << "." 
-      << current()->name()
-      <<  "\t\t\t\t\t" 
-      << "[ " << test_strerror(current()->result()) << " ]";
+
+  Out
+    << "[ " << test_strerror(current()->result()) << " ]"
+    << "\t\t"
+    << name() << "." << current()->name()
+    ;
 
   reset();
 }
@@ -173,9 +177,11 @@ void Formatter::failed()
   assert(current());
   current()->result(TEST_FAILURE);
 
-  Out << name()
-    << "." << current()->name() <<  "\t\t\t\t\t" 
-    << "[ " << test_strerror(current()->result()) << " ]";
+  Out
+    << "[ " << test_strerror(current()->result()) << " ]"
+    << "\t\t"
+    << name() << "." << current()->name()
+    ;
 
   reset();
 }
@@ -184,13 +190,14 @@ void Formatter::success(const libtest::Timer& timer_)
 {
   assert(current());
   current()->result(TEST_SUCCESS, timer_);
-  std::string escaped_string;
 
-  Out << name() << "."
-    << current()->name()
-    <<  "\t\t\t\t\t" 
-    << current()->timer() 
-    << " [ " << test_strerror(current()->result()) << " ]";
+  Out
+    << "[ " << test_strerror(current()->result()) << " ]"
+    << "\t"
+    << current()->timer()
+    << "\t"
+    << name() << "." << current()->name()
+    ;
 
   reset();
 }
@@ -252,6 +259,14 @@ void Formatter::push_testcase(const std::string& arg)
   assert(_suite_name.empty() == false);
   TestCase* _current_testcase= new TestCase(arg);
   _testcases.push_back(_current_testcase);
+
+  assert(current());
+
+  Echo
+    << "\t\t\t"
+    << name() << "." << current()->name()
+    << "... \r"
+    ;
 }
 
 void Formatter::reset()

@@ -138,9 +138,9 @@ test_return_t Collection::exec()
       }
       catch (const libtest::fatal& e)
       {
-        stream::cerr(e.file(), e.line(), e.func()) << e.what();
         _failed++;
         formatter()->failed();
+        stream::make_cerr(e.file(), e.line(), e.func()) << e.what();
         throw;
       }
 
