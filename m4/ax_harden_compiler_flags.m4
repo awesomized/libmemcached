@@ -201,7 +201,7 @@ AC_DEFUN([_HARDEN_CC_COMPILER_FLAGS],
           _APPEND_COMPILE_FLAGS_ERROR([-Wsizeof-pointer-memaccess])
           _APPEND_COMPILE_FLAGS_ERROR([-Wpacked])
           _APPEND_COMPILE_FLAGS_ERROR([-Wlong-long])
-          _APPEND_COMPILE_FLAGS_ERROR([ftrapv])
+          _APPEND_COMPILE_FLAGS_ERROR([-ftrapv])
           # Stop error when using -pie on library builds
           _APPEND_COMPILE_FLAGS_ERROR([-Wno-unused-command-line-argument])
 #         GCC 4.5 removed this.
