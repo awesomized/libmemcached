@@ -1,4 +1,4 @@
-https://github.com/BrianAker/m4
+https://github.com/TangentOrg/ddm4
 
 Common m4 files that I use.
   -Brian Aker, brian@tangent.org

@@ -44,20 +44,22 @@
 #  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#serial 4
+#serial 5
 
 AC_DEFUN([AX_PROG_MEMCACHED],
          [AX_WITH_PROG([MEMCACHED_BINARY],[memcached],[unknown])
          ax_memcached_success=
+         ax_memcached_version=
+         AC_MSG_CHECKING([for memcached version])
          AS_IF([test x"$MEMCACHED_BINARY" != xunknown],
                [AS_IF([test -x "$MEMCACHED_BINARY"],
                       [ax_memcached_version=`$MEMCACHED_BINARY -h | sed 1q | awk '{print \$ 2 }' | sed 's|[\-a-z0-9]*$||' | awk -F. '{printf "%d.%d.%d", $[]1, $[]2, $[]3}'`
                       AS_IF([test -n "$ax_memcached_version"],
                             [ax_memcached_success='ok'
-                            AC_MSG_RESULT([memcached version "$ax_memcached_version"])
                             AC_DEFINE_UNQUOTED([MEMCACHED_VERSION],"$ax_memcached_version",[Memcached binary version])])
                       ])
                ])
+         AC_MSG_RESULT(["$ax_memcached_version"])
 
          AS_IF([test -n "$ax_memcached_success"], 
                [AC_DEFINE([HAVE_MEMCACHED_BINARY], [1], [If Memcached binary is available])

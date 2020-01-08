@@ -1,36 +1,34 @@
-# ===========================================================================
-#      https://github.com/BrianAker/ddm4/
-# ===========================================================================
-#
 # SYNOPSIS
 #
-#   AX_DEBUG()
+#   CONFIG_EXTRA
 #
 # DESCRIPTION
 #
-#   --enable-debug
+#   Adds required extras to config.h
 #
 # LICENSE
 #
-#  Copyright (C) 2012-2014 Brian Aker
+#  Copyright (C) 2014 Andrew Hutchings
+#  Based on bottom.m4 from libdrizzle
+#
 #  All rights reserved.
 #  
 #  Redistribution and use in source and binary forms, with or without
 #  modification, are permitted provided that the following conditions are
 #  met:
-#  
+#
 #      * Redistributions of source code must retain the above copyright
 #  notice, this list of conditions and the following disclaimer.
-#  
+#
 #      * Redistributions in binary form must reproduce the above
 #  copyright notice, this list of conditions and the following disclaimer
 #  in the documentation and/or other materials provided with the
 #  distribution.
-#  
+#
 #      * The names of its contributors may not be used to endorse or
 #  promote products derived from this software without specific prior
 #  written permission.
-#  
+#
 #  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 #  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 #  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -43,23 +41,17 @@
 #  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#serial 8
+#serial 1
 
-AC_DEFUN([AX_DEBUG],
-    [AC_PREREQ([2.63])dnl
-    AC_ARG_ENABLE([debug],
-      [AS_HELP_STRING([--enable-debug],
-        [Add debug code/turns off optimizations (yes|no) @<:@default=no@:>@])],
-      [ax_enable_debug=$enableval],
-			[ax_enable_debug=no])
+AC_DEFUN([CONFIG_EXTRA], [
 
-		AS_IF([test "x$ax_enable_debug" = xyes],
-			[AC_DEFINE([DEBUG],[1],[Define to 1 to enable debugging code.])
-			AX_ADD_AM_MACRO([AM_YFLAGS += --debug])
-			AX_ADD_AM_MACRO([AM_CPPFLAGS += -D_GLIBCXX_DEBUG])],
-			[AC_SUBST([MCHECK])
-			AC_DEFINE([DEBUG],[0],[Define to 1 to enable debugging code.])])
+AH_TOP([
+#pragma once
 
-    AC_MSG_CHECKING([for debug])
-    AC_MSG_RESULT([$ax_enable_debug])
-    AM_CONDITIONAL([DEBUG],[test "x${ax_enable_debug}" = "xyes"])])
+/* _SYS_FEATURE_TESTS_H is Solaris, _FEATURES_H is GCC */
+#if defined( _SYS_FEATURE_TESTS_H) || defined(_FEATURES_H)
+# error "You should include config.h as your first include file"
+#endif
+
+])
+])dnl CONFIG_EXTRA
