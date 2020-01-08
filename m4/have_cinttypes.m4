@@ -40,7 +40,7 @@
 #   modified version of the Autoconf Macro, you may extend this special
 #   exception to the GPL to apply to your modified version as well.
 
-#serial 3
+#serial 4
 
 AC_DEFUN([AX_CXX_CINTTYPES], [
     AC_REQUIRE([AC_PROG_CXX])
@@ -84,12 +84,9 @@ AC_DEFUN([AX_CXX_CINTTYPES], [
           [test -n "$ac_cxx_cinttypes_boost_cinttypes_hpp"], [ac_cv_cxx_cinttypes=$ac_cxx_cinttypes_boost_cinttypes_hpp])
   ])
 
-  AS_IF([ test -n "$ac_cv_cxx_cinttypes"], [
-      AC_MSG_RESULT([$ac_cv_cxx_cinttypes])
-      ],[
+  AS_IF([ test -n "$ac_cv_cxx_cinttypes"], [:],[
       ac_cv_cxx_cinttypes="<inttypes.h>"
       AC_MSG_WARN([Could not find a cinttypes header.])
-      AC_MSG_RESULT([$ac_cv_cxx_cinttypes])
       ])
 
   AC_DEFINE([__STDC_LIMIT_MACROS],[1],[Use STDC Limit Macros in C++])

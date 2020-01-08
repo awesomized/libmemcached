@@ -40,7 +40,7 @@
 #   modified version of the Autoconf Macro, you may extend this special
 #   exception to the GPL to apply to your modified version as well.
 
-#serial 3
+#serial 4
 
 
 AC_DEFUN([AX_CXX_CSTDINT], [
@@ -78,10 +78,9 @@ AC_DEFUN([AX_CXX_CSTDINT], [
         [test -n "$ac_cxx_cstdint_boost_cstdint_hpp"], [ac_cv_cxx_cstdint=$ac_cxx_cstdint_boost_cstdint_hpp])
       ])
 
-  AS_IF([test -n "$ac_cv_cxx_cstdint"], [AC_MSG_RESULT([$ac_cv_cxx_cstdint])], [
+  AS_IF([test -n "$ac_cv_cxx_cstdint"], [:], [
       ac_cv_cxx_cstdint="<stdint.h>"
       AC_MSG_WARN([Could not find a cstdint header.])
-      AC_MSG_RESULT([$ac_cv_cxx_cstdint])
       ])
 
 AC_DEFINE_UNQUOTED([CSTDINT_H],[$ac_cv_cxx_cstdint], [the location of <cstdint>])
