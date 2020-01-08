@@ -83,7 +83,6 @@ AX_COMPILER_VENDOR
 AX_COMPILER_VERSION
 AC_LANG_POP([C++])
 
-
 AX_ASSERT
 
 AX_PLATFORM
@@ -341,6 +340,16 @@ HAVE_GCC_ATOMICS
 AX_ENDIAN
 AX_ASSERT
 AX_HARDEN_COMPILER_FLAGS
+
+AC_ARG_ENABLE([warnings-as-errors], AS_HELP_STRING([--enable-warnings-as-errors], 
+  [Build with -Werror enabled]), , [enable_warnings_as_errors=no])
+AC_CACHE_CHECK([if all warnings should produce an error], [ac_cv_warnings_as_errors], [
+  AS_IF([test "x$enable_warnings_as_errors" = "xyes"], [
+    ac_cv_warnings_as_errors=yes
+  ], [
+    ac_cv_warnings_as_errors=no
+  ])
+])
 
 AX_AM_JOBSERVER([yes])
 
