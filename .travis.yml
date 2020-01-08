@@ -14,13 +14,13 @@ compiler:
 
 env:
 # prod
- - enable_debug=no enable_assert=no enable_dtrace=no enable_silent_rules=yes ac_cv_vcs_system=none
+ - ac_cv_vcs_system=none
 # debug
- - enable_debug=yes enable_assert=yes enable_dtrace=yes enable_silent_rules=no
+# - enable_debug=yes enable_assert=yes enable_dtrace=yes enable_silent_rules=no
 # sanitize=address
- - with_sanitize=address
+# - with_sanitize=address
 # sanitize=thread
- - with_sanitize=thread
+# - with_sanitize=thread
 
 #before_install:
 #install:
