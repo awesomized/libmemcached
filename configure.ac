@@ -73,6 +73,17 @@ AC_DEFUN([CHECK_CXX0X],[
           ])
 CHECK_CXX0X
 
+
+AC_LANG_PUSH([C])
+AX_COMPILER_VENDOR
+AX_COMPILER_VERSION
+AC_LANG_POP([C])
+AC_LANG_PUSH([C++])
+AX_COMPILER_VENDOR
+AX_COMPILER_VERSION
+AC_LANG_POP([C++])
+
+
 AX_ASSERT
 
 AX_PLATFORM
@@ -222,8 +233,6 @@ AC_CHECK_HEADER([umem.h],
 
 AM_CONDITIONAL([BUILD_CACHE],[test "x$build_cache" = "xyes"])
 
-AX_COMPILER_VENDOR
-
 AC_CHECK_TYPES([in_port_t],,,[[
                 #ifdef HAVE_SYS_TYPES_H
                 # include <sys/types.h>
@@ -349,9 +358,9 @@ echo ""
 echo "   * Installation prefix:       $prefix"
 echo "   * System type:               $host_vendor-$host_os"
 echo "   * Host CPU:                  $host_cpu"
-echo "   * C Compiler:                $CC_VERSION"
+echo "   * C Compiler:                $ax_cv_c_compiler_vendor $ax_cv_c_compiler_version"
 echo "   * C Flags:                   $CFLAGS"
-echo "   * C++ Compiler:              $CXX_VERSION"
+echo "   * C++ Compiler:              $ax_cv_cxx_compiler_vendor $ax_cv_cxx_compiler_version"
 echo "   * C++ Flags:                 $CXXFLAGS"
 echo "   * CPP Flags:                 $CPPFLAGS"
 echo "   * LIB Flags:                 $LIB"
