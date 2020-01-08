@@ -4,6 +4,7 @@ services:
 addons:
  apt:
   packages:
+   - python-sphinx
 
 dist: bionic
 language: cpp
