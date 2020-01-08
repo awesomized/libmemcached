@@ -19,7 +19,7 @@
 #   and this notice are preserved. This file is offered as-is, without any
 #   warranty.
 
-#serial 5
+#serial 6
 
 AC_DEFUN([AX_PROG_SPHINX_BUILD],
          [AX_WITH_PROG([SPHINXBUILD],[sphinx-build],[:])
@@ -33,12 +33,12 @@ AC_DEFUN([AX_PROG_SPHINX_BUILD],
                             [junk=`$SPHINXBUILD &> version_file`
                             ax_sphinx_build_version=`head -1 version_file`
                             rm version_file
-                            AC_MSG_RESULT([$SPHINXBUILD is version "$ax_sphinx_build_version"])
                             $SPHINXBUILD -Q -C -b man -d conftest.d . . >/dev/null 2>&1
                             AS_IF([test $? -eq 0], ,[SPHINXBUILD=])
                             rm -rf conftest.d ])
                       ])
                       rm -f version_file
+                      AC_MSG_RESULT(["$ax_sphinx_build_version"])
                ])
 
          AS_IF([test -n "${SPHINXBUILD}"],
