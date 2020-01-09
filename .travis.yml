@@ -14,9 +14,9 @@ compiler:
 
 env:
 # prod
- - ac_cv_vcs_system=none
+ - 
 # debug
-# - enable_debug=yes enable_assert=yes enable_dtrace=yes enable_silent_rules=no
+ - enable_debug=yes
 # sanitize=address
 # - with_sanitize=address
 # sanitize=thread
