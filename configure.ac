@@ -65,13 +65,29 @@ AC_SUBST([lt_cv_dlopen_libs])
 AC_PROG_CC_C99
 AS_IF([test "x${ac_cv_prog_cc_c99}" == "xno"],[AC_MSG_ERROR([No c99 compatible compiler found])])
 
-AC_DEFUN([CHECK_CXX0X],[
-          AC_LANG_PUSH([C++])
-          AX_CHECK_COMPILE_FLAG([-std=c++0x],[
-                                 CXX="$CXX -std=c++0x"])
-          AC_LANG_POP([C++])
-          ])
-CHECK_CXX0X
+AC_LANG_PUSH([C++])
+AX_CHECK_COMPILE_FLAG([-std=gnu++14], [
+  AX_APPEND_COMPILE_FLAGS(["-std=gnu++14"])
+], [
+  AX_CHECK_COMPILE_FLAG([-std=c++14], [
+    AX_APPEND_COMPILE_FLAGS(["-std=c++14"])
+  ], [
+    AX_CHECK_COMPILE_FLAG([-std=gnu++11], [
+      AX_APPEND_COMPILE_FLAGS(["-std=gnu++11"])
+    ], [
+      AX_CHECK_COMPILE_FLAG([-std=c++11], [
+        AX_APPEND_COMPILE_FLAGS(["-std=c++11"])
+      ], [
+        AX_CHECK_COMPILE_FLAG([-std=gnu++0x], [
+          AX_APPEND_COMPILE_FLAGS(["-std=gnu++0x"])
+        ], [
+          AX_APPEND_COMPILE_FLAGS(["-std=c++0x"])
+        ])
+      ])
+    ])
+  ])
+])
+AC_LANG_POP([C++])
 
 
 AC_LANG_PUSH([C])
@@ -340,6 +356,12 @@ HAVE_GCC_ATOMICS
 AX_ENDIAN
 AX_ASSERT
 AX_HARDEN_COMPILER_FLAGS
+
+# override sompe flags specific to libmemcached
+AX_APPEND_COMPILE_FLAGS([-Wno-long-long])
+AC_LANG_PUSH([C++])
+AX_APPEND_COMPILE_FLAGS([-Wno-long-long -Wno-old-style-cast])
+AC_LANG_POP([C++])
 
 AC_ARG_ENABLE([warnings-as-errors], AS_HELP_STRING([--enable-warnings-as-errors], 
   [Build with -Werror enabled]), , [enable_warnings_as_errors=no])
