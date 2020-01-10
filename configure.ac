@@ -33,7 +33,7 @@ AC_CONFIG_SRCDIR([libmemcached/memcached.cc])
 #shared library versioning
 MEMCACHED_UTIL_LIBRARY_VERSION=2:0:0
 MEMCACHED_PROTOCAL_LIBRARY_VERSION=0:0:0
-MEMCACHED_LIBRARY_VERSION=11:0:0
+MEMCACHED_LIBRARY_VERSION=12:0:0
 #                         | | |
 #                  +------+ | +---+
 #                  |        |     |
