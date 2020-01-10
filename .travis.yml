@@ -6,6 +6,7 @@ addons:
   packages:
    - python-sphinx
    - valgrind
+   - libevent-dev
 
 dist: bionic
 language: cpp
