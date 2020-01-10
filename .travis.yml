@@ -5,6 +5,7 @@ addons:
  apt:
   packages:
    - python-sphinx
+   - valgrind
 
 dist: bionic
 language: cpp
