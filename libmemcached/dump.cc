@@ -126,6 +126,18 @@ static memcached_return_t ascii_dump(Memcached *memc, memcached_dump_fn *callbac
         assert(response_rc == MEMCACHED_SUCCESS); // Just fail
         return response_rc;
       }
+      else if (response_rc == MEMCACHED_CLIENT_ERROR)
+      {
+        /* The maximum number of slabs has changed in the past (currently 1<<6-1),
+         * so ignore any client errors complaining about an illegal slab id.
+         */
+        if (0 == strncmp(buffer, "CLIENT_ERROR Illegal slab id", sizeof("CLIENT_ERROR Illegal slab id") - 1)) {
+          memcached_error_free(*instance);
+          memcached_error_free(*memc);
+        } else {
+          return response_rc;
+        }
+      }
       else
       {
         // IO error of some sort must have occurred
