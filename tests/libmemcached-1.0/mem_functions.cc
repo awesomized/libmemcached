@@ -4848,7 +4848,7 @@ test_return_t regression_bug_1251482(memcached_st*)
 
   memcached_behavior_set(&memc, MEMCACHED_BEHAVIOR_RETRY_TIMEOUT, 0);
 
-  for (size_t x= 4; x; --x)
+  for (size_t x= 0; x < 5; ++x)
   {
     size_t value_length;
     memcached_return_t rc;
@@ -4858,7 +4858,11 @@ test_return_t regression_bug_1251482(memcached_st*)
 
     test_false(value);
     test_compare(0LLU, value_length);
-    test_compare(MEMCACHED_CONNECTION_FAILURE, rc);
+    if (x) {
+      test_ne_compare(MEMCACHED_SUCCESS, rc);
+    } else {
+      test_compare(MEMCACHED_CONNECTION_FAILURE, rc);
+    }
   }
 
   return TEST_SUCCESS;
