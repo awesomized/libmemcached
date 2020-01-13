@@ -138,7 +138,7 @@ test_return_t memcached_dump_TEST2(memcached_st *memc)
   test_compare(MEMCACHED_SUCCESS,
                memcached_dump(memc, callbacks, &count, 1));
 
-  test_true(count);
+  test_true(count > 0);
 
   return TEST_SUCCESS;
 }
