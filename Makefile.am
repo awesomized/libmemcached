@@ -87,9 +87,7 @@ include win32/include.am
 include m4/include.am
 endif
 
-TESTS += ${bin_PROGRAMS}
 TESTS += ${check_PROGRAMS}
-XFAIL_TESTS += ${bin_PROGRAMS}
 
 if ! BUILD_WIN32
 

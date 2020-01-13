@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
       {
         if (opt_verbose)
         {
-          std::cout << "key: " << argv[optind] << std::endl << "flags: " << flags << "length: " << string_length << std::endl << "value: ";
+          std::cout << "key: " << argv[optind] << std::endl << "flags: " << flags << std::endl << "length: " << string_length << std::endl << "value: ";
         }
 
         if (opt_file)

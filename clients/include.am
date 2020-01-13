@@ -104,6 +104,23 @@ clients_memcapable_SOURCES+= libmemcached/byteorder.cc
 clients_memcapable_LDADD= $(CLIENTS_LDADDS)
 clients_memcapable_LDADD+= @PTHREAD_LIBS@
 
+TESTS += clients/memcapable.sh
+TESTS += clients/memcp.sh
+TESTS += clients/memcat.sh
+clients/memcat.sh: | mem.testdata
+mem.testdata:
+	date > $@
+TESTS += clients/memdump.sh
+TESTS += clients/memerror.sh
+TESTS += clients/memexist.sh
+TESTS += clients/memparse.sh
+TESTS += clients/memping.sh
+TESTS += clients/memrm.sh
+TESTS += clients/memslap.sh
+TESTS += clients/memstat.sh
+TESTS += clients/memtouch.sh
+TESTS += clients/memflush.sh
+
 test-start-server:
 	clients/memflush --servers=localhost
 	clients/memcp --servers=localhost /etc/services
