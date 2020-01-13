@@ -1302,7 +1302,7 @@ static enum test_return test_ascii_verbosity(void)
   execute(receive_error_response());
 
   execute(send_string("verbosity noreply\r\n"));
-  execute(receive_error_response());
+  execute(test_ascii_version());
 
   execute(send_string("verbosity 0 noreply\r\n"));
   execute(test_ascii_version());
