@@ -2148,7 +2148,7 @@ int main(int argc, char **argv)
     }
   }
 
-  if (hostname)
+  if (!hostname)
   {
     fprintf(stderr, "No hostname was provided.\n");
     return EXIT_FAILURE;
