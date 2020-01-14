@@ -380,6 +380,7 @@ AC_CONFIG_FILES([Makefile
                  libmemcached-1.0/configure.h
                  support/libmemcached.pc
                  support/libmemcached.spec
+                 support/example.cnf
                  ])
 AC_OUTPUT
 

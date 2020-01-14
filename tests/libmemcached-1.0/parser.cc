@@ -356,7 +356,7 @@ test_return_t libmemcached_check_configuration_with_filename_test(memcached_st*)
                     libmemcached_check_configuration(test_literal_param("--CONFIGURE-FILE=\"support/example.cnf\""), buffer, sizeof(buffer)),
                     buffer);
 
-  test_compare_hint(MEMCACHED_SUCCESS,
+  test_compare_hint(MEMCACHED_PARSE_ERROR,
                     libmemcached_check_configuration(test_literal_param("--CONFIGURE-FILE=support/example.cnf"), buffer, sizeof(buffer)),
                     buffer);
 

@@ -183,6 +183,13 @@ endif
 TMP_DIR := tmp_chroot/etc tmp_chroot/var/log tmp_chroot/var/tmp tmp_chroot/var/run tmp_chroot/var/drizzle
 
 BUILT_SOURCES+= $(TMP_DIR)
+BUILT_SOURCES+= tmp_chroot/support
+
+tmp_chroot/support: | tmp_chroot
+	@cp -R support tmp_chroot
+
+tmp_chroot:
+	@$(mkdir_p) $@
 
 $(TMP_DIR):
 	@$(mkdir_p) $(TMP_DIR)
