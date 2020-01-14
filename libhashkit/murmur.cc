@@ -56,6 +56,8 @@
 
 #ifdef HAVE_MURMUR_HASH
 
+#include <cstring>
+
 uint32_t hashkit_murmur(const char *key, size_t length, void *context)
 {
   /*
@@ -79,7 +81,8 @@ uint32_t hashkit_murmur(const char *key, size_t length, void *context)
 
   while(length >= 4)
   {
-    unsigned int k = *(unsigned int *)data;
+    unsigned int k;
+    memcpy(&k, data, sizeof(unsigned int));
 
     k *= m;
     k ^= k >> r;

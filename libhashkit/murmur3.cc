@@ -39,7 +39,13 @@ static FORCE_INLINE uint64_t rotl64 ( uint64_t x, int8_t r )
 // Block read - if your platform needs to do endian-swapping or can only
 // handle aligned reads, do the conversion here
 
-#define getblock(p, i) (p[i])
+#include <cstring>
+template <typename T>
+static inline T getblock(const T *blocks, int i) {
+  T b;
+  memcpy(&b, ((const uint8_t *) blocks) + i * sizeof(T), sizeof(T));
+  return b;
+}
 
 //-----------------------------------------------------------------------------
 // Finalization mix - force all bits of a hash block to avalanche
