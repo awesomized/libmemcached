@@ -399,7 +399,7 @@ public:
   {
     memcached_return_t rc= memcached_set(memc_,
                                          key.c_str(), key.length(),
-                                         &value[0], value.size(),
+                                         value.data(), value.size(),
                                          expiration, flags);
     return memcached_success(rc);
   }
