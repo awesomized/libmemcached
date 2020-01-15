@@ -90,7 +90,6 @@ test_return_t memcached_server_many_TEST(memcached_st* memc)
 
 test_return_t memcached_server_many_weighted_TEST(memcached_st* memc)
 {
-  SKIP_IF(true);
   ASSERT_EQ(0, memcached_server_count(memc));
 
   in_port_t base_port= 5555;
@@ -98,7 +97,7 @@ test_return_t memcached_server_many_weighted_TEST(memcached_st* memc)
   {
     std::string hostname(random_hostname());
     ASSERT_TRUE(hostname.size());
-    test_compare(MEMCACHED_SUCCESS, memcached_server_add_with_weight(memc, hostname.c_str(), base_port +x, random() % 10));
+    test_compare(MEMCACHED_SUCCESS, memcached_server_add_with_weight(memc, hostname.c_str(), base_port +x, x % 10));
   }
 
   return TEST_SUCCESS;

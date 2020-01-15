@@ -174,18 +174,20 @@ static memcached_return_t update_continuum(Memcached *ptr)
     live_servers= memcached_server_count(ptr);
   }
 
-  uint32_t points_per_server= (uint32_t) (memcached_is_weighted_ketama(ptr) ? MEMCACHED_POINTS_PER_SERVER_KETAMA : MEMCACHED_POINTS_PER_SERVER);
-
   if (live_servers == 0)
   {
     return MEMCACHED_SUCCESS;
   }
 
-  if (live_servers > ptr->ketama.continuum_count)
+  uint32_t points_per_server = (uint32_t) (memcached_is_weighted_ketama(ptr) ? MEMCACHED_POINTS_PER_SERVER_KETAMA : MEMCACHED_POINTS_PER_SERVER);
+  uint32_t continuum_limit = live_servers * points_per_server;
+  uint32_t continuum_extra = MEMCACHED_CONTINUUM_ADDITION * points_per_server;
+
+  if (continuum_limit > ptr->ketama.continuum_count)
   {
     memcached_continuum_item_st *new_ptr;
 
-    new_ptr= libmemcached_xrealloc(ptr, ptr->ketama.continuum, (live_servers + MEMCACHED_CONTINUUM_ADDITION) * points_per_server, memcached_continuum_item_st);
+    new_ptr= libmemcached_xrealloc(ptr, ptr->ketama.continuum, continuum_limit + continuum_extra, memcached_continuum_item_st);
 
     if (new_ptr == 0)
     {
@@ -193,7 +195,7 @@ static memcached_return_t update_continuum(Memcached *ptr)
     }
 
     ptr->ketama.continuum= new_ptr;
-    ptr->ketama.continuum_count= live_servers + MEMCACHED_CONTINUUM_ADDITION;
+    ptr->ketama.continuum_count= continuum_limit + continuum_extra;
   }
   assert_msg(ptr->ketama.continuum, "Programmer Error, empty ketama continuum");
 
@@ -221,7 +223,7 @@ static memcached_return_t update_continuum(Memcached *ptr)
         float pct= (float)list[host_index].weight / (float)total_weight;
         pointer_per_server= (uint32_t) ((::floor((float) (pct * MEMCACHED_POINTS_PER_SERVER_KETAMA / 4 * (float)live_servers + 0.0000000001))) * 4);
         pointer_per_hash= 4;
-        if (DEBUG)
+        if (0 && DEBUG)
         {
           printf("ketama_weighted:%s|%d|%llu|%u\n",
                  list[host_index]._hostname,
@@ -255,7 +257,7 @@ static memcached_return_t update_continuum(Memcached *ptr)
                                      memcached_literal_param("snprintf(sizeof(sort_host))"));
         }
 
-        if (DEBUG)
+        if (0 && DEBUG)
         {
           fprintf(stdout, "update_continuum: key is %s\n", sort_host);
         }
