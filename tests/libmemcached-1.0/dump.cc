@@ -124,7 +124,7 @@ test_return_t memcached_dump_TEST2(memcached_st *memc)
                                NULL, 0, // Zero length values
                                time_t(0), uint32_t(0)));
   }
-  memcached_quit(memc);
+  //memcached_quit(memc);
 
   uint64_t counter= 0;
   test_compare(MEMCACHED_SUCCESS,
