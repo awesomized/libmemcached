@@ -101,7 +101,6 @@
 %option noinput
 %option nounput
 %option noyywrap
-%option outfile="libmemcached/csl/scanner.cc" header-file="libmemcached/csl/scanner.h"
 %option perf-report
 %option prefix="config_"
 %option reentrant

@@ -38,7 +38,7 @@
 #include <libmemcached/csl/common.h>
 #include <libmemcached/csl/context.h>
 
-void Context::abort(const char *error_arg, yytokentype last_token, const char *last_token_str)
+void Context::abort(const char *error_arg, config_tokentype last_token, const char *last_token_str)
 {
   rc= MEMCACHED_PARSE_ERROR;
   (void)last_token;
@@ -58,7 +58,7 @@ void Context::abort(const char *error_arg, yytokentype last_token, const char *l
   memcached_set_parser_error(*memc, MEMCACHED_AT, "unknown parsing error");
 }
 
-void Context::error(const char *error_arg, yytokentype last_token, const char *last_token_str)
+void Context::error(const char *error_arg, config_tokentype last_token, const char *last_token_str)
 {
   rc= MEMCACHED_PARSE_ERROR;
   if (not error_arg)

@@ -19,7 +19,10 @@
 #include <fcntl.h>
 #include <netinet/tcp.h>
 #include <netinet/in.h>
-#include <arpa/inet.h>
+
+#if defined(HAVE_ARPA_INET_H)
+# include <arpa/inet.h>
+#endif
 
 #if defined(HAVE_SYS_TIME_H)
 # include <sys/time.h>

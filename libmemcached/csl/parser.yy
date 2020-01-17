@@ -42,17 +42,15 @@ class Context;
 
 %}
 
-%error-verbose
+%define parse.error verbose
+%define api.prefix {config_}
+%define api.pure
 %debug
 %defines
 %expect 0
-%output "libmemcached/csl/parser.cc"
-%defines "libmemcached/csl/parser.h"
 %lex-param { yyscan_t *scanner }
-%name-prefix="config_"
 %parse-param { class Context *context }
 %parse-param { yyscan_t *scanner }
-%pure-parser
 %require "2.5"
 %start begin
 %verbose
@@ -82,18 +80,18 @@ int conf_lex(YYSTYPE* lvalp, void* scanner);
 
 #define stryytname(__yytokentype) ((__yytokentype) <  YYNTOKENS ) ? yytname[(__yytokentype)] : ""
 
-#define parser_abort(__context, __error_message) do { (__context)->abort((__error_message), yytokentype(select_yychar(__context)), stryytname(YYTRANSLATE(select_yychar(__context)))); YYABORT; } while (0) 
+#define parser_abort(__context, __error_message) do { (__context)->abort((__error_message), config_tokentype(select_yychar(__context)), stryytname(YYTRANSLATE(select_yychar(__context)))); YYABORT; } while (0)
 
 // This is bison calling error.
 inline void __config_error(Context *context, yyscan_t *scanner, const char *error, int last_token, const char *last_token_str)
 {
   if (not context->end())
   {
-    context->error(error, yytokentype(last_token), last_token_str);
+    context->error(error, config_tokentype(last_token), last_token_str);
   }
   else
   {
-    context->error(error, yytokentype(last_token), last_token_str);
+    context->error(error, config_tokentype(last_token), last_token_str);
   }
 }
 

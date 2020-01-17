@@ -1,0 +1,40 @@
+
+include(CheckTypeSize)
+include(CheckIncludeFileCXX)
+include(CheckCXXSymbolExists)
+include(CheckCXXCompilerFlag)
+
+function(safe_string STRING OUTPUT)
+    string(REGEX REPLACE "[^0-9a-zA-Z_]" "_" HEADER_SAFE ${STRING})
+    string(TOUPPER "${HEADER_SAFE}" HEADER_DEFN)
+    set(${OUTPUT} ${HEADER_DEFN} PARENT_SCOPE)
+endfunction(safe_string)
+
+function(define_cpp DEF)
+    safe_string(${DEF} CNST)
+    add_compile_definitions(HAVE_${CNST}=1)
+endfunction(define_cpp)
+
+function(check_header HEADER_PATH)
+    safe_string(${HEADER_PATH} HEADER_CONST)
+    check_include_file_cxx(${HEADER_PATH} HAVE_${HEADER_CONST})
+endfunction(check_header)
+
+function(check_decl DECL HEADER)
+    safe_string(${DECL} DECL_CONST)
+    check_cxx_symbol_exists(${DECL} ${HEADER} HAVE_${DECL_CONST})
+endfunction(check_decl)
+
+function(check_type TYPE HEADER)
+    safe_string(${TYPE} TYPE_CONST)
+    SET(CMAKE_EXTRA_INCLUDE_FILES ${HEADER})
+    check_type_size(${TYPE} ${TYPE_CONST})
+    SET(CMAKE_EXTRA_INCLUDE_FILES)
+endfunction(check_type)
+
+function(check_debug)
+    if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
+        add_compile_definitions(DEBUG=1)
+        add_compile_options(-Wall -Wextra)
+    endif()
+endfunction(check_debug)

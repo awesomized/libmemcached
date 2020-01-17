@@ -106,8 +106,8 @@ public:
     return _hostname;
   }
 
-  void abort(const char *, yytokentype, const char *);
-  void error(const char *, yytokentype, const char* );
+  void abort(const char *, config_tokentype, const char *);
+  void error(const char *, config_tokentype, const char* );
 
   ~Context()
   {
@@ -116,7 +116,7 @@ public:
     memc->state.is_parsing= false;
   }
 
-  yytokentype previous_token;
+  config_tokentype previous_token;
   void *scanner;
   const char *buf;
   const char *begin;

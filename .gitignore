@@ -52,6 +52,7 @@ clients/memrm
 clients/memslap
 clients/memstat
 clients/memtouch
+cmake-build-debug/
 config.cache
 config.log
 config.status
