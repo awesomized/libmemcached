@@ -59,6 +59,9 @@ static inline uint64_t swap64(uint64_t in)
 }
 #endif
 
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
 
 uint64_t memcached_ntohll(uint64_t value)
 {
