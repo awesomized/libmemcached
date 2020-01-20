@@ -717,7 +717,7 @@ test_return_t cas_test(memcached_st *memc)
 
   test_compare(MEMCACHED_SUCCESS, memcached_flush(memc, 0));
 
-  test_skip(true, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS, true));
+  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS, true));
 
   test_compare(MEMCACHED_SUCCESS, 
                memcached_set(memc,
