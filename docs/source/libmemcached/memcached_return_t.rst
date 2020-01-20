@@ -10,22 +10,15 @@ SYNOPSIS
 
 .. c:type:: memcached_return_t
 
-.. c:function:: const char *libmemcached_strerror(memcached_return_t rc)
-
-.. c:function:: bool libmemcached_success(memcached_return_t rc)
-
-.. c:function:: bool libmemcached_failure(memcached_return_t rc)
-
-.. c:function:: bool libmemcache_continue(memcached_return_t rc)
+.. c:function:: const char *memcached_strerror(memcached_st *ptr, memcached_return_t rc)
 
 .. c:function:: bool memcached_success(memcached_return_t)
 
-.. c:function:: bool memcached_failure(memcached_return_t)
+.. c:function:: bool memcached_continue(memcached_return_t rc)
 
+.. c:function:: bool memcached_failed(memcached_return_t)
 
-:c:func:`memcached_success` return true if :c:type:`MEMCACHED_SUCCESS` tested true.
-
-:c:func:`memcached_failure` return true if any value other then :c:type:`MEMCACHED_SUCCESS` was provided.
+.. c:function:: bool memcached_fatal(memcached_return_t)
 
 
 Libmemcached return types:
