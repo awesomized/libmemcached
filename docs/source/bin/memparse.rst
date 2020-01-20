@@ -3,7 +3,7 @@ memparse - Parse an option string
 =================================
 
 
-Copies files to a collection of memcached servers
+Used to validate an option string
 
 
 --------
