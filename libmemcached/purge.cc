@@ -111,8 +111,8 @@ bool memcached_purge(memcached_instance_st* ptr)
   WATCHPOINT_ASSERT(ptr->fd != INVALID_SOCKET);
 
   bool is_successful= true;
-  uint32_t no_msg= memcached_server_response_count(ptr) - 1;
-  if (no_msg > 0)
+  uint32_t no_msg= memcached_server_response_count(ptr);
+  if (no_msg > 1)
   {
     memcached_result_st result;
 
@@ -126,7 +126,7 @@ bool memcached_purge(memcached_instance_st* ptr)
     memcached_result_st* result_ptr= memcached_result_create(root, &result);
     assert(result_ptr);
 
-    for (uint32_t x= 0; x < no_msg; x++)
+    for (uint32_t x= 0; x < no_msg - 1; x++)
     {
       memcached_result_reset(result_ptr);
       memcached_return_t rc= memcached_read_one_response(ptr, result_ptr);
