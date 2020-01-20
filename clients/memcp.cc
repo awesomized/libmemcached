@@ -184,11 +184,8 @@ int main(int argc, char *argv[])
     int fd= open(argv[optind], O_RDONLY);
     if (fd < 0)
     {
-      if (opt_verbose)
-      {
-        std::cerr << "memcp " << argv[optind] << " " << strerror(errno) << std::endl;
-        optind++;
-      }
+      std::cerr << "memcp " << argv[optind] << " " << strerror(errno) << std::endl;
+      optind++;
       exit_code= EXIT_FAILURE;
       continue;
     }
