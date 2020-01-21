@@ -68,7 +68,6 @@ static inline void _server_init(memcached_instance_st* self, Memcached *root,
   self->error_messages= NULL;
   self->read_ptr= self->read_buffer;
   self->read_buffer_length= 0;
-  self->read_data_length= 0;
   self->write_buffer_offset= 0;
   self->address_info= NULL;
   self->address_info_next= NULL;

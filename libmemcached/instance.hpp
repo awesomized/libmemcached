@@ -165,7 +165,6 @@ struct memcached_instance_st {
   memcached_connection_t type;
   char *read_ptr;
   size_t read_buffer_length;
-  size_t read_data_length;
   size_t write_buffer_offset;
   struct addrinfo *address_info;
   struct addrinfo *address_info_next;

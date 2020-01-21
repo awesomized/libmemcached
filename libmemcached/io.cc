@@ -70,7 +70,6 @@ static bool repack_input_buffer(memcached_instance_st* instance)
    */
     memmove(instance->read_buffer, instance->read_ptr, instance->read_buffer_length);
     instance->read_ptr= instance->read_buffer;
-    instance->read_data_length= instance->read_buffer_length;
   }
 
   /* There is room in the buffer, try to fill it! */
@@ -80,8 +79,8 @@ static bool repack_input_buffer(memcached_instance_st* instance)
       /* Just try a single read to grab what's available */
       ssize_t nr;
       if ((nr= ::recv(instance->fd,
-                      instance->read_ptr + instance->read_data_length,
-                      MEMCACHED_MAX_BUFFER - instance->read_data_length,
+                      instance->read_ptr + instance->read_buffer_length,
+                      MEMCACHED_MAX_BUFFER - instance->read_buffer_length,
                       MSG_NOSIGNAL)) <= 0)
       {
         if (nr == 0)
@@ -113,7 +112,6 @@ static bool repack_input_buffer(memcached_instance_st* instance)
       }
       else // We read data, append to our read buffer
       {
-        instance->read_data_length+= size_t(nr);
         instance->read_buffer_length+= size_t(nr);
 
         return true;
@@ -491,7 +489,6 @@ static memcached_return_t _io_fill(memcached_instance_st* instance)
   } while (data_read <= 0);
 
   instance->io_bytes_sent= 0;
-  instance->read_data_length= (size_t) data_read;
   instance->read_buffer_length= (size_t) data_read;
   instance->read_ptr= instance->read_buffer;
 
