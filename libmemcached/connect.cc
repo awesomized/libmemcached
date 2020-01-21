@@ -537,13 +537,6 @@ static memcached_return_t network_connect(memcached_instance_st* server)
   /* Create the socket */
   while (server->address_info_next and server->fd == INVALID_SOCKET)
   {
-    /* Memcache server does not support IPV6 in udp mode, so skip if not ipv4 */
-    if (memcached_is_udp(server->root) and server->address_info_next->ai_family != AF_INET)
-    {
-      server->address_info_next= server->address_info_next->ai_next;
-      continue;
-    }
-
     int type= server->address_info_next->ai_socktype;
     if (SOCK_CLOEXEC != 0)
     {
