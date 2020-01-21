@@ -787,7 +787,7 @@ void Application::create_argv(const char *args[])
       vchar::append(built_argv, *ptr);
     }
   }
-  built_argv.push_back(NULL);
+  built_argv.push_back(nullptr);
 }
 
 std::string Application::print()
