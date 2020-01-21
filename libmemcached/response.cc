@@ -783,7 +783,7 @@ static memcached_return_t binary_read_one_response(memcached_instance_st* instan
     case PROTOCOL_BINARY_CMD_REPLACEQ:
     case PROTOCOL_BINARY_CMD_APPENDQ:
     case PROTOCOL_BINARY_CMD_PREPENDQ:
-      return binary_read_one_response(instance, buffer, buffer_length, result);
+      return MEMCACHED_FETCH_NOTFINISHED;
 
     default:
       break;
@@ -849,7 +849,9 @@ static memcached_return_t _read_one_response(memcached_instance_st* instance,
   memcached_return_t rc;
   if (memcached_is_binary(instance->root))
   {
-    rc= binary_read_one_response(instance, buffer, buffer_length, result);
+    do {
+      rc= binary_read_one_response(instance, buffer, buffer_length, result);
+    } while (rc == MEMCACHED_FETCH_NOTFINISHED);
   }
   else
   {
