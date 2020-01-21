@@ -61,7 +61,7 @@ Please see :c:type:`MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT`.
 
 .. describe:: --DISTRIBUTION=
 
-Set the distribution model used by the client.  See :manpage:`` for more details.
+Set the distribution model used by the client.  See :manpage:`memcached_behavior_set(3)` for more details.
 
 .. describe:: --HASH=
 

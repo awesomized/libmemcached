@@ -95,9 +95,9 @@ A number of constants have been provided for in the library.
  have no limit, this only applies to keys used for storage.
  
 
-.. c:macro:: MEMCACHED_MAX_KEY
+.. c:macro:: MEMCACHED_MAX_BUFFER
  
- Default size of key (which includes the null pointer).
+ Default size of read/write buffers (which includes the null pointer).
  
 
 .. c:macro:: MEMCACHED_STRIDE
