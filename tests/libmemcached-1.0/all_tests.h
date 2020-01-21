@@ -413,6 +413,7 @@ test_st memcached_server_add_TESTS[] ={
   {"memcached_server_add(NULL)", false, (test_callback_fn*)memcached_server_add_null_test },
   {"memcached_server_add(many)", false, (test_callback_fn*)memcached_server_many_TEST },
   {"memcached_server_add(many weighted)", false, (test_callback_fn*)memcached_server_many_weighted_TEST },
+  {"memcached_servers_reset(\"\")", false, (test_callback_fn*)memcached_servers_reset_test},
   {0, 0, (test_callback_fn*)0}
 };
 
@@ -452,6 +453,7 @@ collection_st collection[] ={
   {"hsieh_availability", 0, 0, hsieh_availability},
   {"murmur_availability", 0, 0, murmur_availability},
   {"memcached_server_add", (test_callback_fn*)memcached_servers_reset_SETUP, 0, memcached_server_add_TESTS},
+  {"memcached_server_add(continuum)", (test_callback_fn*)memcached_servers_reset_CONTINUUM, 0, memcached_server_add_TESTS},
   {"memcached_server_add(MEMCACHED_DISTRIBUTION_CONSISTENT)", (test_callback_fn*)memcached_servers_reset_MEMCACHED_DISTRIBUTION_CONSISTENT_SETUP, 0, memcached_server_add_TESTS},
   {"memcached_server_add(MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED)", (test_callback_fn*)memcached_servers_reset_MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED_SETUP, 0, memcached_server_add_TESTS},
   {"block", 0, 0, tests},

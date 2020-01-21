@@ -102,3 +102,17 @@ test_return_t memcached_server_many_weighted_TEST(memcached_st* memc)
 
   return TEST_SUCCESS;
 }
+
+test_return_t memcached_servers_reset_test(memcached_st* memc)
+{
+  ASSERT_EQ(0, memcached_server_count(memc));
+
+  test_compare(MEMCACHED_SUCCESS, memcached_server_add(memc, "localhost", 11511));
+
+  memcached_servers_reset(memc);
+
+  test_compare(MEMCACHED_SUCCESS, memcached_server_add(memc, "localhost", 11511));
+
+  return TEST_SUCCESS;
+}
+

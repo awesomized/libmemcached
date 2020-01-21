@@ -41,3 +41,4 @@ test_return_t memcached_server_add_null_test(memcached_st*);
 test_return_t memcached_server_add_empty_test(memcached_st*);
 test_return_t memcached_server_many_TEST(memcached_st*);
 test_return_t memcached_server_many_weighted_TEST(memcached_st*);
+test_return_t memcached_servers_reset_test(memcached_st*);

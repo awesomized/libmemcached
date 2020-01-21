@@ -64,3 +64,4 @@ test_return_t pre_buffer(memcached_st*);
 test_return_t memcached_servers_reset_MEMCACHED_DISTRIBUTION_CONSISTENT_SETUP(memcached_st *memc);
 test_return_t memcached_servers_reset_MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED_SETUP(memcached_st *memc);
 test_return_t memcached_servers_reset_SETUP(memcached_st *memc);
+test_return_t memcached_servers_reset_CONTINUUM(memcached_st *memc);

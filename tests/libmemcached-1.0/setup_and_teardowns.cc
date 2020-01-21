@@ -177,6 +177,16 @@ test_return_t memcached_servers_reset_SETUP(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
+test_return_t memcached_servers_reset_CONTINUUM(memcached_st *memc)
+{
+  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, MEMCACHED_DISTRIBUTION_CONSISTENT);
+  memcached_servers_reset(memc);
+  test_zero(memc->ketama.continuum_count);
+  // If memc->ketama.continuum_count is non-zero at this point, any call to
+  // memcached_server_add will cause a segfault.
+  return TEST_SUCCESS;
+}
+
 test_return_t memcached_servers_reset_MEMCACHED_DISTRIBUTION_CONSISTENT_SETUP(memcached_st *memc)
 {
   test_compare(TEST_SUCCESS, memcached_servers_reset_SETUP(memc));
