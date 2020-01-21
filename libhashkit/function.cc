@@ -180,6 +180,10 @@ static hashkit_hash_algorithm_t get_function_type(const hashkit_hash_fn function
   {
     return HASHKIT_HASH_MURMUR;
   }
+  else if (function == hashkit_murmur3)
+  {
+    return HASHKIT_HASH_MURMUR3;
+  }
   else if (function == hashkit_jenkins)
   {
     return HASHKIT_HASH_JENKINS;
