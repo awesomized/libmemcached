@@ -106,7 +106,7 @@ memcached_return_t memcached_behavior_set(memcached_st *shell,
 
   case MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS:
     ptr->flags.auto_eject_hosts= bool(data);
-    /* fall through */
+    break;
 
   case MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT:
     if (data == 0)
@@ -376,6 +376,8 @@ uint64_t memcached_behavior_get(memcached_st *shell,
     return hashkit_get_function(&ptr->hashkit);
 
   case MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS:
+    return ptr->flags.auto_eject_hosts;
+
   case MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT:
     return ptr->server_failure_limit;
 
