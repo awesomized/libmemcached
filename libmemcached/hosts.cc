@@ -120,7 +120,18 @@ static int continuum_item_cmp(const void *t1, const void *t2)
   WATCHPOINT_ASSERT(ct1->value != 153);
   if (ct1->value == ct2->value)
   {
-    return 0;
+    if (ct1->index == ct2->index)
+    {
+      return 0;
+    }
+    else if (ct1->index > ct2->index)
+    {
+      return 1;
+    }
+    else
+    {
+      return -1;
+    }
   }
   else if (ct1->value > ct2->value)
   {
