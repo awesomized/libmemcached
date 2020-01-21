@@ -477,6 +477,7 @@ static memcached_return_t unix_socket_connect(memcached_instance_st* server)
       {
       case EINPROGRESS:
       case EALREADY:
+      case EAGAIN:
         server->events(POLLOUT);
         break;
 
