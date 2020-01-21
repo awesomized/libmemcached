@@ -309,8 +309,9 @@ static memcached_return_t textual_read_one_response(memcached_instance_st* insta
           return MEMCACHED_E2BIG;
         }
 
-        if (total_read >= memcached_literal_param_size("SERVER_ERROR out of memory storing object") and
-            (memcmp(buffer, memcached_literal_param("SERVER_ERROR out of memory storing object")) == 0))
+        if (total_read >= memcached_literal_param_size("SERVER_ERROR out of memory") and
+            ((memcmp(buffer, memcached_literal_param("SERVER_ERROR out of memory")) == 0) or
+                (memcmp(buffer, memcached_literal_param("SERVER_ERROR Out of memory")) == 0)))
         {
           return MEMCACHED_SERVER_MEMORY_ALLOCATION_FAILURE;
         }
