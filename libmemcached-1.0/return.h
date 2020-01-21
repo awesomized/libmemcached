@@ -50,18 +50,20 @@ static inline bool memcached_success(memcached_return_t rc)
 
 static inline bool memcached_failed(memcached_return_t rc)
 {
-  return (rc != MEMCACHED_SUCCESS && 
-          rc != MEMCACHED_END && 
-          rc != MEMCACHED_STORED && 
-          rc != MEMCACHED_STAT && 
-          rc != MEMCACHED_DELETED &&
+  return (rc != MEMCACHED_AUTH_CONTINUE &&
           rc != MEMCACHED_BUFFERED &&
+          rc != MEMCACHED_DELETED &&
+          rc != MEMCACHED_END && 
+          rc != MEMCACHED_ITEM &&
+          rc != MEMCACHED_STAT &&
+          rc != MEMCACHED_STORED && 
+          rc != MEMCACHED_SUCCESS &&
           rc != MEMCACHED_VALUE);
 }
 
 static inline bool memcached_fatal(memcached_return_t rc)
 {
-  return (
+  return (rc != MEMCACHED_AUTH_CONTINUE &&
           rc != MEMCACHED_BUFFERED &&
           rc != MEMCACHED_CLIENT_ERROR &&
           rc != MEMCACHED_DATA_EXISTS &&
