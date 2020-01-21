@@ -182,6 +182,13 @@ public:
   bool slurp();
   void murder();
 
+  void clear()
+  {
+    slurp();
+    _stdout_buffer.clear();
+    _stderr_buffer.clear();
+  }
+
   void use_gdb(bool arg)
   {
     _use_gdb= arg;

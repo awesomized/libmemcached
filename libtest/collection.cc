@@ -140,7 +140,20 @@ test_return_t Collection::exec()
       {
         _failed++;
         formatter()->failed();
-        stream::make_cerr(e.file(), e.line(), e.func()) << e.what();
+        stream::make_cerr err(e.file(), e.line(), e.func());
+        err << e.what();
+        for (auto server : _frame->servers().servers)
+        {
+          auto output = server->output();
+          if (output.first.size())
+          {
+            err << "Server stdout:\n" << output.first << "\n";
+          }
+          if (output.second.size())
+          {
+            err << "Server stderr:\n" << output.second << "\n";
+          }
+        }
         throw;
       }
 
@@ -154,6 +167,18 @@ test_return_t Collection::exec()
       case TEST_FAILURE:
         _failed++;
         formatter()->failed();
+        for (auto server : _frame->servers().servers)
+        {
+          auto output = server->output();
+          if (output.first.size())
+          {
+            Out << "Server stdout:\n" << output.first << "\n";
+          }
+          if (output.second.size())
+          {
+            Out << "Server stderr:\n" << output.second << "\n";
+          }
+        }
         break;
 
       case TEST_SKIPPED:

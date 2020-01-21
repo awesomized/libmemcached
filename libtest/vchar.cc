@@ -160,7 +160,7 @@ void make_vector(libtest::vchar_t& arg, const char *str, size_t length)
 
 std::ostream& operator<<(std::ostream& output, const libtest::vchar_t& arg)
 {
-  std::string tmp= libtest::printer(&arg[0], arg.size());
+  std::string tmp= libtest::printer(arg.data(), arg.size());
   output << tmp <<  "[" << arg.size() << "]";
 
   return output;

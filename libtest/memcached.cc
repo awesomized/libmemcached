@@ -214,6 +214,8 @@ bool Memcached::build()
     add_option(sasl());
   }
 
+  add_option("-vv");
+
   return true;
 }
 

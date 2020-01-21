@@ -205,6 +205,8 @@ public:
     _log_file.clear();
   }
 
+  std::pair<std::string, std::string> output();
+
   pid_t pid() const;
 
   bool has_pid() const;
