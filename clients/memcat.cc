@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 
     if (opt_servers == NULL)
     {
-      std::cerr << "No servers provied" << std::endl;
+      std::cerr << "No servers provided" << std::endl;
       exit(EXIT_FAILURE);
     }
   }
