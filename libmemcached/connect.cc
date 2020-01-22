@@ -579,7 +579,6 @@ static memcached_return_t network_connect(memcached_instance_st* server)
       timeout_error_occured= true;
       break;
 
-    case EAGAIN:
 #if EWOULDBLOCK != EAGAIN
     case EWOULDBLOCK:
 #endif
@@ -617,6 +616,7 @@ static memcached_return_t network_connect(memcached_instance_st* server)
       // Probably not running service
 
     default:
+      memcached_set_errno(*server, local_error, MEMCACHED_AT);
       break;
     }
 
