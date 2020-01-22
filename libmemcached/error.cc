@@ -216,21 +216,20 @@ static void _set(Memcached& memc, memcached_string_t *str, memcached_return_t &r
 
     error->next= memc.error_messages;
     memc.error_messages= error;
-  }
-
 #if 0
-  if (error_log_fd == -1)
-  {
-//    unlink("/tmp/libmemcachd.log");
-    if ((error_log_fd= open("/tmp/libmemcachd.log", O_CREAT | O_WRONLY | O_APPEND, 0644)) < 0)
+    if (error_log_fd == -1)
     {
-      perror("open");
-      error_log_fd= -1;
+  //    unlink("/tmp/libmemcachd.log");
+      if ((error_log_fd= open("/tmp/libmemcachd.log", O_CREAT | O_WRONLY | O_APPEND, 0644)) < 0)
+      {
+        perror("open");
+        error_log_fd= -1;
+      }
     }
-  }
-  ::write(error_log_fd, error->message, error->size);
-  ::write(error_log_fd, "\n", 1);
+    ::write(error_log_fd, error->message, error->size);
+    ::write(error_log_fd, "\n", 1);
 #endif
+  }
 }
 
 memcached_return_t memcached_set_error(Memcached& memc, memcached_return_t rc, const char *at, const char *str, size_t length)
