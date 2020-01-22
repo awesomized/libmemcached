@@ -25,6 +25,7 @@
 *patch
 .deps
 .cproject
+.idea/
 .project
 .settings/
 INSTALL
@@ -126,6 +127,7 @@ out
 patch
 patch2
 stamp-h1
+support/example.cnf
 support/Makefile
 support/Makefile.in
 support/libmemcached-fc.spec
@@ -168,3 +170,4 @@ tests/testudp
 tests/var/
 tmp_chroot
 unittests/unittests
+.idea/
