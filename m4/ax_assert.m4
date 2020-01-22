@@ -52,10 +52,10 @@ AC_DEFUN([AX_ASSERT],
     AC_ARG_ENABLE([assert],
       [AS_HELP_STRING([--enable-assert],
         [Enable assert, this will be overridden by --enable-debug (yes|no) @<:@default=no@:>@])],
-      [ax_enable_assert=yes],
-      [ax_enable_assert=no])
+      [ax_enable_assert=$enableval],
+      [ax_enable_assert=$ac_cv_vcs_checkout])
 
-    AS_IF([ test "$ax_enable_assert" = "yes" -o "$ax_enable_debug" = "yes" -o "$ac_cv_vcs_checkout" = "yes" ],
+    AS_IF([ test "$ax_enable_assert" = "yes" -o "$ax_enable_debug" = "yes" ],
       [ax_enable_assert="yes"],
       [ax_enable_assert="no"
       AC_DEFINE(NDEBUG,[1],[Define to 1 to disable assert'ing code.])])
