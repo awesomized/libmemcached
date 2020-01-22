@@ -132,7 +132,7 @@ memcached_instance_st* memcached_instance_fetch(memcached_st *ptr, uint32_t serv
 #include "libmemcached/io.h"
 #ifdef __cplusplus
 # include "libmemcached/string.hpp"
-# include "libmemcached/memcached/protocol_binary.h"
+# include "libmemcachedprotocol-0.0/binary.h"
 # include "libmemcached/io.hpp"
 # include "libmemcached/udp.hpp"
 # include "libmemcached/do.hpp"
