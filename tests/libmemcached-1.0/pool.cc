@@ -191,7 +191,7 @@ test_return_t connection_pool2_test(memcached_st *memc)
     test_compare(MEMCACHED_SUCCESS, rc);
   }
 
-  test_compare(UINT64_C(9999), memcached_behavior_get(mmc[1], MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK));
+  test_compare(uint64_t(9999), memcached_behavior_get(mmc[1], MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK));
   test_compare(MEMCACHED_SUCCESS, memcached_pool_release(pool, mmc[1]));
   test_compare(MEMCACHED_SUCCESS, memcached_pool_release(pool, mmc[0]));
 
@@ -202,7 +202,7 @@ test_return_t connection_pool2_test(memcached_st *memc)
     test_compare(MEMCACHED_SUCCESS, rc);
   }
 
-  test_compare(UINT64_C(9999), memcached_behavior_get(mmc[0], MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK));
+  test_compare(uint64_t(9999), memcached_behavior_get(mmc[0], MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK));
   test_compare(MEMCACHED_SUCCESS, memcached_pool_release(pool, mmc[0]));
 
   test_true(memcached_pool_destroy(pool) == memc);
