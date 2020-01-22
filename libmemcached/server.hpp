@@ -91,7 +91,7 @@ static inline void memcached_mark_server_for_timeout(memcached_instance_st* serv
       }
       else
       {
-        server->next_retry= 1; // Setting the value to 1 causes the timeout to occur immediatly
+        server->next_retry= 1; // Setting the value to 1 causes the timeout to occur immediately
       }
 
       server->state= MEMCACHED_SERVER_STATE_IN_TIMEOUT;

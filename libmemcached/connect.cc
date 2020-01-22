@@ -146,7 +146,7 @@ static memcached_return_t connect_poll(memcached_instance_st* server, const int 
         return memcached_set_errno(*server, errno, MEMCACHED_AT, memcached_literal_param("getsockopt() errored while looking up error state from poll()"));
       }
 
-      // We check the value to see what happened wth the socket.
+      // We check the value to see what happened with the socket.
       if (err == 0) // Should not happen
       {
         return MEMCACHED_SUCCESS;
