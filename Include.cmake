@@ -1,4 +1,6 @@
 
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake)
+
 include(CheckTypeSize)
 include(CheckCSourceRuns)
 include(CheckIncludeFileCXX)

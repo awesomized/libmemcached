@@ -1,6 +1,6 @@
-===========
-Introducing
-===========
+============================
+Introducing libmemcachedutil
+============================
 
 
 Utility library for libmemcached

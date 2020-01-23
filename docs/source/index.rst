@@ -6,14 +6,9 @@ Welcome to the libmemcached documentation
 Libmemcached
 ------------
 
-
-######
-Basics
-######
-
-
 .. toctree::
    :maxdepth: 1
+   :caption: Basics
 
    libmemcached
    versioning
@@ -22,12 +17,9 @@ Basics
    libmemcached_configuration
    libmemcached/memcached_last_error_message
 
-#################
-Working with data
-#################
-
 .. toctree::
    :maxdepth: 1
+   :caption: Working with Data
 
    memcached_auto
    memcached_delete
@@ -40,13 +32,9 @@ Working with data
    memcached_append
    memcached_cas
 
-
-###############
-Advanced Topics
-###############
-
 .. toctree::
    :maxdepth: 1
+   :caption: Advanced Topics
 
    libmemcached-1.0/memcached_set_encoding_key
    memcached_behavior
@@ -66,61 +54,43 @@ Advanced Topics
    memcached_version 
    libmemcached/defaults
 
-##################
-Interface Versions
-##################
-
 .. toctree::
    :titlesonly:
+   :caption: Interface Versions
 
    libmemcached-1.0/index
    libmemcached-1.1/index
 
-####################
-Deprecated Functions
-####################
-
 .. toctree::
    :titlesonly:
+   :caption: Deprecated Functions
 
    libmemcached/memcached_fetch
 
-#################
-Platform Specific
-#################
-
 .. toctree::
    :maxdepth: 1
+   :caption: Platform Specifics
 
    tap
    types
 
-#################################
-Deriving statistics from a server
-#################################
-
 .. toctree::
    :maxdepth: 1
+   :caption: Deriving Statistics from a Server
 
    memcached_analyze
    memcached_stats
 
-----------------
-Libmemcachedutil
-----------------
-
 .. toctree::
    :maxdepth: 1
+   :caption: Libmemcachedutil
 
    libmemcachedutil
    memcached_pool
 
--------------------
-Client Applications
--------------------
-
 .. toctree::
    :maxdepth: 1
+   :caption: Client Applications
 
    bin/memcapable
    bin/memcat
@@ -137,12 +107,9 @@ Client Applications
    bin/memping.rst
    bin/memtouch.rst
 
-----------
-Libhashkit
-----------
-
 .. toctree::
    :maxdepth: 1
+   :caption: Libhashkit
 
    libhashkit
    hashkit_create

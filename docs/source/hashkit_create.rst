@@ -15,7 +15,7 @@ SYNOPSIS
 .. c:type:: hashkit_st
 
 .. c:function:: hashkit_st *hashkit_create(hashkit_st *hash)
- 
+
 .. c:function:: hashkit_st *hashkit_clone(hashkit_st *destination, const hashkit_st *ptr)
 
 .. c:function:: void hashkit_free(hashkit_st *hash)

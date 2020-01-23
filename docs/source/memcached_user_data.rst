@@ -20,9 +20,6 @@ SYNOPSIS
 --------
 
 
-
-.. code-block:: c
-
 #include <libmemcached/memcached.h>
 
 .. c:function:: void *memcached_get_user_data (memcached_st *ptr)

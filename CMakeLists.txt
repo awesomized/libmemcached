@@ -70,5 +70,7 @@ add_subdirectory(libmemcached)
 add_subdirectory(libmemcached-1.0)
 add_subdirectory(libmemcachedutil)
 
+add_subdirectory(docs)
+
 # keep last
 configure_file(mem_config.h.in ${CMAKE_BINARY_DIR}/mem_config.h @ONLY)

@@ -38,12 +38,9 @@ Creating a pool of servers
 --------------------------
 
 
-
 .. code-block:: c
 
-Creating a pool of Servers::
-
-  const char *config_string= "--SERVER=host10.example.com --SERVER=host11.example.com --SERVER=host10.example.com"; 
+  const char *config_string= "--SERVER=host10.example.com --SERVER=host11.example.com --SERVER=host10.example.com";
   
   memcached_pool_st* pool= memcached_pool(config_string, strlen(config_string));
 
@@ -79,8 +76,6 @@ Adding a value to the server
 
 
 .. code-block:: c
-
-Adding a value to the Server::
 
    char *key= "foo";
    char *value= "value";
