@@ -39,7 +39,7 @@
 
 #include <libmemcached/csl/common.h>
 
-union YYSTYPE
+union CONFIG_STYPE
 {
   long long number;  
   memcached_string_t string;
@@ -52,4 +52,4 @@ union YYSTYPE
   server_t server;
 };
 
-typedef union YYSTYPE YYSTYPE;
+typedef union CONFIG_STYPE CONFIG_STYPE;

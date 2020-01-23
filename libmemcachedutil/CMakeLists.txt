@@ -1,7 +1,7 @@
 
 find_package(Threads)
 
-add_library(memcachedutil
+add_library(libmemcachedutil SHARED
         ../libmemcached/backtrace.cc
         flush.cc
         pid.cc
@@ -9,7 +9,8 @@ add_library(memcachedutil
         pool.cc
         version.cc
         )
-
-target_compile_definitions(memcachedutil PRIVATE -DBUILDING_LIBMEMCACHED)
-
-target_link_libraries(memcachedutil memcached ${CMAKE_THREAD_LIBS_INIT})
+add_library(memcachedutil ALIAS libmemcachedutil)
+set_target_properties(libmemcachedutil PROPERTIES LIBRARY_OUTPUT_NAME memcachedutil)
+target_include_directories(libmemcachedutil PRIVATE ..)
+target_compile_definitions(libmemcachedutil PRIVATE -DBUILDING_LIBMEMCACHED)
+target_link_libraries(libmemcachedutil libmemcached ${CMAKE_THREAD_LIBS_INIT})

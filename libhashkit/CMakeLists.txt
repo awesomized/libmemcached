@@ -1,15 +1,10 @@
-if(HSIEH)
+if(HAVE_HSIEH_HASH)
     set(HSIEH_CC hsieh.cc)
 else()
     set(HSIEH_CC nohsieh.cc)
 endif()
 
-set(AUTOHEADER_FILE mem_config.h)
-configure_file(hashkitcon.h.in hashkitcon.h @ONLY)
-
-include_directories(..)
-
-add_library(hashkit
+add_library(libhashkit SHARED
         aes.cc
         algorithm.cc
         behavior.cc
@@ -35,4 +30,10 @@ add_library(hashkit
         strerror.cc
         string.cc
         )
-target_compile_options(hashkit PRIVATE -DBUILDING_HASHKIT)
+add_library(hashkit ALIAS libhashkit)
+set_target_properties(libhashkit PROPERTIES LIBRARY_OUTPUT_NAME hashkit)
+target_include_directories(libhashkit PRIVATE ..)
+target_compile_options(libhashkit PRIVATE -DBUILDING_HASHKIT)
+
+set(AUTOHEADER_FILE mem_config.h)
+configure_file(hashkitcon.h.in hashkitcon.h @ONLY)

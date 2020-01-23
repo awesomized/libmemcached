@@ -1,9 +1,8 @@
 
 add_subdirectory(csl)
 
-include_directories(..)
-
-add_library(memcached
+set(LIBMEMCACHED_SOURCES
+        ${CSL_SOURCES}
         allocators.cc
         analyze.cc
         array.c
@@ -50,9 +49,20 @@ add_library(memcached
         udp.cc
         verbosity.cc
         version.cc
-        virtual_bucket.c
-        )
+        virtual_bucket.c)
 
-target_link_libraries(memcached csl hashkit ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS})
+add_library(libmemcached SHARED
+        ${LIBMEMCACHED_SOURCES})
+add_library(memcached ALIAS libmemcached)
+set_target_properties(libmemcached PROPERTIES LIBRARY_OUTPUT_NAME memcached)
+target_link_libraries(libmemcached libhashkit ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS})
+target_include_directories(libmemcached PRIVATE ..)
+target_compile_definitions(libmemcached PRIVATE -DBUILDING_LIBMEMCACHED)
 
-target_compile_definitions(memcached PRIVATE -DBUILDING_LIBMEMCACHED)
+add_library(libmemcachedinternal STATIC
+        ${LIBMEMCACHED_SOURCES})
+add_library(memcachedinternal ALIAS libmemcachedinternal)
+set_target_properties(libmemcachedinternal PROPERTIES LIBRARY_OUTPUT_NAME memcachedinternal)
+target_link_libraries(libmemcachedinternal libhashkit ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS})
+target_include_directories(libmemcachedinternal PRIVATE ..)
+target_compile_definitions(libmemcachedinternal PRIVATE -DBUILDING_LIBMEMCACHEDINTERNAL)

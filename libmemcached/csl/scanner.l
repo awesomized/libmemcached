@@ -86,6 +86,7 @@
 { \
 }
 
+#define YYSTYPE CONFIG_STYPE
 
 #define YY_INPUT(buffer, result, max_size) get_lex_chars(buffer, result, max_size, PARAM)
 

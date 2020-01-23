@@ -1,30 +1,54 @@
-include_directories(..)
 
-add_library(utilities STATIC utilities.cc)
-link_libraries(utilities memcachedinternal)
+set(CLIENTS
+        memcapable
+        memcat
+        memcp
+        memdump
+        memerror
+        memexist
+        memflush
+        memparse
+        memping
+        memrm
+        memslap
+        memstat
+        memtouch)
 
-add_executable(memcapable   memcapable.cc ../libmemcached/byteorder.cc)
-add_executable(memcat       memcat.cc)
-add_executable(memcp        memcp.cc)
-add_executable(memdump      memdump.cc)
-add_executable(memerror     memerror.cc)
-add_executable(memexist     memexist.cc)
-add_executable(memflush     memflush.cc)
-add_executable(memparse     memparse.cc)
-add_executable(memping      memping.cc)
-add_executable(memrm        memrm.cc)
-add_executable(memslap      memslap.cc generator.cc execute.cc)
-add_executable(memstat      memstat.cc)
-add_executable(memtouch     memtouch.cc)
+add_library(libclient_utilities STATIC utilities.cc)
+add_library(client_utilities ALIAS libclient_utilities)
+target_include_directories(libclient_utilities PRIVATE ..)
+target_link_libraries(libclient_utilities libmemcachedinternal)
+
+add_library(libclient_slap STATIC generator.cc execute.cc)
+add_library(client_slap ALIAS libclient_slap)
+target_include_directories(libclient_slap PRIVATE ..)
+target_link_libraries(libclient_slap libmemcachedinternal)
+
+foreach(CLIENT IN LISTS CLIENTS)
+    add_executable(${CLIENT} ${CLIENT}.cc)
+    target_include_directories(${CLIENT} PRIVATE ..)
+    target_link_libraries(${CLIENT} libclient_utilities)
+endforeach()
+
+# extra sources
+
+target_sources(memcapable PRIVATE ../libmemcached/byteorder.cc)
+
+# extra libs
 
 target_link_libraries(memcapable ${CMAKE_THREAD_LIBS_INIT})
-target_link_libraries(memping memcachedutil)
-target_link_libraries(memslap ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(memping libmemcachedutil)
+target_link_libraries(memslap libclient_slap ${CMAKE_THREAD_LIBS_INIT})
+
+# memaslap is special
 
 find_library(LIBEVENT event)
+check_stdatomic()
 
-if(LIBEVENT)
-    add_executable(memaslap
-            memaslap.c generator.cc execute.cc ms_conn.c ms_setting.c ms_sigsegv.c ms_stats.c ms_task.c ms_thread.c)
-    target_link_libraries(memaslap event)
+if(LIBEVENT AND HAVE_C_STDATOMIC)
+    check_decl(getline stdio.h)
+    add_executable(memaslap memaslap.c
+            ms_conn.c ms_setting.c ms_sigsegv.c ms_stats.c ms_task.c ms_thread.c)
+    target_include_directories(memaslap PRIVATE ..)
+    target_link_libraries(memaslap libclient_slap libclient_utilities ${LIBEVENT} ${CMAKE_THREAD_LIBS_INIT})
 endif()

@@ -1,8 +1,10 @@
 
 include(CheckTypeSize)
+include(CheckCSourceRuns)
 include(CheckIncludeFileCXX)
 include(CheckCXXSymbolExists)
 include(CheckCXXCompilerFlag)
+include(CheckCXXSourceRuns)
 
 function(safe_string STRING OUTPUT)
     string(REGEX REPLACE "[^0-9a-zA-Z_]" "_" HEADER_SAFE ${STRING})
@@ -28,7 +30,7 @@ endfunction(check_decl)
 function(check_type TYPE HEADER)
     safe_string(${TYPE} TYPE_CONST)
     SET(CMAKE_EXTRA_INCLUDE_FILES ${HEADER})
-    check_type_size(${TYPE} ${TYPE_CONST})
+    check_type_size(${TYPE} ${TYPE_CONST} LANGUAGE CXX)
     SET(CMAKE_EXTRA_INCLUDE_FILES)
 endfunction(check_type)
 
@@ -38,3 +40,21 @@ function(check_debug)
         add_compile_options(-Wall -Wextra)
     endif()
 endfunction(check_debug)
+
+function(check_stdatomic)
+    check_cxx_source_runs(
+            "#include <atomic>
+            int main() {
+                std::atomic<int> i(0);
+                return atomic_fetch_add(&i,1);
+            }"
+            HAVE_CXX_STDATOMIC)
+    check_c_source_runs(
+            "#include <stdatomic.h>
+            int main() {
+                atomic_int i;
+                atomic_init(&i, 0);
+                return atomic_fetch_add(&i,1);
+            }"
+            HAVE_C_STDATOMIC)
+endfunction(check_atomic_builtins)

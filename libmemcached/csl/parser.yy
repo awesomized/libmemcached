@@ -43,8 +43,9 @@ class Context;
 %}
 
 %define parse.error verbose
-%define api.prefix {config_}
 %define api.pure
+%define api.prefix {config_}
+%define api.value.type {union CONFIG_STYPE}
 %debug
 %defines
 %expect 0
@@ -74,7 +75,7 @@ class Context;
 # endif
 #endif
 
-int conf_lex(YYSTYPE* lvalp, void* scanner);
+int config_lex(YYSTYPE* lvalp, void* scanner);
 
 #define select_yychar(__context) yychar == UNKNOWN ? ( (__context)->previous_token == END ? UNKNOWN : (__context)->previous_token ) : yychar   
 
