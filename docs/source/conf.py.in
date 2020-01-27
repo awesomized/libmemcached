@@ -213,10 +213,8 @@ latex_documents = [
 
 
 # -- Options for manual page output --------------------------------------------
-man_authors = [
-    u'Brian Aker',
-    u'Michael Wallner'
-]
+# Skip a separate AUTHOR section
+man_authors = []
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
