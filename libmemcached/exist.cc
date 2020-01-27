@@ -155,10 +155,5 @@ memcached_return_t memcached_exist_by_key(memcached_st *shell,
     rc= ascii_exist(memc, instance, key, key_length);
   }
 
-  if (memcached_fatal(rc))
-  {
-    memcached_io_reset(instance);
-  }
-
   return rc;
 }

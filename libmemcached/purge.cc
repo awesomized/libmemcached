@@ -105,6 +105,7 @@ bool memcached_purge(memcached_instance_st* ptr)
   */
   if (memcached_io_write(ptr) == false)
   {
+    memcached_io_reset(ptr);
     memcached_set_error(*ptr, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
     return false;
   }
@@ -138,7 +139,6 @@ bool memcached_purge(memcached_instance_st* ptr)
       if (rc== MEMCACHED_PROTOCOL_ERROR or rc == MEMCACHED_UNKNOWN_READ_FAILURE or rc == MEMCACHED_READ_FAILURE)
       {
         WATCHPOINT_ERROR(rc);
-        memcached_io_reset(ptr);
         is_successful= false;
       }
 

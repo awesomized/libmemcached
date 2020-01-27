@@ -85,26 +85,23 @@ memcached_return_t memcached_vdo(memcached_instance_st* instance,
   ** before they start writing, if there is any data in buffer, clear it out,
   ** otherwise we might get a partial write.
   **/
+  bool sent_success;
   if (memcached_is_udp(instance->root))
   {
-    return _vdo_udp(instance, vector, count);
+    sent_success= memcached_success(rc= _vdo_udp(instance, vector, count));
+  } else {
+    sent_success= memcached_io_writev(instance, vector, count, with_flush);
   }
-
-  bool sent_success= memcached_io_writev(instance, vector, count, with_flush);
   if (sent_success == false)
   {
-    //assert(memcached_last_error(instance->root) == MEMCACHED_SUCCESS);
-    if (memcached_last_error(instance->root) == MEMCACHED_SUCCESS)
+    rc= memcached_last_error(instance->root);
+    if (rc == MEMCACHED_SUCCESS)
     {
-      //assert(memcached_last_error(instance->root) != MEMCACHED_SUCCESS);
-      return memcached_set_error(*instance, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
+      memcached_set_error(*instance, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
     }
-    else
-    {
-      rc= memcached_last_error(instance->root);
-    }
+    memcached_io_reset(instance);
   }
-  else if (memcached_is_replying(instance->root))
+  else if (memcached_is_replying(instance->root) && !memcached_is_udp(instance->root))
   {
     memcached_server_response_increment(instance);
   }

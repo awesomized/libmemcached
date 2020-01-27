@@ -98,12 +98,7 @@ static inline memcached_return_t binary_delete(memcached_instance_st* instance,
     { key, key_length }
   };
 
-  memcached_return_t rc;
-  if (memcached_fatal(rc= memcached_vdo(instance, vector,  4, should_flush)))
-  {
-    assert(memcached_last_error(instance->root) != MEMCACHED_SUCCESS);
-    memcached_io_reset(instance);
-  }
+  memcached_return_t rc= memcached_vdo(instance, vector,  4, should_flush);
 
   if (memcached_has_replicas(instance))
   {
@@ -120,12 +115,7 @@ static inline memcached_return_t binary_delete(memcached_instance_st* instance,
 
       memcached_instance_st* replica= memcached_instance_fetch(instance->root, server_key);
 
-      if (memcached_fatal(memcached_vdo(replica, vector, 4, should_flush)))
-      {
-        assert(memcached_last_error(instance->root) != MEMCACHED_SUCCESS);
-        memcached_io_reset(replica);
-      }
-      else
+      if (memcached_success(memcached_vdo(replica, vector, 4, should_flush)))
       {
         memcached_server_response_decrement(replica);
       }

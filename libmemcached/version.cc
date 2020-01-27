@@ -80,7 +80,6 @@ static inline memcached_return_t memcached_version_textual(Memcached *memc)
       memcached_return_t rrc= memcached_response(instance, NULL);
       if (memcached_failed(rrc))
       {
-        memcached_io_reset(instance);
         errors_happened= true;
       }
     }
@@ -117,7 +116,6 @@ static inline memcached_return_t memcached_version_binary(Memcached *memc)
     memcached_return_t rrc= memcached_vdo(instance, vector, 1, true);
     if (memcached_failed(rrc))
     {
-      memcached_io_reset(instance);
       errors_happened= true;
       continue;
     }
@@ -136,7 +134,6 @@ static inline memcached_return_t memcached_version_binary(Memcached *memc)
       memcached_return_t rrc= memcached_response(instance, buffer, sizeof(buffer), NULL);
       if (memcached_failed(rrc))
       {
-        memcached_io_reset(instance);
         errors_happened= true;
       }
     }

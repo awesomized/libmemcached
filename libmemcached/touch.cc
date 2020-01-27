@@ -63,7 +63,6 @@ static memcached_return_t ascii_touch(memcached_instance_st* instance,
   memcached_return_t rc;
   if (memcached_failed(rc= memcached_vdo(instance, vector, 6, true)))
   {
-    memcached_io_reset(instance);
     return memcached_set_error(*instance, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
   }
 
@@ -96,7 +95,6 @@ static memcached_return_t binary_touch(memcached_instance_st* instance,
   memcached_return_t rc;
   if (memcached_failed(rc= memcached_vdo(instance, vector, 4, true)))
   {
-    memcached_io_reset(instance);
     return memcached_set_error(*instance, MEMCACHED_WRITE_FAILURE, MEMCACHED_AT);
   }
 

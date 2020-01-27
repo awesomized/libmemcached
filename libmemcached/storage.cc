@@ -192,15 +192,6 @@ static memcached_return_t memcached_send_binary(Memcached *ptr,
   memcached_return_t rc;
   if ((rc= memcached_vdo(server, vector, 5, flush)) != MEMCACHED_SUCCESS)
   {
-    memcached_io_reset(server);
-
-#if 0
-    if (memcached_has_error(ptr))
-    {
-      memcached_set_error(*server, rc, MEMCACHED_AT);
-    }
-#endif
-
     assert(memcached_last_error(server->root) != MEMCACHED_SUCCESS);
     return memcached_last_error(server->root);
   }
@@ -220,11 +211,7 @@ static memcached_return_t memcached_send_binary(Memcached *ptr,
 
       memcached_instance_st* instance= memcached_instance_fetch(ptr, server_key);
 
-      if (memcached_vdo(instance, vector, 5, false) != MEMCACHED_SUCCESS)
-      {
-        memcached_io_reset(instance);
-      }
-      else
+      if (memcached_success(memcached_vdo(instance, vector, 5, false)))
       {
         memcached_server_response_decrement(instance);
       }
@@ -333,11 +320,6 @@ static memcached_return_t memcached_send_ascii(Memcached *ptr,
     {
       return MEMCACHED_SUCCESS;
     }
-  }
-
-  if (rc == MEMCACHED_WRITE_FAILURE)
-  {
-    memcached_io_reset(instance);
   }
 
   assert(memcached_failed(rc));

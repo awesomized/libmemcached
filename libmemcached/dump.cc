@@ -71,11 +71,7 @@ static memcached_return_t ascii_dump(Memcached *memc, memcached_dump_fn *callbac
       memcached_instance_st* instance= memcached_instance_fetch(memc, server_key);
 
       memcached_return_t vdo_rc;
-      if (memcached_success((vdo_rc= memcached_vdo(instance, vector, 3, true))))
-      {
-        // We have sent the message to the server successfully
-      }
-      else
+      if (memcached_failed((vdo_rc= memcached_vdo(instance, vector, 3, true))))
       {
         return vdo_rc;
       }

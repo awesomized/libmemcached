@@ -484,6 +484,7 @@ static memcached_return_t binary_stats_fetch(memcached_stat_st *memc_stat,
 {
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
   protocol_binary_request_stats request= {}; // = {.bytes= {0}};
+  memcached_return_t rc;
 
   initialize_binary_request(instance, request.message.header);
 
@@ -501,10 +502,9 @@ static memcached_return_t binary_stats_fetch(memcached_stat_st *memc_stat,
       { args, args_length }
     };
 
-    if (memcached_vdo(instance, vector, 2, true) != MEMCACHED_SUCCESS)
+    if (memcached_failed(rc = memcached_vdo(instance, vector, 2, true)))
     {
-      memcached_io_reset(instance);
-      return MEMCACHED_WRITE_FAILURE;
+      return rc;
     }
   }
   else
@@ -514,17 +514,16 @@ static memcached_return_t binary_stats_fetch(memcached_stat_st *memc_stat,
       { request.bytes, sizeof(request.bytes) }
     };
 
-    if (memcached_vdo(instance, vector, 1, true) != MEMCACHED_SUCCESS)
+    if (memcached_failed(rc = memcached_vdo(instance, vector, 1, true)))
     {
-      memcached_io_reset(instance);
-      return MEMCACHED_WRITE_FAILURE;
+      return rc;
     }
   }
 
   memcached_server_response_decrement(instance);
   while (1)
   {
-    memcached_return_t rc= memcached_response(instance, buffer, sizeof(buffer), NULL);
+    rc= memcached_response(instance, buffer, sizeof(buffer), NULL);
 
     if (rc == MEMCACHED_END)
     {
@@ -533,7 +532,6 @@ static memcached_return_t binary_stats_fetch(memcached_stat_st *memc_stat,
 
     if (rc != MEMCACHED_SUCCESS)
     {
-      memcached_io_reset(instance);
       return rc;
     }
 
