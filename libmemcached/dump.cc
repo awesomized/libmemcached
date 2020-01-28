@@ -46,6 +46,7 @@
 
 static memcached_return_t ascii_dump(Memcached *memc, memcached_dump_fn *callback, void *context, uint32_t number_of_callbacks)
 {
+  memcached_version(memc);
   /* MAX_NUMBER_OF_SLAB_CLASSES is defined to 200 in Memcached 1.4.10 */
   for (uint32_t x= 0; x < 200; x++)
   {
@@ -70,10 +71,13 @@ static memcached_return_t ascii_dump(Memcached *memc, memcached_dump_fn *callbac
     {
       memcached_instance_st* instance= memcached_instance_fetch(memc, server_key);
 
-      memcached_return_t vdo_rc;
-      if (memcached_failed((vdo_rc= memcached_vdo(instance, vector, 3, true))))
-      {
-        return vdo_rc;
+      // skip slabs >63 for server versions >= 1.4.23
+      if (x < 64 || memcached_version_instance_cmp(instance, 1, 4, 23) < 0) {
+        memcached_return_t vdo_rc;
+        if (memcached_failed((vdo_rc= memcached_vdo(instance, vector, 3, true))))
+        {
+          return vdo_rc;
+        }
       }
     }
 

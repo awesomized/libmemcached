@@ -49,15 +49,18 @@ using namespace libtest;
 #include "tests/libmemcached-1.0/dump.h"
 
 static memcached_return_t callback_dump_counter(const memcached_st *,
-                                                const char*, // key,
-                                                size_t, // length,
+                                                const char* key,
+                                                size_t length,
                                                 void *context)
 {
   size_t *counter= (size_t *)context;
 
 #if 0
   std::cerr.write(key, length);
-  std::cerr << std::endl;
+  std::cerr << ": " << *counter << std::endl;
+#else
+  (void)key;
+  (void)length;
 #endif
 
   *counter= *counter +1;
@@ -78,6 +81,9 @@ static memcached_return_t item_counter(const memcached_instance_st * ,
     {
       return MEMCACHED_FAILURE;
     }
+#if 0
+    std::cerr << "# " << number_value << " items " << std::endl;
+#endif
     *counter= *counter +number_value;
   }
 
@@ -110,21 +116,23 @@ test_return_t memcached_dump_TEST2(memcached_st *memc)
 {
   test_skip(false, memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL));
 
-  /* The dump test relies on there being at least 32 items in memcached */
   for (uint32_t x= 0; x < memcached_dump_TEST2_COUNT; x++)
   {
     char key[1024];
 
-    int length= snprintf(key, sizeof(key), "%s%u", __func__, x);
+    int length= snprintf(key, sizeof(key), "%s_%u", __func__, x);
 
     test_true(length > 0);
 
     test_compare(MEMCACHED_SUCCESS,
                  memcached_set(memc, key, length,
-                               NULL, 0, // Zero length values
+                               key, length,
                                time_t(0), uint32_t(0)));
   }
   memcached_quit(memc);
+
+  // give memcached some time
+  libtest::dream(1, 0);
 
   uint64_t counter= 0;
   test_compare(MEMCACHED_SUCCESS,

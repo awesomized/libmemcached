@@ -199,6 +199,29 @@ void memcached_version_instance(memcached_instance_st* instance)
   }
 }
 
+int8_t memcached_version_instance_cmp(memcached_instance_st *instance,
+    uint8_t maj, uint8_t min, uint8_t mic)
+{
+  if (!instance || memcached_server_major_version(instance) == UINT8_MAX) {
+    return INT8_MIN;
+  } else {
+    uint32_t sv, cv;
+
+    sv = memcached_server_micro_version(instance)
+        |memcached_server_minor_version(instance) << 8
+        |memcached_server_major_version(instance) << 16
+        ;
+    cv = mic
+        |min << 8
+        |maj << 16
+        ;
+    if (sv < cv) {
+      return -1;
+    }
+    return sv != cv;
+  }
+}
+
 memcached_return_t memcached_version(memcached_st *shell)
 {
   Memcached* memc= memcached2Memcached(shell);

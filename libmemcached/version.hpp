@@ -42,3 +42,5 @@
 #pragma once
 
 void memcached_version_instance(memcached_instance_st*);
+int8_t memcached_version_instance_cmp(memcached_instance_st*,
+    uint8_t maj, uint8_t min, uint8_t mic);
