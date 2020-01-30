@@ -37,7 +37,7 @@
 #include <libmemcached-1.0/memcached.h>
 
 #include "libmemcached/socket.hpp"
-#include "libmemcached/memcached/protocol_binary.h"
+#include "libmemcachedprotocol-0.0/binary.h"
 #include "libmemcached/byteorder.h"
 #include "clients/utilities.h"
 
@@ -536,6 +536,7 @@ static enum test_return do_validate_response_header(response *rsp,
     case PROTOCOL_BINARY_CMD_REPLACEQ:
     case PROTOCOL_BINARY_CMD_SETQ:
       verify("Quiet command shouldn't return on success" == NULL);
+      /* fall through */
     default:
       break;
     }

@@ -454,8 +454,10 @@ static memcached_return_t _io_fill(memcached_instance_st* instance)
 
       case ENOTCONN: // Programmer Error
         WATCHPOINT_ASSERT(0);
+        // fall through
       case ENOTSOCK:
         WATCHPOINT_ASSERT(0);
+        // fall through
       case EBADF:
         assert_msg(instance->fd != INVALID_SOCKET, "Programmer error, invalid socket");
         /* fall through */
@@ -587,9 +589,9 @@ memcached_return_t memcached_io_slurp(memcached_instance_st* instance)
         /* fall through */
 
       case ENOTCONN: // Programmer Error
-        assert(0);
       case ENOTSOCK:
         assert(0);
+        /* fall through */
       case EBADF:
         assert_msg(instance->fd != INVALID_SOCKET, "Invalid socket state");
         /* fall through */

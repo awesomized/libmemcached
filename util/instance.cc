@@ -151,7 +151,7 @@ bool Instance::run()
         return false;
       }
       _addrinfo_next= _addrinfo_next->ai_next;
-
+      /* fall through */
 
     case CONNECT:
       close_socket();

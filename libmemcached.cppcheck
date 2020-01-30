@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="1">
+    <builddir>.cppcheck</builddir>
+    <platform>native</platform>
+    <analyze-all-vs-configs>false</analyze-all-vs-configs>
+    <check-headers>true</check-headers>
+    <check-unused-templates>false</check-unused-templates>
+    <max-ctu-depth>10</max-ctu-depth>
+    <includedir>
+        <dir name="."/>
+    </includedir>
+    <undefines>
+        <undefine>HARD_MALLOC_TEST</undefine>
+    </undefines>
+    <paths>
+        <dir name="."/>
+    </paths>
+    <exclude>
+        <path name=".git"/>
+        <path name=".idea"/>
+        <path name=".settings"/>
+        <path name="docs"/>
+        <path name="libmemcached/csl/parser.cc"/>
+        <path name="libmemcached/csl/scanner.cc"/>
+        <path name="libmemcached/memcached"/>
+        <path name="libtest"/>
+        <path name="tests"/>
+    </exclude>
+</project>

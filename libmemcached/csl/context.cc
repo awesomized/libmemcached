@@ -67,7 +67,7 @@ void Context::error(const char *error_arg, yytokentype last_token, const char *l
     return;
   }
 
-  if (error_arg and strcmp(error_arg, "memory exhausted") == 0)
+  if (strcmp(error_arg, "memory exhausted") == 0)
   {
     (void)memcached_set_error(*memc, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, memcached_string_make_from_cstr(error_arg));
     return;
@@ -75,9 +75,7 @@ void Context::error(const char *error_arg, yytokentype last_token, const char *l
 
   // We now test if it is something other then a syntax error, if it  we
   // return a generic message 
-  if (error_arg and strcmp(error_arg, "syntax error") == 0)
-  { }
-  else if (error_arg)
+  if (strcmp(error_arg, "syntax error") != 0)
   {
     memcached_set_parser_error(*memc, MEMCACHED_AT, "Error occured during parsing (%s)", error_arg);
     return;

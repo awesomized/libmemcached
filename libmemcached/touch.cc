@@ -36,7 +36,6 @@
  */
 
 #include <libmemcached/common.h>
-#include <libmemcached/memcached/protocol_binary.h>
 
 static memcached_return_t ascii_touch(memcached_instance_st* instance,
                                       const char *key, size_t key_length,

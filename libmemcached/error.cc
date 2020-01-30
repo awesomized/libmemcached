@@ -651,7 +651,7 @@ memcached_return_t memcached_server_error_return(const memcached_instance_st * p
     return MEMCACHED_INVALID_ARGUMENTS;
   }
 
-  if (ptr and ptr->error_messages)
+  if (ptr->error_messages)
   {
     return ptr->error_messages->rc;
   }
@@ -666,7 +666,7 @@ memcached_return_t memcached_instance_error_return(memcached_instance_st* instan
     return MEMCACHED_INVALID_ARGUMENTS;
   }
 
-  if (instance and instance->error_messages)
+  if (instance->error_messages)
   {
     return instance->error_messages->rc;
   }

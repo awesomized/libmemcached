@@ -36,7 +36,6 @@
  */
 
 #include <libmemcached/common.h>
-#include <libmemcached/memcached/protocol_binary.h>
 
 memcached_return_t memcached_delete(memcached_st *shell, const char *key, size_t key_length,
                                     time_t expiration)

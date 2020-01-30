@@ -534,7 +534,7 @@ static memcached_return_t binary_read_one_response(memcached_instance_st* instan
        * (only the final NOOP), so we need to increment the counter again.
        */
       memcached_server_response_increment(instance);
-      /* FALLTHROUGH */
+      /* fall through */
     case PROTOCOL_BINARY_CMD_GETK:
       {
         uint16_t keylen= header.response.keylen;

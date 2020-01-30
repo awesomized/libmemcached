@@ -349,15 +349,15 @@ static int64_t ms_parse_time()
   case 'd':
   case 'D':
     ret*= 24;
-
+    /* fall through */
   case 'h':
   case 'H':
     ret*= 60;
-
+    /* fall through */
   case 'm':
   case 'M':
     ret*= 60;
-
+    /* fall through */
   case 's':
   case 'S':
     break;

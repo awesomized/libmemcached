@@ -1184,6 +1184,7 @@ static int ms_ascii_process_line(ms_conn_t *c, char *command)
 
   case 'O':   /* OK */
     c->currcmd.retstat= MCD_SUCCESS;
+    break;
 
   case 'S':                    /* STORED STATS SERVER_ERROR */
     if (buffer[2] == 'A')      /* STORED STATS */
@@ -2344,7 +2345,7 @@ static void ms_conn_shrink(ms_conn_t *c)
       && (c->rudpbytes + UDP_MAX_PAYLOAD_SIZE < UDP_DATA_BUFFER_SIZE))
   {
     char *new_rbuf= (char *)realloc(c->rudpbuf, (size_t)c->rudpsize * 2);
-    if (! new_rbuf)
+    if (new_rbuf)
     {
       c->rudpbuf= new_rbuf;
       c->rudpsize= UDP_DATA_BUFFER_SIZE;

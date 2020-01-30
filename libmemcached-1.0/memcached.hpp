@@ -485,13 +485,11 @@ public:
               time_t expiration,
               uint32_t flags)
   {
-    bool retval= true;
     std::map<const std::string, std::vector<char> >::const_iterator it= key_value_map.begin();
 
     while (it != key_value_map.end())
     {
-      retval= set(it->first, it->second, expiration, flags);
-      if (retval == false)
+      if (!set(it->first, it->second, expiration, flags))
       {
         // We should tell the user what the key that failed was
         return false;
