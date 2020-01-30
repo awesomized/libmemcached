@@ -1,8 +1,19 @@
 
-add_subdirectory(csl)
+find_package(FLEX)
+find_package(BISON)
+
+bison_target(CSL_PARSER csl/parser.yy ${CMAKE_CURRENT_BINARY_DIR}/csl/parser.cc
+        DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/csl/parser.h
+        )
+flex_target(CSL_SCANNER csl/scanner.l ${CMAKE_CURRENT_BINARY_DIR}/csl/scanner.cc
+        DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/csl/scanner.h
+        )
+add_flex_bison_dependency(CSL_SCANNER CSL_PARSER)
 
 set(LIBMEMCACHED_SOURCES
-        ${CSL_SOURCES}
+        csl/context.cc
+        ${BISON_CSL_PARSER_OUTPUTS}
+        ${FLEX_CSL_SCANNER_OUTPUTS}
         allocators.cc
         analyze.cc
         array.c
