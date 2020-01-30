@@ -74,7 +74,7 @@ static inline const char *storage_op_string(memcached_storage_action_t verb)
   return "set ";
 }
 
-static inline uint8_t can_by_encrypted(const memcached_storage_action_t verb)
+static inline bool can_by_encrypted(const memcached_storage_action_t verb)
 {
   switch (verb)
   {
