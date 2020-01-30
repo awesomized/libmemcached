@@ -339,7 +339,6 @@ bool server_startup_st::_start_server(const bool is_socket,
           {
             Outn();
             Out << "STARTING SERVER(pid:" << server->pid() << "): " << server->running();
-            Outn();
           }
 #endif
         }
