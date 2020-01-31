@@ -263,12 +263,6 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  if (libtest::libtool() == NULL)
-  {
-    Error << "Failed to locate libtool";
-    return EXIT_FAILURE;
-  }
-
   if (getenv("YATL_COLLECTION_TO_RUN"))
   {
     if (strlen(getenv("YATL_COLLECTION_TO_RUN")))

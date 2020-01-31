@@ -37,7 +37,7 @@
 
 #include <mem_config.h>
 #include <libtest/test.hpp>
-
+#include <libmemcached-1.0/memcached.h>
 #include <tests/libmemcached-1.0/fetch_all_results.h>
 
 test_return_t fetch_all_results(memcached_st *memc, unsigned int &keys_returned, memcached_return_t& rc)

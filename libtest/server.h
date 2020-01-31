@@ -205,7 +205,10 @@ public:
     _log_file.clear();
   }
 
-  std::pair<std::string, std::string> output();
+  std::pair<std::string, std::string> output()
+  {
+    return _app.output();
+  }
 
   pid_t pid() const;
 

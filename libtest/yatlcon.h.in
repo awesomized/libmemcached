@@ -39,3 +39,9 @@
 #pragma once
 
 #include "@AUTOHEADER_FILE@"
+
+#ifndef LIBTEST_TEMP
+# define LIBTEST_TEMP "/tmp"
+#endif
+
+#define HAVE_LIBMEMCACHED 1

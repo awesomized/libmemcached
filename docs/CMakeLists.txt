@@ -34,7 +34,7 @@ if(SPHINX_EXECUTABLE)
             "${SPHINX_BUILD_DIR}/conf.py"
             @ONLY)
 
-    add_custom_target("docs"
+    add_custom_target(html
             ${SPHINX_EXECUTABLE}
             -q -a -b html
             -c "${SPHINX_BUILD_DIR}"
@@ -44,7 +44,6 @@ if(SPHINX_EXECUTABLE)
             "${SPHINX_HTML_DIR}"
             BYPRODUCTS ${SPHINX_HTML_DIR}
             COMMENT "Build HTML documentation with Sphinx")
-    #list(APPEND ADDITIONAL_CLEAN_FILES ${SPHINX_CACHE_DIR} ${SPHINX_HTML_DIR})
     add_custom_target(man
             ${SPHINX_EXECUTABLE}
             -q -a -b man
@@ -55,5 +54,4 @@ if(SPHINX_EXECUTABLE)
             "${SPHINX_MAN_DIR}"
             BYPRODUCTS ${SPHINX_MAN_DIR}
             COMMENT "Build manpage documentation with Sphinx")
-    #list(APPEND ADDITIONAL_CLEAN_FILES ${SPHINX_CACHE_DIR} ${SPHINX_MAN_DIR})
 endif()

@@ -529,20 +529,4 @@ bool Server::kill()
   return false;
 }
 
-std::pair<std::string, std::string> Server::output()
-{
-  _app.slurp();
-  return {
-    std::string {
-      _app.stdout_result().data(),
-      _app.stdout_result().size()
-    },
-    std::string {
-      _app.stderr_result().data(),
-      _app.stderr_result().size()
-    }
-  };
-}
-
-
 } // namespace libtest

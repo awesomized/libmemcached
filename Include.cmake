@@ -1,6 +1,12 @@
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake)
 
+function(set_test_target TARGET2)
+    foreach(TEST IN LISTS TESTS)
+        add_custom_command(TARGET ${TARGET2} POST_BUILD COMMAND ${TEST})
+    endforeach()
+endfunction()
+
 include(CheckTypeSize)
 include(CheckCSourceRuns)
 include(CheckIncludeFileCXX)

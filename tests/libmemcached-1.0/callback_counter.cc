@@ -37,7 +37,7 @@
 
 #include <mem_config.h>
 #include <libtest/test.hpp>
-
+#include <libmemcached-1.0/memcached.h>
 #include "tests/libmemcached-1.0/callback_counter.h"
 
 memcached_return_t callback_counter(const memcached_st*, memcached_result_st*, void *context)

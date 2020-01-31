@@ -17,6 +17,8 @@ include(Config.cmake)
 include(Include.cmake)
 
 find_package(Threads REQUIRED)
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+
 find_library(HAVE_LIBSASL NAMES sasl sasl2)
 check_header(sasl/sasl.h)
 
@@ -36,6 +38,7 @@ check_header(sys/socket.h)
 check_header(sys/time.h)
 check_header(sys/types.h)
 check_header(sys/un.h)
+check_header(sys/wait.h)
 check_header(time.h)
 check_header(umem.h)
 check_header(unistd.h)
@@ -62,6 +65,23 @@ check_header(cinttypes)
 check_debug()
 
 include_directories(${CMAKE_BINARY_DIR})
+set(AUTOHEADER_FILE mem_config.h)
+
+set(CLIENTS
+        memcapable
+        memcat
+        memcp
+        memdump
+        memerror
+        memexist
+        memflush
+        memparse
+        memping
+        memrm
+        memslap
+        memstat
+        memtouch
+        )
 
 add_subdirectory(clients)
 add_subdirectory(libhashkit)
@@ -70,7 +90,13 @@ add_subdirectory(libmemcached)
 add_subdirectory(libmemcached-1.0)
 add_subdirectory(libmemcachedutil)
 
+
+include(CTest)
+enable_testing()
+add_subdirectory(libtest)
+add_subdirectory(tests)
+
 add_subdirectory(docs)
 
 # keep last
-configure_file(mem_config.h.in ${CMAKE_BINARY_DIR}/mem_config.h @ONLY)
+configure_file(mem_config.h.in ${CMAKE_BINARY_DIR}/${AUTOHEADER_FILE} @ONLY)

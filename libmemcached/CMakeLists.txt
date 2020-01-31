@@ -66,7 +66,7 @@ add_library(libmemcached SHARED
         ${LIBMEMCACHED_SOURCES})
 add_library(memcached ALIAS libmemcached)
 set_target_properties(libmemcached PROPERTIES LIBRARY_OUTPUT_NAME memcached)
-target_link_libraries(libmemcached libhashkit ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS})
+target_link_libraries(libmemcached libhashkit Threads::Threads ${CMAKE_DL_LIBS})
 target_include_directories(libmemcached PRIVATE ..)
 target_compile_definitions(libmemcached PRIVATE -DBUILDING_LIBMEMCACHED)
 
@@ -74,6 +74,6 @@ add_library(libmemcachedinternal STATIC
         ${LIBMEMCACHED_SOURCES})
 add_library(memcachedinternal ALIAS libmemcachedinternal)
 set_target_properties(libmemcachedinternal PROPERTIES LIBRARY_OUTPUT_NAME memcachedinternal)
-target_link_libraries(libmemcachedinternal libhashkit ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS})
+target_link_libraries(libmemcachedinternal libhashkit Threads::Threads ${CMAKE_DL_LIBS})
 target_include_directories(libmemcachedinternal PRIVATE ..)
 target_compile_definitions(libmemcachedinternal PRIVATE -DBUILDING_LIBMEMCACHEDINTERNAL)

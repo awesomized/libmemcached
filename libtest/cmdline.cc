@@ -142,7 +142,7 @@ Application::Application(const std::string& arg, const bool _use_libtool_arg) :
     {
       if (libtool() == NULL)
       {
-        FATAL("libtool requested, but know libtool was found");
+        FATAL("libtool requested, but no libtool was found");
       }
     }
 
@@ -280,7 +280,16 @@ Application::error_t Application::run(const char *args[])
   {
     if (_will_fail == false)
     {
-      Error << strerror(spawn_ret) << "(" << spawn_ret << ")";
+      std::string sb;
+      char buf[1024];
+
+      std::for_each(built_argv.begin(), built_argv.end()-1, [&sb](const char *a) {
+        if (sb.size()) {
+          sb.append(" ");
+        }
+        sb.append(a);
+      });
+      Error << strerror(spawn_ret) << "(" << spawn_ret << "): " << sb << " cwd:" << getcwd(buf, sizeof(buf)-1);
     }
     _pid= -1;
     return Application::INVALID_POSIX_SPAWN;
@@ -408,6 +417,22 @@ bool Application::slurp()
   }
 
   return data_was_read;
+}
+
+std::pair<std::string, std::string> Application::output()
+{
+  slurp();
+  return {
+      std::string {
+          stdout_result().data(),
+          stdout_result().size()
+      },
+      std::string {
+          stderr_result().data(),
+          stderr_result().size()
+      }
+  };
+
 }
 
 Application::error_t Application::join()
@@ -826,12 +851,18 @@ int exec_cmdline(const std::string& command, const char *args[], bool use_libtoo
 
   Application::error_t ret= app.run(args);
 
-  if (ret != Application::SUCCESS)
-  {
-    return int(ret);
+  if (Application::SUCCESS == ret) {
+    ret = app.join();
   }
 
-  return int(app.join());
+  if (ret != Application::SUCCESS)
+  {
+    auto out = app.output();
+    Error << command << " stdout: " << out.first;
+    Error << command << " stderr: " << out.second;
+  }
+
+  return int(ret);
 }
 
 } // namespace exec_cmdline

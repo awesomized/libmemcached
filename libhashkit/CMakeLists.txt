@@ -35,5 +35,4 @@ set_target_properties(libhashkit PROPERTIES LIBRARY_OUTPUT_NAME hashkit)
 target_include_directories(libhashkit PRIVATE ..)
 target_compile_options(libhashkit PRIVATE -DBUILDING_HASHKIT)
 
-set(AUTOHEADER_FILE mem_config.h)
 configure_file(hashkitcon.h.in hashkitcon.h @ONLY)

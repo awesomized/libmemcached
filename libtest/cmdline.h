@@ -180,6 +180,7 @@ public:
   bool check() const;
 
   bool slurp();
+  std::pair<std::string, std::string> output();
   void murder();
 
   void clear()
