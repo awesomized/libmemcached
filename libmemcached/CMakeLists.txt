@@ -2,6 +2,7 @@
 find_package(FLEX)
 find_package(BISON)
 
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/csl)
 bison_target(CSL_PARSER csl/parser.yy ${CMAKE_CURRENT_BINARY_DIR}/csl/parser.cc
         DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/csl/parser.h
         )
@@ -66,14 +67,29 @@ add_library(libmemcached SHARED
         ${LIBMEMCACHED_SOURCES})
 add_library(memcached ALIAS libmemcached)
 set_target_properties(libmemcached PROPERTIES LIBRARY_OUTPUT_NAME memcached)
-target_link_libraries(libmemcached libhashkit Threads::Threads ${CMAKE_DL_LIBS})
-target_include_directories(libmemcached PRIVATE ..)
+target_link_libraries(libmemcached libhashkit Threads::Threads ${LIBSASL_LIBRARIES} ${CMAKE_DL_LIBS})
+target_include_directories(libmemcached PRIVATE .. ${LIBSASL_INCLUDEDIR})
 target_compile_definitions(libmemcached PRIVATE -DBUILDING_LIBMEMCACHED)
+
+set_target_properties(libmemcached PROPERTIES SOVERSION ${LIBMEMCACHED_SO_VERSION})
+install(TARGETS libmemcached EXPORT libmemcached)
+export(EXPORT libmemcached)
+install(EXPORT libmemcached DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake)
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        TYPE INCLUDE
+        FILES_MATCHING REGEX "(memcached|util)\\.h(pp)?"
+        PATTERN csl EXCLUDE
+        PATTERN memcached EXCLUDE
+        PATTERN util EXCLUDE
+        )
+
+# FIXME: dtrace
 
 add_library(libmemcachedinternal STATIC
         ${LIBMEMCACHED_SOURCES})
 add_library(memcachedinternal ALIAS libmemcachedinternal)
 set_target_properties(libmemcachedinternal PROPERTIES LIBRARY_OUTPUT_NAME memcachedinternal)
-target_link_libraries(libmemcachedinternal libhashkit Threads::Threads ${CMAKE_DL_LIBS})
-target_include_directories(libmemcachedinternal PRIVATE ..)
+target_link_libraries(libmemcachedinternal libhashkit Threads::Threads ${LIBSASL_LIBRARIES} ${CMAKE_DL_LIBS})
+target_include_directories(libmemcachedinternal PRIVATE .. ${LIBSASL_INCLUDEDIR})
 target_compile_definitions(libmemcachedinternal PRIVATE -DBUILDING_LIBMEMCACHEDINTERNAL)

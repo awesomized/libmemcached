@@ -52,7 +52,7 @@ clients/memrm
 clients/memslap
 clients/memstat
 clients/memtouch
-cmake-build-debug/
+cmake-build-*/
 config.cache
 config.log
 config.status
@@ -120,10 +120,6 @@ man/.doctrees/
 mem_config.h
 mem_config.h.in
 mem_config.in
-memcached/.git
-memcached/.gitignore
-memcached/memcached
-memcached/memcached.spec
 out
 patch
 patch2

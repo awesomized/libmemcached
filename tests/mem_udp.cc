@@ -382,7 +382,7 @@ static test_return_t udp_verbosity_test(memcached_st *memc)
     increment_request_id(&expected_ids[x]);
   }
 
-  test_compare(MEMCACHED_SUCCESS, memcached_verbosity(memc, 3));
+  test_compare(MEMCACHED_SUCCESS, memcached_verbosity(memc, 0));
 
   return post_udp_op_check(memc, expected_ids);
 }

@@ -147,11 +147,11 @@ test_return_t Collection::exec()
           auto output = server->output();
           if (output.first.size())
           {
-            err << "Server stdout:\n" << output.first << "\n";
+            err << "Server(" << server->port() << ") stdout:\n" << output.first << "\n";
           }
           if (output.second.size())
           {
-            err << "Server stderr:\n" << output.second << "\n";
+            err << "Server(" << server->port() << ") stderr:\n" << output.second << "\n";
           }
         }
         throw;
@@ -172,11 +172,11 @@ test_return_t Collection::exec()
           auto output = server->output();
           if (output.first.size())
           {
-            Out << "Server stdout:\n" << output.first << "\n";
+            Out << "Server(" << server->port() << ") stdout:\n" << output.first << "\n";
           }
           if (output.second.size())
           {
-            Out << "Server stderr:\n" << output.second << "\n";
+            Out << "Server(" << server->port() << ") stderr:\n" << output.second << "\n";
           }
         }
         break;

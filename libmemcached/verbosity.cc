@@ -58,8 +58,7 @@ static memcached_return_t _set_verbosity(const Memcached *,
   {
     memcached_instance_st* instance= memcached_instance_fetch(memc_ptr, 0);
 
-
-    rc= memcached_vdo(instance, vector, 4, true);
+    rc= memcached_vdo(instance, vector, 2, true);
 
     if (rc == MEMCACHED_SUCCESS)
     {
@@ -86,7 +85,7 @@ memcached_return_t memcached_verbosity(memcached_st *shell, uint32_t verbosity)
 
   char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
 
-  int send_length= snprintf(buffer, sizeof(buffer), "%u", verbosity);
+  int send_length= snprintf(buffer, sizeof(buffer), "verbosity %u\r\n", verbosity);
   if (send_length >= MEMCACHED_DEFAULT_COMMAND_SIZE or send_length < 0)
   {
     return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
@@ -96,9 +95,7 @@ memcached_return_t memcached_verbosity(memcached_st *shell, uint32_t verbosity)
   libmemcached_io_vector_st vector[]=
   {
     { NULL, 0 },
-    { memcached_literal_param("verbosity ") },
     { buffer, size_t(send_length) },
-    { memcached_literal_param("\r\n") }
   };
 
   callbacks[0]= _set_verbosity;

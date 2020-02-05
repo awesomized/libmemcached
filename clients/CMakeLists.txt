@@ -8,6 +8,7 @@ foreach(CLIENT IN LISTS CLIENTS)
     add_executable(${CLIENT} ${CLIENT}.cc)
     target_include_directories(${CLIENT} PRIVATE ..)
     target_link_libraries(${CLIENT} libclient_utilities)
+    install(TARGETS ${CLIENT})
 endforeach()
 
 # extra sources
@@ -22,13 +23,12 @@ target_link_libraries(memslap Threads::Threads)
 
 # memaslap is special
 
-find_library(LIBEVENT event)
-check_stdatomic()
-
-if(LIBEVENT AND HAVE_C_STDATOMIC)
-    check_decl(getline stdio.h)
-    add_executable(memaslap memaslap.c
-            ms_conn.c ms_setting.c ms_sigsegv.c ms_stats.c ms_task.c ms_thread.c)
-    target_include_directories(memaslap PRIVATE ..)
-    target_link_libraries(memaslap libclient_utilities ${LIBEVENT} Threads::Threads)
+if(ENABLE_MEMASLAP)
+    if(LIBEVENT AND HAVE_C_STDATOMIC)
+        add_executable(memaslap memaslap.c
+                ms_conn.c ms_setting.c ms_sigsegv.c ms_stats.c ms_task.c ms_thread.c)
+        target_include_directories(memaslap PRIVATE .. ${LIBEVENT_INCLUDEDIR})
+        target_link_libraries(memaslap libclient_utilities ${LIBEVENT_LIBRARIES} Threads::Threads)
+        install(TARGETS memaslap)
+    endif()
 endif()

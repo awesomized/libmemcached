@@ -1,18 +1,18 @@
 find_package(Sphinx)
 
-if(SPHINX_EXECUTABLE)
+if(NOT SPHINX_EXECUTABLE)
+
+    message(WARNING "The sphinx-build command is required to build manpages.")
+
+else()
+
+    if(NOT DEFINED SPHINX_OPTIONS)
+        set(SPHINX_OPTIONS)
+    endif()
 
     if(NOT DEFINED SPHINX_THEME)
         set(SPHINX_THEME sphinx_rtd_theme)
         set(SPHINX_THEME_OPTIONS "'collapse_navigation':False, 'navigation_depth':2, 'titles_only':False, 'includehidden':False")
-    endif()
-
-    if(NOT DEFINED SPHINX_THEME_DIR)
-        set(SPHINX_THEME_DIR)
-    endif()
-
-    if(NOT DEFINED SPHINX_OPTIONS)
-        set(SPHINX_OPTIONS)
     endif()
 
     set(SPHINX_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/source")
@@ -36,22 +36,31 @@ if(SPHINX_EXECUTABLE)
 
     add_custom_target(html
             ${SPHINX_EXECUTABLE}
-            -q -a -b html
+            -q -b html
             -c "${SPHINX_BUILD_DIR}"
             -d "${SPHINX_CACHE_DIR}"
             ${SPHINX_OPTIONS}
             "${SPHINX_SOURCE_DIR}"
             "${SPHINX_HTML_DIR}"
             BYPRODUCTS ${SPHINX_HTML_DIR}
-            COMMENT "Build HTML documentation with Sphinx")
-    add_custom_target(man
+            )
+    add_custom_target(man ALL
             ${SPHINX_EXECUTABLE}
-            -q -a -b man
+            -q -b man
             -c "${SPHINX_BUILD_DIR}"
             -d "${SPHINX_CACHE_DIR}"
             ${SPHINX_OPTIONS}
             "${SPHINX_SOURCE_DIR}"
             "${SPHINX_MAN_DIR}"
             BYPRODUCTS ${SPHINX_MAN_DIR}
-            COMMENT "Build manpage documentation with Sphinx")
+            )
+
+    install(DIRECTORY ${SPHINX_MAN_DIR}/
+            DESTINATION ${CMAKE_INSTALL_MANDIR}/man1
+            FILES_MATCHING PATTERN *.1
+            )
+    install(DIRECTORY ${SPHINX_MAN_DIR}/
+            DESTINATION ${CMAKE_INSTALL_MANDIR}/man3
+            FILES_MATCHING PATTERN *.3
+            )
 endif()

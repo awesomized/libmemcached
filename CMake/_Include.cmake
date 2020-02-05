@@ -1,0 +1,102 @@
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake)
+
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+
+# globals
+include(CTest)
+include(GNUInstallDirs)
+
+find_package(PkgConfig)
+find_package(Threads REQUIRED)
+
+# locals
+include(SafeString)
+include(CheckDebug)
+include(CheckDecl)
+include(CheckDependency)
+include(CheckHeader)
+include(CheckType)
+include(CheckStdatomic)
+
+# configuration
+
+## debug
+check_debug()
+
+## memaslap
+if(ENABLE_MEMASLAP)
+    check_stdatomic()
+    check_dependency(LIBEVENT event event.h)
+    check_decl(getline stdio.h)
+endif()
+
+## dtrace
+if(ENABLE_DTRACE)
+    set(HAVE_DTRACE 1)
+endif()
+
+##uuid
+if(BUILD_TESTING)
+    check_dependency(LIBUUID uuid uuid/uuid.h)
+endif()
+
+## sasl
+if(ENABLE_SASL)
+    check_dependency(LIBSASL sasl2 sasl/sasl.h)
+    if(LIBSASL)
+        set(LIBMEMCACHED_WITH_SASL_SUPPORT 1)
+    endif()
+endif()
+
+## hashes
+if(ENABLE_FNV64_HASH)
+    set(HAVE_FNV64_HASH 1)
+endif()
+if(ENABLE_MURMUR_HASH)
+    set(HAVE_MURMUR_HASH 1)
+endif()
+if(ENABLE_HSIEH_HASH)
+    set(HAVE_HSIEH_HASH 1)
+endif()
+
+# system checks
+
+check_header(arpa/inet.h)
+check_header(dlfcn.h)
+check_header(errno.h)
+check_header(execinfo.h)
+check_header(fcntl.h)
+check_header(io.h)
+check_header(limits.h)
+check_header(netdb.h)
+check_header(poll.h)
+check_header(stddef.h)
+check_header(stdlib.h)
+check_header(strings.h)
+check_header(sys/socket.h)
+check_header(sys/time.h)
+check_header(sys/types.h)
+check_header(sys/un.h)
+check_header(sys/wait.h)
+check_header(time.h)
+check_header(umem.h)
+check_header(unistd.h)
+check_header(winsock2.h)
+check_header(ws2tcpip.h)
+
+check_decl(fcntl fcntl.h)
+check_decl(htonll arpa/inet.h)
+check_decl(MSG_DONTWAIT sys/socket.h)
+check_decl(MSG_MORE sys/socket.h)
+check_decl(MSG_NOSIGNAL sys/socket.h)
+check_decl(rcvtimeo sys/socket.h)
+check_decl(sndtimeo sys/socket.h)
+check_decl(strerror_r string.h)
+check_decl(strerror string.h)
+check_decl(abi::__cxa_demangle cxxabi.h)
+set(HAVE_GCC_ABI_DEMANGLE ${HAVE_ABI____CXA_DEMANGLE})
+
+check_type(in_port_t netinet/in.h)
+
+check_header(cstdint)
+check_header(cinttypes)

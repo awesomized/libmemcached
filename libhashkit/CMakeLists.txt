@@ -36,3 +36,12 @@ target_include_directories(libhashkit PRIVATE ..)
 target_compile_options(libhashkit PRIVATE -DBUILDING_HASHKIT)
 
 configure_file(hashkitcon.h.in hashkitcon.h @ONLY)
+
+set_target_properties(libhashkit PROPERTIES SOVERSION ${LIBHASHKIT_SO_VERSION})
+install(TARGETS libhashkit EXPORT libhashkit)
+export(EXPORT libhashkit)
+install(EXPORT libhashkit DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        TYPE INCLUDE
+        FILES_MATCHING PATTERN hashkit.h
+        )

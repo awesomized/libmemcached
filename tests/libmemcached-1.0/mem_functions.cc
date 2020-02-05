@@ -4462,7 +4462,7 @@ test_return_t test_multiple_get_last_disconnect(memcached_st *)
 
 test_return_t test_verbosity(memcached_st *memc)
 {
-  memcached_verbosity(memc, 3);
+  test_compare(MEMCACHED_SUCCESS, memcached_verbosity(memc, 0));
 
   return TEST_SUCCESS;
 }

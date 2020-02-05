@@ -6,7 +6,9 @@ shift
 exec $@
 ")
 if(UNIX)
-    execute_process(COMMAND chmod +x ${CMAKE_BINARY_DIR}/libtool)
+    if (EXISTS ${CMAKE_BINARY_DIR}/libtool)
+        execute_process(COMMAND chmod +x ${CMAKE_BINARY_DIR}/libtool)
+    endif()
 endif()
 
 add_library(libtest STATIC
@@ -64,7 +66,6 @@ target_include_directories(wait PRIVATE ..)
 add_executable(core_count core_count.cc cpu.cc)
 target_include_directories(core_count PRIVATE ..)
 
-add_executable(abort abort.cc)
 add_executable(backtrace backtrace_test.cc ../libmemcached/backtrace.cc)
 target_link_libraries(backtrace PRIVATE ${CMAKE_DL_LIBS})
 target_include_directories(backtrace PRIVATE ..)

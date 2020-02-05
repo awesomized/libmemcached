@@ -4,7 +4,7 @@ target_link_libraries(internals PRIVATE libtest libmemcachedinternal Threads::Th
 target_include_directories(internals PRIVATE ../..)
 add_test(internals internals)
 
-add_executable(sasl
+add_executable(testsasl
         basic.cc
         debug.cc
         deprecated.cc
@@ -21,7 +21,7 @@ add_executable(sasl
         fetch_all_results.cc
         generate.cc
         )
-target_link_libraries(sasl PRIVATE
+target_link_libraries(testsasl PRIVATE
         libclient_utilities
         libhashkit
         libmemcached
@@ -29,8 +29,8 @@ target_link_libraries(sasl PRIVATE
         libtest
         Threads::Threads
         )
-target_include_directories(sasl PRIVATE ../..)
-add_test(sasl sasl)
+target_include_directories(testsasl PRIVATE ../..)
+add_test(testsasl testsasl)
 
 add_executable(atomsmasher atomsmasher.cc)
 add_executable(testplus plus.cpp)
@@ -54,8 +54,6 @@ foreach(TEST IN ITEMS atomsmasher testplus)
     add_test(${TEST} ${TEST})
 endforeach()
 
-
-find_library(LIBUUID uuid REQUIRED)
 
 add_executable(testapp all_tests.cc)
 add_executable(testsocket all_tests_socket.cc)
@@ -95,8 +93,8 @@ foreach(TEST IN ITEMS testapp testsocket)
             libmemcachedutil
             libtest
             Threads::Threads
-            ${LIBUUID}
+            ${LIBUUID_LIBRARIES}
             )
-    target_include_directories(${TEST} PRIVATE ../..)
+    target_include_directories(${TEST} PRIVATE ../.. ${LIBUUID_INCLUDEDIR})
     add_test(${TEST} ${TEST})
 endforeach()
