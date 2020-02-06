@@ -37,6 +37,6 @@ script:
 #after_success:
 
 after_failure:
- - cat build/Testing/Temporary/LastTest.log
+ - cat Testing/Temporary/LastTest.log
 
 #after_script:
