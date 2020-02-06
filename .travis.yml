@@ -23,7 +23,7 @@ env:
 #install:
 
 before_script:
- - memcached-tool localhost:11211 settings
+ - echo stats settings | nc -q 0 localhost 11211 | column -t
  - mkdir build
 
 script:
