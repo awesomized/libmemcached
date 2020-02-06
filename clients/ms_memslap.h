@@ -25,6 +25,7 @@
 #include <math.h>
 
 #include "ms_stats.h"
+#include "ms_atomic.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -71,22 +72,22 @@ typedef struct statistic
 /* global status statistic structure */
 typedef struct stats
 {
-  volatile uint32_t active_conns;   /* active connections */
-  size_t bytes_read;              /* read bytes */
-  size_t bytes_written;           /* written bytes */
-  size_t obj_bytes;               /* object bytes */
-  size_t pre_cmd_get;             /* previous total get command count */
-  size_t pre_cmd_set;             /* previous total set command count */
-  size_t cmd_get;                 /* current total get command count */
-  size_t cmd_set;                 /* current total set command count */
-  size_t get_misses;              /* total objects of get miss */
-  size_t vef_miss;                /* total objects of verification miss  */
-  size_t vef_failed;              /* total objects of verification failed  */
-  size_t unexp_unget;             /* total objects which is unexpired but not get */
-  size_t exp_get;                 /* total objects which is expired but get  */
-  volatile size_t pkt_disorder;            /* disorder packages of UDP */
-  size_t pkt_drop;                /* packages dropped of UDP */
-  size_t udp_timeout;             /* how many times timeout of UDP happens */
+  ATOMIC uint32_t active_conns;   /* active connections */
+  ATOMIC size_t bytes_read;       /* read bytes */
+  ATOMIC size_t bytes_written;    /* written bytes */
+  ATOMIC size_t obj_bytes;        /* object bytes */
+  ATOMIC size_t pre_cmd_get;      /* previous total get command count */
+  ATOMIC size_t pre_cmd_set;      /* previous total set command count */
+  ATOMIC size_t cmd_get;          /* current total get command count */
+  ATOMIC size_t cmd_set;          /* current total set command count */
+  ATOMIC size_t get_misses;       /* total objects of get miss */
+  ATOMIC size_t vef_miss;         /* total objects of verification miss  */
+  ATOMIC size_t vef_failed;       /* total objects of verification failed  */
+  ATOMIC size_t unexp_unget;      /* total objects which is unexpired but not get */
+  ATOMIC size_t exp_get;          /* total objects which is expired but get  */
+  ATOMIC size_t pkt_disorder;     /* disorder packages of UDP */
+  ATOMIC size_t pkt_drop;         /* packages dropped of UDP */
+  ATOMIC size_t udp_timeout;      /* how many times timeout of UDP happens */
 } ms_stats_t;
 
 /* lock adapter */

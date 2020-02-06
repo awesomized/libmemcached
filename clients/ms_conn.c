@@ -66,7 +66,7 @@
 static uint64_t key_prefix_seq= KEY_PREFIX_BASE;
 
 /* global increasing counter, generating request id for UDP */
-static volatile uint32_t udp_request_id= 0;
+static ATOMIC uint32_t udp_request_id= 0;
 
 extern pthread_key_t ms_thread_key;
 

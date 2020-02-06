@@ -53,8 +53,8 @@ typedef struct mcd_server
   int srv_port;                                     /* server port */
 
   /* for calculating how long the server disconnects */
-  volatile uint32_t disconn_cnt;                    /* number of disconnections count */
-  volatile uint32_t reconn_cnt;                     /* number of reconnections count */
+  ATOMIC uint32_t disconn_cnt;                    /* number of disconnections count */
+  ATOMIC uint32_t reconn_cnt;                     /* number of reconnections count */
   struct timeval disconn_time;                      /* start time of disconnection */
   struct timeval reconn_time;                       /* end time of reconnection */
 } ms_mcd_server_t;

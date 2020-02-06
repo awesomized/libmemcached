@@ -12,6 +12,12 @@
 #ifndef CLIENTS_MS_ATOMIC_H
 #define CLIENTS_MS_ATOMIC_H
 
+#if HAVE_C_STDATOMIC
+# define ATOMIC _Atomic
+#else
+# define ATOMIC volatile
+#endif
+
 #if defined(__SUNPRO_C)
 # define _KERNEL
 # include <atomic.h>
@@ -57,7 +63,7 @@
 # define atomic_dec_size(X) atomic_fetch_sub(X, 1)
 /* The same as above, but these return the new value instead of void */
 # define ATOMIC_ADD_FETCH_DECL(T) \
-static inline T atomic_add_fetch_##T(volatile T *ptr, T add) { \
+static inline T atomic_add_fetch_##T(ATOMIC T *ptr, T add) { \
 	T des, cur = atomic_load(ptr); \
 	do { \
 		des = cur + add; \
@@ -65,7 +71,7 @@ static inline T atomic_add_fetch_##T(volatile T *ptr, T add) { \
 	return des; \
 }
 # define ATOMIC_SUB_FETCH_DECL(T) \
-T atomic_sub_fetch_##T(volatile T *ptr) { \
+T atomic_sub_fetch_##T(ATOMIC T *ptr) { \
 	T des, cur = atomic_load(ptr); \
 	do { \
 		des = cur - 1; \

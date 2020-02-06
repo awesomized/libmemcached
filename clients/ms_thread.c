@@ -184,7 +184,7 @@ static int ms_setup_thread(ms_thread_ctx_t *thread_ctx)
   ms_thread->thread_ctx= thread_ctx;
   ms_thread->nactive_conn= thread_ctx->nconns;
   ms_thread->initialized= false;
-  static volatile uint32_t cnt= 0;
+  static ATOMIC uint32_t cnt= 0;
 
   gettimeofday(&ms_thread->startup_time, NULL);
 
