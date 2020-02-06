@@ -168,3 +168,5 @@ tmp_chroot
 unittests/unittests
 venv/
 /infer-out/
+/gh-pages/
+/gh-pages-build/
