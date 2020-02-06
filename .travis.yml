@@ -16,27 +16,25 @@ compiler:
 
 env:
 # prod
- - 
-# debug
- - enable_debug=yes
-# sanitize=address
-# - with_sanitize=address
-# sanitize=thread
-# - with_sanitize=thread
+ - BUILD=Release
+ - BUILD=Debug
 
 #before_install:
 #install:
 
 before_script:
- - export enable_dependency_tracking=no
- - autoreconf -vfi
+ - memcached-tool localhost:11211 settings
+ - mkdir build
 
-#script:
+script:
+ - cmake -B build -S . -DCMAKE_BUILD_TYPE=${BUILD}
+ - make -C build
+ - make -C build test
 
 #before_cache:
 #after_success:
 
 after_failure:
- - cat test-suite.log
+ - cat build/Testing/Temporary/LastTest.log
 
 #after_script:
