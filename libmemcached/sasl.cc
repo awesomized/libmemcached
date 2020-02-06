@@ -37,6 +37,7 @@
 
 #include "libmemcached/common.h"
 #include <cassert>
+#include <atomic>
 
 #if defined(LIBMEMCACHED_WITH_SASL_SUPPORT) && LIBMEMCACHED_WITH_SASL_SUPPORT
 
@@ -120,7 +121,7 @@ static void sasl_shutdown_function()
   sasl_done();
 }
 
-static volatile int sasl_startup_state= SASL_OK;
+static std::atomic<int> sasl_startup_state(SASL_OK);
 pthread_mutex_t sasl_startup_state_LOCK= PTHREAD_MUTEX_INITIALIZER;
 static pthread_once_t sasl_startup_once= PTHREAD_ONCE_INIT;
 static void sasl_startup_function(void)

@@ -11,6 +11,9 @@ set(BUILD_TESTING ON
 set(ENABLE_SANITIZERS ""
     CACHE STRING "sanitizers to enable (e.g. address undefined ...)")
 
+set(MEMCACHED_BINARY "/usr/bin/memcached"
+    CACHE FILEPATH "memcached binary")
+
 # sasl
 
 set(ENABLE_SASL OFF

@@ -1,12 +1,12 @@
 
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/tmp_chroot)
-file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/libtool CONTENT
+file(WRITE ${CMAKE_BINARY_DIR}/libtool
 "#!/bin/bash
 shift
 exec $@
 ")
 if(UNIX)
-    if (EXISTS ${CMAKE_BINARY_DIR}/libtool)
+    if(EXISTS ${CMAKE_BINARY_DIR}/libtool)
         execute_process(COMMAND chmod +x ${CMAKE_BINARY_DIR}/libtool)
     endif()
 endif()
@@ -54,7 +54,7 @@ target_compile_definitions(libtest PRIVATE
 
         DRIZZLED_BINARY=\"drizzled\"
         GEARMAND_BINARY=\"gearmand\"
-        MEMCACHED_BINARY=\"/usr/bin/memcached\"
+        MEMCACHED_BINARY=\"${MEMCACHED_BINARY}\"
         HAVE_MEMCACHED_BINARY=1
         )
 target_link_libraries(libtest PRIVATE Threads::Threads ${CMAKE_DL_LIBS})

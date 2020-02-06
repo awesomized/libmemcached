@@ -41,6 +41,9 @@
 
 #include "tests/libmemcached_test_container.h"
 
+static char *sasl_pwdb = const_cast<char *>(LIBMEMCACHED_WITH_SASL_PWDB);
+static char *sasl_conf = const_cast<char *>(LIBMEMCACHED_WITH_SASL_CONF);
+
 static void *world_create(libtest::server_startup_st& servers, test_return_t& error)
 {
   SKIP_UNLESS(libtest::has_libmemcached());
@@ -55,6 +58,10 @@ static void *world_create(libtest::server_startup_st& servers, test_return_t& er
       error= TEST_SKIPPED;
       return NULL;
     }
+
+    // provide conf and pwdb to memcached binary
+    putenv(sasl_pwdb);
+    putenv(sasl_conf);
   }
 
   for (uint32_t x= 0; x < servers.servers_to_run(); x++)

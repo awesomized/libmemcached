@@ -45,7 +45,11 @@ namespace libtest {
 
 bool has_libmemcached_sasl(void)
 {
+#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
+  return LIBMEMCACHED_WITH_SASL_SUPPORT;
+#else
   return false;
+#endif
 }
 
 bool has_libmemcached(void)

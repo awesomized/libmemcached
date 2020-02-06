@@ -86,7 +86,12 @@ public:
 
   virtual const char *sasl() const
   {
-    return NULL;
+    return "-S";
+  }
+
+  bool is_sasl() const
+  {
+    return _username.size() && _password.size();
   }
 
   const std::string& password() const
@@ -113,7 +118,7 @@ public:
       return false;
     }
 
-    if (is_socket())
+    if (is_socket() or is_sasl())
     {
       return _app.check();
     }
@@ -157,7 +162,11 @@ public:
     char buffer[30];
     snprintf(buffer, sizeof(buffer), "%d", int(arg));
     app.add_option("-p", buffer);
-    app.add_option("-U", buffer);
+
+    if(!is_sasl())
+    {
+      app.add_option("-U", buffer);
+    }
   }
 
   bool has_port_option() const
@@ -209,12 +218,12 @@ bool Memcached::build()
   add_option("-M");
 #endif
 
-  if (sasl())
+  if (is_sasl())
   {
     add_option(sasl());
   }
 
-  //add_option("-vv");
+  //add_option("-vvv");
 
   return true;
 }
@@ -234,6 +243,16 @@ libtest::Server *build_memcached_socket(const std::string& socket_file, const in
   if (has_memcached())
   {
     return new Memcached(socket_file, try_port, true);
+  }
+
+  return NULL;
+}
+
+libtest::Server *build_memcached_sasl(const std::string &hostname, const in_port_t try_port, const std::string &username, const std::string &password)
+{
+  if (has_memcached())
+  {
+    return new Memcached(hostname, try_port, false, username, password);
   }
 
   return NULL;

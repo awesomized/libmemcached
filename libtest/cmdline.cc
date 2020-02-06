@@ -266,7 +266,7 @@ Application::error_t Application::run(const char *args[])
   }
   else
   {
-    spawn_ret= posix_spawn(&_pid, built_argv[0], &file_actions, &spawnattr, &built_argv[0], NULL);
+    spawn_ret= posix_spawn(&_pid, built_argv[0], &file_actions, &spawnattr, &built_argv[0], environ);
   }
 
   posix_spawn_file_actions_destroy(&file_actions);
