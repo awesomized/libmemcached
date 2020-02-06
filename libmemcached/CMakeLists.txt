@@ -72,12 +72,13 @@ target_include_directories(libmemcached PRIVATE .. ${LIBSASL_INCLUDEDIR})
 target_compile_definitions(libmemcached PRIVATE -DBUILDING_LIBMEMCACHED)
 
 set_target_properties(libmemcached PROPERTIES SOVERSION ${LIBMEMCACHED_SO_VERSION})
-install(TARGETS libmemcached EXPORT libmemcached)
+install(TARGETS libmemcached EXPORT libmemcached
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 export(EXPORT libmemcached)
 install(EXPORT libmemcached DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake)
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        TYPE INCLUDE
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         FILES_MATCHING REGEX "(memcached|util)\\.h(pp)?"
         PATTERN csl EXCLUDE
         PATTERN memcached EXCLUDE

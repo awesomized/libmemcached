@@ -14,6 +14,7 @@ target_compile_definitions(libmemcachedutil PRIVATE -DBUILDING_LIBMEMCACHED)
 target_link_libraries(libmemcachedutil libmemcached Threads::Threads)
 
 set_target_properties(libmemcachedutil PROPERTIES SOVERSION ${LIBMEMCACHEDUTIL_SO_VERSION})
-install(TARGETS libmemcachedutil EXPORT libmemcachedutil)
+install(TARGETS libmemcachedutil EXPORT libmemcachedutil
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 export(EXPORT libmemcachedutil)
 install(EXPORT libmemcachedutil DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake)

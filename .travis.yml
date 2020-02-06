@@ -27,7 +27,7 @@ before_script:
  - mkdir build
 
 script:
- - cmake -B build -S . -DCMAKE_BUILD_TYPE=${BUILD}
+ - cd build && cmake -DCMAKE_BUILD_TYPE=${BUILD} ..
  - make -C build
  - make -C build test
 
