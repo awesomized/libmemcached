@@ -1,0 +1,772 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Setting the verbosity of a server &mdash; libmemcached  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="copyright" title="Copyright" href="copyright.html" />
+    <link rel="next" title="Getting version information about the client and server" href="memcached_version.html" />
+    <link rel="prev" title="Storing custom user information in the client." href="memcached_user_data.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> libmemcached
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Basics</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="libmemcached.html">Introducing the C Client Library for memcached</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached.html#constants">CONSTANTS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached.html#threads-and-processes">THREADS AND PROCESSES</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="versioning.html">Versioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memcached_create.html">Creating and destroying a memcached_st</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="memcached_create.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_create.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_create.html#return">RETURN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_create.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_create.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="libmemcached_examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached_examples.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached_examples.html#connecting-to-servers">Connecting to servers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached_examples.html#creating-a-pool-of-servers">Creating a pool of servers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached_examples.html#adding-a-value-to-the-server">Adding a value to the server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached_examples.html#fetching-multiple-values">Fetching multiple values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached_examples.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached_examples.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="libmemcached_configuration.html">Configuring Libmemcached</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached_configuration.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached_configuration.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached_configuration.html#return">RETURN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached_configuration.html#example">EXAMPLE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached_configuration.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached_configuration.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="libmemcached/memcached_last_error_message.html">Retrieving errors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached/memcached_last_error_message.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached/memcached_last_error_message.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached/memcached_last_error_message.html#return">RETURN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached/memcached_last_error_message.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached/memcached_last_error_message.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Working with Data</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="memcached_auto.html">Incrementing and Decrementing Values</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="memcached_auto.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_auto.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_auto.html#return">RETURN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_auto.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_auto.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="memcached_delete.html">Deleting data from a server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="memcached_delete.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_delete.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_delete.html#return">RETURN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_delete.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_delete.html#author">AUTHOR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_delete.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="libmemcached/memcached_exist.html">Determine if a keys exists.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached/memcached_exist.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached/memcached_exist.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached/memcached_exist.html#return">RETURN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached/memcached_exist.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached/memcached_exist.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="memcached_flush_buffers.html">Flushing client buffers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="memcached_flush_buffers.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_flush_buffers.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_flush_buffers.html#return">RETURN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_flush_buffers.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_flush_buffers.html#author">AUTHOR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_flush_buffers.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="memcached_flush.html">Wiping clean the contents of a server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="memcached_flush.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_flush.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_flush.html#return">RETURN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_flush.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_flush.html#author">AUTHOR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_flush.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="memcached_get.html">Retrieving data from the server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="memcached_get.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_get.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_get.html#return">RETURN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_get.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_get.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="memcached_result_st.html">Working with result sets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="memcached_result_st.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_result_st.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_result_st.html#return">RETURN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_result_st.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_result_st.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="memcached_set.html">Store, replace, add, or atomically add data to the server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="memcached_set.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_set.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_set.html#return">RETURN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_set.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_set.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="memcached_append.html">Appending or Prepending to data on the server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="memcached_append.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_append.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_append.html#return">RETURN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_append.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_append.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="memcached_cas.html">Working with data on the server in an atomic fashion</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="memcached_cas.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_cas.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_cas.html#return">RETURN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_cas.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_cas.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Advanced Topics</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="libmemcached-1.0/memcached_set_encoding_key.html">Set encryption key</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached-1.0/memcached_set_encoding_key.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached-1.0/memcached_set_encoding_key.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached-1.0/memcached_set_encoding_key.html#return">RETURN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached-1.0/memcached_set_encoding_key.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached-1.0/memcached_set_encoding_key.html#author">AUTHOR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached-1.0/memcached_set_encoding_key.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="memcached_behavior.html">Modifying how the driver behaves</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="memcached_behavior.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_behavior.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_behavior.html#return">RETURN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_behavior.html#notes">NOTES</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_behavior.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_behavior.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="memcached_callback.html">Setting callbacks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="memcached_callback.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_callback.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_callback.html#return">RETURN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_callback.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_callback.html#author">AUTHOR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_callback.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="memcached_dump.html">Dumping data from a server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="memcached_dump.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_dump.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_dump.html#return">RETURN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_dump.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_dump.html#author">AUTHOR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_dump.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="memcached_generate_hash_value.html">Generating hash values directly</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="memcached_generate_hash_value.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_generate_hash_value.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_generate_hash_value.html#return">RETURN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_generate_hash_value.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_generate_hash_value.html#author">AUTHOR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_generate_hash_value.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="memcached_memory_allocators.html">Use custom allocators for embedded usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="memcached_memory_allocators.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_memory_allocators.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_memory_allocators.html#notes">NOTES</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_memory_allocators.html#return">RETURN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_memory_allocators.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_memory_allocators.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="memcached_quit.html">Disconnecting a client from a server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="memcached_quit.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_quit.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_quit.html#return">RETURN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_quit.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_quit.html#author">AUTHOR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_quit.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="libmemcached/memcached_return_t.html">Error Codes (memcached_return_t)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached/memcached_return_t.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached/memcached_return_t.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="memcached_sasl.html">SASL support</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="memcached_sasl.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_sasl.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_sasl.html#return">RETURN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_sasl.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_sasl.html#author">AUTHOR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_sasl.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="memcached_server_st.html">Managing lists of servers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="memcached_server_st.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_server_st.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_server_st.html#return">RETURN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_server_st.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_server_st.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="memcached_servers.html">Manipulate the server information stored in memcached_st</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="memcached_servers.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_servers.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_servers.html#return">RETURN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_servers.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_servers.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="memcached_strerror.html">Coverting Errors, memcached_return_t, to strings</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="memcached_strerror.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_strerror.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_strerror.html#return">RETURN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_strerror.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_strerror.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="error_messages.html">Client Error messages</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_AUTH_CONTINUE.html">MEMCACHED_AUTH_CONTINUE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_AUTH_FAILURE.html">MEMCACHED_AUTH_FAILURE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_AUTH_PROBLEM.html">MEMCACHED_AUTH_PROBLEM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_BAD_KEY_PROVIDED.html">MEMCACHED_BAD_KEY_PROVIDED</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_BUFFERED.html">MEMCACHED_BUFFERED</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_CLIENT_ERROR.html">MEMCACHED_CLIENT_ERROR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_CONNECTION_BIND_FAILURE.html">MEMCACHED_CONNECTION_BIND_FAILURE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_CONNECTION_FAILURE.html">MEMCACHED_CONNECTION_FAILURE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE.html">MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_DATA_DOES_NOT_EXIST.html">MEMCACHED_DATA_DOES_NOT_EXIST</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_DATA_EXISTS.html">MEMCACHED_DATA_EXISTS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_DELETED.html">MEMCACHED_DELETED</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_DEPRECATED.html">MEMCACHED_DEPRECATED</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_E2BIG.html">MEMCACHED_E2BIG</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_END.html">MEMCACHED_END</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_ERRNO.html">MEMCACHED_ERRNO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_FAILURE.html">MEMCACHED_FAILURE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_FAIL_UNIX_SOCKET.html">MEMCACHED_FAIL_UNIX_SOCKET</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_FETCH_NOTFINISHED.html">MEMCACHED_FETCH_NOTFINISHED</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_HOST_LOOKUP_FAILURE.html">MEMCACHED_HOST_LOOKUP_FAILURE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_INVALID_ARGUMENTS.html">MEMCACHED_INVALID_ARGUMENTS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_INVALID_HOST_PROTOCOL.html">MEMCACHED_INVALID_HOST_PROTOCOL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_ITEM.html">MEMCACHED_ITEM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_KEY_TOO_BIG.html">MEMCACHED_KEY_TOO_BIG</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_MAXIMUM_RETURN.html">MEMCACHED_MAXIMUM_RETURN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_MEMORY_ALLOCATION_FAILURE.html">MEMCACHED_MEMORY_ALLOCATION_FAILURE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_NOTFOUND.html">MEMCACHED_NOTFOUND</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_NOTSTORED.html">MEMCACHED_NOTSTORED</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_NOT_SUPPORTED.html">MEMCACHED_NOT_SUPPORTED</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_NO_KEY_PROVIDED.html">MEMCACHED_NO_KEY_PROVIDED</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_NO_SERVERS.html">MEMCACHED_NO_SERVERS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_PARSE_ERROR.html">MEMCACHED_PARSE_ERROR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_PARSE_USER_ERROR.html">MEMCACHED_PARSE_USER_ERROR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_PARTIAL_READ.html">MEMCACHED_PARTIAL_READ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_PROTOCOL_ERROR.html">MEMCACHED_PROTOCOL_ERROR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_READ_FAILURE.html">MEMCACHED_READ_FAILURE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_SERVER_ERROR.html">MEMCACHED_SERVER_ERROR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_SERVER_MARKED_DEAD.html">MEMCACHED_SERVER_MARKED_DEAD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_SOME_ERRORS.html">MEMCACHED_SOME_ERRORS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_STAT.html">MEMCACHED_STAT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_STORED.html">MEMCACHED_STORED</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_SUCCESS.html">MEMCACHED_SUCCESS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_TIMEOUT.html">MEMCACHED_TIMEOUT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_UNKNOWN_READ_FAILURE.html">MEMCACHED_UNKNOWN_READ_FAILURE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_UNKNOWN_STAT_KEY.html">MEMCACHED_UNKNOWN_STAT_KEY</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_VALUE.html">MEMCACHED_VALUE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client_errors/MEMCACHED_WRITE_FAILURE.html">MEMCACHED_WRITE_FAILURE</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="memcached_user_data.html">Storing custom user information in the client.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="memcached_user_data.html#library">LIBRARY</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_user_data.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_user_data.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_user_data.html#return">RETURN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_user_data.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_user_data.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Setting the verbosity of a server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#return">RETURN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="memcached_version.html">Getting version information about the client and server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="memcached_version.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_version.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_version.html#return">RETURN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_version.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_version.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="libmemcached/defaults.html">DEFAULTS</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Interface Versions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="libmemcached-1.0/index.html">libmemcached 1.0 API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="libmemcached-1.0/memcached_touch.html">memcached_touch, memcached_touch_by_key</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="libmemcached-1.1/index.html">libmemcached 1.1 API</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Deprecated Functions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="libmemcached/memcached_fetch.html">memcached_fetch</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Platform Specifics</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tap.html">Systemtap support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="types.html">Required C types</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="types.html#types">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="types.html#c-types-used">C Types Used</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Deriving Statistics from a Server</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="memcached_analyze.html">Anaylzing servers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="memcached_analyze.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_analyze.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_analyze.html#return">RETURN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_analyze.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_analyze.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="memcached_stats.html">Working with statistical information from a server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="memcached_stats.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_stats.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_stats.html#return">RETURN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_stats.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_stats.html#author">AUTHOR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_stats.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Libmemcachedutil</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="libmemcachedutil.html">Introducing libmemcachedutil</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="libmemcachedutil.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcachedutil.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcachedutil.html#threads">THREADS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcachedutil.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libmemcachedutil.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="memcached_pool.html">Working with memcached pools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="memcached_pool.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_pool.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_pool.html#return">RETURN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_pool.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_pool.html#author">AUTHOR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memcached_pool.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Client Applications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="bin/memcapable.html">memcapable - Checking a Memcached server capibilities and compatibility</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bin/memcapable.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memcapable.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memcapable.html#limitations">LIMITATIONS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memcapable.html#options">OPTIONS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memcapable.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memcapable.html#author">AUTHOR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memcapable.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bin/memcat.html">memcat - “cat” data from a server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bin/memcat.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memcat.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memcat.html#options">OPTIONS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memcat.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memcat.html#author">AUTHOR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memcat.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bin/memcp.html">memcp - Copy data to a server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bin/memcp.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memcp.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memcp.html#options">OPTIONS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memcp.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memcp.html#author">AUTHOR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memcp.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bin/memdump.html">memdump - Dumping your server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bin/memdump.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memdump.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memdump.html#options">OPTIONS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memdump.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memdump.html#author">AUTHOR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memdump.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bin/memerror.html">memerror - translate an error code to a string</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bin/memerror.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memerror.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memerror.html#options">OPTIONS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memerror.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memerror.html#author">AUTHOR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memerror.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bin/memflush.html">memflush - flush all data from a server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bin/memflush.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memflush.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memflush.html#options">OPTIONS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memflush.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memflush.html#author">AUTHOR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memflush.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bin/memrm.html">memrm - Remove data from a server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bin/memrm.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memrm.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memrm.html#options">OPTIONS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memrm.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memrm.html#author">AUTHOR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memrm.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bin/memslap.html">memslap - Load testing  and benchmarking a server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bin/memslap.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memslap.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memslap.html#options">OPTIONS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memslap.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memslap.html#author">AUTHOR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memslap.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bin/memaslap.html">memaslap - Load testing  and benchmarking a server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bin/memaslap.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memaslap.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memaslap.html#features">FEATURES</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memaslap.html#details">DETAILS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memaslap.html#usage">USAGE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memaslap.html#configuration-file">Configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memaslap.html#format-of-output">Format of output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memaslap.html#options">OPTIONS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memaslap.html#examples">EXAMPLES</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memaslap.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memaslap.html#authors">AUTHORS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memaslap.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bin/memstat.html">memstat - Gather statistics from a server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bin/memstat.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memstat.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memstat.html#options">OPTIONS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memstat.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memstat.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bin/memexist.html">memexist - Check for the existance of a key</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bin/memexist.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memexist.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memexist.html#options">OPTIONS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memexist.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memexist.html#author">AUTHOR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memexist.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bin/memparse.html">memparse - Parse an option string</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bin/memparse.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memparse.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memparse.html#options">OPTIONS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memparse.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memparse.html#author">AUTHOR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memparse.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bin/memping.html">memping - Test to see if a server is available.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bin/memping.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memping.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memping.html#options">OPTIONS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memping.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memping.html#author">AUTHOR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memping.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bin/memtouch.html">memtouch - Touches a key.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bin/memtouch.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memtouch.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memtouch.html#options">OPTIONS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memtouch.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memtouch.html#author">AUTHOR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memtouch.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Libhashkit</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="libhashkit.html">Introducing libhashkit</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="libhashkit.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libhashkit.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libhashkit.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="hashkit_create.html">Creating a hashkit structure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="hashkit_create.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hashkit_create.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hashkit_create.html#return-value">RETURN VALUE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hashkit_create.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hashkit_create.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="hashkit_functions.html">Available Hashes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="hashkit_functions.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hashkit_functions.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hashkit_functions.html#return-value">RETURN VALUE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hashkit_functions.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hashkit_functions.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="hashkit_value.html">hashkit_value</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="hashkit_value.html#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hashkit_value.html#description">DESCRIPTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hashkit_value.html#return-value">RETURN VALUE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hashkit_value.html#home">HOME</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hashkit_value.html#see-also">SEE ALSO</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">libmemcached</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Setting the verbosity of a server</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="setting-the-verbosity-of-a-server">
+<h1>Setting the verbosity of a server<a class="headerlink" href="#setting-the-verbosity-of-a-server" title="Permalink to this headline">¶</a></h1>
+<p id="index-0">Modifiy verbosity of servers</p>
+<div class="section" id="synopsis">
+<h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p>#include &lt;libmemcached/memcached.h&gt;</p>
+<dl class="function">
+<dt id="c.memcached_verbosity">
+<a class="reference internal" href="libmemcached/memcached_return_t.html#c.memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_verbosity</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#c.memcached_st" title="memcached_st">memcached_st</a><em> *ptr</em>, <a class="reference internal" href="types.html#c.uint32_t" title="uint32_t">uint32_t</a><em> verbosity</em><span class="sig-paren">)</span><a class="headerlink" href="#c.memcached_verbosity" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Compile and link with -lmemcached</p>
+</div>
+<div class="section" id="description">
+<h2>DESCRIPTION<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="#c.memcached_verbosity" title="memcached_verbosity"><code class="xref c c-func docutils literal notranslate"><span class="pre">memcached_verbosity()</span></code></a> modifies the “verbosity” of the
+memcached(1) servers referenced in the <a class="reference internal" href="memcached_create.html#c.memcached_st" title="memcached_st"><code class="xref c c-type docutils literal notranslate"><span class="pre">memcached_st</span></code></a>  parameter.</p>
+</div>
+<div class="section" id="return">
+<h2>RETURN<a class="headerlink" href="#return" title="Permalink to this headline">¶</a></h2>
+<p>A value of type <a class="reference internal" href="libmemcached/memcached_return_t.html#c.memcached_return_t" title="memcached_return_t"><code class="xref c c-type docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> is returned.</p>
+<p>On success that value will be <a class="reference internal" href="client_errors/MEMCACHED_SUCCESS.html#c.MEMCACHED_SUCCESS" title="MEMCACHED_SUCCESS"><code class="xref c c-type docutils literal notranslate"><span class="pre">MEMCACHED_SUCCESS</span></code></a>.</p>
+<p>Use <a class="reference internal" href="memcached_strerror.html#c.memcached_strerror" title="memcached_strerror"><code class="xref c c-func docutils literal notranslate"><span class="pre">memcached_strerror()</span></code></a> to translate this value to a printable string.</p>
+</div>
+<div class="section" id="home">
+<h2>HOME<a class="headerlink" href="#home" title="Permalink to this headline">¶</a></h2>
+<p>To find out more information please check:
+<a class="reference external" href="http://libmemcached.org/">http://libmemcached.org/</a></p>
+</div>
+<div class="section" id="see-also">
+<h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><em class="manpage">memcached(1)</em> <em class="manpage">libmemcached(3)</em> <em class="manpage">memcached_strerror(3)</em></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="memcached_version.html" class="btn btn-neutral float-right" title="Getting version information about the client and server" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="memcached_user_data.html" class="btn btn-neutral float-left" title="Storing custom user information in the client." accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; <a href="copyright.html">Copyright</a> 2011-2020 Brian Aker, Michael Wallner
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
