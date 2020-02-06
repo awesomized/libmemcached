@@ -27,9 +27,11 @@ before_script:
  - mkdir build
 
 script:
- - cd build && cmake -DCMAKE_BUILD_TYPE=${BUILD} ..
- - make -C build
- - make -C build test
+ - cd build
+ - cmake -DCMAKE_BUILD_TYPE=${BUILD} ..
+ - make
+ - make test
+ - make install DESTDIR=.
 
 #before_cache:
 #after_success:

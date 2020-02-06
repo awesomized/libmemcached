@@ -118,7 +118,6 @@ man/*.3
 man/*.8
 man/.doctrees/
 mem_config.h
-mem_config.h.in
 mem_config.in
 out
 patch
