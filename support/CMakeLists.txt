@@ -5,7 +5,7 @@ install(FILES ax_libmemcached.m4
 
 configure_file(example.cnf.in example.cnf @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/example.cnf
-        DESTINATION ${CMAKE_INSTALL_DATADIR}
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/libmemcached
         )
 
 configure_file(libmemcached.pc.in libmemcached.pc @ONLY)
