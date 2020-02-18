@@ -27,8 +27,8 @@ install:
      git clone -b 1.5.9 https://github.com/memcached/memcached &&
      cd memcached && ./autogen.sh &&
      CFLAGS="-O2 -pipe" ./configure --prefix=${PREFIX} --disable-dependency-tracking --enable-sasl --enable-sasl-pwdb --disable-coverage --disable-docs &&
-     make -j2 && make install;
-     cd .. && ${PREFIX}/bin/memcached -l 127.0.0.1 -p ${PORT} -U ${PORT} -m 128 &
+     make -j2 && make install && cd ..;
+     ${PREFIX}/bin/memcached -l 127.0.0.1 -p ${PORT} -U ${PORT} -m 128 &
    fi;
 
 
