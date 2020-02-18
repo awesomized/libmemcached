@@ -1880,8 +1880,8 @@ test_return_t block_add_regression(memcached_st *memc)
       Error << memcached_last_error_message(memc);
       return TEST_SKIPPED;
     }
-    test_compare(*memc, MEMCACHED_SUCCESS);
-    test_compare(rc, MEMCACHED_SUCCESS);
+    test_compare(MEMCACHED_SUCCESS,*memc);
+    test_compare(MEMCACHED_SUCCESS, rc);
   }
 
   return TEST_SUCCESS;

@@ -16,9 +16,8 @@ compiler:
  - clang
 
 env:
-# - BUILD=Release SASL=false
-# - BUILD=Debug SASL=false
- - BUILD=Debug SASL=true MEMCACHED_BINARY=/opt/bin/memcached MEMCACHED_PORT=11212
+ - BUILD=Release SASL=false
+ - BUILD=Debug SASL=true PREFIX=/opt PORT=11212
 
 #before_install:
 install:
@@ -27,19 +26,20 @@ install:
    then
      git clone -b 1.5.9 https://github.com/memcached/memcached &&
      cd memcached && ./autogen.sh &&
-     CFLAGS="-O2 -pipe" ./configure --prefix=/opt --disable-dependency-tracking --enable-sasl --enable-sasl-pwdb --disable-coverage --disable-docs &&
-     make && make install &&
-     /opt/bin/memcached -l 127.0.0.1 -p ${MEMCACHED_PORT} -U ${MEMCACHED_PORT} -m 128 &
-   fi
+     CFLAGS="-O2 -pipe" ./configure --prefix=${PREFIX} --disable-dependency-tracking --enable-sasl --enable-sasl-pwdb --disable-coverage --disable-docs &&
+     make -j2 && make install;
+     ${PREFIX}/bin/memcached -l 127.0.0.1 -p ${PORT} -U ${PORT} -m 128 &
+   fi;
+
 
 before_script:
- - echo stats settings | nc -q 0 localhost ${MEMCACHED_PORT:-11211} | column -t
+ - echo stats settings | nc -q 0 localhost ${PORT:-11211} | column -t
  - mkdir build
 
 script:
  - cd build
- - cmake -DCMAKE_BUILD_TYPE=${BUILD} -DENABLE_SASL=${SASL} -DMEMCACHED_BINARY=${MEMCACHED_BINARY:-/usr/bin/memcached} ..
- - make
+ - cmake -DCMAKE_BUILD_TYPE=${BUILD} -DENABLE_SASL=${SASL} -DMEMCACHED_BINARY=${PREFIX:-/usr}/bin/memcached ..
+ - make -j2
  - make test
  - make install DESTDIR=.
 
