@@ -119,7 +119,7 @@ static void *world_create(server_startup_st& servers, test_return_t&)
 
 void get_world(libtest::Framework* world)
 {
-  executable= "./clients/memcapable";
+  executable= "./src/bin/memcapable";
   world->collections(collection);
   world->create(world_create);
 }

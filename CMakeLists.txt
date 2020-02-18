@@ -17,7 +17,13 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 include(CMakeConfig.txt)
 
-include_directories(${CMAKE_BINARY_DIR})
+foreach(INCLUDE IN ITEMS ${CMAKE_BINARY_DIR} .)
+    include_directories(
+            ${INCLUDE}/
+            ${INCLUDE}/include
+            ${INCLUDE}/src
+            )
+endforeach()
 set(AUTOHEADER_FILE mem_config.h)
 
 set(CLIENTS
@@ -36,21 +42,14 @@ set(CLIENTS
         memtouch
         )
 
-add_subdirectory(clients)
-add_subdirectory(libhashkit)
-add_subdirectory(libhashkit-1.0)
-add_subdirectory(libmemcached)
-add_subdirectory(libmemcached-1.0)
-add_subdirectory(libmemcachedutil)
-add_subdirectory(libmemcachedutil-1.0)
-
-if(BUILD_TESTING)
-    add_subdirectory(libtest)
-    add_subdirectory(tests)
-endif()
-
+add_subdirectory(include)
+add_subdirectory(src)
 add_subdirectory(docs)
 add_subdirectory(support)
 
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()
+
 # keep last
-configure_file(mem_config.h.in ${CMAKE_BINARY_DIR}/${AUTOHEADER_FILE} @ONLY)
+configure_file(src/mem_config.h.in ${AUTOHEADER_FILE} @ONLY)

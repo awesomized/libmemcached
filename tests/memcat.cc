@@ -50,7 +50,7 @@ using namespace libtest;
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif
 
-static std::string executable("clients/memcat");
+static std::string executable("src/bin/memcat");
 
 static test_return_t help_test(void *)
 {

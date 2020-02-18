@@ -51,7 +51,7 @@ using namespace libtest;
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif
 
-static std::string executable("./clients/memexist");
+static std::string executable("./src/bin/memexist");
 
 static test_return_t help_test(void *)
 {

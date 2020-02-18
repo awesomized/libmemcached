@@ -52,7 +52,7 @@ using namespace libtest;
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif
 
-static std::string executable("./clients/memcp");
+static std::string executable("./src/bin/memcp");
 
 static test_return_t help_test(void *)
 {

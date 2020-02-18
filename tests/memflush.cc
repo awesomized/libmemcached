@@ -112,7 +112,7 @@ static void *world_create(server_startup_st& servers, test_return_t& error)
 
 void get_world(libtest::Framework* world)
 {
-  executable= "./clients/memflush";
+  executable= "./src/bin/memflush";
   world->collections(collection);
   world->create(world_create);
 }

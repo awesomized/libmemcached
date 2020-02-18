@@ -50,7 +50,7 @@ using namespace libtest;
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif
 
-static std::string executable("./clients/memrm");
+static std::string executable("./src/bin/memrm");
 
 static test_return_t quiet_test(void *)
 {

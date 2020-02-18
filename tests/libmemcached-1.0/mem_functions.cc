@@ -68,7 +68,7 @@
 
 #include <libtest/server.h>
 
-#include "clients/generator.h"
+#include "bin/generator.h"
 
 #define SMALL_STRING_LEN 1024
 

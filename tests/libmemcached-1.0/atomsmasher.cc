@@ -27,8 +27,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <ctime>
-#include <clients/generator.h>
-#include <clients/execute.h>
+#include <bin/generator.h>
+#include <bin/execute.h>
 
 #include <libtest/server.h>
 

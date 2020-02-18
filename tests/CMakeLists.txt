@@ -3,12 +3,10 @@ add_subdirectory(libmemcached-1.0)
 
 add_executable(cycle cycle.cc)
 target_link_libraries(cycle PRIVATE libtest Threads::Threads)
-target_include_directories(cycle PRIVATE ..)
 add_test(cycle cycle)
 
 add_executable(parser parser.cc)
 target_link_libraries(parser PRIVATE libtest libmemcached)
-target_include_directories(parser PRIVATE ..)
 add_test(parser parser)
 
 add_executable(failure failure.cc)
@@ -33,12 +31,10 @@ endforeach()
 
 add_executable(testhashkit hashkit_functions.cc)
 target_link_libraries(testhashkit PRIVATE libtest libhashkit)
-target_include_directories(testhashkit PRIVATE ..)
 add_test(testhashkit testhashkit)
 
 add_executable(hash_plus hash_plus.cc)
 target_link_libraries(hash_plus PRIVATE libtest libhashkit)
-target_include_directories(hash_plus PRIVATE ..)
 add_test(testhashplus hash_plus)
 
 foreach(CLIENT IN LISTS CLIENTS)
@@ -49,7 +45,6 @@ foreach(CLIENT IN LISTS CLIENTS)
                 libmemcachedutil
                 libtest
                 )
-        target_include_directories(test${CLIENT} PRIVATE ..)
         add_test(test${CLIENT} test${CLIENT})
     endif()
 endforeach()

@@ -50,7 +50,7 @@ using namespace libtest;
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif
 
-static std::string executable("./clients/memerror");
+static std::string executable("./src/bin/memerror");
 
 static test_return_t help_TEST(void *)
 {

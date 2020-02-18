@@ -45,8 +45,8 @@
 #include <tests/libmemcached-1.0/fetch_all_results.h>
 #include "tests/libmemcached-1.0/callback_counter.h"
 
-#include "clients/generator.h"
-#include "clients/execute.h"
+#include "bin/generator.h"
+#include "bin/execute.h"
 
 #include "tests/memc.hpp"
 

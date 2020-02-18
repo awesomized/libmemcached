@@ -50,7 +50,7 @@ using namespace libtest;
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif
 
-static std::string executable("clients/memping");
+static std::string executable("src/bin/memping");
 
 static test_return_t help_test(void *)
 {
