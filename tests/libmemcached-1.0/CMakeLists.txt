@@ -3,32 +3,34 @@ add_executable(internals internals.cc string.cc)
 target_link_libraries(internals PRIVATE libtest libmemcachedinternal Threads::Threads)
 add_test(internals internals)
 
-add_executable(testsasl
-        basic.cc
-        debug.cc
-        deprecated.cc
-        error_conditions.cc
-        ketama.cc
-        namespace.cc
-        parser.cc
-        pool.cc
-        print.cc
-        replication.cc
-        sasl.cc
-        virtual_buckets.cc
-        callback_counter.cc
-        fetch_all_results.cc
-        generate.cc
-        )
-target_link_libraries(testsasl PRIVATE
-        libclient_utilities
-        libhashkit
-        libmemcached
-        libmemcachedutil
-        libtest
-        Threads::Threads
-        )
-add_test(testsasl testsasl)
+if(LIBMEMCACHED_WITH_SASL_SUPPORT)
+    add_executable(testsasl
+            basic.cc
+            debug.cc
+            deprecated.cc
+            error_conditions.cc
+            ketama.cc
+            namespace.cc
+            parser.cc
+            pool.cc
+            print.cc
+            replication.cc
+            sasl.cc
+            virtual_buckets.cc
+            callback_counter.cc
+            fetch_all_results.cc
+            generate.cc
+            )
+    target_link_libraries(testsasl PRIVATE
+            libclient_utilities
+            libhashkit
+            libmemcached
+            libmemcachedutil
+            libtest
+            Threads::Threads
+            )
+    add_test(testsasl testsasl)
+endif()
 
 add_executable(atomsmasher atomsmasher.cc)
 add_executable(testplus plus.cpp)
