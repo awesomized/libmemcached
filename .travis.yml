@@ -7,6 +7,7 @@ addons:
    - python-sphinx
    - valgrind
    - libevent-dev
+   - libsasl2-dev
 
 dist: bionic
 language: cpp
@@ -15,20 +16,30 @@ compiler:
  - clang
 
 env:
-# prod
- - BUILD=Release SASL=OFF
- - BUILD=Debug SASL=OFF
+# - BUILD=Release SASL=false
+# - BUILD=Debug SASL=false
+ - BUILD=Debug SASL=true MEMCACHED_BINARY=/opt/bin/memcached MEMCACHED_PORT=11212
 
 #before_install:
-#install:
+install:
+ - |
+   if ${SASL};
+   then
+     git clone -b 1.5.9 https://github.com/memcached/memcached &&
+     cd memcached &&
+     CFLAGS="-O2 -pipe" ./configure --prefix=/opt --disable-dependency-tracking --enable-sasl --enable-sasl-pwdb --disable-coverage --disable-docs &&
+     make && make install &&
+     /opt/bin/memcached -l 127.0.0.1 -p ${MEMCACHED_PORT} -U ${MEMCACHED_PORT} -m 128 &
+   endif
+
 
 before_script:
- - echo stats settings | nc -q 0 localhost 11211 | column -t
+ - echo stats settings | nc -q 0 localhost ${MEMCACHED_PORT:11211} | column -t
  - mkdir build
 
 script:
  - cd build
- - cmake -DCMAKE_BUILD_TYPE=${BUILD} -DENABLE_SASL=${SASL} ..
+ - cmake -DCMAKE_BUILD_TYPE=${BUILD} -DENABLE_SASL=${SASL} -DMEMCACHED_BINARY=${MEMCACHED_BINARY:/usr/bin/memcached} ..
  - make
  - make test
  - make install DESTDIR=.
