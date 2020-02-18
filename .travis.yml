@@ -30,8 +30,7 @@ install:
      CFLAGS="-O2 -pipe" ./configure --prefix=/opt --disable-dependency-tracking --enable-sasl --enable-sasl-pwdb --disable-coverage --disable-docs &&
      make && make install &&
      /opt/bin/memcached -l 127.0.0.1 -p ${MEMCACHED_PORT} -U ${MEMCACHED_PORT} -m 128 &
-   endif
-
+   fi
 
 before_script:
  - echo stats settings | nc -q 0 localhost ${MEMCACHED_PORT:11211} | column -t
