@@ -37,7 +37,10 @@ set(ENABLE_MEMASLAP ON
 set(ENABLE_DTRACE OFF
     CACHE BOOL "enable dtrace support")
 
-# sphinx
+# docs / sphinx
+
+set(GZIP_MAN ON
+    CACHE BOOL "gzip manpages")
 
 set(SPHINX_OPTIONS ""
     CACHE STRING "additional sphinx-build command line options")
