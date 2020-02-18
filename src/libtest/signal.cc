@@ -35,11 +35,11 @@
  */
 
 #include "libtest/yatlcon.h"
-#include <libtest/common.h>
+#include "libtest/common.h"
 
 #include <csignal>
 
-#include <libtest/signal.h>
+#include "libtest/signal.h"
 
 using namespace libtest;
 

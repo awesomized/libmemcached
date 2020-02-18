@@ -35,7 +35,7 @@
  */
 
 /* -*- Mode: C; tab-width: 2; c-basic-offset: 2; indent-tabs-mode: nil -*- */
-#include <libmemcachedprotocol/common.h>
+#include "libmemcachedprotocol/common.h"
 
 #include <sys/types.h>
 

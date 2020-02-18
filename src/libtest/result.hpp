@@ -36,10 +36,10 @@
 
 #pragma once
 
-#include <libtest/result/base.hpp>
-#include <libtest/result/fail.hpp>
-#include <libtest/result/skip.hpp>
-#include <libtest/result/success.hpp>
+#include "libtest/result/base.hpp"
+#include "libtest/result/fail.hpp"
+#include "libtest/result/skip.hpp"
+#include "libtest/result/success.hpp"
 
 #define _SUCCESS throw libtest::__success(LIBYATL_DEFAULT_PARAM)
 

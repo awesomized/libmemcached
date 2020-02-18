@@ -36,7 +36,7 @@
 
 #pragma once
 
-#include <libtest/cmdline.h>
+#include "libtest/cmdline.h"
 
 #include <cassert>
 #include <cstdio>

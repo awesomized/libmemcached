@@ -35,7 +35,7 @@
  *
  */
 
-#include <libmemcached/common.h>
+#include "libmemcached/common.h"
 
 static void auto_response(memcached_instance_st* instance, const bool reply,  memcached_return_t& rc, uint64_t* value)
 {

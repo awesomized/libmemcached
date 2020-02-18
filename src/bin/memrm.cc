@@ -18,7 +18,7 @@
 #include <iostream>
 #include <unistd.h>
 
-#include <libmemcached-1.0/memcached.h>
+#include "libmemcached-1.0/memcached.h"
 #include "client_options.h"
 #include "utilities.h"
 

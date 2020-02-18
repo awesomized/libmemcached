@@ -34,8 +34,8 @@
  *
  */
 
-#include <mem_config.h>
-#include <libtest/test.hpp>
+#include "mem_config.h"
+#include "libtest/test.hpp"
 
 using namespace libtest;
 

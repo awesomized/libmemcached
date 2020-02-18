@@ -36,7 +36,7 @@
 
 #include "libtest/yatlcon.h"
 
-#include <libtest/timer.hpp>
+#include "libtest/timer.hpp"
 
 #include <ctime>
 #include <iomanip>

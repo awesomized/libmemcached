@@ -13,7 +13,7 @@
 
 #include <stdio.h>
 
-#include <libmemcached-1.0/memcached.h>
+#include "libmemcached-1.0/memcached.h"
 #include "generator.h"
 
 #ifdef __cplusplus

@@ -47,6 +47,6 @@
 typedef void* yyscan_t;
 #endif
 
-#include <libmemcached/common.h>
-#include <libmemcached/csl/server.h>
+#include "libmemcached/common.h"
+#include "libmemcached/csl/server.h"
 

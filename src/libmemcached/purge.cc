@@ -37,7 +37,7 @@
  */
 
 
-#include <libmemcached/common.h>
+#include "libmemcached/common.h"
 
 #define memcached_set_purging(__object, __value) ((__object)->state.is_purging= (__value))
 

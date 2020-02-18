@@ -40,16 +40,16 @@
   Sample test application.
 */
 
-#include <mem_config.h>
-#include <libtest/test.hpp>
+#include "mem_config.h"
+#include "libtest/test.hpp"
 
 using namespace libtest;
 
-#include <libmemcached-1.0/memcached.h>
-#include <libmemcached/server_instance.h>
-#include <libmemcached/io.h>
-#include <libmemcached/udp.hpp>
-#include <libmemcachedutil-1.0/util.h>
+#include "libmemcached-1.0/memcached.h"
+#include "libmemcached/server_instance.h"
+#include "libmemcached/io.h"
+#include "libmemcached/udp.hpp"
+#include "libmemcachedutil-1.0/util.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -61,7 +61,7 @@ using namespace libtest;
 #include <unistd.h>
 #include <time.h>
 
-#include <libtest/server.h>
+#include "libtest/server.h"
 
 #include "libmemcached/instance.hpp"
 

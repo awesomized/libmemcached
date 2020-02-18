@@ -38,16 +38,16 @@
 // We let libmemcached/common.h define config since we are looking at
 // library internals.
 
-#include <mem_config.h>
+#include "mem_config.h"
 
-#include <libmemcached-1.0/memcached.h>
+#include "libmemcached-1.0/memcached.h"
 
 #include "libmemcached/string.hpp"
 #include "libmemcached/is.h"
 
-#include <libtest/test.hpp>
+#include "libtest/test.hpp"
 
-#include <tests/string.h>
+#include "tests/string.h"
 
 test_return_t string_static_null(void*)
 {

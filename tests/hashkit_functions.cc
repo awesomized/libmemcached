@@ -35,8 +35,8 @@
  *
  */
 
-#include <mem_config.h>
-#include <libtest/test.hpp>
+#include "mem_config.h"
+#include "libtest/test.hpp"
 
 using namespace libtest;
 
@@ -44,8 +44,8 @@ using namespace libtest;
 #include <cstdlib>
 #include <cstring>
 
-#include <libhashkit-1.0/hashkit.h>
-#include <libhashkit/is.h>
+#include "libhashkit-1.0/hashkit.h"
+#include "libhashkit/is.h"
 
 #include "tests/hash_results.h"
 

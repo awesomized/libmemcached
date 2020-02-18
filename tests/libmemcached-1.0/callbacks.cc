@@ -35,10 +35,10 @@
  *
  */
 
-#include <mem_config.h>
-#include <libtest/test.hpp>
+#include "mem_config.h"
+#include "libtest/test.hpp"
 #include "libmemcached-1.0/memcached.h"
-#include <tests/callbacks.h>
+#include "tests/callbacks.h"
 
 using namespace libtest;
 

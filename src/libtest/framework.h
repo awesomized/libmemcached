@@ -36,7 +36,7 @@
 
 #pragma once
 
-#include <libtest/signal.h>
+#include "libtest/signal.h"
 
 /**
   Framework is the structure which is passed to the test implementation to be filled.

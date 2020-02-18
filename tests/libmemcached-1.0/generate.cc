@@ -35,14 +35,14 @@
  *
  */
 
-#include <mem_config.h>
-#include <libtest/test.hpp>
+#include "mem_config.h"
+#include "libtest/test.hpp"
 
-#include <libmemcachedutil-1.0/util.h>
-#include <libmemcached/is.h>
+#include "libmemcachedutil-1.0/util.h"
+#include "libmemcached/is.h"
 
-#include <tests/libmemcached-1.0/generate.h>
-#include <tests/libmemcached-1.0/fetch_all_results.h>
+#include "tests/libmemcached-1.0/generate.h"
+#include "tests/libmemcached-1.0/fetch_all_results.h"
 #include "tests/libmemcached-1.0/callback_counter.h"
 
 #include "bin/generator.h"

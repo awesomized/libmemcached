@@ -35,7 +35,7 @@
  *
  */
 
-#include <libmemcached/common.h>
+#include "libmemcached/common.h"
 
 memcached_return_t memcached_flush_buffers(memcached_st *shell)
 {

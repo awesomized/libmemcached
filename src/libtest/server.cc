@@ -36,7 +36,7 @@
 
 #include "libtest/yatlcon.h"
 
-#include <libtest/common.h>
+#include "libtest/common.h"
 
 #include <cassert>
 #include <cerrno>
@@ -57,9 +57,9 @@ static inline std::string &rtrim(std::string &s)
   return s; 
 }
 
-#include <libtest/server.h>
-#include <libtest/stream.h>
-#include <libtest/killpid.h>
+#include "libtest/server.h"
+#include "libtest/stream.h"
+#include "libtest/killpid.h"
 
 namespace libtest {
 

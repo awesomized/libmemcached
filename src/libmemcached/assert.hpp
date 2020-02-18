@@ -62,7 +62,7 @@
 # include <stdio.h>
 #endif
 
-# include <libmemcached/backtrace.hpp>
+# include "libmemcached/backtrace.hpp"
 
 # define assert_msg(__expr, __mesg) \
 do \

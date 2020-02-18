@@ -35,7 +35,7 @@
  *
  */
 
-#include <libmemcached/common.h>
+#include "libmemcached/common.h"
 
 void _libmemcached_free(const memcached_st*, void *mem, void*)
 {

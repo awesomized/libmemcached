@@ -39,11 +39,11 @@
   Test that we are cycling the servers we are creating during testing.
 */
 
-#include <mem_config.h>
-#include <libtest/test.hpp>
+#include "mem_config.h"
+#include "libtest/test.hpp"
 
 using namespace libtest;
-#include <libmemcached-1.0/memcached.h>
+#include "libmemcached-1.0/memcached.h"
 
 static test_return_t server_startup_single_TEST(void *obj)
 {

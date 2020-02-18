@@ -36,7 +36,7 @@
  */
 
 
-#include <libhashkit/common.h>
+#include "libhashkit/common.h"
 
 static inline void _hashkit_init(hashkit_st *self)
 {

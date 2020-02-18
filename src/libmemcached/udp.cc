@@ -35,7 +35,7 @@
  *
  */
 
-#include <libmemcached/common.h>
+#include "libmemcached/common.h"
 
 /*
  * The udp request id consists of two seperate sections

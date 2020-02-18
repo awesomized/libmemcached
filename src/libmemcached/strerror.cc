@@ -35,7 +35,7 @@
  *
  */
 
-#include <libmemcached/common.h>
+#include "libmemcached/common.h"
 
 const char *memcached_strerror(const memcached_st *, memcached_return_t rc)
 {

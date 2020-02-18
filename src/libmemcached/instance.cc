@@ -35,7 +35,7 @@
  *
  */
 
-#include <libmemcached/common.h>
+#include "libmemcached/common.h"
 
 static inline void _server_init(memcached_instance_st* self, Memcached *root,
                                 const memcached_string_t& hostname,

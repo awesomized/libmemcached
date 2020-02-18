@@ -37,7 +37,7 @@
 
 
 
-#include <libhashkit/common.h>
+#include "libhashkit/common.h"
 
 const char *hashkit_strerror(hashkit_st *ptr, hashkit_return_t rc)
 {

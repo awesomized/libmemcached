@@ -24,6 +24,7 @@ foreach(INCLUDE IN ITEMS ${CMAKE_BINARY_DIR} .)
             ${INCLUDE}/src
             )
 endforeach()
+
 set(AUTOHEADER_FILE mem_config.h)
 
 set(CLIENTS

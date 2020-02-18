@@ -77,7 +77,7 @@
 # define SKIP(__message_format, ...)
 #endif
 
-#include <libtest/valgrind.h>
+#include "libtest/valgrind.h"
 
 static inline size_t yatl_strlen(const char *s)
 {

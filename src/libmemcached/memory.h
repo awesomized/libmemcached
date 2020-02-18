@@ -36,9 +36,9 @@
 
 #pragma once
 
-#include <mem_config.h>
+#include "mem_config.h"
 
-#include <libmemcached/common.h>
+#include "libmemcached/common.h"
 
 #ifdef __cplusplus
 #include <cstddef>

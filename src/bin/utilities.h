@@ -12,7 +12,7 @@
 #pragma once
 
 #include <getopt.h>
-#include <libmemcached-1.0/memcached.h>
+#include "libmemcached-1.0/memcached.h"
 #include "client_options.h"
 
 #if defined(HAVE_SYS_TIME_H)

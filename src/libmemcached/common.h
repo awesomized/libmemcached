@@ -42,7 +42,7 @@
 
 #pragma once
 
-#include <mem_config.h>
+#include "mem_config.h"
 
 #ifdef __cplusplus
 # include <cstddef>
@@ -111,7 +111,7 @@
 # include "libmemcached/windows.hpp"
 #endif
 
-#include <libmemcached-1.0/memcached.h>
+#include "libmemcached-1.0/memcached.h"
 #include "libmemcached/watchpoint.h"
 #include "libmemcached/is.h"
 typedef struct memcached_st Memcached;

@@ -36,7 +36,7 @@
  */
 
 
-#include <libhashkit/common.h>
+#include "libhashkit/common.h"
 #include <math.h>
 
 #if 0

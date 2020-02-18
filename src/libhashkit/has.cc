@@ -36,7 +36,7 @@
  */
 
 
-#include <libhashkit/common.h>
+#include "libhashkit/common.h"
 
 bool libhashkit_has_algorithm(const hashkit_hash_algorithm_t algo)
 {

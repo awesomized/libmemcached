@@ -35,14 +35,14 @@
  *
  */
 
-#include <mem_config.h>
-#include <libtest/test.hpp>
+#include "mem_config.h"
+#include "libtest/test.hpp"
 
 using namespace libtest;
 
-#include <libmemcached-1.0/memcached.h>
+#include "libmemcached-1.0/memcached.h"
 
-#include <tests/namespace.h>
+#include "tests/namespace.h"
 
 test_return_t memcached_increment_namespace(memcached_st *memc)
 {

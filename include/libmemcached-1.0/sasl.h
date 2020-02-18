@@ -67,4 +67,4 @@ sasl_callback_t *memcached_get_sasl_callbacks(memcached_st *ptr);
 }
 #endif
 
-#include <libmemcached-1.0/struct/sasl.h>
+#include "libmemcached-1.0/struct/sasl.h"

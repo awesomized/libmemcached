@@ -15,7 +15,7 @@
   Return the number of rows set.
 */
 
-#include <mem_config.h>
+#include "mem_config.h"
 #include "execute.h"
 
 unsigned int execute_set(memcached_st *memc, pairs_st *pairs, unsigned int number_of)

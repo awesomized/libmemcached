@@ -34,7 +34,7 @@
  *
  */
 
-#include <libmemcached/common.h>
+#include "libmemcached/common.h"
 
 bool memcached_flag(const memcached_st& memc, const memcached_flag_t flag)
 {

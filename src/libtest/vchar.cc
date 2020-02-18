@@ -35,7 +35,7 @@
  */
 
 #include "libtest/yatlcon.h"
-#include <libtest/common.h>
+#include "libtest/common.h"
 
 /* Use this for string generation */
 static const char ALPHANUMERICS[]=

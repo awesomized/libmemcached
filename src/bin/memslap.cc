@@ -36,7 +36,7 @@
  */
 
 
-#include <mem_config.h>
+#include "mem_config.h"
 
 #include <cassert>
 #include <cerrno>
@@ -55,7 +55,7 @@
 
 #include <iostream>
 
-#include <libmemcached-1.0/memcached.h>
+#include "libmemcached-1.0/memcached.h"
 
 #include "client_options.h"
 #include "utilities.h"

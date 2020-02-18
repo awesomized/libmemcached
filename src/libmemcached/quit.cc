@@ -35,7 +35,7 @@
  *
  */
 
-#include <libmemcached/common.h>
+#include "libmemcached/common.h"
 
 namespace {
   memcached_return_t send_quit_message(memcached_instance_st* instance)

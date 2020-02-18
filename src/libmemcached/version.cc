@@ -34,7 +34,7 @@
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#include <libmemcached/common.h>
+#include "libmemcached/common.h"
 
 const char * memcached_lib_version(void) 
 {

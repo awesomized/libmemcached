@@ -36,7 +36,7 @@
 #ifndef PROTOCOL_BINARY_H
 #define PROTOCOL_BINARY_H
 
-#include <libmemcachedprotocol-0.0/vbucket.h>
+#include "libmemcachedprotocol-0.0/vbucket.h"
 
 /**
  * \addtogroup Protocol

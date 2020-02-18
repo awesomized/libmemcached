@@ -35,9 +35,9 @@
  *
  */
 
-#include <libmemcached/common.h>
-#include <libmemcached/options.hpp>
-#include <libmemcached/virtual_bucket.h>
+#include "libmemcached/common.h"
+#include "libmemcached/options.hpp"
+#include "libmemcached/virtual_bucket.h"
 
 #include <ctime>
 #include <sys/types.h>

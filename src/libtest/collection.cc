@@ -36,7 +36,7 @@
 
 #include "libtest/yatlcon.h"
 
-#include <libtest/common.h>
+#include "libtest/common.h"
 
 // @todo possibly have this code fork off so if it fails nothing goes bad
 static test_return_t runner_code(libtest::Framework* frame,

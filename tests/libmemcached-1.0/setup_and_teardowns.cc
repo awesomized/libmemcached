@@ -35,10 +35,10 @@
  *
  */
 
-#include <mem_config.h>
-#include <libtest/test.hpp>
+#include "mem_config.h"
+#include "libtest/test.hpp"
 
-#include <libmemcachedutil-1.0/util.h>
+#include "libmemcachedutil-1.0/util.h"
 
 #include "tests/print.h"
 #include "tests/libmemcached-1.0/setup_and_teardowns.h"

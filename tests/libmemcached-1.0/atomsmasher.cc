@@ -12,11 +12,11 @@
 /*
   Sample test application.
 */
-#include <mem_config.h>
+#include "mem_config.h"
 
-#include <libtest/test.hpp>
+#include "libtest/test.hpp"
 
-#include <libmemcached-1.0/memcached.h>
+#include "libmemcached-1.0/memcached.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -30,9 +30,9 @@
 #include <bin/generator.h>
 #include <bin/execute.h>
 
-#include <libtest/server.h>
+#include "libtest/server.h"
 
-#include <tests/debug.h>
+#include "tests/debug.h"
 
 #include "tests/libmemcached-1.0/generate.h"
 

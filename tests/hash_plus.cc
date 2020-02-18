@@ -2,15 +2,15 @@
   C++ to libhashkit
 */
 
-#include <mem_config.h>
+#include "mem_config.h"
 
-#include <libtest/test.hpp>
+#include "libtest/test.hpp"
 
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
-#include <libhashkit-1.0/hashkit.hpp>
+#include "libhashkit-1.0/hashkit.hpp"
 
 using namespace libtest;
 

@@ -36,7 +36,7 @@
  */
 
 
-#include <libhashkit/common.h>
+#include "libhashkit/common.h"
 
 /* FNV hash'es lifted from Dustin Sallings work */
 static uint32_t FNV_32_INIT= 2166136261UL;

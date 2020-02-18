@@ -34,7 +34,7 @@
  *
  */
 
-#include <libhashkit/common.h>
+#include "libhashkit/common.h"
 
 const char * libhashkit_string_hash(hashkit_hash_algorithm_t type)
 {

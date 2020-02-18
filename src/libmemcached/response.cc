@@ -35,8 +35,8 @@
  *
  */
 
-#include <libmemcached/common.h>
-#include <libmemcached/string.hpp>
+#include "libmemcached/common.h"
+#include "libmemcached/string.hpp"
 
 static memcached_return_t textual_value_fetch(memcached_instance_st* instance,
                                               char *buffer,

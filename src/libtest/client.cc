@@ -35,7 +35,7 @@
  */
 
 #include "libtest/yatlcon.h"
-#include <libtest/common.h>
+#include "libtest/common.h"
 
 #include <sys/types.h>
 #include <sys/socket.h>

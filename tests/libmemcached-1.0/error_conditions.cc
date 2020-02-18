@@ -35,15 +35,15 @@
  *
  */
 
-#include <mem_config.h>
-#include <libtest/test.hpp>
+#include "mem_config.h"
+#include "libtest/test.hpp"
 
 #define BUILDING_LIBMEMCACHED
 
-#include <libmemcached-1.0/memcached.h>
+#include "libmemcached-1.0/memcached.h"
 #include "libmemcached/is.h"
 
-#include <tests/error_conditions.h>
+#include "tests/error_conditions.h"
 
 test_return_t memcached_increment_MEMCACHED_NO_SERVERS(memcached_st *)
 {

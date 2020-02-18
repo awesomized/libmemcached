@@ -37,7 +37,7 @@
 
 #pragma once
 
-#include <libmemcached/csl/common.h>
+#include "libmemcached/csl/common.h"
 
 union CONFIG_STYPE
 {

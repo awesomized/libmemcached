@@ -35,7 +35,7 @@
  *
  */
 
-#include <libmemcached-1.0/struct/result.h>
+#include "libmemcached-1.0/struct/result.h"
 
 #pragma once
 

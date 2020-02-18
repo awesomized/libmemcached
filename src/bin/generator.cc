@@ -10,7 +10,7 @@
  *
  */
 
-#include <mem_config.h>
+#include "mem_config.h"
 
 #include <stdint.h>
 

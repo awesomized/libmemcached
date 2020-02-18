@@ -59,71 +59,71 @@
 
 #include <sys/types.h>
 
-#include <libmemcached-1.0/visibility.h>
-#include <libmemcached-1.0/configure.h>
-#include <libmemcached-1.0/platform.h>
+#include "libmemcached-1.0/visibility.h"
+#include "libmemcached-1.0/configure.h"
+#include "libmemcached-1.0/platform.h"
 
-#include <libmemcached-1.0/limits.h>
-#include <libmemcached-1.0/defaults.h>
+#include "libmemcached-1.0/limits.h"
+#include "libmemcached-1.0/defaults.h"
 
-#include <libmemcached-1.0/types/behavior.h>
-#include <libmemcached-1.0/types/callback.h>
-#include <libmemcached-1.0/types/connection.h>
-#include <libmemcached-1.0/types/hash.h>
-#include <libmemcached-1.0/types/return.h>
-#include <libmemcached-1.0/types/server_distribution.h>
+#include "libmemcached-1.0/types/behavior.h"
+#include "libmemcached-1.0/types/callback.h"
+#include "libmemcached-1.0/types/connection.h"
+#include "libmemcached-1.0/types/hash.h"
+#include "libmemcached-1.0/types/return.h"
+#include "libmemcached-1.0/types/server_distribution.h"
 
-#include <libmemcached-1.0/return.h>
+#include "libmemcached-1.0/return.h"
 
-#include <libmemcached-1.0/types.h>
-#include <libmemcached-1.0/callbacks.h>
-#include <libmemcached-1.0/alloc.h>
-#include <libmemcached-1.0/triggers.h>
+#include "libmemcached-1.0/types.h"
+#include "libmemcached-1.0/callbacks.h"
+#include "libmemcached-1.0/alloc.h"
+#include "libmemcached-1.0/triggers.h"
 
-#include <libhashkit-1.0/hashkit.h>
+#include "libhashkit-1.0/hashkit.h"
 
-#include <libmemcached-1.0/struct/callback.h>
-#include <libmemcached-1.0/struct/string.h>
-#include <libmemcached-1.0/struct/result.h>
-#include <libmemcached-1.0/struct/allocator.h>
-#include <libmemcached-1.0/struct/sasl.h>
-#include <libmemcached-1.0/struct/memcached.h>
-#include <libmemcached-1.0/struct/server.h>
-#include <libmemcached-1.0/struct/stat.h>
+#include "libmemcached-1.0/struct/callback.h"
+#include "libmemcached-1.0/struct/string.h"
+#include "libmemcached-1.0/struct/result.h"
+#include "libmemcached-1.0/struct/allocator.h"
+#include "libmemcached-1.0/struct/sasl.h"
+#include "libmemcached-1.0/struct/memcached.h"
+#include "libmemcached-1.0/struct/server.h"
+#include "libmemcached-1.0/struct/stat.h"
 
-#include <libmemcached-1.0/basic_string.h>
-#include <libmemcached-1.0/error.h>
-#include <libmemcached-1.0/stats.h>
+#include "libmemcached-1.0/basic_string.h"
+#include "libmemcached-1.0/error.h"
+#include "libmemcached-1.0/stats.h"
 
 // Everything above this line must be in the order specified.
-#include <libmemcached-1.0/allocators.h>
-#include <libmemcached-1.0/analyze.h>
-#include <libmemcached-1.0/auto.h>
-#include <libmemcached-1.0/behavior.h>
-#include <libmemcached-1.0/callback.h>
-#include <libmemcached-1.0/delete.h>
-#include <libmemcached-1.0/dump.h>
-#include <libmemcached-1.0/encoding_key.h>
-#include <libmemcached-1.0/exist.h>
-#include <libmemcached-1.0/fetch.h>
-#include <libmemcached-1.0/flush.h>
-#include <libmemcached-1.0/flush_buffers.h>
-#include <libmemcached-1.0/get.h>
-#include <libmemcached-1.0/hash.h>
-#include <libmemcached-1.0/options.h>
-#include <libmemcached-1.0/parse.h>
-#include <libmemcached-1.0/quit.h>
-#include <libmemcached-1.0/result.h>
-#include <libmemcached-1.0/server.h>
-#include <libmemcached-1.0/server_list.h>
-#include <libmemcached-1.0/storage.h>
-#include <libmemcached-1.0/strerror.h>
-#include <libmemcached-1.0/touch.h>
-#include <libmemcached-1.0/verbosity.h>
-#include <libmemcached-1.0/version.h>
-#include <libmemcached-1.0/sasl.h>
+#include "libmemcached-1.0/allocators.h"
+#include "libmemcached-1.0/analyze.h"
+#include "libmemcached-1.0/auto.h"
+#include "libmemcached-1.0/behavior.h"
+#include "libmemcached-1.0/callback.h"
+#include "libmemcached-1.0/delete.h"
+#include "libmemcached-1.0/dump.h"
+#include "libmemcached-1.0/encoding_key.h"
+#include "libmemcached-1.0/exist.h"
+#include "libmemcached-1.0/fetch.h"
+#include "libmemcached-1.0/flush.h"
+#include "libmemcached-1.0/flush_buffers.h"
+#include "libmemcached-1.0/get.h"
+#include "libmemcached-1.0/hash.h"
+#include "libmemcached-1.0/options.h"
+#include "libmemcached-1.0/parse.h"
+#include "libmemcached-1.0/quit.h"
+#include "libmemcached-1.0/result.h"
+#include "libmemcached-1.0/server.h"
+#include "libmemcached-1.0/server_list.h"
+#include "libmemcached-1.0/storage.h"
+#include "libmemcached-1.0/strerror.h"
+#include "libmemcached-1.0/touch.h"
+#include "libmemcached-1.0/verbosity.h"
+#include "libmemcached-1.0/version.h"
+#include "libmemcached-1.0/sasl.h"
 
-#include <libmemcached-1.0/deprecated_types.h>
+#include "libmemcached-1.0/deprecated_types.h"
 
 #ifdef __cplusplus
 extern "C" {

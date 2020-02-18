@@ -39,10 +39,10 @@
   Test that we are cycling the servers we are creating during testing.
 */
 
-#include <mem_config.h>
+#include "mem_config.h"
 
-#include <libtest/test.hpp>
-#include <libmemcached-1.0/memcached.h>
+#include "libtest/test.hpp"
+#include "libmemcached-1.0/memcached.h"
 
 using namespace libtest;
 

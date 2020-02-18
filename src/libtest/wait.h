@@ -40,7 +40,7 @@
 #include <string>
 #include <signal.h>
 
-#include <libtest/dream.h>
+#include "libtest/dream.h"
 
 namespace libtest {
 

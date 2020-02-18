@@ -50,9 +50,9 @@
 
 #pragma once
 
-#include <libmemcached-1.0/memcached.h>
+#include "libmemcached-1.0/memcached.h"
 #if 0
-#include <libmemcached/exception.hpp>
+#include "libmemcached/exception.hpp"
 #endif
 
 #include <string.h>

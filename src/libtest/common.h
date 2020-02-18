@@ -82,20 +82,20 @@
 # define get_socket_errno() errno
 #endif
 
-#include <libtest/test.hpp>
+#include "libtest/test.hpp"
 
-#include <libtest/is_pid.hpp>
+#include "libtest/is_pid.hpp"
 
-#include <libtest/gearmand.h>
-#include <libtest/blobslap_worker.h>
-#include <libtest/memcached.h>
-#include <libtest/drizzled.h>
+#include "libtest/gearmand.h"
+#include "libtest/blobslap_worker.h"
+#include "libtest/memcached.h"
+#include "libtest/drizzled.h"
 
-#include <libtest/libtool.hpp>
-#include <libtest/killpid.h>
-#include <libtest/signal.h>
-#include <libtest/dns.hpp>
-#include <libtest/formatter.hpp>
+#include "libtest/libtool.hpp"
+#include "libtest/killpid.h"
+#include "libtest/signal.h"
+#include "libtest/dns.hpp"
+#include "libtest/formatter.hpp"
 
 struct FreeFromVector
 {

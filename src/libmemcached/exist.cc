@@ -34,7 +34,7 @@
  *
  */
 
-#include <libmemcached/common.h>
+#include "libmemcached/common.h"
 
 static memcached_return_t ascii_exist(Memcached *memc, memcached_instance_st* instance, const char *key, size_t key_length)
 {

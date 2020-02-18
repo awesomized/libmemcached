@@ -17,8 +17,8 @@
 #include <getopt.h>
 #include <unistd.h>
 
-#include <libmemcached-1.0/memcached.h>
-#include <libmemcachedutil-1.0/util.h>
+#include "libmemcached-1.0/memcached.h"
+#include "libmemcachedutil-1.0/util.h"
 #include "client_options.h"
 #include "utilities.h"
 

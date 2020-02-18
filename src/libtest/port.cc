@@ -35,7 +35,7 @@
  */
 
 #include "libtest/yatlcon.h"
-#include <libtest/common.h>
+#include "libtest/common.h"
 
 #include <cassert>
 #include <cstdlib>
@@ -55,7 +55,7 @@
 
 #include <signal.h>
 
-#include <libtest/signal.h>
+#include "libtest/signal.h"
 
 #ifndef SOCK_CLOEXEC 
 #  define SOCK_CLOEXEC 0

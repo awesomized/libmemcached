@@ -34,17 +34,17 @@
  *
  */
 
-#include <mem_config.h>
-#include <libtest/test.hpp>
+#include "mem_config.h"
+#include "libtest/test.hpp"
 
-#include <libmemcached-1.0/memcached.h>
+#include "libmemcached-1.0/memcached.h"
 
 #include "libmemcached/server_instance.h"
 #include "libmemcached/continuum.hpp"
 #include "libmemcached/instance.hpp"
 
-#include <tests/ketama.h>
-#include <tests/ketama_test_cases.h>
+#include "tests/ketama.h"
+#include "tests/ketama_test_cases.h"
 
 test_return_t ketama_compatibility_libmemcached(memcached_st *)
 {

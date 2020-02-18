@@ -36,9 +36,9 @@
 
 #pragma once
 
-#include <libtest/formatter.hpp>
+#include "libtest/formatter.hpp"
 
-#include <libtest/timer.hpp>
+#include "libtest/timer.hpp"
 
 namespace { class Framework; }
 

@@ -35,16 +35,16 @@
  *
  */
 
-#include <mem_config.h>
-#include <libtest/yatl.h>
+#include "mem_config.h"
+#include "libtest/yatl.h"
 
 #include <string>
 
 using namespace libtest;
 
-#include <libmemcached-1.0/memcached.h>
+#include "libmemcached-1.0/memcached.h"
 
-#include <tests/server_add.h>
+#include "tests/server_add.h"
 
 static std::string random_hostname()
 {

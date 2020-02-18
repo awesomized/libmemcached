@@ -52,7 +52,7 @@
   Updated to murmur2 hash - BP
 */
 
-#include <libhashkit/common.h>
+#include "libhashkit/common.h"
 
 #ifdef HAVE_MURMUR_HASH
 

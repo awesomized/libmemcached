@@ -10,14 +10,14 @@
  *
  */
 
-#include <mem_config.h>
+#include "mem_config.h"
 
 #include <cstdio>
 #include <cstring>
 #include <getopt.h>
 #include <iostream>
 #include <unistd.h>
-#include <libmemcached-1.0/memcached.h>
+#include "libmemcached-1.0/memcached.h"
 
 #include "utilities.h"
 

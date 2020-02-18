@@ -40,7 +40,7 @@
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif
 
-#include <libtest/lite.h>
+#include "libtest/lite.h"
 
 /**
   A structure describing the test case.

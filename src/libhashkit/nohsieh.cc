@@ -34,7 +34,7 @@
  *
  */
 
-#include <libhashkit/common.h>
+#include "libhashkit/common.h"
 
 #ifdef HAVE_HSIEH_HASH
 #error "not supported"

@@ -36,11 +36,11 @@
  */
 
 
-#include <libmemcached/common.h>
+#include "libmemcached/common.h"
 
 #include <sys/time.h>
 
-#include <libmemcached/virtual_bucket.h>
+#include "libmemcached/virtual_bucket.h"
 
 uint32_t memcached_generate_hash_value(const char *key, size_t key_length, memcached_hash_t hash_algorithm)
 {

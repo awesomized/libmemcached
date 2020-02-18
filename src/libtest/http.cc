@@ -36,7 +36,7 @@
 
 #include "libtest/yatlcon.h"
 
-#include <libtest/common.h>
+#include "libtest/common.h"
 
 #if defined(HAVE_LIBCURL) && HAVE_LIBCURL
 #include <curl/curl.h>

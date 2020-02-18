@@ -35,8 +35,8 @@
  *
  */
 
-#include <mem_config.h>
-#include <libtest/test.hpp>
+#include "mem_config.h"
+#include "libtest/test.hpp"
 
 #if defined(HAVE_LIBUUID) && HAVE_LIBUUID
 # include <uuid/uuid.h>
@@ -46,13 +46,13 @@
   Test cases
 */
 
-#include <libmemcached-1.0/memcached.h>
+#include "libmemcached-1.0/memcached.h"
 #include "libmemcached/is.h"
 #include "libmemcached/server_instance.h"
 
-#include <libhashkit-1.0/hashkit.h>
+#include "libhashkit-1.0/hashkit.h"
 
-#include <libtest/memcached.hpp>
+#include "libtest/memcached.hpp"
 
 #include <cerrno>
 #include <memory>
@@ -66,17 +66,17 @@
 
 #include <iostream>
 
-#include <libtest/server.h>
+#include "libtest/server.h"
 
 #include "bin/generator.h"
 
 #define SMALL_STRING_LEN 1024
 
-#include <libtest/test.hpp>
+#include "libtest/test.hpp"
 
 using namespace libtest;
 
-#include <libmemcachedutil-1.0/util.h>
+#include "libmemcachedutil-1.0/util.h"
 
 #include "tests/hash_results.h"
 

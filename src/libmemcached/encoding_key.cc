@@ -35,8 +35,8 @@
  *
  */
 
-#include <libmemcached/common.h>
-#include <libmemcached/assert.hpp>
+#include "libmemcached/common.h"
+#include "libmemcached/assert.hpp"
 
 static void _set_encoding_key(Memcached& memc, const char *key, size_t key_length)
 {

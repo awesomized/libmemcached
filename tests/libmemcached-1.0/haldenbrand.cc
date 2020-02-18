@@ -35,8 +35,8 @@
  *
  */
 
-#include <mem_config.h>
-#include <libtest/test.hpp>
+#include "mem_config.h"
+#include "libtest/test.hpp"
 #include "libmemcached-1.0/memcached.h"
 #include "tests/libmemcached-1.0/haldenbrand.h"
 #include "tests/libmemcached-1.0/fetch_all_results.h"

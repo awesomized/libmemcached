@@ -35,13 +35,13 @@
  *
  */
 
-#include <mem_config.h>
+#include "mem_config.h"
 
 #include <cstdio>
 #include <cstring>
 #include <iostream>
 
-#include <libmemcached-1.0/memcached.h>
+#include "libmemcached-1.0/memcached.h"
 
 int main(int argc, char *argv[])
 {

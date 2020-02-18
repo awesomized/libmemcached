@@ -37,10 +37,10 @@
 
 %top{
 
-#include <libmemcached/csl/common.h>
-#include <libmemcached/csl/context.h>
-#include <libmemcached/csl/parser.h>
-#include <libmemcached/csl/symbol.h>
+#include "libmemcached/csl/common.h"
+#include "libmemcached/csl/context.h"
+#include "libmemcached/csl/parser.h"
+#include "libmemcached/csl/symbol.h"
 
 #ifndef __INTEL_COMPILER
 #pragma GCC diagnostic ignored "-Wold-style-cast"

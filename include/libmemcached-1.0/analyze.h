@@ -35,7 +35,7 @@
  *
  */
 
-#include <libmemcached-1.0/struct/analysis.h>
+#include "libmemcached-1.0/struct/analysis.h"
 
 #pragma once
 

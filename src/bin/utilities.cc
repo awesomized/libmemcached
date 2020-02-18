@@ -9,7 +9,7 @@
  * Summary:
  *
  */
-#include <mem_config.h>
+#include "mem_config.h"
 
 #include "utilities.h"
 

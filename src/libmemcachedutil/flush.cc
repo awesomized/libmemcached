@@ -36,7 +36,7 @@
  *
  */
 
-#include <libmemcachedutil/common.h>
+#include "libmemcachedutil/common.h"
 
 
 bool libmemcached_util_flush(const char *hostname, in_port_t port, memcached_return_t *ret)

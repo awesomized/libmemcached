@@ -44,7 +44,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include <libtest/wait.h>
+#include "libtest/wait.h"
 
 static void version_command(const char *command_name, int major_version, int minor_version)
 {

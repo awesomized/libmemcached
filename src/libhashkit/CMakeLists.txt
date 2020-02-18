@@ -23,7 +23,6 @@ add_library(libhashkit SHARED
         murmur.cc
         murmur3.cc
         murmur3_api.cc
-        nohsieh.cc
         one_at_a_time.cc
         rijndael.cc
         str_algorithm.cc
@@ -41,7 +40,9 @@ install(TARGETS libhashkit EXPORT libhashkit
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 export(EXPORT libhashkit)
 install(EXPORT libhashkit DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake)
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-        FILES_MATCHING PATTERN hashkit.h
+
+install_public_headers(
+        libhashkit
+
+        hashkit.h
         )

@@ -34,13 +34,13 @@
  *
  */
 
-#include <mem_config.h>
+#include "mem_config.h"
 
 /*
   C++ interface test
 */
-#include <libmemcached-1.0/memcached.hpp>
-#include <libtest/test.hpp>
+#include "libmemcached-1.0/memcached.hpp"
+#include "libtest/test.hpp"
 
 using namespace libtest;
 

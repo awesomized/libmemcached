@@ -39,9 +39,9 @@
 #include <typeinfo>
 
 #if defined(HAVE_LIBMEMCACHED) && HAVE_LIBMEMCACHED
-#include <libmemcached-1.0/memcached.h>
-#include <libmemcachedutil-1.0/ostream.hpp>
-#include <libtest/memcached.hpp>
+#include "libmemcached-1.0/memcached.h"
+#include "libmemcachedutil-1.0/ostream.hpp"
+#include "libtest/memcached.hpp"
 #endif
 
 #if defined(HAVE_LIBGEARMAN) && HAVE_LIBGEARMAN

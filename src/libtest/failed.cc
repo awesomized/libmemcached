@@ -35,9 +35,9 @@
  */
 
 #include "libtest/yatlcon.h"
-#include <libtest/common.h>
+#include "libtest/common.h"
 
-#include <libtest/failed.h>
+#include "libtest/failed.h"
 
 #include <iostream>
 #include <string>

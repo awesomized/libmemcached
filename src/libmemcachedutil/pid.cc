@@ -37,7 +37,7 @@
  *
  */
 
-#include <libmemcachedutil/common.h>
+#include "libmemcachedutil/common.h"
 
 
 // Never look at the stat object directly.

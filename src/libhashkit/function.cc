@@ -6,7 +6,7 @@
  * the COPYING file in the parent directory for full text.
  */
 
-#include <libhashkit/common.h>
+#include "libhashkit/common.h"
 
 static hashkit_return_t _set_function(struct hashkit_st::hashkit_function_st *self, hashkit_hash_algorithm_t hash_algorithm)
 {

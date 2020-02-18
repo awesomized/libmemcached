@@ -36,7 +36,7 @@
 
 %{
 
-#include <libmemcached/csl/common.h>
+#include "libmemcached/csl/common.h"
 
 class Context;
 
@@ -58,11 +58,11 @@ class Context;
 
 %{
 
-#include <libmemcached/options.hpp>
+#include "libmemcached/options.hpp"
 
-#include <libmemcached/csl/context.h>
-#include <libmemcached/csl/symbol.h>
-#include <libmemcached/csl/scanner.h>
+#include "libmemcached/csl/context.h"
+#include "libmemcached/csl/symbol.h"
+#include "libmemcached/csl/scanner.h"
 
 #ifndef __INTEL_COMPILER
 # pragma GCC diagnostic ignored "-Wold-style-cast"

@@ -36,7 +36,7 @@
  */
 
 
-#include <libmemcached/common.h>
+#include "libmemcached/common.h"
 
 inline static memcached_return_t _string_check(memcached_string_st *string, size_t need)
 {

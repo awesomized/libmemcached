@@ -35,9 +35,9 @@
  */
 
 #include "libtest/yatlcon.h"
-#include <libtest/common.h>
+#include "libtest/common.h"
 
-#include <libtest/drizzled.h>
+#include "libtest/drizzled.h"
 
 #include "util/instance.hpp"
 #include "util/operation.hpp"

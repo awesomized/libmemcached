@@ -36,7 +36,7 @@
  */
 
 
-#include <libhashkit/common.h>
+#include "libhashkit/common.h"
 
 #if __WORDSIZE == 64 && defined(HAVE_FNV64_HASH)
 

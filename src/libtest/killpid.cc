@@ -35,7 +35,7 @@
  */
 
 #include "libtest/yatlcon.h"
-#include <libtest/common.h>
+#include "libtest/common.h"
 
 #include <cstdlib>
 #include <cstring>
@@ -47,8 +47,8 @@
 #include <sys/wait.h>
 
 
-#include <libtest/killpid.h>
-#include <libtest/stream.h>
+#include "libtest/killpid.h"
+#include "libtest/stream.h"
 
 using namespace libtest;
 

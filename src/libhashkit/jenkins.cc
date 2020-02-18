@@ -48,7 +48,7 @@
 * Add big endian support
 */
 
-#include <libhashkit/common.h>
+#include "libhashkit/common.h"
 
 #define hashsize(n) ((uint32_t)1<<(n))
 #define hashmask(n) (hashsize(n)-1)

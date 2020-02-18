@@ -35,7 +35,7 @@
  *
  */
 
-#include <libmemcached/common.h>
+#include "libmemcached/common.h"
 
 static inline memcached_return_t memcached_validate_key_length(size_t key_length, bool)
 {

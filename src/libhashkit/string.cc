@@ -35,7 +35,7 @@
  */
 
 
-#include <libhashkit/common.h>
+#include "libhashkit/common.h"
 
 #include <cassert>
 #include <cstring>

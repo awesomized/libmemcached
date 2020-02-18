@@ -42,7 +42,7 @@
   all slabs on servers and "grab" the keys.
 */
 
-#include <libmemcached/common.h>
+#include "libmemcached/common.h"
 
 static memcached_return_t ascii_dump(Memcached *memc, memcached_dump_fn *callback, void *context, uint32_t number_of_callbacks)
 {

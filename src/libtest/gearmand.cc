@@ -35,9 +35,9 @@
  */
 
 #include "libtest/yatlcon.h"
-#include <libtest/common.h>
+#include "libtest/common.h"
 
-#include <libtest/gearmand.h>
+#include "libtest/gearmand.h"
 
 using namespace libtest;
 

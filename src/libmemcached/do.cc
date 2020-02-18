@@ -9,7 +9,7 @@
  *
  */
 
-#include <libmemcached/common.h>
+#include "libmemcached/common.h"
 
 static memcached_return_t _vdo_udp(memcached_instance_st* instance,
                                    libmemcached_io_vector_st vector[],

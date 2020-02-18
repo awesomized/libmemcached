@@ -35,7 +35,7 @@
  *
  */
 
-#include <libmemcached/common.h>
+#include "libmemcached/common.h"
 
 char *memcached_fetch(memcached_st *shell, char *key, size_t *key_length, 
                       size_t *value_length, 

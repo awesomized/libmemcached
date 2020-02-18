@@ -42,7 +42,7 @@
   to memcached we will be able to absorb new attributes without having
   to addjust the entire API.
 */
-#include <libmemcached/common.h>
+#include "libmemcached/common.h"
 
 static inline void _result_init(memcached_result_st *self,
                                 Memcached *memc)

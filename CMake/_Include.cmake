@@ -10,6 +10,7 @@ find_package(PkgConfig)
 find_package(Threads REQUIRED)
 
 # locals
+include(InstallPublicHeaders)
 include(SafeString)
 include(CheckDebug)
 include(CheckDecl)

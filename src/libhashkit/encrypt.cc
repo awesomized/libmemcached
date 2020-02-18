@@ -35,7 +35,7 @@
  */
 
 
-#include <libhashkit/common.h>
+#include "libhashkit/common.h"
 
 hashkit_string_st *hashkit_encrypt(hashkit_st *kit,
                                    const char* source, size_t source_length)

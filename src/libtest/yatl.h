@@ -40,4 +40,4 @@
 # define YATL_FULL 1
 #endif
 
-#include <libtest/test.hpp>
+#include "libtest/test.hpp"

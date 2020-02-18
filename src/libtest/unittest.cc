@@ -36,10 +36,10 @@
 
 #include "libtest/yatlcon.h"
 
-#include <libtest/yatl.h>
+#include "libtest/yatl.h"
 
 #if defined(HAVE_LIBMEMCACHED_1_0_TYPES_RETURN_H) && HAVE_LIBMEMCACHED_1_0_TYPES_RETURN_H
-# include <libmemcached-1.0/types/return.h>
+# include "libmemcached-1.0/types/return.h"
 #endif
 
 #if defined(HAVE_LIBGEARMAN_1_0_RETURN_H) && HAVE_LIBGEARMAN_1_0_RETURN_H

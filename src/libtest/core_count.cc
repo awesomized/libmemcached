@@ -44,7 +44,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include <libtest/cpu.hpp>
+#include "libtest/cpu.hpp"
 
 static void version_command(const char *command_name, int major_version, int minor_version)
 {

@@ -36,9 +36,9 @@
 
 
 #include "libtest/yatlcon.h"
-#include <libtest/common.h>
+#include "libtest/common.h"
 
-#include <libtest/blobslap_worker.h>
+#include "libtest/blobslap_worker.h"
 
 #include <cassert>
 #include <cerrno>

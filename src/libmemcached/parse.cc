@@ -42,7 +42,7 @@
   Frankly its too damn useful not to be here though.
 */
 
-#include <libmemcached/common.h>
+#include "libmemcached/common.h"
 
 memcached_server_list_st memcached_servers_parse(const char *server_strings)
 {

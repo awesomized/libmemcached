@@ -34,8 +34,8 @@
  *
  */
 
-#include <mem_config.h>
-#include <libtest/test.hpp>
+#include "mem_config.h"
+#include "libtest/test.hpp"
 
 using namespace libtest;
 
@@ -43,7 +43,7 @@ using namespace libtest;
   Test cases
 */
 
-#include <libmemcached-1.0/memcached.h>
+#include "libmemcached-1.0/memcached.h"
 
 static test_return_t pre_sasl(memcached_st *)
 {

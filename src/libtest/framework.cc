@@ -36,9 +36,9 @@
 
 #include "libtest/yatlcon.h"
 
-#include <libtest/common.h>
-#include <libtest/collection.h>
-#include <libtest/signal.h>
+#include "libtest/common.h"
+#include "libtest/collection.h"
+#include "libtest/signal.h"
 
 #include <algorithm>
 #include <fnmatch.h>

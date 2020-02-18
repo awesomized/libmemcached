@@ -77,12 +77,12 @@ install(TARGETS libmemcached EXPORT libmemcached
 export(EXPORT libmemcached)
 install(EXPORT libmemcached DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake)
 
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-        FILES_MATCHING REGEX "(memcached|util)\\.h(pp)?"
-        PATTERN csl EXCLUDE
-        PATTERN memcached EXCLUDE
-        PATTERN util EXCLUDE
+install_public_headers(
+        libmemcached
+
+        memcached.h
+        memcached.hpp
+        util.h
         )
 
 # FIXME: dtrace

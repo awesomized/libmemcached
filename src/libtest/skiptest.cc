@@ -36,7 +36,7 @@
 
 #include "libtest/yatlcon.h"
 
-#include <libtest/test.hpp>
+#include "libtest/test.hpp"
 
 #include <cstdlib>
 #include <unistd.h>

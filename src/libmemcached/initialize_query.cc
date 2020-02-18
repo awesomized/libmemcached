@@ -34,7 +34,7 @@
  *
  */
 
-#include <libmemcached/common.h>
+#include "libmemcached/common.h"
 
 memcached_return_t initialize_query(Memcached *self, bool increment_query_id)
 {

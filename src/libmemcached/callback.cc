@@ -9,7 +9,7 @@
  *
  */
 
-#include <libmemcached/common.h>
+#include "libmemcached/common.h"
 #include <sys/types.h>
 
 #ifndef __INTEL_COMPILER

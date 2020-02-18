@@ -49,10 +49,10 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include <libtest/server.h>
-#include <libtest/wait.h>
+#include "libtest/server.h"
+#include "libtest/wait.h"
 
-#include <libtest/memcached.h>
+#include "libtest/memcached.h"
 
 #ifndef __INTEL_COMPILER
 #pragma GCC diagnostic ignored "-Wold-style-cast"

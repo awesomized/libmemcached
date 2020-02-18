@@ -35,10 +35,10 @@
  *
  */
 
-#include <libmemcached/common.h>
+#include "libmemcached/common.h"
 
-#include <libmemcached/options.hpp>
-#include <libmemcached/virtual_bucket.h>
+#include "libmemcached/options.hpp"
+#include "libmemcached/virtual_bucket.h"
 
 static inline bool _memcached_init(Memcached *self)
 {

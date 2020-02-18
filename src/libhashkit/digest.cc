@@ -35,7 +35,7 @@
  */
 
 
-#include <libhashkit/common.h>
+#include "libhashkit/common.h"
 
 uint32_t hashkit_digest(const hashkit_st *self, const char *key, size_t key_length)
 {

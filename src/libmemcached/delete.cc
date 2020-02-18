@@ -35,7 +35,7 @@
  *
  */
 
-#include <libmemcached/common.h>
+#include "libmemcached/common.h"
 
 memcached_return_t memcached_delete(memcached_st *shell, const char *key, size_t key_length,
                                     time_t expiration)
