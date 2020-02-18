@@ -16,8 +16,8 @@ compiler:
 
 env:
 # prod
- - BUILD=Release
- - BUILD=Debug
+ - BUILD=Release SASL=OFF
+ - BUILD=Debug SASL=OFF
 
 #before_install:
 #install:
@@ -28,7 +28,7 @@ before_script:
 
 script:
  - cd build
- - cmake -DCMAKE_BUILD_TYPE=${BUILD} ..
+ - cmake -DCMAKE_BUILD_TYPE=${BUILD} -DENABLE_SASL=${SASL} ..
  - make
  - make test
  - make install DESTDIR=.
