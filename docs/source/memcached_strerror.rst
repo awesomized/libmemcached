@@ -9,7 +9,7 @@ Converting Errors, memcached_return_t, to strings
 SYNOPSIS
 --------
 
-#include <libmemcached/memcached.h>
+.. describe:: #include <libmemcached/memcached.h>
 
 .. c:function:: const char * memcached_strerror (memcached_st *ptr, memcached_return_t rc)
 

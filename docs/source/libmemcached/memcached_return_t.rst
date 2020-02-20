@@ -10,8 +10,6 @@ SYNOPSIS
 
 .. c:type:: memcached_return_t
 
-.. c:function:: const char *memcached_strerror(memcached_st *ptr, memcached_return_t rc)
-
 .. c:function:: bool memcached_success(memcached_return_t)
 
 .. c:function:: bool memcached_continue(memcached_return_t rc)
@@ -123,4 +121,4 @@ Libmemcached return types:
 SEE ALSO
 --------
 
-:manpage:`memcached` :manpage:`libmemcached` :manpage:`memcached_client_error` or :manpage:`memcached_worker_error`
+:manpage:`memcached` :manpage:`libmemcached` :manpage:`memcached_str_error`
