@@ -19,7 +19,7 @@ DESCRIPTION
 -----------
 
 
-:c:func:`memcached_set_encoding_key` sets the key that will be used to encrypt and decrypt data as it is sent and recieved from the server.
+:c:func:`memcached_set_encoding_key` sets the key that will be used to encrypt and decrypt data as it is sent and received from the server.
 
 Currently only AES is is supported.
 
@@ -33,22 +33,6 @@ A value of type :c:type:`memcached_return_t` is returned On success that value
 will be :c:type:`MEMCACHED_SUCCESS`.  Use :c:func:`memcached_strerror` to
 translate this value to a printable string.
 
-
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
-
-------
-AUTHOR
-------
-
-
-Brian Aker, <brian@tangent.org>
 
 
 --------

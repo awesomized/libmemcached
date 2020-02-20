@@ -30,13 +30,6 @@ RETURN
 memcached_last_error_message returns a const char* which does not need to be
 de-allocated. If no error has occurred then it will return NULL.
 
-----
-HOME
-----
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
 
 --------
 SEE ALSO

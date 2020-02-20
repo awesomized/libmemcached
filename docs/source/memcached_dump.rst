@@ -29,11 +29,11 @@ DESCRIPTION
 
 
 :c:func:`memcached_dump` is used to get a list of keys found in memcached(1) 
-servers. Because memcached(1) does not guarentee to dump all keys you can not 
+servers. Because memcached(1) does not guarantee to dump all keys you can not
 assume you have fetched all keys from the server. The function takes an array
 of callbacks that it will use to execute on keys as they are found.
 
-Currently the binary protocol is not testsed.
+Currently the binary protocol is not tested.
 
 
 ------
@@ -46,22 +46,6 @@ On success that value will be :c:type:`MEMCACHED_SUCCESS`.
 Use :c:func:`memcached_strerror` to translate this value to a printable 
 string.
 
-
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
-
-------
-AUTHOR
-------
-
-
-Brian Aker, <brian@tangent.org>
 
 
 --------

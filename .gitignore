@@ -47,5 +47,5 @@ example/t/memcached_light
 tags
 venv/
 /infer-out/
-/docs/gh-pages/source/
+/docs/gh-pages/pages/
 /docs/gh-pages/build/

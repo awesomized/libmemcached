@@ -53,24 +53,6 @@ this memcached handle. :c:func:`memcached_set_sasl_auth_data` returns
 :c:type:`MEMCACHED_SUCCESS` upon success.
 
 
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
-
-------
-AUTHOR
-------
-
-
-Brian Aker, <brian@tangent.org>
-
-Trond Norbye, <trond.norbye@gmail.com>
-
 
 --------
 SEE ALSO

@@ -54,7 +54,7 @@ group_key parameter to map objects to particular servers.
 If you are looking for performance, :c:func:`memcached_set` with non-blocking
 IO is the fastest way to store data on the server.
 
-All of the above functions are testsed with the 
+All of the above functions are tested with the
 :c:type:`MEMCACHED_BEHAVIOR_USE_UDP` behavior enabled. However, when using 
 these operations with this behavior on, there are limits to the size of the 
 payload being sent to the server.  The reason for these limits is that the 
@@ -85,19 +85,10 @@ Use :c:func:`memcached_strerror` to translate this value to a printable
 string.
 
 
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
-
 --------
 SEE ALSO
 --------
 
 
-:manpage:`memcached(1)` :manpage:`libmemached(3)` :manpage:`memcached_strerror(3)` :manpage:`memcached_set(3)` :manpage:`memcached_add(3)` :manpage:`memcached_cas(3)` :manpage:`memcached_replace(3)`
+:manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)` :manpage:`memcached_set(3)` :manpage:`memcached_add(3)` :manpage:`memcached_cas(3)` :manpage:`memcached_replace(3)`
 

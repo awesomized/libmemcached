@@ -1,5 +1,5 @@
 =======================================================================
-memcapable - Checking a Memcached server capibilities and compatibility
+memcapable - Checking a Memcached server capabilities and compatibility
 =======================================================================
 
 --------
@@ -51,24 +51,6 @@ Print out the comparison when it detects an error from the server.
 .. option:: -t n
  
 Set the timeout from an IO operation to/from the server to \ *n*\  seconds.
- 
-
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
-
-------
-AUTHOR
-------
-
-
-Trond Norbye, <trond.norbye@gmail.com>
-
 
 --------
 SEE ALSO

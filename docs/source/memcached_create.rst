@@ -66,15 +66,6 @@ that was created (or initialized). On an allocation failure, it returns NULL.
 that was created (or initialized). On an allocation failure, it returns NULL.
 
 
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
-
 --------
 SEE ALSO
 --------

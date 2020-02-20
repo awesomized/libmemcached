@@ -41,22 +41,6 @@ A value of type :c:type:`memcached_return_t` is returned
 On success that value will be :c:type:`MEMCACHED_SUCCESS`.
 Use :c:type:`memcached_strerror` to translate this value to a printable string.
 
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
-
-------
-AUTHOR
-------
-
-
-Brian Aker, <brian@tangent.org>
-
 
 --------
 SEE ALSO

@@ -115,14 +115,6 @@ keys at all were found.
 to :c:type:`MEMCACHED_END` upon successful conclusion.
 :c:type:`MEMCACHED_NOTFOUND` will be return if no keys at all were found.
 
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
 
 --------
 SEE ALSO

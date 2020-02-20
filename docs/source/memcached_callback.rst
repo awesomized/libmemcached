@@ -44,14 +44,14 @@ if required for any of the callbacks.
 
 .. c:type:: MEMCACHED_CALLBACK_CLEANUP_FUNCTION
  
-When :c:func:`memcached_delete` is called this function will be excuted. At 
+When :c:func:`memcached_delete` is called this function will be executed. At
 the point of its execution all connections are closed.
  
 
 
 .. c:type:: MEMCACHED_CALLBACK_CLONE_FUNCTION
  
-When :c:func:`memcached_delete` is called this function will be excuted. 
+When :c:func:`memcached_delete` is called this function will be executed.
 At the point of its execution all connections are closed.
 
 .. c:type:: MEMCACHED_CALLBACK_PREFIX_KEY
@@ -73,7 +73,7 @@ If you set a value with the value being NULL then the prefix key is disabled.
 
 .. c:type:: MEMCACHED_CALLBACK_USER_DATA
  
-This allows you to store a pointer to a specifc piece of data. This can be
+This allows you to store a pointer to a specific piece of data. This can be
 retrieved from inside of :c:func:`memcached_fetch_execute`. Cloning a 
 :c:type:`memcached_st` will copy the pointer to the clone.
  
@@ -99,7 +99,7 @@ You must clone the :c:type:`memcached_st` in order to
 make use of it. The value will be stored only if you return
 :c:type:`MEMCACHED_SUCCESS` or :c:type:`MEMCACHED_BUFFERED`. Returning 
 :c:type:`MEMCACHED_BUFFERED` will cause the object to be buffered and not sent 
-immediatly (if this is the default behavior based on your connection setup 
+immediately (if this is the default behavior based on your connection setup
 this will happen automatically).
  
 The prototype for this is:
@@ -131,22 +131,6 @@ provided. Upon error, nothing is set, null is returned, and the
 :c:func:`memcached_callback_set` returns :c:type:`MEMCACHED_SUCCESS` upon 
 successful setting, otherwise :c:type:`MEMCACHED_FAILURE` on error.
 
-
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
-
-------
-AUTHOR
-------
-
-
-Brian Aker, <brian@tangent.org>
 
 
 --------

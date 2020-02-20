@@ -15,38 +15,32 @@ SYNOPSIS
 
 .. c:function::  memcached_return_t memcached_exist_by_key(memcached_st *ptr, char *group_key, size_t *group_key_length, char *key, size_t *key_length)
 
-   .. versionadded:: 0.53
-
 Compile and link with -lmemcached
+
+.. versionadded:: 0.53
 
 
 -----------
 DESCRIPTION
 -----------
 
-:c:func:`memcached_exist()` can be used to check to see if a key exists. No value is returned if the key exists, or does not exist, on the server. 
+:c:func:`memcached_exist()` can be used to check if a key exists.
 
 
 ------
 RETURN
 ------
 
-:c:func:`memcached_exist()` sets error to 
-to :c:type:`MEMCACHED_SUCCESS` upon finding that the key exists.
-:c:type:`MEMCACHED_NOTFOUND` will be return if the key is not found.
+:c:type:`MEMCACHED_SUCCESS`
+  The key exists.
 
-
-----
-HOME
-----
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
+:c:type:`MEMCACHED_NOTFOUND`
+  The key was not found.
 
 --------
 SEE ALSO
 --------
+
 
 :manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`
 

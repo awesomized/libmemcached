@@ -67,22 +67,6 @@ Any method returning a :c:type:`memcached_stat_st` expects you to free the
 memory allocated for it.
 
 
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
-
-------
-AUTHOR
-------
-
-
-Brian Aker, <brian@tangent.org>
-
 
 --------
 SEE ALSO

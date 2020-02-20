@@ -50,14 +50,6 @@ and the key was set larger then :c:type:`MEMCACHED_MAX_KEY`, which was the large
 key allowed for the original memcached ascii server.
 
 
-----
-HOME
-----
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
-
 --------
 SEE ALSO
 --------

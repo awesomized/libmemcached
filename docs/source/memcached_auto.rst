@@ -38,7 +38,7 @@ DESCRIPTION
 (overflow and underflow are not detected). This gives you the ability to use
 memcached to generate shared sequences of values.
 
-memcached_increment takes a key and keylength and increments the value by
+memcached_increment takes a key and key length and increments the value by
 the offset passed to it. The value is then returned via the uint32_t
 value pointer you pass to it.
 
@@ -79,15 +79,6 @@ RETURN
 A value of type :c:type:`memcached_return_t`  is returned.
 On success that value will be :c:type:`MEMCACHED_SUCCESS`.
 Use memcached_strerror to translate this value to a printable string.
-
-
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
 
 
 --------

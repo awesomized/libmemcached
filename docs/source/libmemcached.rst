@@ -137,14 +137,6 @@ locking structures you can not share a single :c:type:`memcached_st`. However,
 you can call :c:func:`memcached_quit` on a :c:type:`memcached_st` and then use the resulting cloned structure.
 
 
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
 
 --------
 SEE ALSO

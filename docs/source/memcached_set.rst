@@ -49,7 +49,7 @@ will always return true unless a network error occurs.
 :c:func:`memcached_cas` overwrites data in the server as long as the "cas" 
 value is still the same in the server. You can get the cas value of a result by 
 calling :c:func:`memcached_result_cas` on a memcached_result_st(3) structure. At the point 
-that this note was written cas is still buggy in memached. Turning on tests
+that this note was written cas is still buggy in memcached. Turning on tests
 for it in libmemcached(3) is optional. Please see memcached_set for 
 information on how to do this.
 
@@ -59,7 +59,7 @@ objects to particular servers.
 
 If you are looking for performance, :c:func:`memcached_set` with non-blocking IO is the fastest way to store data on the server.
 
-All of the above functions are testsed with the :c:type:`MEMCACHED_BEHAVIOR_USE_UDP` behavior enabled. However, when using these operations with this behavior 
+All of the above functions are tested with the :c:type:`MEMCACHED_BEHAVIOR_USE_UDP` behavior enabled. However, when using these operations with this behavior
 on, there are limits to the size of the payload being sent to the server.  
 The reason for these limits is that the Memcached Server does not allow 
 multi-datagram requests and the current server implementation sets a datagram 
@@ -80,16 +80,8 @@ All methods return a value of type :c:type:`memcached_return_t`.
 On success the value will be :c:type:`MEMCACHED_SUCCESS`.
 Use :c:func:`memcached_strerror` to translate this value to a printable string.
 
-For :c:func:`memcached_replace` and :c:func:`memcached_add`, :c:type:`MEMCACHED_NOTSTORED` is a legitmate error in the case of a collision.
+For :c:func:`memcached_replace` and :c:func:`memcached_add`, :c:type:`MEMCACHED_NOTSTORED` is a legitimate error in the case of a collision.
 
-
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
 
 
 --------
@@ -97,5 +89,5 @@ SEE ALSO
 --------
 
 
-:manpage:`memcached(1)` :manpage:`libmemached(3)` :manpage:`memcached_strerror(3)` :manpage:`memcached_prepend(3)` :manpage:`memcached_cas(3)` :manpage:`memcached_append(3)`
+:manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)` :manpage:`memcached_prepend(3)` :manpage:`memcached_cas(3)` :manpage:`memcached_append(3)`
 

@@ -82,15 +82,6 @@ RETURN
 Varies, see particular functions.
 
 
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
-
 --------
 SEE ALSO
 --------

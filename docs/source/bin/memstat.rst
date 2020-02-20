@@ -44,14 +44,6 @@ For a full list of operations run the tool with:
 
 .. option:: --analyze  
 
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
 
 --------
 SEE ALSO

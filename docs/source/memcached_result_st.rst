@@ -109,14 +109,6 @@ Varies, see particular functions. All structures must have
 to do this will result in leaked memory.
 
 
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
 
 --------
 SEE ALSO

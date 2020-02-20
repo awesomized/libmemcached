@@ -10,7 +10,7 @@ Creating a hashkit structure
 SYNOPSIS
 --------
 
-#include <libhashkit/hashkit.h>
+.. describe:: #include <libhashkit/hashkit.h>
  
 .. c:type:: hashkit_st
 
@@ -56,15 +56,6 @@ failure or non-NULL on success.
 :c:func:`hashkit_is_allocated` returns true if the memory for the hashkit
 object was allocated inside of :c:func:`hashkit_create` or 
 :c:func:`hashkit_clone`, otherwise it is false and was user-supplied memory.
-
-
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
 
 
 

@@ -5,7 +5,7 @@ Flushing client buffers
 
 .. index:: object: memcached_st
 
-Flush and senf buffered commands
+Flush and send buffered commands
 
 --------
 SYNOPSIS
@@ -38,23 +38,6 @@ Use :c:func:`memcached_strerror` to translate this value to a printable
 string.
 
 
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
-
-------
-AUTHOR
-------
-
-
-Brian Aker, <brian@tangent.org>
-
-Trond Norbye, <trond.norbye@gmail.com>
 
 
 --------

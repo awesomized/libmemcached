@@ -54,14 +54,6 @@ RETURN
 :c:func:`memcached_get_user_data` returns the current value uf the user specific data.
 
 
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
 
 --------
 SEE ALSO

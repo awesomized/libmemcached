@@ -59,7 +59,7 @@ DEPRECATED :c:func:`memcached_servers_parse`, please see :c:func:`memcached`
 
 :c:func:`memcached_server_error` can be used to look at the text of the last error message sent by the server to to the client.
 
-Before version 0.39 theses functions used a memcache_server_st \*. In 0.39
+Before version 0.39 theses functions used a memcached_server_st \*. In 0.39
 memcached_server_st \* was aliased to :c:type:`memcached_server_list_st`. This was done for a style reason to help clean up some concepts in the code.
 
 
@@ -69,15 +69,6 @@ RETURN
 
 
 Varies, see particular functions.
-
-
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
 
 
 

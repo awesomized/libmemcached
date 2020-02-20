@@ -45,14 +45,6 @@ Use :c:func:`memcached_strerror` to translate this value to
 a printable string.
 
 
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
 
 --------
 SEE ALSO

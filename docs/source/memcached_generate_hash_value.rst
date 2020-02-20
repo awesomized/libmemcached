@@ -59,7 +59,7 @@ for normal memcache operations.
 The allowed hash algorithm constants are listed in the manpage for
 :c:func:`memcached_behavior_set`.
 
-:c:func:`memcached_generate_hash` takes a :c:type:`memcached_st` struture 
+:c:func:`memcached_generate_hash` takes a :c:type:`memcached_st` structure
 and produces the hash value that would have been generated based on the 
 defaults of :c:type:`memcached_st`.
 
@@ -76,22 +76,6 @@ A 32-bit integer which is the result of hashing the given key.
 For 64-bit hash algorithms, only the least-significant 32 bits are
 returned.
 
-
-----
-HOME
-----
-
-
-To find out more information please check: 
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
-
-------
-AUTHOR
-------
-
-
-Brian Aker, <brian@tangent.org>
 
 
 --------

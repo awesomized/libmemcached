@@ -21,9 +21,9 @@ DESCRIPTION
 
 
 :program:`memaslap` is a load generation and benchmark tool for memcached
-servers. It generates configurable workload such as threads, concurrencies, 
+servers. It generates configurable workload such as threads, concurrency,
 connections, run time, overwrite, miss rate, key size, value size, get/set 
-proportion, expected throughput, and so on. Furthermore, it also testss data
+proportion, expected throughput, and so on. Furthermore, it also tests data
 verification, expire-time verification, UDP, binary protocol, facebook test,
 replication test, multi-get and reconnection, etc.
 
@@ -115,12 +115,12 @@ _________________________________________________________
 
 Memslap has the similar implementation of multi-threads to
 memcached. Memslap creates one or more self-governed threads;
-each thread is bound with one CPU core if the system testss setting CPU
+each thread is bound with one CPU core if the system tests setting CPU
 core affinity.
 
 In addition, each thread has a libevent to manage the events of the network;
-each thread has one or more self-governed concurrencies; and each
-concurrency has one or more socket connections. All the concurrencies don’t
+each thread has one or more self-governed concurrency; and each
+concurrency has one or more socket connections. All the concurrent tasks don't
 communicate with each other even though they are in the same thread.
 
 Memslap can create thousands of socket connections, and each
@@ -145,10 +145,10 @@ of the string to identify a string. It can save much memory.
 Each key contains two parts, a prefix and a suffix. The prefix is an
 uint64_t, 8 bytes. In order to verify the data set before, 
 memaslap need to ensure each key is unique, so it uses the prefix to identify
-a key. The prefix cannot include illegal characters, such as ‘\r’, ‘\n’,
-‘\0’ and ‘ ‘. And memaslap has an algorithm to ensure that.
+a key. The prefix cannot include illegal characters, such as '\r', '\n',
+'\0' and ' '. And memaslap has an algorithm to ensure that.
 
-Memslap doesn’t generate all the objects (key-value pairs) at
+Memslap doesn't generate all the objects (key-value pairs) at
 the beginning. It only generates enough objects to fill the task window
 (default 10K objects) of each concurrency. Each object has the following
 basic information, key prefix, key suffix offset in the character table, key
@@ -164,7 +164,7 @@ Simple but useful task scheduling
 _________________________________
 
 
-Memslap uses libevent to schedule all the concurrencies of
+Memslap uses libevent to schedule all concurrent tasks of
 threads, and each concurrency schedules tasks based on the local task
 window. Memslap assumes that if each concurrency keeps the same
 key distribution, value distribution and commands distribution, from
@@ -209,7 +209,7 @@ By default, Memslap does single get. If the user specifies
 multi-get option, memaslap will collect enough get commands and
 pack and send the commands together.
 
-Memslap testss both the ASCII protocol and binary protocol,
+Memslap tests both the ASCII protocol and binary protocol,
 but it runs on the ASCII protocol by default. 
 Memslap by default runs on the TCP protocol, but it also
 tests UDP. Because UDP is unreliable, dropped packages and out-of-order
@@ -260,7 +260,7 @@ memaslap -s 127.0.0.1:11211,127.0.0.1:11212 -F config -t 2m -p 2
 The user must specify one server at least to run memaslap. The
 rest of the parameters have default values, as shown below:
 
-Thread number = 1                    Concurrency = 16
+Thread number = 1                     Concurrency = 16
 
 Run time = 600 seconds                Configuration file = NULL
 
@@ -268,33 +268,32 @@ Key size = 64                         Value size = 1024
 
 Get/set = 9:1                         Window size = 10k
 
-Execute number = 0                   Single get = true
+Execute number = 0                    Single get = true
 
-Multi-get = false                      Number of sockets of each concurrency = 1
+Multi-get = false                     Number of sockets of each concurrency = 1
 
 Reconnect = false                     Data verification = false
 
-Expire-time verification = false           ASCII protocol = true
+Expire-time verification = false      ASCII protocol = true
 
-Binary protocol = false                 Dumping statistic information
-
-periodically = false
+Binary protocol = false               Dumping statistic information periodically = false
 
 Overwrite proportion = 0%             UDP = false
 
-TCP = true                           Limit throughput = false
+TCP = true                            Limit throughput = false
 
-Facebook test = false                  Replication test = false
+Facebook test = false                 Replication test = false
+
 
 Key size, value size and command distribution.
 ______________________________________________
 
 
 All the distributions are read from the configuration file specified by user
-with “—cfg_cmd” option. If the user does not specify a configuration file,
+with "—cfg_cmd" option. If the user does not specify a configuration file,
 memaslap will run with the default distribution (key size = 64,
 value size = 1024, get/set = 9:1). For information on how to edit the
-configuration file, refer to the “Configuration File” section.
+configuration file, refer to the "Configuration File" section.
 
 The minimum key size is 16 bytes; the maximum key size is 250 bytes. The
 precision of proportion is 0.001. The proportion of distribution will be
@@ -303,7 +302,7 @@ rounded to 3 decimal places.
 The minimum value size is 1 bytes; the maximum value size is 1M bytes. The
 precision of proportion is 0.001. The proportion of distribution will be
 rounded to 3 decimal places.
-Currently, memaslap only testss set and get commands. And it
+Currently, memaslap only tests set and get commands. And it
 testss 100% set and 100% get. For 100% get, it will preset some objects to
 the server.
 
@@ -313,9 +312,9 @@ ____________________________
 
 
 The high performance of memaslap benefits from the special
-schedule of thread and concurrency. It’s important to specify the proper
+schedule of thread and concurrency. It's important to specify the proper
 number of them. The default number of threads is 1; the default number of
-concurrency is 16. The user can use “—threads” and “--concurrency” to
+concurrency is 16. The user can use "—threads" and "--concurrency" to
 specify these variables.
 
 If the system tests setting CPU affinity and the number of threads
@@ -359,13 +358,13 @@ limit the performance of memaslap, there
 are two ways to do this:
 
 Decrease the number of threads and concurrencies.
-Use the option “--tps” that memaslap
+Use the option "--tps" that memaslap
 provides to limit the throughput. This option allows
 the user to get the expected throughput. For
 example, assume that the maximum throughput is 50
 kops/s for a specific configuration, you can specify
 the throughput equal to or less than the maximum
-throughput using “--tps” option.
+throughput using "--tps" option.
 
 
 Window size
@@ -492,7 +491,7 @@ For example:
 Memslap will dump the statistics of the commands (get and set) at the frequency of every 20
 seconds.
 
-For more information on the format of dumping statistic information, refer to “Format of Output” section.
+For more information on the format of dumping statistic information, refer to "Format of Output" section.
 
 
 Multi-get
@@ -506,9 +505,9 @@ verification and expire-time verification for multi-get.
 Memslap testss multi-get with both TCP and UDP. Because of
 the different implementation of the ASCII protocol and binary protocol,
 there are some differences between the two. For the ASCII protocol,
-memaslap sends one “multi-get” to the server once. For the
+memaslap sends one "multi-get" to the server once. For the
 binary protocol, memaslap sends several single get commands
-together as “multi-get” to the server.
+together as "multi-get" to the server.
 
 
 UDP and TCP
@@ -518,18 +517,18 @@ ___________
 Memslap testss both UDP and TCP. For TCP,
 memaslap does not reconnect the memcached server if socket connections are
 lost. If all the socket connections are lost or memcached server crashes,
-memaslap will exit. If the user specifies the “--reconnect”
+memaslap will exit. If the user specifies the "--reconnect"
 option when socket connections are lost, it will reconnect them.
 
-User can use “--udp” to enable the UDP feature, but UDP comes with some
+User can use "--udp" to enable the UDP feature, but UDP comes with some
 limitations:
 
 UDP cannot set data more than 1400 bytes.
 
-UDP is not testsed by the binary protocol because the binary protocol of
+UDP is not tested by the binary protocol because the binary protocol of
 memcached does not tests that.
 
-UDP doesn’t tests reconnection.
+UDP doesn't tests reconnection.
 
 
 Facebook test
@@ -561,7 +560,7 @@ ________________
 
 
 For replication test, the user must specify at least two memcached servers.
-The user can use “—rep_write=” option to enable feature.
+The user can use "—rep_write=" option to enable feature.
 
 For example:
 
@@ -610,7 +609,7 @@ For example:
 Since memcached 1.3.3 doesn't implement binary UDP protocol,
 memaslap does not tests UDP. In addition, memcached 1.3.3 does not tests
 multi-get. If you specify "--division=50" option, it just sends 50 get
-commands together as “mulit-get” to the server.
+commands together as "multi-get" to the server.
 
 
 
@@ -875,7 +874,7 @@ Net
 
 Get_miss
  
- How many objects can’t be gotten
+ How many objects can't be gotten
  
 
 
@@ -1034,13 +1033,13 @@ cmd_set
 
 get_misses
  
- How many objects can’t be gotten from server
+ How many objects can't be gotten from server
  
 
 
 verify_misses
  
- How many objects need to verify but can’t get them
+ How many objects need to verify but can't get them
  
 
 
@@ -1058,7 +1057,7 @@ expired_get
 
 unexpired_unget
  
- How many objects are unexpired but we can’t get them
+ How many objects are unexpired but we can't get them
  
 
 
@@ -1225,25 +1224,6 @@ memaslap -s 127.0.0.1:11211 -F config -t 2m -d 50 -a -n 40
 memaslap -s 127.0.0.1:11211,127.0.0.1:11212 -F config -t 2m
 
 memaslap -s 127.0.0.1:11211,127.0.0.1:11212 -F config -t 2m -p 2
-
-
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
-
--------
-AUTHORS
--------
-
-
-Mingqiang Zhuang <mingqiangzhuang@hengtiansoft.com> (Schooner Technolgy)
-Brian Aker, <brian@tangent.org>
-
 
 --------
 SEE ALSO

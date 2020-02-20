@@ -126,15 +126,6 @@ Notice that you freed values returned from memcached_fetch(). The define
 
 
 
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
-
 --------
 SEE ALSO
 --------

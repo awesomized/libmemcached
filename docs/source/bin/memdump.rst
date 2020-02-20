@@ -20,7 +20,7 @@ DESCRIPTION
 
 
 :program:`memdump`  dumps a list of "keys" from all servers that 
-it is told to fetch from. Because memcached does not guarentee to
+it is told to fetch from. Because memcached does not guarantee to
 provide all keys it is not possible to get a complete "dump".
 
 
@@ -33,22 +33,6 @@ For a full list of operations run the tool with option:
 
 .. option:: --help
 
-
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
-
-------
-AUTHOR
-------
-
-
-Brian Aker, <brian@tangent.org>
 
 
 --------

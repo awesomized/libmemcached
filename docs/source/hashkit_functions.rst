@@ -57,14 +57,6 @@ RETURN VALUE
 A 32-bit hash value.
 
 
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
 
 --------
 SEE ALSO

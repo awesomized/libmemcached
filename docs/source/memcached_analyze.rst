@@ -1,5 +1,5 @@
 =================
-Anaylzing servers
+Analyzing servers
 =================
 
 
@@ -50,14 +50,6 @@ checking the :c:type:`memcached_return_t` value.
 Any method returning a :c:type:`memcached_analysis_st` expects you to free the
 memory allocated for it.
 
-
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
 
 
 --------

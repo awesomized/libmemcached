@@ -47,7 +47,7 @@ allocation functions should behave as specified in the C99 standard. Specify
 NULL as all functions to reset them to the default values.
 
 :c:func:`memcached_get_memory_allocators` is used to get the currently used 
-memory allocators by a mamcached handle.
+memory allocators by a memcached handle.
 
 :c:func:`memcached_get_memory_allocators_context` returns the void \* that 
 was passed in during the call to :c:func:`memcached_set_memory_allocators`.
@@ -75,15 +75,6 @@ RETURN
 :c:func:`memcached_set_memory_allocators` return :c:type:`MEMCACHED_SUCCESS` 
 upon success, and :c:type:`MEMCACHED_FAILURE` if you don't pass a complete set 
 of function pointers.
-
-
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
 
 
 --------

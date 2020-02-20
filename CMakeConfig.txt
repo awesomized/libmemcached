@@ -39,6 +39,12 @@ set(ENABLE_DTRACE OFF
 
 # docs / sphinx
 
+set(BUILD_DOCS ON
+    CACHE BOOL "build documentation")
+
+set(BUILD_DOCSONLY OFF
+    CACHE BOOL "build *only* documentation")
+
 set(GZIP_MAN ON
     CACHE BOOL "gzip manpages")
 
@@ -61,5 +67,8 @@ set(HAVE_GCC_BUILTIN_ATOMIC 1)
 
 # modules
 
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake)
 
-include(CMake/_Include.cmake)
+if(NOT BUILD_DOCSONLY)
+    include(CMake/_Include.cmake)
+endif()

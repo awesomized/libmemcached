@@ -31,7 +31,7 @@ it won't be possible to retrieve it by the "get" command. The "add" and
 "replace" commands with this key will also fail (the "set" command will 
 succeed, however). After the time passes, the item is finally deleted from server memory.
 
-Please note the the Danga memcached server removed tests for expiration in
+Please note the the memcached server removed tests for expiration in
 the 1.4 version.
 
 
@@ -48,22 +48,6 @@ string.
 If you are using the non-blocking mode of the library, success only
 means that the message was queued for delivery.
 
-
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
-
-------
-AUTHOR
-------
-
-
-Brian Aker, <brian@tangent.org>
 
 
 --------

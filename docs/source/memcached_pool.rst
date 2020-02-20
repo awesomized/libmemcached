@@ -83,24 +83,6 @@ If any methods returns MEMCACHED_IN_PROGRESS then a lock on the pool could not b
 memcached_pool_fetch may return MEMCACHED_TIMEOUT if a timeout occurs while waiting for a free memcached_st. MEMCACHED_NOTFOUND if no memcached_st was available.
 
 
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
-
-------
-AUTHOR
-------
-
-
-Brian Aker, <brian@tangent.org>
-
-Trond Norbye, <trond.norbye@gmail.com>
-
 
 --------
 SEE ALSO

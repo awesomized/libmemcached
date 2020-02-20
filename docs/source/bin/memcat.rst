@@ -34,7 +34,7 @@ OPTIONS
 
 You can specify servers via the option:
 
-.. cmdoption:: --servers
+.. option:: --servers
 
 or via the environment variable:
 
@@ -42,26 +42,7 @@ or via the environment variable:
 
 For a full list of operations run the tool with the option:
 
-.. cmdoption:: --help
-
-
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
-
-------
-AUTHOR
-------
-
-
-Brian Aker, <brian@tangent.org>
-
-Mark Atwood <mark@fallenpegasus.com>
+.. option:: --help
 
 
 --------

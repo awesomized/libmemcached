@@ -1,6 +1,6 @@
-================================================
-Coverting Errors, memcached_return_t, to strings
-================================================
+=================================================
+Converting Errors, memcached_return_t, to strings
+=================================================
 
 
 .. index:: object: memcached_st
@@ -36,16 +36,6 @@ RETURN
 
 
 :c:func:`memcached_strerror` returns a string describing a :c:type:`memcached_return_t` value.
-
-
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
 
 
 --------
