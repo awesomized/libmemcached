@@ -1229,4 +1229,6 @@ memaslap -s 127.0.0.1:11211,127.0.0.1:11212 -F config -t 2m -p 2
 SEE ALSO
 --------
 
-:manpage:`memcached(1)` :manpage:`libmemcached(3)`
+.. only:: man
+
+  :manpage:`memcached(1)` :manpage:`libmemcached(3)`

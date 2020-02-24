@@ -35,6 +35,8 @@ de-allocated. If no error has occurred then it will return NULL.
 SEE ALSO
 --------
 
-:manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`
+.. only:: man
+
+  :manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`
 
 

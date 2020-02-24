@@ -1,28 +1,35 @@
-======================
 Introducing libhashkit
 ======================
 
+SYNOPSIS
+--------
 
-.. code-block:: c
+#include <libhashkit-|libhashkit_version|/hashkit.h>
+  Compile and link with -lhashkit.
 
-   cc [ flag ... ] file ... -lhashkit
- 
-   #include <libhashkit/hashkit.h>
-
-
-
------------
 DESCRIPTION
 -----------
 
+libhashkit is a small and thread-safe client library that provides a collection of useful hashing algorithm.
 
-libhashkit  is a small and thread-safe client library that provides a collection of useful hashing algorithm. libhashkit is distributed with libmemcached.
+libhashkit is distributed with libmemcached.
 
-
-
---------
 SEE ALSO
 --------
 
-:manpage:`libhashkit(3)`
+.. only:: man
+
+    :manpage:`libmemcached(3)`
+    :manpage:`hashkit_create(3)`
+    :manpage:`hashkit_function(3)`
+    :manpage:`hashkit_functions(3)`
+    :manpage:`hashkit_value(3)`
+
+.. only:: html
+
+    * :doc:`libmemcached`
+    * :doc:`hashkit_create`
+    * :doc:`hashkit_function`
+    * :doc:`hashkit_functions`
+    * :doc:`hashkit_value`
 

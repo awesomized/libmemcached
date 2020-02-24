@@ -56,5 +56,7 @@ Set the timeout from an IO operation to/from the server to \ *n*\  seconds.
 SEE ALSO
 --------
 
-:manpage:`memcached(1)` :manpage:`libmemcached(3)`
+.. only:: man
+
+  :manpage:`memcached(1)` :manpage:`libmemcached(3)`
 

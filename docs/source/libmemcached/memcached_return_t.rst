@@ -121,4 +121,6 @@ Libmemcached return types:
 SEE ALSO
 --------
 
-:manpage:`memcached` :manpage:`libmemcached` :manpage:`memcached_str_error`
+.. only:: man
+
+  :manpage:`memcached` :manpage:`libmemcached` :manpage:`memcached_str_error`

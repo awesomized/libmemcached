@@ -1,18 +1,19 @@
-============================
 Creating a hashkit structure
 ============================
 
-.. highlightlang:: c
-
 .. index:: object: hashkit_st
 
---------
+Create, copy and free a hashkit structure
+
 SYNOPSIS
 --------
 
-.. describe:: #include <libhashkit/hashkit.h>
- 
-.. c:type:: hashkit_st
+#include <libhashkit-|libhashkit_version|/hashkit.h>
+  Compile and link with -lhashkit
+
+.. c:type:: struct hashkit_st
+
+   typedef struct hashkit_st hashkit_st;
 
 .. c:function:: hashkit_st *hashkit_create(hashkit_st *hash)
 
@@ -22,12 +23,8 @@ SYNOPSIS
 
 .. c:function:: bool hashkit_is_allocated(const hashkit_st *hash)
 
-Compile and link with -lhashkit
-
------------
 DESCRIPTION
 -----------
-
 
 The :c:func:`hashkit_create` function initializes a hashkit object for use. If
 you pass a NULL argument for hash, then the memory for the object is
@@ -44,11 +41,8 @@ objects that were initialized with :c:func:`hashkit_create` or :c:func:`hashkit_
 The :c:func:`hashkit_is_allocated` reports where the memory was allocated 
 for a hashkit object.
 
-
-------------
 RETURN VALUE
 ------------
-
 
 :c:func:`hashkit_create` and :c:func:`hashkit_clone` will return NULL on 
 failure or non-NULL on success.
@@ -57,12 +51,17 @@ failure or non-NULL on success.
 object was allocated inside of :c:func:`hashkit_create` or 
 :c:func:`hashkit_clone`, otherwise it is false and was user-supplied memory.
 
-
-
---------
 SEE ALSO
 --------
 
+.. only:: man
 
-:manpage:`hashkit_create(3)` :manpage:`hashkit_value(3)` :manpage:`hashkit_set_hash_fn(3)`
+    :manpage:`libhashkit(3)`
+    :manpage:`hashkit_value(3)`
+    :manpage:`hashkit_function3)`
 
+.. only:: html
+
+    * :doc:`libhashkit`
+    * :doc:`hashkit_value`
+    * :doc:`hashkit_function`

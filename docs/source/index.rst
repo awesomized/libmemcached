@@ -113,6 +113,7 @@ Libmemcached
 
    libhashkit
    hashkit_create
+   hashkit_function
    hashkit_functions
    hashkit_value
 

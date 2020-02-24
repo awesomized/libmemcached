@@ -88,6 +88,7 @@ For :c:func:`memcached_replace` and :c:func:`memcached_add`, :c:type:`MEMCACHED_
 SEE ALSO
 --------
 
+.. only:: man
 
-:manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)` :manpage:`memcached_prepend(3)` :manpage:`memcached_cas(3)` :manpage:`memcached_append(3)`
+  :manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)` :manpage:`memcached_prepend(3)` :manpage:`memcached_cas(3)` :manpage:`memcached_append(3)`
 

@@ -120,4 +120,6 @@ to :c:type:`MEMCACHED_END` upon successful conclusion.
 SEE ALSO
 --------
 
-:manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`
+.. only:: man
+
+  :manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`

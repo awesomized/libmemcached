@@ -44,6 +44,13 @@ man_pages = [
   ('hashkit_create'                             , 'hashkit_create'                         , u'libhashkit Documentation'                            , man_authors, 3),
   ('hashkit_create'                             , 'hashkit_free'                           , u'libhashkit Documentation'                            , man_authors, 3),
   ('hashkit_create'                             , 'hashkit_is_allocated'                   , u'libhashkit Documentation'                            , man_authors, 3),
+  ('hashkit_function'                           , 'hashkit_function'                       , u'libhashkit Documentation'                            , man_authors, 3),
+  ('hashkit_function'                           , 'hashkit_get_distribution_function'      , u'libhashkit Documentation'                            , man_authors, 3),
+  ('hashkit_function'                           , 'hashkit_get_function'                   , u'libhashkit Documentation'                            , man_authors, 3),
+  ('hashkit_function'                           , 'hashkit_set_function'                   , u'libhashkit Documentation'                            , man_authors, 3),
+  ('hashkit_function'                           , 'hashkit_set_custom_distribution_function',u'libhashkit Documentation'                            , man_authors, 3),
+  ('hashkit_function'                           , 'hashkit_set_custom_function'            , u'libhashkit Documentation'                            , man_authors, 3),
+  ('hashkit_function'                           , 'hashkit_set_distribution_function'      , u'libhashkit Documentation'                            , man_authors, 3),
   ('hashkit_functions'                          , 'hashkit_crc32'                          , u'libhashkit Documentation'                            , man_authors, 3),
   ('hashkit_functions'                          , 'hashkit_fnv1_32'                        , u'libhashkit Documentation'                            , man_authors, 3),
   ('hashkit_functions'                          , 'hashkit_fnv1_64'                        , u'libhashkit Documentation'                            , man_authors, 3),
@@ -182,5 +189,10 @@ man_pages = [
   ('bin/memping'                                , 'memping'                                , u'libmemcached Documentation'                          , man_authors, 1),
   ('bin/memtouch'                               , 'memtouch'                               , u'libmemcached Documentation'                          , man_authors, 1),
   ]
+
+rst_prolog = """
+.. |libhashkit_version| replace:: @LIBHASHKIT_VERSION_MAJOR@.@LIBHASHKIT_VERSION_MINOR@
+.. |libmemcached_version| replace:: @LIBMEMCACHED_VERSION_MAJOR@.@LIBMEMCACHED_VERSION_MINOR@
+"""
 
 @SPHINX_CONF_APPEND@

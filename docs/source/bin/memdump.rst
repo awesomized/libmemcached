@@ -39,4 +39,6 @@ For a full list of operations run the tool with option:
 SEE ALSO
 --------
 
-:manpage:`memcached(1)` :manpage:`libmemcached(3)`
+.. only:: man
+
+  :manpage:`memcached(1)` :manpage:`libmemcached(3)`

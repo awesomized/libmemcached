@@ -54,5 +54,7 @@ key allowed for the original memcached ascii server.
 SEE ALSO
 --------
 
-:manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)` :manpage:`memcached_fetch_result(3)`
+.. only:: man
+
+  :manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)` :manpage:`memcached_fetch_result(3)`
 

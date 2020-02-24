@@ -130,6 +130,5 @@ Notice that you freed values returned from memcached_fetch(). The define
 SEE ALSO
 --------
 
-
 :manpage:`memcached(1)`
 

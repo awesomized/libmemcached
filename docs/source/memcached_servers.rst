@@ -86,5 +86,6 @@ Varies, see particular functions.
 SEE ALSO
 --------
 
+.. only:: man
 
-:manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`
+  :manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`

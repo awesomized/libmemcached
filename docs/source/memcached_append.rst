@@ -89,6 +89,7 @@ string.
 SEE ALSO
 --------
 
+.. only:: man
 
-:manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)` :manpage:`memcached_set(3)` :manpage:`memcached_add(3)` :manpage:`memcached_cas(3)` :manpage:`memcached_replace(3)`
+  :manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)` :manpage:`memcached_set(3)` :manpage:`memcached_add(3)` :manpage:`memcached_cas(3)` :manpage:`memcached_replace(3)`
 

@@ -58,5 +58,6 @@ this memcached handle. :c:func:`memcached_set_sasl_auth_data` returns
 SEE ALSO
 --------
 
+.. only:: man
 
-:manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`
+  :manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`

@@ -8,16 +8,12 @@ Configuring Libmemcached
 SYNOPSIS 
 --------
 
-.. describe:: #include <libmemcached-1.0/memcached.h>
+#include <libmemcached-1.0/memcached.h>
+  Compile and link with -lmemcached
 
-.. c:function:: memcached_st *\
-                memcached(const char *string, size_t string_length)
+.. c:function:: memcached_st *memcached(const char *string, size_t string_length)
 
-.. c:function:: memcached_return_t \
-                libmemcached_check_configuration(const char *option_string, size_t length, \
-                                                 char *error_buffer, size_t error_buffer_size)
-
-Compile and link with -lmemcached
+.. c:function:: memcached_return_t libmemcached_check_configuration(const char *option_string, size_t length, char *error_buffer, size_t error_buffer_size)
 
 
 -----------
@@ -231,5 +227,14 @@ EXAMPLE
 SEE ALSO
 --------
 
+.. only:: man
 
-:manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`
+    :manpage:`memcached(1)`
+    :manpage:`libmemcached(3)`
+    :manpage:`memcached_strerror(3)`
+
+.. only:: html
+
+    * :manpage:`memcached(1)`
+    * :doc:`libmemcached`
+    * :doc:`memcached_strerror`

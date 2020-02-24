@@ -7,12 +7,12 @@ SYNOPSIS
 --------
 
 #include <libmemcached/memcached.h>
-
-Compile and link with -lmemcached
+  Compile and link with -lmemcached
 
 =======
 
-libMemcached is an open source C/C++ client library and tools for the memcached server (http://memcached.org/). It has been designed to be light on memory usage, thread safe, and provide full access to server side methods.
+libMemcached is an open source C/C++ client library and tools for the memcached server (http://memcached.org/).
+It has been designed to be light on memory usage, thread safe, and provide full access to server side methods.
 
 libMemcached was designed to provide the greatest number of options to use Memcached. Some of the features provided:
 
@@ -53,7 +53,8 @@ Nearly all functions return a :c:type:`memcached_return_t` value.
 This value can be translated to a printable string with 
 :c:type:`memcached_strerror`.
 
-Objects are stored on servers by hashing keys. The hash value maps the key to a particular server. All clients understand how this hashing works, so it is possibly to reliably both push data to a server and retrieve data from a server.
+Objects are stored on servers by hashing keys. The hash value maps the key to a particular server.
+All clients understand how this hashing works, so it is possibly to reliably both push data to a server and retrieve data from a server.
 
 Group keys can be optionally used to group sets of objects with servers. 
 
@@ -72,8 +73,6 @@ AC_SUBST(DEPS_CFLAGS)
 AC_SUBST(DEPS_LIBS)
 
 Some features of the library must be enabled through :c:func:`memcached_behavior_set`.
-
-Hope you enjoy it!
 
 
 ---------
@@ -142,36 +141,110 @@ you can call :c:func:`memcached_quit` on a :c:type:`memcached_st` and then use t
 SEE ALSO
 --------
 
+.. only:: man
 
-:manpage:`memcached(1)` :manpage:`libmemcached_examples(3)`
-:manpage:`libmemcached(1)` :manpage:`memcat(1)` :manpage:`memcp(1)`
-:manpage:`memflush(1)` :manpage:`memrm(1)` :manpage:`memslap(1)`
-:manpage:`memstat(1)` :manpage:`memcached_fetch(3)`
-:manpage:`memcached_replace(3)` :manpage:`memcached_server_list_free(3)`
-:manpage:`libmemcached_examples(3)` :manpage:`memcached_clone(3)`
-:manpage:`memcached_free(3)` :manpage:`memcached_server_add(3)`
-:manpage:`memcached_server_push(3)` :manpage:`memcached_add(3)`
-:manpage:`memcached_get(3)` :manpage:`memcached_server_count(3)`
-:manpage:`memcached_create(3)` :manpage:`memcached_increment(3)`
-:manpage:`memcached_server_list(3)` :manpage:`memcached_set(3)`
-:manpage:`memcached_decrement(3)` :manpage:`memcached_mget(3)`
-:manpage:`memcached_server_list_append(3)` :manpage:`memcached_strerror(3)`
-:manpage:`memcached_delete(3)` :manpage:`memcached_quit(3)`
-:manpage:`memcached_server_list_count(3)` :manpage:`memcached_verbosity(3)`
-:manpage:`memcached_server_add_unix_socket(3)`
-:manpage:`memcached_result_create(3)`  :manpage:`memcached_result_free(3)`
-:manpage:`memcached_result_key_value(3)`
-:manpage:`memcached_result_key_length(3)`
-:manpage:`memcached_result_value(3)`  :manpage:`memcached_result_length(3)`
-:manpage:`memcached_result_flags(3)`  :manpage:`memcached_result_cas(3)`
-:manpage:`memcached_result_st(3)` :manpage:`memcached_append(3)`
-:manpage:`memcached_prepend(3)` :manpage:`memcached_fetch_result(3)`
-:manpage:`memerror(1)` :manpage:`memcached_get_by_key(3)`
-:manpage:`memcached_mget_by_key(3)` :manpage:`memcached_delete_by_key(3)`
-:manpage:`memcached_fetch_execute(3)` :manpage:`memcached_callback_get(3)`
-:manpage:`memcached_callback_set(3)` :manpage:`memcached_version(3)`
-:manpage:`memcached_lib_version(3)` :manpage:`memcached_result_set_value(3)`
-:manpage:`memcached_dump(3)` :manpage:`memdump(1)`
-:manpage:`memcached_set_memory_allocators(3)`
-:manpage:`memcached_get_memory_allocators(3)`
-:manpage:`memcached_get_user_data(3)` :manpage:`memcached_set_user_data(3)`
+    :manpage:`memcached(1)`
+    :manpage:`memaslap(1)`
+    :manpage:`memcapable(1)`
+    :manpage:`memcat(1)`
+    :manpage:`memcp(1)`
+    :manpage:`memdump(1)`
+    :manpage:`memerror(1)`
+    :manpage:`memexist(1)`
+    :manpage:`memflush(1)`
+    :manpage:`memparse(1)`
+    :manpage:`memping(1)`
+    :manpage:`memrm(1)`
+    :manpage:`memslap(1)`
+    :manpage:`memstat(1)`
+    :manpage:`memtouch(1)`
+    :manpage:`libhashkit(3)`
+    :manpage:`libmemcached_configuration(3)`
+    :manpage:`libmemcached_examples(3)`
+    :manpage:`libmemcachedutil(3)`
+    :manpage:`memcached_analyze(3)`
+    :manpage:`memcached_append(3)`
+    :manpage:`memcached_auto(3)`
+    :manpage:`memcached_behavior(3)`
+    :manpage:`memcached_callback(3)`
+    :manpage:`memcached_cas(3)`
+    :manpage:`memcached_create(3)`
+    :manpage:`memcached_delete(3)`
+    :manpage:`memcached_dump(3)`
+    :manpage:`memcached_exist(3)`
+    :manpage:`memcached_fetch(3)`
+    :manpage:`memcached_flush(3)`
+    :manpage:`memcached_flush_buffers(3)`
+    :manpage:`memcached_generate_hash_value(3)`
+    :manpage:`memcached_get(3)`
+    :manpage:`memcached_last_error_message(3)`
+    :manpage:`memcached_memory_allocators(3)`
+    :manpage:`memcached_pool(3)`
+    :manpage:`memcached_quit(3)`
+    :manpage:`memcached_result_st(3)`
+    :manpage:`memcached_return_t(3)`
+    :manpage:`memcached_sasl(3)`
+    :manpage:`memcached_servers(3)`
+    :manpage:`memcached_server_st(3)`
+    :manpage:`memcached_set(3)`
+    :manpage:`memcached_set_encoding_key(3)`
+    :manpage:`memcached_stats(3)`
+    :manpage:`memcached_strerror(3)`
+    :manpage:`memcached_touch(3)`
+    :manpage:`memcached_user_data(3)`
+    :manpage:`memcached_verbosity(3)`
+    :manpage:`memcached_version(3)`
+
+.. only:: html
+
+    * :manpage:`memcached(1)`
+    * :doc:`bin/memaslap`
+    * :doc:`bin/memcapable`
+    * :doc:`bin/memcat`
+    * :doc:`bin/memcp`
+    * :doc:`bin/memdump`
+    * :doc:`bin/memerror`
+    * :doc:`bin/memexist`
+    * :doc:`bin/memflush`
+    * :doc:`bin/memparse`
+    * :doc:`bin/memping`
+    * :doc:`bin/memrm`
+    * :doc:`bin/memslap`
+    * :doc:`bin/memstat`
+    * :doc:`bin/memtouch`
+    * :doc:`libhashkit`
+    * :doc:`libmemcached_configuration`
+    * :doc:`libmemcached_examples`
+    * :doc:`libmemcachedutil`
+    * :doc:`memcached_analyze`
+    * :doc:`memcached_append`
+    * :doc:`memcached_auto`
+    * :doc:`memcached_behavior`
+    * :doc:`memcached_callback`
+    * :doc:`memcached_cas`
+    * :doc:`memcached_create`
+    * :doc:`memcached_delete`
+    * :doc:`memcached_dump`
+    * :doc:`libmemcached/memcached_exist`
+    * :doc:`libmemcached/memcached_fetch`
+    * :doc:`memcached_flush`
+    * :doc:`memcached_flush_buffers`
+    * :doc:`memcached_generate_hash_value`
+    * :doc:`memcached_get`
+    * :doc:`libmemcached/memcached_last_error_message`
+    * :doc:`memcached_memory_allocators`
+    * :doc:`memcached_pool`
+    * :doc:`memcached_quit`
+    * :doc:`memcached_result_st`
+    * :doc:`libmemcached/memcached_return_t`
+    * :doc:`memcached_sasl`
+    * :doc:`memcached_servers`
+    * :doc:`memcached_server_st`
+    * :doc:`memcached_set`
+    * :doc:`libmemcached-1.0/memcached_set_encoding_key`
+    * :doc:`memcached_stats`
+    * :doc:`memcached_strerror`
+    * :doc:`libmemcached-1.0/memcached_touch`
+    * :doc:`memcached_user_data`
+    * :doc:`memcached_verbosity`
+    * :doc:`memcached_version`
