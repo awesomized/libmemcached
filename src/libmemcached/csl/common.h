@@ -47,6 +47,12 @@
 typedef void* yyscan_t;
 #endif
 
+#ifndef YYSTYPE
+# define YYSTYPE union CONFIG_STYPE
+#endif
+
+#define config_tokentype int
+
 #include "libmemcached/common.h"
 #include "libmemcached/csl/server.h"
 
