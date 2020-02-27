@@ -3,61 +3,52 @@ set(CMAKE_BUILD_TYPE Release
 set(CMAKE_INSTALL_PREFIX /usr/local
     CACHE PATH "install prefix")
 
-# make test
+option(BUILD_TESTING        "whether to enable build of the test suite"
+        OFF)
+option(BUILD_DOCSONLY       "build *only* documentation"
+        OFF)
+option(BUILD_DOCS           "build documentation"
+        OFF)
+option(BUILD_DOCS_HTML      "build HTML docs"
+        ${BUILD_DOCS})
+option(BUILD_DOCS_MAN       "build manpages"
+        ${BUILD_DOCS})
+option(BUILD_DOCS_MANGZ     "gzip manpages"
+        ${BUILD_DOCS_MAN})
 
-set(BUILD_TESTING ON
-    CACHE STRING "whether to enable build of the test suite")
+option(ENABLE_DTRACE        "enable dtrace support"
+        OFF)
+option(ENABLE_HASH_FNV64    "enable fnv64 hash support"
+        ON)
+option(ENABLE_HASH_MURMUR   "enable murmur hash support"
+        ON)
+option(ENABLE_HASH_HSIEH    "enable hsieh hash support"
+        OFF)
+option(ENABLE_MEMASLAP      "enable memaslap client"
+        ON)
+option(ENABLE_SASL          "enable SASL support"
+        OFF)
 
 set(ENABLE_SANITIZERS ""
     CACHE STRING "sanitizers to enable (e.g. address undefined ...)")
 
-set(MEMCACHED_BINARY "/usr/bin/memcached"
-    CACHE FILEPATH "memcached binary")
+if(BUILD_TESTING)
+    set(MEMCACHED_BINARY "/usr/bin/memcached"
+        CACHE FILEPATH "memcached binary")
+endif()
 
-# sasl
-
-set(ENABLE_SASL OFF
-    CACHE BOOL "enable SASL support")
-
-# hashes
-
-set(ENABLE_FNV64_HASH ON
-    CACHE BOOL "enable fnv64 hash support")
-set(ENABLE_MURMUR_HASH ON
-    CACHE BOOL "enable murmur hash support")
-set(ENABLE_HSIEH_HASH OFF
-    CACHE BOOL "enable hsieh hash support")
-
-# memaslap, needs libevent and stdatomic
-set(ENABLE_MEMASLAP ON
-    CACHE BOOL "enable memaslap client")
-
-# dtrace
-
-set(ENABLE_DTRACE OFF
-    CACHE BOOL "enable dtrace support")
-
-# docs / sphinx
-
-set(BUILD_DOCS ON
-    CACHE BOOL "build documentation")
-
-set(BUILD_DOCSONLY OFF
-    CACHE BOOL "build *only* documentation")
-
-set(GZIP_MAN ON
-    CACHE BOOL "gzip manpages")
-
-set(SPHINX_OPTIONS ""
-    CACHE STRING "additional sphinx-build command line options")
-set(SPHINX_THEME "sphinx_rtd_theme"
-    CACHE STRING "sphinx HTML theme")
-set(SPHINX_THEME_OPTIONS "'collapse_navigation':False, 'navigation_depth':2, 'titles_only':False, 'includehidden':False"
-    CACHE STRING "sphinx HTML theme options")
-set(SPHINX_EXTENSIONS ""
-    CACHE STRING "comma separated list of quoted sphinx extensions")
-set(SPHINX_CONF_APPEND ""
-    CACHE STRING "append verbatim code to sphinx' conf.py")
+if(BUILD_DOCS)
+    set(SPHINX_OPTIONS ""
+        CACHE STRING "additional sphinx-build command line options")
+    set(SPHINX_THEME "sphinx_rtd_theme"
+        CACHE STRING "sphinx HTML theme")
+    set(SPHINX_THEME_OPTIONS "'collapse_navigation':False, 'navigation_depth':2, 'titles_only':False, 'includehidden':False"
+        CACHE STRING "sphinx HTML theme options")
+    set(SPHINX_EXTENSIONS ""
+        CACHE STRING "comma separated list of quoted sphinx extensions")
+    set(SPHINX_CONF_APPEND ""
+        CACHE STRING "append verbatim code to sphinx' conf.py")
+endif()
 
 # legacy
 

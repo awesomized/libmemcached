@@ -48,13 +48,13 @@ if(ENABLE_SASL)
 endif()
 
 ## hashes
-if(ENABLE_FNV64_HASH)
+if(ENABLE_HASH_FNV64)
     set(HAVE_FNV64_HASH 1)
 endif()
-if(ENABLE_MURMUR_HASH)
+if(ENABLE_HASH_MURMUR)
     set(HAVE_MURMUR_HASH 1)
 endif()
-if(ENABLE_HSIEH_HASH)
+if(ENABLE_HASH_HSIEH)
     set(HAVE_HSIEH_HASH 1)
 endif()
 
