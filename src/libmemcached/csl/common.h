@@ -48,7 +48,7 @@ typedef void* yyscan_t;
 #endif
 
 #ifndef YYSTYPE
-# define YYSTYPE union CONFIG_STYPE
+# define YYSTYPE CONFIG_STYPE
 #endif
 
 #define config_tokentype int
