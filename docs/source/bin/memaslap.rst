@@ -630,44 +630,30 @@ _____
 servers : "servers"
  
  The servers used by memaslap.
- 
-
 
 threads count
  
  The number of threads memaslap runs with.
- 
-
 
 concurrency
  
  The number of concurrencies memaslap runs with.
- 
-
 
 run time
  
  How long to run memaslap.
- 
-
 
 windows size
  
  The task window size of each concurrency.
- 
-
 
 set proportion
  
  The proportion of set command.
- 
-
 
 get proportion
  
  The proportion of get command.
- 
-
 
 The output of dynamic statistics is something like this:
 
@@ -681,18 +667,16 @@ The output of dynamic statistics is something like this:
   95.43      177.29
   Global  20  1257935  62896     71.8      0         26      3791     224
   117.79     192.60
-  
-   
   Set Statistics
+
   Type  Time(s)  Ops   TPS(ops/s)  Net(M/s)  Get_miss  Min(us)  Max(us)
   Avg(us)  Std_dev    Geo_dist  
   Period   5    38425   7685      7.3       0         42      628     240
   88.05      220.21
   Global   20   139780  6989      8.0       0         37      3790    253
   117.93     224.83
-  
-   
   Total Statistics
+
   Type  Time(s)  Ops   TPS(ops/s)  Net(M/s)  Get_miss  Min(us)  Max(us)
   Avg(us)  Std_dev    Geo_dist 
   Period   5   384252   76850     72.5      0        27      2198     207
@@ -707,86 +691,58 @@ _____
 Get Statistics
  
  Statistics information of get command
- 
-
 
 Set Statistics
  
  Statistics information of set command
- 
-
 
 Total Statistics
  
  Statistics information of both get and set command
- 
-
 
 Period
  
  Result within a period
- 
-
 
 Global
  
  Accumulated results
- 
-
 
 Ops
  
  Total operations
- 
-
 
 TPS
  
  Throughput, operations/second
- 
-
 
 Net
  
  The rate of network
- 
-
 
 Get_miss
  
  How many objects can't be gotten
- 
-
 
 Min
  
  The minimum response time
- 
-
 
 Max
  
  The maximum response time
- 
-
 
 Avg:
  
  The average response time
- 
-
 
 Std_dev
  
  Standard deviation of response time
- 
-
 
 Geo_dist
  
  Geometric distribution based on natural exponential function
- 
-
 
 At the end, memaslap will output something like this:
 
@@ -843,162 +799,108 @@ At the end, memaslap will output something like this:
    Run time: 20.0s Ops: 1397754 TPS: 69817 Net_rate: 59.4M/s
    ---------------------------------------------------------------------------------------------------------------------------------
 
-
-
 Where
 _____
 
 Get Statistics
  
  Get statistics of response time
- 
-
 
 Set Statistics
  
  Set statistics of response time
- 
-
 
 Total Statistics
  
  Both get and set statistics of response time
- 
-
 
 Min
  
  The accumulated and minimum response time
- 
-
 
 Max
  
  The accumulated and maximum response time
- 
-
 
 Avg
  
  The accumulated and average response time
- 
-
 
 Std
  
  Standard deviation of response time
- 
-
 
 Log2 Dist
  
  Geometric distribution based on logarithm 2
- 
-
 
 cmd_get
  
  Total get commands done
- 
-
 
 cmd_set
  
  Total set commands done
- 
-
 
 get_misses
  
  How many objects can't be gotten from server
- 
-
 
 verify_misses
  
  How many objects need to verify but can't get them
- 
-
 
 verify_failed
  
  How many objects with insistent value
- 
-
 
 expired_get
  
  How many objects are expired but we get them
- 
-
 
 unexpired_unget
  
  How many objects are unexpired but we can't get them
- 
-
 
 written_bytes
  
  Total written bytes
- 
-
 
 read_bytes
  
  Total read bytes
- 
-
 
 object_bytes
  
  Total object bytes
- 
-
 
 packet_disorder
  
  How many UDP packages are disorder
- 
-
 
 packet_drop
  
  How many UDP packages are lost
- 
-
 
 udp_timeout
  
  How many times UDP time out happen
- 
-
 
 Run time
  
  Total run time
- 
-
 
 Ops
  
  Total operations
- 
-
 
 TPS
  
  Throughput, operations/second
- 
-
 
 Net_rate
  
  The average rate of network
- 
-
-
-
 
 OPTIONS
 -------

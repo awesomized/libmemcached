@@ -57,7 +57,6 @@ SYNOPSIS
     Maximum display width of an integer represented as string.
 
 
-
 .. c:macro:: MEMCACHED_CONTINUUM_ADDITION
 
     How many extra slots we should build for in the continuum, defaults to 10.

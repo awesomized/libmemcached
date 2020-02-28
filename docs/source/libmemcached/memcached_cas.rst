@@ -4,7 +4,6 @@ Working with data on the server in an atomic fashion
 
 .. index:: object: memcached_st
 
-
 --------
 SYNOPSIS
 --------

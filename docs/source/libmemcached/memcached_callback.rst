@@ -24,7 +24,6 @@ SYNOPSIS
         When :func:`memcached_delete` is called this function will be executed. At
         the point of its execution all connections are closed.
 
-    
     .. enumerator:: MEMCACHED_CALLBACK_CLONE_FUNCTION
      
         When :func:`memcached_delete` is called this function will be executed.
@@ -92,7 +91,6 @@ SYNOPSIS
         The prototype for this is:
 
         .. type:: memcached_return_t (*memcached_trigger_delete_key)(memcached_st *ptr, char *key, size_t key_length)
-     
 
 DESCRIPTION
 -----------
@@ -109,8 +107,6 @@ callback flag. No connections are reset.
 
 You can use `MEMCACHED_CALLBACK_USER_DATA` to provide custom context 
 if required for any of the callbacks.
-
-
 
 RETURN VALUE
 ------------

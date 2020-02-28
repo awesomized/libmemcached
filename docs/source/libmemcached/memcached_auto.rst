@@ -72,7 +72,6 @@ when using the binary protocol.
 RETURN
 ------
 
-
 A value of type :type:`memcached_return_t`  is returned.
 On success that value will be `MEMCACHED_SUCCESS`.
 Use memcached_strerror to translate this value to a printable string.
