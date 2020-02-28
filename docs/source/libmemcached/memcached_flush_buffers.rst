@@ -20,8 +20,8 @@ DESCRIPTION
 :func:`memcached_flush_buffers` is used in conjunction with
 `MEMCACHED_BEHAVIOR_BUFFER_REQUESTS` (see memcached_behavior(3)) to flush all buffers by sending the buffered commands to the server for processing.
 
-RETURN
-------
+RETURN VALUE
+------------
 
 A value of type :type:`memcached_return_t` is returned
 On success that value will be `MEMCACHED_SUCCESS`.

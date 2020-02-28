@@ -22,8 +22,8 @@ DESCRIPTION
 :func:`memcached_touch_by_key` works the same, but it takes a master key 
 to find the given value.
 
-RETURN
-------
+RETURN VALUE
+------------
 
 A value of type :type:`memcached_return_t` is returned
 On success that value will be `MEMCACHED_SUCCESS`.

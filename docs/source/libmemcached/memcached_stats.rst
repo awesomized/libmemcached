@@ -49,8 +49,8 @@ obtain information on.
 A command line tool, memstat(1), is provided so that you do not have to write
 an application to do this.
 
-RETURN
-------
+RETURN VALUE
+------------
 
 Varies, see particular functions.
 

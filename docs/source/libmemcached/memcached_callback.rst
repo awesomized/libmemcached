@@ -1,9 +1,5 @@
-Setting callbacks
+Library callbacks
 =================
-
-Get and set a callback
-
-.. index:: object: memcached_st
 
 SYNOPSIS
 --------
@@ -15,19 +11,19 @@ SYNOPSIS
  
 .. function:: void *memcached_callback_get(memcached_st *ptr, memcached_callback_t flag, memcached_return_t *error)
 
-.. c:type:: enum memcached_callback_t memcached_callback_t
+.. type:: enum memcached_callback_t memcached_callback_t
  
 .. enum:: memcached_callback_t
 
     .. enumerator:: MEMCACHED_CALLBACK_CLEANUP_FUNCTION
      
-        When :func:`memcached_delete` is called this function will be executed. At
-        the point of its execution all connections are closed.
+        When `memcached_delete` is called this function will be executed. At the
+        point of its execution all connections are closed.
 
     .. enumerator:: MEMCACHED_CALLBACK_CLONE_FUNCTION
      
-        When :func:`memcached_delete` is called this function will be executed.
-        At the point of its execution all connections are closed.
+        When `memcached_delete` is called this function will be executed. At the
+        point of its execution all connections are closed.
     
     .. enumerator:: MEMCACHED_CALLBACK_PREFIX_KEY
     
@@ -36,49 +32,52 @@ SYNOPSIS
     .. enumerator:: MEMCACHED_CALLBACK_NAMESPACE
      
         You can set a value which will be used to create a domain for your keys.
-        The value specified here will be prefixed to each of your keys. The value can
-        not be greater then `MEMCACHED_PREFIX_KEY_MAX_SIZE` - 1 and will
-        reduce `MEMCACHED_MAX_KEY` by the value of your key.
+        The value specified here will be prefixed to each of your keys. The
+        value can not be greater then :c:macro:`MEMCACHED_MAX_NAMESPACE` - 1 and
+        will reduce :c:macro:`MEMCACHED_MAX_KEY` by the value of your key.
 
         The prefix key is only applied to the primary key, not the master key.
-        `MEMCACHED_FAILURE` will be returned if no key is set. In the case of
-        a key which is too long, `MEMCACHED_BAD_KEY_PROVIDED` will be returned.
+        `MEMCACHED_FAILURE` will be returned if no key is set. In the case of a
+        key which is too long, `MEMCACHED_BAD_KEY_PROVIDED` will be returned.
 
-        If you set a value with the value being NULL then the prefix key is disabled.
+        If you set a value with the value being NULL then the prefix key is
+        disabled.
     
     .. enumerator:: MEMCACHED_CALLBACK_USER_DATA
      
-        This allows you to store a pointer to a specific piece of data. This can be
-        retrieved from inside of :func:`memcached_fetch_execute`. Cloning a
-        :type:`memcached_st` will copy the pointer to the clone.
+        This allows you to store a pointer to a specific piece of data. This can
+        be retrieved from inside of `memcached_fetch_execute`. Cloning a
+        `memcached_st` will copy the pointer to the clone.
      
     .. enumerator:: MEMCACHED_CALLBACK_MALLOC_FUNCTION
 
         .. deprecated:: <0.32
-           Use :type:`memcached_set_memory_allocators` instead.
+           Use `memcached_set_memory_allocators` instead.
     
     .. enumerator:: MEMCACHED_CALLBACK_REALLOC_FUNCTION
 
         .. deprecated:: <0.32
-           Use :type:`memcached_set_memory_allocators` instead.
+           Use `memcached_set_memory_allocators` instead.
      
     .. enumerator:: MEMCACHED_CALLBACK_FREE_FUNCTION
 
         .. deprecated:: <0.32
-           Use :type:`memcached_set_memory_allocators` instead.
+           Use `memcached_set_memory_allocators` instead.
     
     .. enumerator:: MEMCACHED_CALLBACK_GET_FAILURE
      
-        This function implements the read through cache behavior. On failure of retrieval this callback will be called.
+        This function implements the read through cache behavior. On failure of
+        retrieval this callback will be called.
 
-        You are responsible for populating the result object provided. This result object will then be stored in the server and returned to the calling process.
+        You are responsible for populating the result object provided. This
+        result object will then be stored in the server and returned to the
+        calling process.
 
-        You must clone the :type:`memcached_st` in order to
-        make use of it. The value will be stored only if you return
-        `MEMCACHED_SUCCESS` or `MEMCACHED_BUFFERED`. Returning
-        `MEMCACHED_BUFFERED` will cause the object to be buffered and not sent
-        immediately (if this is the default behavior based on your connection setup
-        this will happen automatically).
+        You must clone the `memcached_st` in order to make use of it. The value
+        will be stored only if you return `MEMCACHED_SUCCESS` or
+        `MEMCACHED_BUFFERED`. Returning `MEMCACHED_BUFFERED` will cause the
+        object to be buffered and not sent immediately (if this is the default
+        behavior based on your connection setup this will happen automatically).
      
         The prototype for this is:
     
@@ -86,7 +85,9 @@ SYNOPSIS
     
     .. enumerator:: MEMCACHED_CALLBACK_DELETE_TRIGGER
      
-        This function implements a trigger upon successful deletion of a key. The memcached_st structure will need to be cloned in order to make use of it.
+        This function implements a trigger upon successful deletion of a key.
+        The `memcached_st` structure will need to be cloned in order to make use
+        of it.
 
         The prototype for this is:
 
@@ -95,32 +96,40 @@ SYNOPSIS
 DESCRIPTION
 -----------
 
-`libmemcached` can have callbacks set key execution points. These either
-provide function calls at points in the code, or return pointers to
-structures for particular usages.
+`libmemcached` can have callbacks set key execution points. These either provide
+function calls at points in the code, or return pointers to structures for
+particular usages.
 
-:func:`memcached_callback_get` takes a callback flag and returns the 
-structure or function set by :func:`memcached_callback_set`.
+`memcached_callback_get` takes a callback flag and returns the structure or
+function set by `memcached_callback_set`.
 
-:func:`memcached_callback_set` changes the function/structure assigned by a
-callback flag. No connections are reset.
+`memcached_callback_set` changes the function/structure assigned by a callback
+flag. No connections are reset.
 
-You can use `MEMCACHED_CALLBACK_USER_DATA` to provide custom context 
-if required for any of the callbacks.
+You can use `MEMCACHED_CALLBACK_USER_DATA` to provide custom context if required
+for any of the callbacks.
 
 RETURN VALUE
 ------------
 
-:func:`memcached_callback_get` return the function or structure that was 
-provided. Upon error, nothing is set, null is returned, and the 
-:type:`memcached_return_t` argument is set to `MEMCACHED_FAILURE`.
+`memcached_callback_get` returns the function or structure that was provided.
+Upon error, nothing is set, NULL is returned, and the `memcached_return_t`
+argument is set to `MEMCACHED_FAILURE`.
 
-:func:`memcached_callback_set` returns `MEMCACHED_SUCCESS` upon
-successful setting, otherwise `MEMCACHED_FAILURE` on error.
+`memcached_callback_set` returns `MEMCACHED_SUCCESS` upon successful setting,
+otherwise `MEMCACHED_FAILURE` on error.
 
 SEE ALSO
 --------
 
 .. only:: man
 
-  :manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`
+    :manpage:`memcached(1)`
+    :manpage:`libmemcached(3)`
+    :manpage:`memcached_strerror(3)`
+
+.. only:: html
+
+    * :manpage:`memcached(1)`
+    * :doc:`../libmemcached`
+    * :doc:`memcached_strerror`

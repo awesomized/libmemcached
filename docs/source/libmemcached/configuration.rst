@@ -4,7 +4,7 @@ libmemcached Configuration
 SYNOPSIS
 --------
 
-#include <libmemcached-1.0/memcached.h>
+#include <libmemcached-|libmemcached_version|/memcached.h>
   Compile and link with -lmemcached
 
 .. function:: memcached_st *memcached(const char *string, size_t string_length)
@@ -25,18 +25,18 @@ General Options:
 
     Provide a servername to be used by the client.
 
-    Providing a weight will cause weighting to occur with all hosts with each 
+    Providing a weight will cause weighting to occur with all hosts with each
     server getting a default weight of 1.
 
 .. describe:: --SOCKET=\"<filepath>/?<optional_weight>\"
 
-    Provide a filepath to a UNIX socket file. Providing a weight will cause 
-    weighting to occur with all hosts with each server getting a default weight 
+    Provide a filepath to a UNIX socket file. Providing a weight will cause
+    weighting to occur with all hosts with each server getting a default weight
     of 1.
 
 .. describe:: --VERIFY-KEY
 
-    Verify that keys that are being used fit within the design of the protocol 
+    Verify that keys that are being used fit within the design of the protocol
     being used.
 
 .. describe:: --REMOVE_FAILED_SERVERS
@@ -169,7 +169,7 @@ Other Options:
 .. describe:: INCLUDE
 
     Include a file in configuration.
-    Unlike --CONFIGURE-FILE= this will not reset `memcached_st`.
+    Unlike ``--CONFIGURE-FILE=`` this will not reset `memcached_st`.
 
 .. describe:: RESET
 
@@ -191,8 +191,8 @@ ENVIRONMENT
 RETURN VALUE
 ------------
 
-:func:`memcached()` returns a pointer to the memcached_st that was
-created (or initialized).  On an allocation failure, it returns NULL.
+`memcached` returns a pointer to the memcached_st that was created (or
+initialized).  On an allocation failure, it returns NULL.
 
 EXAMPLE 
 -------

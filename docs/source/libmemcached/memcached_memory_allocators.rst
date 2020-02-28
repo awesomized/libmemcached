@@ -54,8 +54,8 @@ In version 0.38 all functions were modified to have a context void pointer
 passed to them. This was so that customer allocators could have their own space
 for memory.
 
-RETURN
-------
+RETURN VALUE
+------------
 
 :func:`memcached_set_memory_allocators` return `MEMCACHED_SUCCESS` upon success,
 and `MEMCACHED_FAILURE` if you don't pass a complete set of function pointers.

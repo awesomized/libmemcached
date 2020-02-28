@@ -1,11 +1,6 @@
 Set Hash Function
 =================
 
-.. index:: object: hashkit_st
-.. index:: object: hashkit_hash_fn
-
-Set hash functions to use for calculating values for keys
-
 SYNOPSIS
 --------
 
@@ -34,11 +29,11 @@ These functions are used to set and retrieve the key and distribution hash funct
 RETURN VALUE
 ------------
 
-:func:`hashkit_set_function`, :func:`hashkit_set_custom_function` and the distribution equivalents
-return :type:`hashkit_return_t` `HASHKIT_SUCCESS` on success.
+`hashkit_set_function`, `hashkit_set_custom_function` and the distribution
+equivalents return `hashkit_return_t` `HASHKIT_SUCCESS` on success.
 
-:func:`hashkit_get_function` and :func:`hashkit_get_distribution_function` return :type:`hashkit_hash_algorithm_t`
-indicating the hash function used.
+`hashkit_get_function` and `hashkit_get_distribution_function` return
+`hashkit_hash_algorithm_t` indicating the hash function used.
 
 SEE ALSO
 --------

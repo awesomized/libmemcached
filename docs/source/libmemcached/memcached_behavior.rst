@@ -11,17 +11,15 @@ SYNOPSIS
 #include <libmemcached/memcached.h>
   Compile and link with -lmemcached
 
-.. c:type:: typedef enum memcached_behavior_t memcached_behavior_t;
-
 .. function:: uint64_t memcached_behavior_get (memcached_st *ptr, memcached_behavior_t flag)
 
 .. function:: memcached_return_t memcached_behavior_set (memcached_st *ptr, memcached_behavior_t flag, uint64_t data)
 
     .. versionchanged:: 0.17
-        The `data` argument of :func:`memcached_behavior_set` was changed in
+        The `data` argument of `memcached_behavior_set` was changed in
         from taking a pointer to data value, to taking a uin64_t.
 
-.. c:type:: enum memcached_behavior_t memcached_behavior_t
+.. type:: enum memcached_behavior_t memcached_behavior_t
 
 .. enum:: memcached_behavior_t
 
@@ -34,15 +32,15 @@ SYNOPSIS
         The following operations will return `MEMCACHED_NOT_SUPPORTED` when
         executed with `MEMCACHED_BEHAVIOR_USE_UDP` enabled:
 
-        * :func:`memcached_version`,
-        * :func:`memcached_stat`,
-        * :func:`memcached_get`,
-        * :func:`memcached_get_by_key`,
-        * :func:`memcached_mget`,
-        * :func:`memcached_mget_by_key`,
-        * :func:`memcached_fetch`,
-        * :func:`memcached_fetch_result`,
-        * :func:`memcached_fetch_execute`.
+        * `memcached_version`,
+        * `memcached_stat`,
+        * `memcached_get`,
+        * `memcached_get_by_key`,
+        * `memcached_mget`,
+        * `memcached_mget_by_key`,
+        * `memcached_fetch`,
+        * `memcached_fetch_result`,
+        * `memcached_fetch_execute`.
 
         All other operations are tested but are executed in a 'fire-and-forget'
         mode, in which once the client has executed the operation, no attempt
@@ -117,8 +115,8 @@ SYNOPSIS
         distribution and allows servers to be added to the cluster with minimal
         cache losses.
 
-        Currently `MEMCACHED_DISTRIBUTION_CONSISTENT` is an alias for the
-        value type:`MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA`.
+        Currently `MEMCACHED_DISTRIBUTION_CONSISTENT` is an alias for the value
+        `MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA`.
 
     .. enumerator:: MEMCACHED_BEHAVIOR_CACHE_LOOKUPS
 
@@ -143,7 +141,7 @@ SYNOPSIS
 
         Sets the default distribution to
         `MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA` with the weighted tests.
-        Makes the default hashing algorithm for keys use MD5.
+        Makes the default hashing algorithm for keys use `MEMCACHED_HASH_MD5`.
 
     .. enumerator:: MEMCACHED_BEHAVIOR_KETAMA_HASH
 
@@ -220,9 +218,9 @@ SYNOPSIS
         `libmemcached` should start to automatically drain the input queue (need
         at least 10 IO requests sent without reading the input buffer).
 
-        Setting this value to high, may cause libmemcached to deadlock (trying to
-        send data, but the send will block because the input buffer in the kernel
-        is full).
+        Setting this value to high, may cause libmemcached to deadlock (trying
+        to send data, but the send will block because the input buffer in the
+        kernel is full).
 
     .. enumerator:: MEMCACHED_BEHAVIOR_IO_KEY_PREFETCH
 
@@ -264,8 +262,8 @@ SYNOPSIS
     .. enumerator:: MEMCACHED_BEHAVIOR_CORK
 
         .. deprecated:: ?
-            This open has been deprecated with the behavior now built and used
-            appropriately on selected platforms.
+            This option has been deprecated with the behavior now built in and
+            used appropriately on selected platforms.
 
     .. enumerator:: MEMCACHED_BEHAVIOR_KEEPALIVE
 
@@ -331,30 +329,30 @@ SYNOPSIS
 DESCRIPTION
 -----------
 
-`libmemcached` behavior can be modified by using :func:`memcached_behavior_set`.
+`libmemcached` behavior can be modified by using `memcached_behavior_set`.
 Default behavior is the library strives to be quick and accurate. Some behavior,
 while being faster, can also result in not entirely accurate behavior (for
-instance, :func:`memcached_set` will always respond with `MEMCACHED_SUCCESS`).
+instance, `memcached_set` will always respond with `MEMCACHED_SUCCESS`).
 
-:func:`memcached_behavior_get` takes a behavior flag and returns whether or not
+`memcached_behavior_get` takes a behavior ``flag`` and returns whether or not
 that behavior is currently enabled in the client.
 
-:func:`memcached_behavior_set` changes the value of a particular option of the
-client. It takes both a flag (listed below) and a value. For simple on or off
-options you just need to pass in a value of 1. Calls to
-:func:`memcached_behavior_set` will flush and reset all connections.
+`memcached_behavior_set` changes the value of a particular option of the client.
+It takes both a ``flag`` and a ``value``. For simple on or off options you just
+need to pass in a value of 1. Calls to `memcached_behavior_set` will flush and
+reset all connections.
 
 RETURN VALUE
 ------------
 
-:func:`memcached_behavior_get` returns either the current value of the key, or 0
-or 1 on simple flag behaviors (1 being enabled). :func:`memcached_behavior_set`
+`memcached_behavior_get` returns either the current value of the key, or 0
+or 1 on simple flag behaviors (1 being enabled). `memcached_behavior_set`
 returns failure or success.
 
 NOTES
 -----
 
-The `data` argument of :func:`memcached_behavior_set` was changed in version
+The `data` argument of `memcached_behavior_set` was changed in version
 0.17 from taking a pointer to data value, to taking a uin64_t.
 
 SEE ALSO

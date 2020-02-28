@@ -26,8 +26,8 @@ of callbacks that it will use to execute on keys as they are found.
 
 Currently the binary protocol is not tested.
 
-RETURN
-------
+RETURN VALUE
+------------
 
 A value of type :type:`memcached_return_t` is returned
 On success that value will be `MEMCACHED_SUCCESS`.

@@ -8,7 +8,7 @@ option(BUILD_TESTING        "whether to enable build of the test suite"
 option(BUILD_DOCSONLY       "build *only* documentation"
         OFF)
 option(BUILD_DOCS           "build documentation"
-        OFF)
+        ${BUILD_DOCSONLY})
 option(BUILD_DOCS_HTML      "build HTML docs"
         ${BUILD_DOCS})
 option(BUILD_DOCS_MAN       "build manpages"
@@ -40,9 +40,9 @@ endif()
 if(BUILD_DOCS)
     set(SPHINX_OPTIONS ""
         CACHE STRING "additional sphinx-build command line options")
-    set(SPHINX_THEME "nature" #"sphinx_rtd_theme"
+    set(SPHINX_THEME "sphinx_rtd_theme"
         CACHE STRING "sphinx HTML theme")
-    set(SPHINX_THEME_OPTIONS "" #"'collapse_navigation':False, 'navigation_depth':2, 'titles_only':False, 'includehidden':False"
+    set(SPHINX_THEME_OPTIONS ""
         CACHE STRING "sphinx HTML theme options")
     set(SPHINX_EXTENSIONS ""
         CACHE STRING "comma separated list of quoted sphinx extensions")

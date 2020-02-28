@@ -23,8 +23,8 @@ functions.
 `memcached_return_t` values are of an enum type so that you can set up responses
 with switch/case and know that you are capturing all possible return values.
 
-RETURN
-------
+RETURN VALUE
+------------
 
 `memcached_strerror` returns a string describing a `memcached_return_t` value.
 

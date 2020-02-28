@@ -4,12 +4,12 @@ libmemcached Constants and Defaults
 SYNOPSIS
 --------
 
-#include <libmemcached-1.0/memcached.h>
+#include <libmemcached-|libmemcached_version|/memcached.h>
   Compile and link with -lmemcached
 
 .. c:macro:: LIBMEMCACHED_VERSION_STRING
 
-    String value of libmemcached version such as "1.23.4"
+    String value of libmemcached version such as "|release|"
 
 .. c:macro:: LIBMEMCACHED_VERSION_HEX
 
@@ -60,6 +60,10 @@ SYNOPSIS
 .. c:macro:: MEMCACHED_CONTINUUM_ADDITION
 
     How many extra slots we should build for in the continuum, defaults to 10.
+
+.. c:macro:: MEMCACHED_EXPIRATION_NOT_ADD
+
+    Value ``0xffffffffU``
 
 .. c:macro:: MEMCACHED_STRIDE
 

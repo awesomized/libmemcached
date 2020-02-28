@@ -19,8 +19,8 @@ DESCRIPTION
 
 :func:`memcached_version` is used to set the major, minor, and micro versions of each memcached server being used by the memcached_st connection structure. It returns the memcached server return code.
 
-RETURN
-------
+RETURN VALUE
+------------
 
 :func:`memcached_lib_version` returns a string with the version of the libmemcached driver.
 

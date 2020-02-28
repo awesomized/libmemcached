@@ -6,9 +6,8 @@ Examples for libmemcached
 DESCRIPTION
 -----------
 
-For full examples, test cases are found in tests/\*.c in the main
-distribution. These are always up to date, and are used for each test run of
-the library.
+For full examples, test cases are found in tests/\*.c in the main distribution.
+These are always up to date, and are used for each test run of the library.
 
 Connecting to servers
 ---------------------
@@ -25,15 +24,18 @@ Connecting to servers
   }
    memcached_free(memc);
 
-In the above code you create a :type:`memcached_st` object with three server 
-by making use of :func:`memcached_create`.
+In the above code you create a `memcached_st` object with three server by making
+use of `memcached_create`.
 
 Creating a pool of servers
 --------------------------
 
 .. code-block:: c
 
-  const char *config_string= "--SERVER=host10.example.com --SERVER=host11.example.com --SERVER=host10.example.com";
+  const char *config_string = 
+    "--SERVER=host10.example.com "
+    "--SERVER=host11.example.com "
+    "--SERVER=host10.example.com";
   
   memcached_pool_st* pool= memcached_pool(config_string, strlen(config_string));
 
@@ -53,10 +55,10 @@ Creating a pool of servers
   */
   memcached_pool_destroy(pool);
 
-In the above code you create a :type:`memcached_pool_st` object with three
-server by making use of :func:`memcached_pool()`.
+In the above code you create a `memcached_pool_st` object with three server by
+making use of `memcached_pool()`.
 
-When :func:`memcached_pool_destroy()` all memory will be released that is associated
+When `memcached_pool_destroy()` all memory will be released that is associated
 with the pool.
 
 Adding a value to the server

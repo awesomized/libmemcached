@@ -32,7 +32,7 @@ libmemcached API
     index_deprecated
 
 .. toctree:
-    :titlesonlx:
+    :titlesonly:
     :caption: Misc
 
     index_misc

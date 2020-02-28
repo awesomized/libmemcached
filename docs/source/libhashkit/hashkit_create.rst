@@ -1,8 +1,6 @@
 Creating a hashkit structure
 ============================
 
-Create, copy and free a hashkit structure
-
 SYNOPSIS
 --------
 
@@ -22,30 +20,29 @@ SYNOPSIS
 DESCRIPTION
 -----------
 
-The :func:`hashkit_create` function initializes a hashkit object for use. If
-you pass a NULL argument for hash, then the memory for the object is
-allocated. If you specify a pre-allocated piece of memory, that is
-initialized for use.
+The `hashkit_create` function initializes a hashkit object for use. If you pass
+a NULL argument for hash, then the memory for the object is allocated. If you
+specify a pre-allocated piece of memory, that is initialized for use.
 
-The :func:`hashkit_clone` function initializes a hashkit object much like
-:func:`hashkit_create`, but instead of using default settings it will use
-the settings of the ptr hashkit object.
+The `hashkit_clone` function initializes a hashkit object much like
+`hashkit_create`, but instead of using default settings it will use the settings
+of the ptr hashkit object.
 
-The :func:`hashkit_free` frees any resources being consumed by the hashkit
-objects that were initialized with :func:`hashkit_create` or :func:`hashkit_clone`.
+The `hashkit_free` frees any resources being consumed by the hashkit objects
+that were initialized with `hashkit_create` or `hashkit_clone`.
 
-The :func:`hashkit_is_allocated` reports where the memory was allocated
-for a hashkit object.
+The `hashkit_is_allocated` reports where the memory was allocated for a hashkit
+object.
 
 RETURN VALUE
 ------------
 
-:func:`hashkit_create` and :func:`hashkit_clone` will return NULL on
-failure or non-NULL on success.
+`hashkit_create` and `hashkit_clone` will return NULL on failure or non-NULL on
+success.
 
-:func:`hashkit_is_allocated` returns true if the memory for the hashkit
-object was allocated inside of :func:`hashkit_create` or 
-:func:`hashkit_clone`, otherwise it is false and was user-supplied memory.
+`hashkit_is_allocated` returns true if the memory for the hashkit object was
+allocated inside of `hashkit_create` or `hashkit_clone`, otherwise it is false
+and was user-supplied memory.
 
 SEE ALSO
 --------

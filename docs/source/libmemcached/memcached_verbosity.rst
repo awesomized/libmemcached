@@ -20,8 +20,8 @@ DESCRIPTION
 :func:`memcached_verbosity` modifies the "verbosity" of the
 memcached(1) servers referenced in the :type:`memcached_st`  parameter.
 
-RETURN
-------
+RETURN VALUE
+------------
 
 A value of type :type:`memcached_return_t` is returned.
 

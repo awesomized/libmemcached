@@ -13,16 +13,16 @@ SYNOPSIS
 DESCRIPTION
 -----------
 
-`libmemcachedutil` is a small and thread-safe client library that
-provides extra functionality built on top of `libmemcached`.
+`libmemcachedutil` is a small and thread-safe client library that provides extra
+functionality built on top of `libmemcached`.
 
-THREADS
--------
+THREADS AND PROCESSES
+---------------------
 
-Do not try to access an instance of :type:`memcached_st` from multiple threads
-at the same time. If you want to access memcached from multiple threads
-you should either clone the :type:`memcached_st`, or use the memcached pool
-implementation. See :func:`memcached_pool_create`.
+Do not try to access an instance of `memcached_st` from multiple threads at the
+same time. If you want to access memcached from multiple threads you should
+either clone the `memcached_st`, or use the memcached pool implementation. See
+`memcached_pool_create`.
 
 SEE ALSO
 --------

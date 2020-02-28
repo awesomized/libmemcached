@@ -22,8 +22,8 @@ DESCRIPTION
 
 :func:`memcached_exist()` can be used to check if a key exists.
 
-RETURN
-------
+RETURN VALUE
+------------
 
 `MEMCACHED_SUCCESS`
   The key exists.

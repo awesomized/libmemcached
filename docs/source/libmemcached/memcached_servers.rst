@@ -67,8 +67,8 @@ functions provided. You can optionally pass in a value via
 context which will be provided to each callback function. An error
 return from any callback will terminate the loop. :func:`memcached_server_cursor` is passed the original caller :type:`memcached_st` in its current state.
 
-RETURN
-------
+RETURN VALUE
+------------
 
 Varies, see particular functions.
 

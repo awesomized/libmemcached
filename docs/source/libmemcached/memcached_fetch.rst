@@ -31,8 +31,8 @@ All of the above functions are not tested when the
 `MEMCACHED_BEHAVIOR_USE_UDP` has been set. Executing any of these 
 functions with this behavior on will result in `MEMCACHED_NOT_SUPPORTED` being returned, or for those functions which do not return a :type:`memcached_return_t`, the error function parameter will be set to `MEMCACHED_NOT_SUPPORTED`.
 
-RETURN
-------
+RETURN VALUE
+------------
 
 :func:`memcached_fetch` sets error to
 to `MEMCACHED_END` upon successful conclusion.

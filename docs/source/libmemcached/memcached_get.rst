@@ -89,8 +89,8 @@ All of the above functions are not tested when the
 `MEMCACHED_BEHAVIOR_USE_UDP` has been set. Executing any of these 
 functions with this behavior on will result in `MEMCACHED_NOT_SUPPORTED` being returned, or for those functions which do not return a :type:`memcached_return_t`, the error function parameter will be set to `MEMCACHED_NOT_SUPPORTED`.
 
-RETURN
-------
+RETURN VALUE
+------------
 
 All objects retrieved via :func:`memcached_get` or :func:`memcached_get_by_key` must be freed with :manpage:`free(3)`.
 

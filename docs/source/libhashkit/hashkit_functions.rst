@@ -1,10 +1,6 @@
 Available Hashes
 ================
 
-.. index:: object: hashkit_st
-
-Various hash functions to use for calculating hash values for keys
-
 SYNOPSIS
 --------
 

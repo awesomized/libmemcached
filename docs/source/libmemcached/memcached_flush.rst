@@ -24,8 +24,8 @@ flush). The operation is not atomic to multiple servers, just atomic to a
 single server. That is, it will flush the servers in the order that they were
 added.
 
-RETURN
-------
+RETURN VALUE
+------------
 
 A value of type :type:`memcached_return_t` is returned
 On success that value will be `MEMCACHED_SUCCESS`.

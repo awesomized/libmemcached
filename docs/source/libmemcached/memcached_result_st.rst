@@ -92,8 +92,8 @@ You may wish to avoid using memcached_result_create(3) with a
 stack based allocation. The most common issues related to ABI safety involve
 heap allocated structures.
 
-RETURN
-------
+RETURN VALUE
+------------
 
 Varies, see particular functions. All structures must have
 :func:`memcached_result_free` called on them for cleanup purposes. Failure 

@@ -19,8 +19,8 @@ DESCRIPTION
 
 Currently only AES is is supported.
 
-RETURN
-------
+RETURN VALUE
+------------
 
 A value of type :type:`memcached_return_t` is returned On success that value
 will be `MEMCACHED_SUCCESS`.  Use :func:`memcached_strerror` to

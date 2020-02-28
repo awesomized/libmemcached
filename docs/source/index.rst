@@ -5,12 +5,10 @@ libmemcached Manual
 memcached server (http://memcached.org/). It has been designed to be light on
 memory usage, thread safe, and provide full access to server side methods.
 
-* :ref:`genindex`
-* :ref:`search`
 
 .. toctree::
-    :titlesonly:
     :caption: libmemcached
+    :titlesonly:
 
     Introduction <libmemcached>
     libmemcached/index
@@ -41,3 +39,8 @@ memory usage, thread safe, and provide full access to server side methods.
     :hidden:
 
     copyright
+
+Index
+-----
+
+:ref:`genindex`

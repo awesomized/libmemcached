@@ -55,8 +55,8 @@ DEPRECATED :func:`memcached_servers_parse`, please see :func:`memcached`
 Before version 0.39 theses functions used a memcached_server_st \*. In 0.39
 memcached_server_st \* was aliased to :type:`memcached_server_list_st`. This was done for a style reason to help clean up some concepts in the code.
 
-RETURN
-------
+RETURN VALUE
+------------
 
 Varies, see particular functions.
 

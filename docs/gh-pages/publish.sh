@@ -14,7 +14,7 @@ fi
 
 mkdir -p build
 cd build
-cmake -DBUILD_DOCSONLY=true ../../..
+cmake -DBUILD_DOCSONLY=true -DBUILD_DOCS_HTML=true ../../..
 make html
 rsync -va --delete --exclude=.git/ docs/html/ ../pages/
 

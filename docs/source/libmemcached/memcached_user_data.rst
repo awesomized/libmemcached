@@ -33,8 +33,8 @@ the memcached_st structure.
 
 :func:`memcached_get_user_data` is used to retrieve the user specific data in the :type:`memcached_st` structure.
 
-RETURN
-------
+RETURN VALUE
+------------
 
 :func:`memcached_set_user_data` returns the previous value of the user specific data.
 

@@ -27,30 +27,28 @@ Memcached. Some of the features provided:
 DESCRIPTION
 -----------
 
-"Memcached is a high-performance, distributed memory object caching
-system, generic in nature, but intended for use in speeding up dynamic web
-applications by alleviating database load."
-`http://memcached.org/ <http://memcached.org/>`_
+"Memcached is a high-performance, distributed memory object caching system,
+generic in nature, but intended for use in speeding up dynamic web applications
+by alleviating database load." `http://memcached.org/ <http://memcached.org/>`_
 
-`libmemcached` is a small, thread-safe client library for the
-memcached protocol. The code has all been written to allow
-for both web and embedded usage. It handles the work behind routing
-individual keys to specific servers specified by the developer (and values are
-matched based on server order as supplied by the user). It implements
-a modular and consistent method of object distribution.
+`libmemcached` is a small, thread-safe client library for the memcached
+protocol. The code has all been written to allow for both web and embedded
+usage. It handles the work behind routing individual keys to specific servers
+specified by the developer (and values are matched based on server order as
+supplied by the user). It implements a modular and consistent method of object
+distribution.
 
 There are multiple implemented routing and hashing methods. See the
-:func:`memcached_behavior_set` manpage for more information.
+`memcached_behavior_set` manpage for more information.
 
-All operations are performed against a :type:`memcached_st` structure.
-These structures can either be dynamically allocated or statically
-allocated and then initialized by :func:`memcached_create`. Functions have 
-been written in order to encapsulate the :type:`memcached_st`. It is not
-recommended that you operate directly against the structure.
+All operations are performed against a `memcached_st` structure. These
+structures can either be dynamically allocated or statically allocated and then
+initialized by `memcached_create`. Functions have been written in order to
+encapsulate the `memcached_st`. It is not recommended that you operate directly
+against the structure.
 
-Nearly all functions return a :type:`memcached_return_t` value.
-This value can be translated to a printable string with 
-:type:`memcached_strerror`.
+Nearly all functions return a `memcached_return_t` value. This value can be
+translated to a printable string with `memcached_strerror`.
 
 Objects are stored on servers by hashing keys. The hash value maps the key to a
 particular server. All clients understand how this hashing works, so it is
@@ -63,30 +61,16 @@ applications can use the same memcached servers.
 
 Some features of the library must be enabled through `memcached_behavior_set`.
 
-CONSTANTS
----------
-
-A number of constants have been provided for in the library.
-
-.. only:: man
-
-    See :manpage:`libmemcached_constants(3)`.
-
-.. only:: html
-
-    See :doc:`libmemcached/constants`.
-
 THREADS AND PROCESSES
 ---------------------
 
 No global variables are used in this library.
 
-:type:`memcached_st` structures are thread-safe, but when using threads or
-forked processes it is important to keep one instance of :type:`memcached_st`
-per process or thread. Without creating your own locking structures you can not
-share a single :type:`memcached_st`. However, you can call
-:func:`memcached_quit` on a :type:`memcached_st` and then use the resulting
-cloned structure.
+`memcached_st` structures are thread-safe, but when using threads or forked
+processes it is important to keep one instance of `memcached_st` per process or
+thread. Without creating your own locking structures you can not share a single
+`memcached_st`. However, you can call `memcached_quit` on a `memcached_st` and
+then use the resulting cloned structure.
 
 SYSTEMTAP
 ---------

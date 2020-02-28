@@ -35,8 +35,8 @@ in memory. If you choose to use this method you have to call
 :type:`memcached_destroy_sasl_auth_data` if you specify your own callback 
 function with :func:`memcached_set_sasl_callbacks`.
 
-RETURN
-------
+RETURN VALUE
+------------
 
 :func:`memcached_get_sasl_callbacks` returns the callbacks currently used by
 this memcached handle. :func:`memcached_set_sasl_auth_data` returns
