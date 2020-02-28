@@ -96,7 +96,7 @@
 <li class="toctree-l3"><a class="reference internal" href="memcached_touch.html">memcached_touch, memcached_touch_by_key</a></li>
 <li class="toctree-l3"><a class="reference internal" href="memcached_flush_buffers.html">Flushing client buffers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="memcached_result_st.html">Working with result sets</a></li>
-<li class="toctree-l3"><a class="reference internal" href="memcached_append.html">Appending or Prepending to data on the server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memcached_append.html">Appending or Prepending Data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="memcached_cas.html">Working with data on the server in an atomic fashion</a></li>
 </ul>
 </li>
@@ -193,8 +193,11 @@
   <div class="section" id="incrementing-and-decrementing-values">
 <h1>Incrementing and Decrementing Values<a class="headerlink" href="#incrementing-and-decrementing-values" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="synopsis">
-<span id="index-0"></span><h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p>#include &lt;libmemcached/memcached.h&gt;</p>
+<h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<dl class="simple">
+<dt>#include &lt;libmemcached/memcached.h&gt;</dt><dd><p>Compile and link with -lmemcached</p>
+</dd>
+</dl>
 <dl class="function">
 <dt id="_CPPv419memcached_incrementP12memcached_stPKc6size_t8uint32_tP8uint64_t">
 <span id="_CPPv319memcached_incrementP12memcached_stPKc6size_t8uint32_tP8uint64_t"></span><span id="_CPPv219memcached_incrementP12memcached_stPKc6size_t8uint32_tP8uint64_t"></span><span id="memcached_increment__memcached_stP.cCP.s.uint32_t.uint64_tP"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_increment</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <em class="property">const</em> char *<em>key</em>, size_t <em>key_length</em>, uint32_t <em>offset</em>, uint64_t *<em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419memcached_incrementP12memcached_stPKc6size_t8uint32_tP8uint64_t" title="Permalink to this definition">¶</a><br /></dt>
@@ -235,49 +238,54 @@
 <span id="_CPPv339memcached_decrement_with_initial_by_keyP12memcached_stPKc6size_tPKc6size_t8uint64_t8uint64_t6time_tP8uint64_t"></span><span id="_CPPv239memcached_decrement_with_initial_by_keyP12memcached_stPKc6size_tPKc6size_t8uint64_t8uint64_t6time_tP8uint64_t"></span><span id="memcached_decrement_with_initial_by_key__memcached_stP.cCP.s.cCP.s.uint64_t.uint64_t.time_t.uint64_tP"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_decrement_with_initial_by_key</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <em class="property">const</em> char *<em>group_key</em>, size_t <em>group_key_length</em>, <em class="property">const</em> char *<em>key</em>, size_t <em>key_length</em>, uint64_t <em>offset</em>, uint64_t <em>initial</em>, time_t <em>expiration</em>, uint64_t *<em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv439memcached_decrement_with_initial_by_keyP12memcached_stPKc6size_tPKc6size_t8uint64_t8uint64_t6time_tP8uint64_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<p>Compile and link with -lmemcached</p>
 </div>
 <div class="section" id="description">
 <h2>DESCRIPTION<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
 <p><em class="manpage"><a class="manpage reference external" href="http://man7.org/linux/man-pages/man1/memcached.1.html">memcached(1)</a></em> servers have the ability to increment and decrement keys
 (overflow and underflow are not detected). This gives you the ability to use
 memcached to generate shared sequences of values.</p>
-<p>memcached_increment takes a key and key length and increments the value by
-the offset passed to it. The value is then returned via the uint32_t
-value pointer you pass to it.</p>
-<p>memcached_decrement takes a key and keylength and decrements the value by
-the offset passed to it. The value is then returned via the uint32_t
-value pointer you pass to it.</p>
-<p>memcached_increment_with_initial takes a key and keylength and increments
-the value by the offset passed to it. If the object specified by key does
-not exist, one of two things may happen: If the expiration value is
-MEMCACHED_EXPIRATION_NOT_ADD, the operation will fail. For all other
-expiration values, the operation will succeed by seeding the value for that
-key with a initial value to expire with the provided expiration time. The
-flags will be set to zero.The value is then returned via the uint32_t
-value pointer you pass to it. memcached_increment_with_initial is only available
-when using the binary protocol.</p>
-<p>memcached_decrement_with_initial takes a key and keylength and decrements
-the value by the offset passed to it. If the object specified by key does
-not exist, one of two things may happen: If the expiration value is
-MEMCACHED_EXPIRATION_NOT_ADD, the operation will fail. For all other
-expiration values, the operation will succeed by seeding the value for that
-key with a initial value to expire with the provided expiration time. The
-flags will be set to zero.The value is then returned via the uint32_t
-value pointer you pass to it. memcached_decrement_with_initial is only available
-when using the binary protocol.</p>
-<p><a class="reference internal" href="#_CPPv426memcached_increment_by_keyP12memcached_stPKc6size_tPKc6size_t8uint32_tP8uint64_t" title="memcached_increment_by_key"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_increment_by_key()</span></code></a>, <a class="reference internal" href="#_CPPv426memcached_decrement_by_keyP12memcached_stPKc6size_tPKc6size_t8uint32_tP8uint64_t" title="memcached_decrement_by_key"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_decrement_by_key()</span></code></a>,
-<a class="reference internal" href="#_CPPv439memcached_increment_with_initial_by_keyP12memcached_stPKc6size_tPKc6size_t8uint64_t8uint64_t6time_tP8uint64_t" title="memcached_increment_with_initial_by_key"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_increment_with_initial_by_key()</span></code></a>, and
-<a class="reference internal" href="#_CPPv439memcached_decrement_with_initial_by_keyP12memcached_stPKc6size_tPKc6size_t8uint64_t8uint64_t6time_tP8uint64_t" title="memcached_decrement_with_initial_by_key"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_decrement_with_initial_by_key()</span></code></a> are master key equivalents of the above.</p>
+<p><a class="reference internal" href="#_CPPv419memcached_incrementP12memcached_stPKc6size_t8uint32_tP8uint64_t" title="memcached_increment"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_increment()</span></code></a> takes a <code class="docutils literal notranslate"><span class="pre">key</span></code> and <code class="docutils literal notranslate"><span class="pre">key_length</span></code> and increments the
+value by the <code class="docutils literal notranslate"><span class="pre">offset</span></code> passed to it. The value is then returned via the
+uint32_t <code class="docutils literal notranslate"><span class="pre">value</span></code> pointer you pass to it.</p>
+<p><a class="reference internal" href="#_CPPv419memcached_decrementP12memcached_stPKc6size_t8uint32_tP8uint64_t" title="memcached_decrement"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_decrement()</span></code></a> takes a <code class="docutils literal notranslate"><span class="pre">key</span></code> and <code class="docutils literal notranslate"><span class="pre">key_length</span></code> and decrements the
+value by the <code class="docutils literal notranslate"><span class="pre">offset</span></code> passed to it. The value is then returned via the
+uint32_t <code class="docutils literal notranslate"><span class="pre">value</span></code> pointer you pass to it.</p>
+<p><a class="reference internal" href="#_CPPv432memcached_increment_with_initialP12memcached_stPKc6size_t8uint64_t8uint64_t6time_tP8uint64_t" title="memcached_increment_with_initial"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_increment_with_initial()</span></code></a> takes a <code class="docutils literal notranslate"><span class="pre">key</span></code> and <code class="docutils literal notranslate"><span class="pre">key_length</span></code> and
+increments the value by the <code class="docutils literal notranslate"><span class="pre">offset</span></code> passed to it. If the object specified by
+<code class="docutils literal notranslate"><span class="pre">key</span></code> does not exist, one of two things may happen: If the <code class="docutils literal notranslate"><span class="pre">expiration</span></code>
+value is <a class="reference internal" href="constants.html#c.MEMCACHED_EXPIRATION_NOT_ADD" title="MEMCACHED_EXPIRATION_NOT_ADD"><code class="xref c c-macro docutils literal notranslate"><span class="pre">MEMCACHED_EXPIRATION_NOT_ADD</span></code></a>, the operation will fail. For
+all other <code class="docutils literal notranslate"><span class="pre">expiration</span></code> values, the operation will succeed by seeding the value
+for that key with a initial value to expire with the provided expiration time.
+The <code class="docutils literal notranslate"><span class="pre">flags</span></code> will be set to zero. The value is then returned via the uint32_t
+<code class="docutils literal notranslate"><span class="pre">value</span></code> pointer you pass to it. <code class="docutils literal notranslate"><span class="pre">memcached_increment_with_initial</span></code> is only
+available when using the binary protocol.</p>
+<p><a class="reference internal" href="#_CPPv432memcached_decrement_with_initialP12memcached_stPKc6size_t8uint64_t8uint64_t6time_tP8uint64_t" title="memcached_decrement_with_initial"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_decrement_with_initial()</span></code></a> takes a <code class="docutils literal notranslate"><span class="pre">key</span></code> and <code class="docutils literal notranslate"><span class="pre">key_length</span></code> and
+decrements the value by the <code class="docutils literal notranslate"><span class="pre">offset</span></code> passed to it. If the object specified by
+<code class="docutils literal notranslate"><span class="pre">key</span></code> does not exist, one of two things may happen: If the <code class="docutils literal notranslate"><span class="pre">expiration</span></code>
+value is <a class="reference internal" href="constants.html#c.MEMCACHED_EXPIRATION_NOT_ADD" title="MEMCACHED_EXPIRATION_NOT_ADD"><code class="xref c c-macro docutils literal notranslate"><span class="pre">MEMCACHED_EXPIRATION_NOT_ADD</span></code></a>, the operation will fail. For
+all other <code class="docutils literal notranslate"><span class="pre">expiration</span></code> values, the operation will succeed by seeding the value
+for that key with a initial value to expire with the provided expiration time.
+The <code class="docutils literal notranslate"><span class="pre">flags</span></code> will be set to zero. The value is then returned via the uint32_t
+<code class="docutils literal notranslate"><span class="pre">value</span></code> pointer you pass to it. <a class="reference internal" href="#_CPPv432memcached_decrement_with_initialP12memcached_stPKc6size_t8uint64_t8uint64_t6time_tP8uint64_t" title="memcached_decrement_with_initial"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_decrement_with_initial()</span></code></a> is only
+available when using the binary protocol.</p>
+<p><a class="reference internal" href="#_CPPv426memcached_increment_by_keyP12memcached_stPKc6size_tPKc6size_t8uint32_tP8uint64_t" title="memcached_increment_by_key"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_increment_by_key()</span></code></a>, <a class="reference internal" href="#_CPPv426memcached_decrement_by_keyP12memcached_stPKc6size_tPKc6size_t8uint32_tP8uint64_t" title="memcached_decrement_by_key"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_decrement_by_key()</span></code></a>,
+<a class="reference internal" href="#_CPPv439memcached_increment_with_initial_by_keyP12memcached_stPKc6size_tPKc6size_t8uint64_t8uint64_t6time_tP8uint64_t" title="memcached_increment_with_initial_by_key"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_increment_with_initial_by_key()</span></code></a>, and
+<a class="reference internal" href="#_CPPv439memcached_decrement_with_initial_by_keyP12memcached_stPKc6size_tPKc6size_t8uint64_t8uint64_t6time_tP8uint64_t" title="memcached_decrement_with_initial_by_key"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_decrement_with_initial_by_key()</span></code></a> are master key equivalents of the
+above.</p>
 </div>
-<div class="section" id="return">
-<h2>RETURN<a class="headerlink" href="#return" title="Permalink to this headline">¶</a></h2>
-<p>A value of type <a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a>  is returned.
+<div class="section" id="return-value">
+<h2>RETURN VALUE<a class="headerlink" href="#return-value" title="Permalink to this headline">¶</a></h2>
+<p>A value of type <a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a>  is returned.
 On success that value will be <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t17MEMCACHED_SUCCESSE" title="MEMCACHED_SUCCESS"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_SUCCESS</span></code></a>.
-Use memcached_strerror to translate this value to a printable string.</p>
+Use <a class="reference internal" href="memcached_strerror.html#_CPPv418memcached_strerrorP12memcached_st18memcached_return_t" title="memcached_strerror"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_strerror()</span></code></a> to translate this value to a printable string.</p>
 </div>
 <div class="section" id="see-also">
 <h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><em class="manpage"><a class="manpage reference external" href="http://man7.org/linux/man-pages/man1/memcached.1.html">memcached(1)</a></em></p></li>
+<li><p><a class="reference internal" href="../libmemcached.html"><span class="doc">C/C++ Client Library for memcached</span></a></p></li>
+<li><p><a class="reference internal" href="memcached_strerror.html"><span class="doc">Converting Error Codes to Messages</span></a></p></li>
+</ul>
 </div>
 </div>
 

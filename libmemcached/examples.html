@@ -183,9 +183,8 @@
 <p>Examples for libmemcached</p>
 <div class="section" id="description">
 <h2>DESCRIPTION<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
-<p>For full examples, test cases are found in tests/*.c in the main
-distribution. These are always up to date, and are used for each test run of
-the library.</p>
+<p>For full examples, test cases are found in tests/*.c in the main distribution.
+These are always up to date, and are used for each test run of the library.</p>
 </div>
 <div class="section" id="connecting-to-servers">
 <h2>Connecting to servers<a class="headerlink" href="#connecting-to-servers" title="Permalink to this headline">¶</a></h2>
@@ -200,12 +199,15 @@ the library.</p>
  <span class="n">memcached_free</span><span class="p">(</span><span class="n">memc</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>In the above code you create a <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_st</span></code></a> object with three server
-by making use of <a class="reference internal" href="memcached_create.html#_CPPv416memcached_createP12memcached_st" title="memcached_create"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_create()</span></code></a>.</p>
+<p>In the above code you create a <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> object with three server by making
+use of <a class="reference internal" href="memcached_create.html#_CPPv416memcached_createP12memcached_st" title="memcached_create"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_create()</span></code></a>.</p>
 </div>
 <div class="section" id="creating-a-pool-of-servers">
 <h2>Creating a pool of servers<a class="headerlink" href="#creating-a-pool-of-servers" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">config_string</span><span class="o">=</span> <span class="s">&quot;--SERVER=host10.example.com --SERVER=host11.example.com --SERVER=host10.example.com&quot;</span><span class="p">;</span>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">config_string</span> <span class="o">=</span>
+  <span class="s">&quot;--SERVER=host10.example.com &quot;</span>
+  <span class="s">&quot;--SERVER=host11.example.com &quot;</span>
+  <span class="s">&quot;--SERVER=host10.example.com&quot;</span><span class="p">;</span>
 
 <span class="n">memcached_pool_st</span><span class="o">*</span> <span class="n">pool</span><span class="o">=</span> <span class="n">memcached_pool</span><span class="p">(</span><span class="n">config_string</span><span class="p">,</span> <span class="n">strlen</span><span class="p">(</span><span class="n">config_string</span><span class="p">));</span>
 
@@ -226,9 +228,9 @@ by making use of <a class="reference internal" href="memcached_create.html#_CPPv
 <span class="n">memcached_pool_destroy</span><span class="p">(</span><span class="n">pool</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>In the above code you create a <a class="reference internal" href="../libmemcachedutil/memcached_pool.html#_CPPv417memcached_pool_st" title="memcached_pool_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_pool_st</span></code></a> object with three
-server by making use of <a class="reference internal" href="../libmemcachedutil/memcached_pool.html#_CPPv414memcached_poolPKc6size_t" title="memcached_pool"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_pool()</span></code></a>.</p>
-<p>When <a class="reference internal" href="../libmemcachedutil/memcached_pool.html#_CPPv422memcached_pool_destroyP17memcached_pool_st" title="memcached_pool_destroy"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_pool_destroy()</span></code></a> all memory will be released that is associated
+<p>In the above code you create a <a class="reference internal" href="../libmemcachedutil/memcached_pool.html#_CPPv417memcached_pool_st" title="memcached_pool_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_pool_st</span></code></a> object with three server by
+making use of <a class="reference internal" href="../libmemcachedutil/memcached_pool.html#_CPPv414memcached_poolPKc6size_t" title="memcached_pool"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_pool()</span></code></a>.</p>
+<p>When <a class="reference internal" href="../libmemcachedutil/memcached_pool.html#_CPPv422memcached_pool_destroyP17memcached_pool_st" title="memcached_pool_destroy"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_pool_destroy()</span></code></a> all memory will be released that is associated
 with the pool.</p>
 </div>
 <div class="section" id="adding-a-value-to-the-server">

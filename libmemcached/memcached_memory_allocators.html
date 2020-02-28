@@ -37,7 +37,7 @@
     <link rel="search" title="Search" href="../search.html" />
     <link rel="copyright" title="Copyright" href="../copyright.html" />
     <link rel="next" title="Storing custom user information in the client." href="memcached_user_data.html" />
-    <link rel="prev" title="Setting callbacks" href="memcached_callback.html" /> 
+    <link rel="prev" title="Library callbacks" href="memcached_callback.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -95,7 +95,7 @@
 <li class="toctree-l2 current"><a class="reference internal" href="index_advanced.html">Advanced Topics</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="index_advanced_internals.html">Internal Behavior</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="memcached_behavior.html">Behaviors of the library</a></li>
-<li class="toctree-l4"><a class="reference internal" href="memcached_callback.html">Setting callbacks</a></li>
+<li class="toctree-l4"><a class="reference internal" href="memcached_callback.html">Library callbacks</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">Use custom allocators for embedded usage</a></li>
 <li class="toctree-l4"><a class="reference internal" href="memcached_user_data.html">Storing custom user information in the client.</a></li>
 </ul>
@@ -266,8 +266,8 @@ use of any operation which would modify it.</p>
 passed to them. This was so that customer allocators could have their own space
 for memory.</p>
 </div>
-<div class="section" id="return">
-<h2>RETURN<a class="headerlink" href="#return" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="return-value">
+<h2>RETURN VALUE<a class="headerlink" href="#return-value" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference internal" href="#_CPPv431memcached_set_memory_allocatorsP12memcached_st19memcached_malloc_fn17memcached_free_fn20memcached_realloc_fn19memcached_calloc_fnPv" title="memcached_set_memory_allocators"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_set_memory_allocators()</span></code></a> return <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t17MEMCACHED_SUCCESSE" title="MEMCACHED_SUCCESS"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_SUCCESS</span></code></a> upon success,
 and <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t17MEMCACHED_FAILUREE" title="MEMCACHED_FAILURE"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_FAILURE</span></code></a> if you don’t pass a complete set of function pointers.</p>
 </div>
@@ -292,7 +292,7 @@ and <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcach
         <a href="memcached_user_data.html" class="btn btn-neutral float-right" title="Storing custom user information in the client." accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="memcached_callback.html" class="btn btn-neutral float-left" title="Setting callbacks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="memcached_callback.html" class="btn btn-neutral float-left" title="Library callbacks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

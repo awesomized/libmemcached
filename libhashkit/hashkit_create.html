@@ -180,7 +180,6 @@
             
   <div class="section" id="creating-a-hashkit-structure">
 <h1>Creating a hashkit structure<a class="headerlink" href="#creating-a-hashkit-structure" title="Permalink to this headline">¶</a></h1>
-<p>Create, copy and free a hashkit structure</p>
 <div class="section" id="synopsis">
 <h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
 <dl class="simple">
@@ -215,25 +214,24 @@
 </div>
 <div class="section" id="description">
 <h2>DESCRIPTION<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
-<p>The <a class="reference internal" href="#_CPPv414hashkit_createP10hashkit_st" title="hashkit_create"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">hashkit_create()</span></code></a> function initializes a hashkit object for use. If
-you pass a NULL argument for hash, then the memory for the object is
-allocated. If you specify a pre-allocated piece of memory, that is
-initialized for use.</p>
-<p>The <a class="reference internal" href="#_CPPv413hashkit_cloneP10hashkit_stPK10hashkit_st" title="hashkit_clone"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">hashkit_clone()</span></code></a> function initializes a hashkit object much like
-<a class="reference internal" href="#_CPPv414hashkit_createP10hashkit_st" title="hashkit_create"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">hashkit_create()</span></code></a>, but instead of using default settings it will use
-the settings of the ptr hashkit object.</p>
-<p>The <a class="reference internal" href="#_CPPv412hashkit_freeP10hashkit_st" title="hashkit_free"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">hashkit_free()</span></code></a> frees any resources being consumed by the hashkit
-objects that were initialized with <a class="reference internal" href="#_CPPv414hashkit_createP10hashkit_st" title="hashkit_create"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">hashkit_create()</span></code></a> or <a class="reference internal" href="#_CPPv413hashkit_cloneP10hashkit_stPK10hashkit_st" title="hashkit_clone"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">hashkit_clone()</span></code></a>.</p>
-<p>The <a class="reference internal" href="#_CPPv420hashkit_is_allocatedPK10hashkit_st" title="hashkit_is_allocated"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">hashkit_is_allocated()</span></code></a> reports where the memory was allocated
-for a hashkit object.</p>
+<p>The <a class="reference internal" href="#_CPPv414hashkit_createP10hashkit_st" title="hashkit_create"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_create()</span></code></a> function initializes a hashkit object for use. If you pass
+a NULL argument for hash, then the memory for the object is allocated. If you
+specify a pre-allocated piece of memory, that is initialized for use.</p>
+<p>The <a class="reference internal" href="#_CPPv413hashkit_cloneP10hashkit_stPK10hashkit_st" title="hashkit_clone"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_clone()</span></code></a> function initializes a hashkit object much like
+<a class="reference internal" href="#_CPPv414hashkit_createP10hashkit_st" title="hashkit_create"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_create()</span></code></a>, but instead of using default settings it will use the settings
+of the ptr hashkit object.</p>
+<p>The <a class="reference internal" href="#_CPPv412hashkit_freeP10hashkit_st" title="hashkit_free"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_free()</span></code></a> frees any resources being consumed by the hashkit objects
+that were initialized with <a class="reference internal" href="#_CPPv414hashkit_createP10hashkit_st" title="hashkit_create"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_create()</span></code></a> or <a class="reference internal" href="#_CPPv413hashkit_cloneP10hashkit_stPK10hashkit_st" title="hashkit_clone"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_clone()</span></code></a>.</p>
+<p>The <a class="reference internal" href="#_CPPv420hashkit_is_allocatedPK10hashkit_st" title="hashkit_is_allocated"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_is_allocated()</span></code></a> reports where the memory was allocated for a hashkit
+object.</p>
 </div>
 <div class="section" id="return-value">
 <h2>RETURN VALUE<a class="headerlink" href="#return-value" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="#_CPPv414hashkit_createP10hashkit_st" title="hashkit_create"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">hashkit_create()</span></code></a> and <a class="reference internal" href="#_CPPv413hashkit_cloneP10hashkit_stPK10hashkit_st" title="hashkit_clone"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">hashkit_clone()</span></code></a> will return NULL on
-failure or non-NULL on success.</p>
-<p><a class="reference internal" href="#_CPPv420hashkit_is_allocatedPK10hashkit_st" title="hashkit_is_allocated"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">hashkit_is_allocated()</span></code></a> returns true if the memory for the hashkit
-object was allocated inside of <a class="reference internal" href="#_CPPv414hashkit_createP10hashkit_st" title="hashkit_create"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">hashkit_create()</span></code></a> or
-<a class="reference internal" href="#_CPPv413hashkit_cloneP10hashkit_stPK10hashkit_st" title="hashkit_clone"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">hashkit_clone()</span></code></a>, otherwise it is false and was user-supplied memory.</p>
+<p><a class="reference internal" href="#_CPPv414hashkit_createP10hashkit_st" title="hashkit_create"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_create()</span></code></a> and <a class="reference internal" href="#_CPPv413hashkit_cloneP10hashkit_stPK10hashkit_st" title="hashkit_clone"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_clone()</span></code></a> will return NULL on failure or non-NULL on
+success.</p>
+<p><a class="reference internal" href="#_CPPv420hashkit_is_allocatedPK10hashkit_st" title="hashkit_is_allocated"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_is_allocated()</span></code></a> returns true if the memory for the hashkit object was
+allocated inside of <a class="reference internal" href="#_CPPv414hashkit_createP10hashkit_st" title="hashkit_create"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_create()</span></code></a> or <a class="reference internal" href="#_CPPv413hashkit_cloneP10hashkit_stPK10hashkit_st" title="hashkit_clone"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_clone()</span></code></a>, otherwise it is false
+and was user-supplied memory.</p>
 </div>
 <div class="section" id="see-also">
 <h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>

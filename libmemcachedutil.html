@@ -182,15 +182,15 @@
 </div>
 <div class="section" id="description">
 <h2>DESCRIPTION<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
-<p><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcachedutil</span></code> is a small and thread-safe client library that
-provides extra functionality built on top of <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcached</span></code>.</p>
+<p><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcachedutil</span></code> is a small and thread-safe client library that provides extra
+functionality built on top of <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcached</span></code>.</p>
 </div>
-<div class="section" id="threads">
-<h2>THREADS<a class="headerlink" href="#threads" title="Permalink to this headline">¶</a></h2>
-<p>Do not try to access an instance of <a class="reference internal" href="libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_st</span></code></a> from multiple threads
-at the same time. If you want to access memcached from multiple threads
-you should either clone the <a class="reference internal" href="libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_st</span></code></a>, or use the memcached pool
-implementation. See <a class="reference internal" href="libmemcachedutil/memcached_pool.html#_CPPv421memcached_pool_createP12memcached_stii" title="memcached_pool_create"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_pool_create()</span></code></a>.</p>
+<div class="section" id="threads-and-processes">
+<h2>THREADS AND PROCESSES<a class="headerlink" href="#threads-and-processes" title="Permalink to this headline">¶</a></h2>
+<p>Do not try to access an instance of <a class="reference internal" href="libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> from multiple threads at the
+same time. If you want to access memcached from multiple threads you should
+either clone the <a class="reference internal" href="libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a>, or use the memcached pool implementation. See
+<a class="reference internal" href="libmemcachedutil/memcached_pool.html#_CPPv421memcached_pool_createP12memcached_stii" title="memcached_pool_create"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_pool_create()</span></code></a>.</p>
 </div>
 <div class="section" id="see-also">
 <h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>

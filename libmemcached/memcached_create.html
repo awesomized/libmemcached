@@ -192,10 +192,13 @@
 <h1>Creating and destroying a memcached_st<a class="headerlink" href="#creating-and-destroying-a-memcached-st" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="synopsis">
 <h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p>#include &lt;libmemcached/memcached.h&gt;</p>
+<dl class="simple">
+<dt>#include &lt;libmemcached/memcached.h&gt;</dt><dd><p>Compile and link with -lmemcached</p>
+</dd>
+</dl>
 <dl class="type">
 <dt id="_CPPv412memcached_st">
-<span id="_CPPv312memcached_st"></span><span id="_CPPv212memcached_st"></span><span id="memcached_st"></span><em class="property">type </em><code class="sig-name descname">memcached_st</code><a class="headerlink" href="#_CPPv412memcached_st" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv312memcached_st"></span><span id="_CPPv212memcached_st"></span><span id="memcached_st"></span><em class="property">typedef </em><em class="property">struct</em> <a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st">memcached_st</a> <code class="sig-name descname">memcached_st</code><a class="headerlink" href="#_CPPv412memcached_st" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -218,42 +221,42 @@
 <span id="_CPPv323memcached_servers_reset12memcached_st"></span><span id="_CPPv223memcached_servers_reset12memcached_st"></span><span id="memcached_servers_reset__memcached_st"></span>void <code class="sig-name descname">memcached_servers_reset</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st">memcached_st</a><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423memcached_servers_reset12memcached_st" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<p>Compile and link with -lmemcached</p>
 </div>
 <div class="section" id="description">
 <h2>DESCRIPTION<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="#_CPPv416memcached_createP12memcached_st" title="memcached_create"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_create()</span></code></a> is used to create a <a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_st</span></code></a>
-structure that will then be used by other libmemcached(3) functions to
-communicate with the server. You should either pass a statically declared
-<a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_st</span></code></a> to <a class="reference internal" href="#_CPPv416memcached_createP12memcached_st" title="memcached_create"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_create()</span></code></a> or
+<p><a class="reference internal" href="#_CPPv416memcached_createP12memcached_st" title="memcached_create"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_create()</span></code></a> is used to create a <a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> structure that will then
+be used by other <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcached</span></code> functions to communicate with the server. You
+should either pass a statically declared <a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> to <a class="reference internal" href="#_CPPv416memcached_createP12memcached_st" title="memcached_create"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_create()</span></code></a> or
 a NULL. If a NULL passed in then a structure is allocated for you.</p>
-<p>Please note, when you write new application use
-<a class="reference internal" href="configuration.html#_CPPv49memcachedPKc6size_t" title="memcached"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached()</span></code></a> over <a class="reference internal" href="#_CPPv416memcached_createP12memcached_st" title="memcached_create"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_create()</span></code></a>.</p>
-<p><a class="reference internal" href="#_CPPv415memcached_cloneP12memcached_stP12memcached_st" title="memcached_clone"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_clone()</span></code></a> is similar to <a class="reference internal" href="#_CPPv416memcached_createP12memcached_st" title="memcached_create"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_create()</span></code></a> but
-it copies the defaults and list of servers from the source
-<a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_st</span></code></a>. If you pass a null as the argument for the source
-to clone, it is the same as a call to <a class="reference internal" href="#_CPPv416memcached_createP12memcached_st" title="memcached_create"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_create()</span></code></a>.
-If the destination argument is NULL a <a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_st</span></code></a> will be allocated
-for you.</p>
-<p><a class="reference internal" href="#_CPPv423memcached_servers_reset12memcached_st" title="memcached_servers_reset"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_servers_reset()</span></code></a> allows you to zero out the list of
-servers that the <a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_st</span></code></a> has.</p>
-<p>To clean up memory associated with a <a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_st</span></code></a> structure you
-should pass it to <a class="reference internal" href="#_CPPv414memcached_freeP12memcached_st" title="memcached_free"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_free()</span></code></a> when you are finished using it.
-<a class="reference internal" href="#_CPPv414memcached_freeP12memcached_st" title="memcached_free"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_free()</span></code></a> is the only way to make sure all memory is
-deallocated when you finish using the structure.</p>
-<p>You may wish to avoid using memcached_create(3) or memcached_clone(3) with a
-stack based allocation. The most common issues related to ABI safety involve
-heap allocated structures.</p>
+<p>Please note, when you write new application use <a class="reference internal" href="configuration.html#_CPPv49memcachedPKc6size_t" title="memcached"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached()</span></code></a> over
+<a class="reference internal" href="#_CPPv416memcached_createP12memcached_st" title="memcached_create"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_create()</span></code></a>.</p>
+<p><a class="reference internal" href="#_CPPv415memcached_cloneP12memcached_stP12memcached_st" title="memcached_clone"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_clone()</span></code></a> is similar to <a class="reference internal" href="#_CPPv416memcached_createP12memcached_st" title="memcached_create"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_create()</span></code></a> but it copies the defaults
+and list of servers from the source <a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a>. If you pass a null as the
+argument for the source to clone, it is the same as a call to
+<a class="reference internal" href="#_CPPv416memcached_createP12memcached_st" title="memcached_create"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_create()</span></code></a>. If the destination argument is NULL a <a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> will be
+allocated for you.</p>
+<p><a class="reference internal" href="#_CPPv423memcached_servers_reset12memcached_st" title="memcached_servers_reset"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_servers_reset()</span></code></a> allows you to zero out the list of servers that the
+<a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> has.</p>
+<p>To clean up memory associated with a <a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> structure you should pass it
+to <a class="reference internal" href="#_CPPv414memcached_freeP12memcached_st" title="memcached_free"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_free()</span></code></a> when you are finished using it. <a class="reference internal" href="#_CPPv414memcached_freeP12memcached_st" title="memcached_free"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_free()</span></code></a> is the only
+way to make sure all memory is deallocated when you finish using the structure.</p>
+<p>You may wish to avoid using <a class="reference internal" href="#_CPPv416memcached_createP12memcached_st" title="memcached_create"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_create()</span></code></a> or <a class="reference internal" href="#_CPPv415memcached_cloneP12memcached_stP12memcached_st" title="memcached_clone"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_clone()</span></code></a> with a stack
+based allocation. The most common issues related to ABI safety involve heap
+allocated structures.</p>
 </div>
-<div class="section" id="return">
-<h2>RETURN<a class="headerlink" href="#return" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="#_CPPv416memcached_createP12memcached_st" title="memcached_create"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_create()</span></code></a> returns a pointer to the <a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_st</span></code></a>
-that was created (or initialized). On an allocation failure, it returns NULL.</p>
-<p><a class="reference internal" href="#_CPPv415memcached_cloneP12memcached_stP12memcached_st" title="memcached_clone"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_clone()</span></code></a> returns a pointer to the <a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_st</span></code></a>
-that was created (or initialized). On an allocation failure, it returns NULL.</p>
+<div class="section" id="return-value">
+<h2>RETURN VALUE<a class="headerlink" href="#return-value" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="#_CPPv416memcached_createP12memcached_st" title="memcached_create"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_create()</span></code></a> returns a pointer to the <a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> that was created (or
+initialized). On an allocation failure, it returns NULL.</p>
+<p><a class="reference internal" href="#_CPPv415memcached_cloneP12memcached_stP12memcached_st" title="memcached_clone"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_clone()</span></code></a> returns a pointer to the <a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> that was created (or
+initialized). On an allocation failure, it returns NULL.</p>
 </div>
 <div class="section" id="see-also">
 <h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><em class="manpage"><a class="manpage reference external" href="http://man7.org/linux/man-pages/man1/memcached.1.html">memcached(1)</a></em></p></li>
+<li><p><a class="reference internal" href="../libmemcached.html"><span class="doc">C/C++ Client Library for memcached</span></a></p></li>
+</ul>
 </div>
 </div>
 

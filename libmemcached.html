@@ -196,26 +196,24 @@ Memcached. Some of the features provided:</p>
 </div>
 <div class="section" id="description">
 <h2>DESCRIPTION<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
-<p>“Memcached is a high-performance, distributed memory object caching
-system, generic in nature, but intended for use in speeding up dynamic web
-applications by alleviating database load.”
-<a class="reference external" href="http://memcached.org/">http://memcached.org/</a></p>
-<p><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcached</span></code> is a small, thread-safe client library for the
-memcached protocol. The code has all been written to allow
-for both web and embedded usage. It handles the work behind routing
-individual keys to specific servers specified by the developer (and values are
-matched based on server order as supplied by the user). It implements
-a modular and consistent method of object distribution.</p>
+<p>“Memcached is a high-performance, distributed memory object caching system,
+generic in nature, but intended for use in speeding up dynamic web applications
+by alleviating database load.” <a class="reference external" href="http://memcached.org/">http://memcached.org/</a></p>
+<p><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcached</span></code> is a small, thread-safe client library for the memcached
+protocol. The code has all been written to allow for both web and embedded
+usage. It handles the work behind routing individual keys to specific servers
+specified by the developer (and values are matched based on server order as
+supplied by the user). It implements a modular and consistent method of object
+distribution.</p>
 <p>There are multiple implemented routing and hashing methods. See the
-<a class="reference internal" href="libmemcached/memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> manpage for more information.</p>
-<p>All operations are performed against a <a class="reference internal" href="libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_st</span></code></a> structure.
-These structures can either be dynamically allocated or statically
-allocated and then initialized by <a class="reference internal" href="libmemcached/memcached_create.html#_CPPv416memcached_createP12memcached_st" title="memcached_create"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_create()</span></code></a>. Functions have
-been written in order to encapsulate the <a class="reference internal" href="libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_st</span></code></a>. It is not
-recommended that you operate directly against the structure.</p>
-<p>Nearly all functions return a <a class="reference internal" href="libmemcached/memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> value.
-This value can be translated to a printable string with
-<a class="reference internal" href="libmemcached/memcached_strerror.html#_CPPv418memcached_strerrorP12memcached_st18memcached_return_t" title="memcached_strerror"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_strerror</span></code></a>.</p>
+<a class="reference internal" href="libmemcached/memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> manpage for more information.</p>
+<p>All operations are performed against a <a class="reference internal" href="libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> structure. These
+structures can either be dynamically allocated or statically allocated and then
+initialized by <a class="reference internal" href="libmemcached/memcached_create.html#_CPPv416memcached_createP12memcached_st" title="memcached_create"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_create()</span></code></a>. Functions have been written in order to
+encapsulate the <a class="reference internal" href="libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a>. It is not recommended that you operate directly
+against the structure.</p>
+<p>Nearly all functions return a <a class="reference internal" href="libmemcached/memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> value. This value can be
+translated to a printable string with <a class="reference internal" href="libmemcached/memcached_strerror.html#_CPPv418memcached_strerrorP12memcached_st18memcached_return_t" title="memcached_strerror"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_strerror()</span></code></a>.</p>
 <p>Objects are stored on servers by hashing keys. The hash value maps the key to a
 particular server. All clients understand how this hashing works, so it is
 possibly to reliably both push data to a server and retrieve data from a server.</p>
@@ -224,20 +222,14 @@ possibly to reliably both push data to a server and retrieve data from a server.
 applications can use the same memcached servers.</p>
 <p>Some features of the library must be enabled through <a class="reference internal" href="libmemcached/memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a>.</p>
 </div>
-<div class="section" id="constants">
-<h2>CONSTANTS<a class="headerlink" href="#constants" title="Permalink to this headline">¶</a></h2>
-<p>A number of constants have been provided for in the library.</p>
-<p>See <a class="reference internal" href="libmemcached/constants.html"><span class="doc">libmemcached Constants and Defaults</span></a>.</p>
-</div>
 <div class="section" id="threads-and-processes">
 <h2>THREADS AND PROCESSES<a class="headerlink" href="#threads-and-processes" title="Permalink to this headline">¶</a></h2>
 <p>No global variables are used in this library.</p>
-<p><a class="reference internal" href="libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_st</span></code></a> structures are thread-safe, but when using threads or
-forked processes it is important to keep one instance of <a class="reference internal" href="libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_st</span></code></a>
-per process or thread. Without creating your own locking structures you can not
-share a single <a class="reference internal" href="libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_st</span></code></a>. However, you can call
-<a class="reference internal" href="libmemcached/memcached_quit.html#_CPPv414memcached_quitP12memcached_st" title="memcached_quit"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_quit()</span></code></a> on a <a class="reference internal" href="libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_st</span></code></a> and then use the resulting
-cloned structure.</p>
+<p><a class="reference internal" href="libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> structures are thread-safe, but when using threads or forked
+processes it is important to keep one instance of <a class="reference internal" href="libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> per process or
+thread. Without creating your own locking structures you can not share a single
+<a class="reference internal" href="libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a>. However, you can call <a class="reference internal" href="libmemcached/memcached_quit.html#_CPPv414memcached_quitP12memcached_st" title="memcached_quit"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_quit()</span></code></a> on a <a class="reference internal" href="libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> and
+then use the resulting cloned structure.</p>
 </div>
 <div class="section" id="systemtap">
 <h2>SYSTEMTAP<a class="headerlink" href="#systemtap" title="Permalink to this headline">¶</a></h2>

@@ -218,12 +218,12 @@
 <p><a class="reference internal" href="#_CPPv421memcached_lib_versionv" title="memcached_lib_version"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_lib_version()</span></code></a> is used to return a simple version string representing the libmemcached version (client library version, not server version)</p>
 <p><a class="reference internal" href="#_CPPv417memcached_versionP12memcached_st" title="memcached_version"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_version()</span></code></a> is used to set the major, minor, and micro versions of each memcached server being used by the memcached_st connection structure. It returns the memcached server return code.</p>
 </div>
-<div class="section" id="return">
-<h2>RETURN<a class="headerlink" href="#return" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="return-value">
+<h2>RETURN VALUE<a class="headerlink" href="#return-value" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference internal" href="#_CPPv421memcached_lib_versionv" title="memcached_lib_version"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_lib_version()</span></code></a> returns a string with the version of the libmemcached driver.</p>
 <p>A value of <a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> is returned from :func:’memcached_version’</p>
 <p>On success that value will be <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t17MEMCACHED_SUCCESSE" title="MEMCACHED_SUCCESS"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_SUCCESS</span></code></a>.</p>
-<p>If called with the <a class="reference internal" href="memcached_behavior.html#_CPPv4N20memcached_behavior_t26MEMCACHED_BEHAVIOR_USE_UDPE" title="MEMCACHED_BEHAVIOR_USE_UDP"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_USE_UDP</span></code></a> behavior set, the value
+<p>If called with the <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_USE_UDP</span></code> behavior set, the value
 <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t23MEMCACHED_NOT_SUPPORTEDE" title="MEMCACHED_NOT_SUPPORTED"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_NOT_SUPPORTED</span></code></a> will be returned.</p>
 <p>Use <a class="reference internal" href="memcached_strerror.html#_CPPv418memcached_strerrorP12memcached_st18memcached_return_t" title="memcached_strerror"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_strerror()</span></code></a> to translate this value to
 a printable string.</p>

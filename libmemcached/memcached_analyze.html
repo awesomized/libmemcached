@@ -196,18 +196,16 @@
             
   <div class="section" id="analyzing-servers">
 <h1>Analyzing servers<a class="headerlink" href="#analyzing-servers" title="Permalink to this headline">¶</a></h1>
-<p>Analyze server information</p>
 <div class="section" id="synopsis">
 <h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<dl class="simple" id="index-0">
+<dl class="simple">
 <dt>#include &lt;libmemcached/memcached.h&gt;</dt><dd><p>Compile and link with -lmemcached</p>
 </dd>
 </dl>
 <dl class="type">
 <dt id="_CPPv421memcached_analysis_st">
-<span id="_CPPv321memcached_analysis_st"></span><span id="_CPPv221memcached_analysis_st"></span><span id="memcached_analysis_st"></span><em class="property">type </em><code class="sig-name descname">memcached_analysis_st</code><a class="headerlink" href="#_CPPv421memcached_analysis_st" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>typedef struct memcached_analysis_st memcached_analysis_st;</p>
-</dd></dl>
+<span id="_CPPv321memcached_analysis_st"></span><span id="_CPPv221memcached_analysis_st"></span><span id="memcached_analysis_st"></span><em class="property">typedef </em><em class="property">struct</em> <a class="reference internal" href="#_CPPv421memcached_analysis_st" title="memcached_analysis_st">memcached_analysis_st</a> <code class="sig-name descname">memcached_analysis_st</code><a class="headerlink" href="#_CPPv421memcached_analysis_st" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
 
 <dl class="function">
 <dt id="_CPPv417memcached_analyzeP12memcached_stP17memcached_stat_stP18memcached_return_t">
@@ -217,22 +215,26 @@
 </div>
 <div class="section" id="description">
 <h2>DESCRIPTION<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
-<p><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcached</span></code> has the ability to query a memcached server (or
-collection of servers) for their current state. Queries to find state return a
-<a class="reference internal" href="#_CPPv421memcached_analysis_st" title="memcached_analysis_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_analysis_st</span></code></a> structure. You are responsible for freeing this structure.</p>
-<p><a class="reference internal" href="#_CPPv417memcached_analyzeP12memcached_stP17memcached_stat_stP18memcached_return_t" title="memcached_analyze"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_analyze()</span></code></a> analyzes useful information based on the
-provided servers and sets the result to the <a class="reference internal" href="#_CPPv421memcached_analysis_st" title="memcached_analysis_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_analysis_st</span></code></a>
-structure. The return value must be freed by the calling application.</p>
-<p>A command line tool, <strong class="program">memstat</strong> with the option <a class="reference internal" href="../bin/memstat.html#cmdoption-memstat-analyze"><code class="xref std std-option docutils literal notranslate"><span class="pre">memstat</span> <span class="pre">--analyze</span></code></a>,
-is provided so that you do not have to write an application to use this method.</p>
+<p><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcached</span></code> has the ability to query a memcached server (or collection of
+servers) for their current state. Queries to find state return a
+<a class="reference internal" href="#_CPPv421memcached_analysis_st" title="memcached_analysis_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_analysis_st</span></code></a> structure. You are responsible for freeing this
+structure.</p>
+<p><a class="reference internal" href="#_CPPv417memcached_analyzeP12memcached_stP17memcached_stat_stP18memcached_return_t" title="memcached_analyze"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_analyze()</span></code></a> analyzes useful information based on the provided servers
+and sets the result to the <a class="reference internal" href="#_CPPv421memcached_analysis_st" title="memcached_analysis_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_analysis_st</span></code></a> structure. The return value
+must be freed by the calling application.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../bin/memstat.html#cmdoption-memstat-analyze"><code class="xref std std-option docutils literal notranslate"><span class="pre">memstat</span> <span class="pre">--analyze</span></code></a>
+A command line tool to analyze a memcached server.</p>
 </div>
-<div class="section" id="return">
-<h2>RETURN<a class="headerlink" href="#return" title="Permalink to this headline">¶</a></h2>
-<p>A pointer to the allocated <a class="reference internal" href="#_CPPv421memcached_analysis_st" title="memcached_analysis_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_analysis_st</span></code></a> structure on
-success and a NULL pointer on failure. You may inspect the error detail by
-checking the <a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> value.</p>
-<p>Any method returning a <a class="reference internal" href="#_CPPv421memcached_analysis_st" title="memcached_analysis_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_analysis_st</span></code></a> expects you to free the
-memory allocated for it.</p>
+</div>
+<div class="section" id="return-value">
+<h2>RETURN VALUE<a class="headerlink" href="#return-value" title="Permalink to this headline">¶</a></h2>
+<p>A pointer to the allocated <a class="reference internal" href="#_CPPv421memcached_analysis_st" title="memcached_analysis_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_analysis_st</span></code></a> structure on success and a
+NULL pointer on failure. You may inspect the error detail by checking the
+<a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> value.</p>
+<p>Any method returning a <a class="reference internal" href="#_CPPv421memcached_analysis_st" title="memcached_analysis_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_analysis_st</span></code></a> expects you to free the memory
+allocated for it.</p>
 </div>
 <div class="section" id="see-also">
 <h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
