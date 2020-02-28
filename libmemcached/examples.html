@@ -1,0 +1,366 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>libmemcached Examples &mdash; libmemcached 1.0.99 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="copyright" title="Copyright" href="../copyright.html" />
+    <link rel="next" title="libmemcached Versioning" href="versioning.html" />
+    <link rel="prev" title="libmemcached Constants and Defaults" href="constants.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> libmemcached
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">libmemcached</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../libmemcached.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">libmemcached API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="index_basics.html">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index_data.html">Working with Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index_errors.html">Messages and Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index_advanced.html">Advanced Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index_deprecated.html">Deprecated Functionality</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="index_misc.html">Misc</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="constants.html">Constants</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="versioning.html">Versioning</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">libmemcachedutil</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../libmemcachedutil.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../libmemcachedutil/index.html">libmemcachedutil API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../libmemcachedutil/memcached_pool.html">Working with memcached pools</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">libhashkit</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../libhashkit.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../libhashkit/index.html">libhashkit API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../libhashkit/hashkit_create.html">Creating a hashkit structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libhashkit/hashkit_function.html">Set Hash Function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libhashkit/hashkit_functions.html">Available Hashes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libhashkit/hashkit_value.html">Generate hash value</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Client Applications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../bin/index.html">Client Applications</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memcapable.html">memcapable - Checking a Memcached server capabilities and compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memcat.html">memcat - “cat” data from a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memcp.html">memcp - Copy data to a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memdump.html">memdump - Dumping your server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memerror.html">memerror - translate an error code to a string</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memflush.html">memflush - flush all data from a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memrm.html">memrm - Remove data from a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memslap.html">memslap - Load testing  and benchmarking a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memaslap.html">memaslap - Load testing  and benchmarking a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memstat.html">memstat - Gather statistics from a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memexist.html">memexist - Check for the existence of a key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memparse.html">memparse - Parse an option string</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memping.html">memping - Test to see if a server is available.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memtouch.html">memtouch - Touches a key.</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">libmemcached</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index_misc.html">Misc</a> &raquo;</li>
+        
+      <li>libmemcached Examples</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="libmemcached-examples">
+<h1>libmemcached Examples<a class="headerlink" href="#libmemcached-examples" title="Permalink to this headline">¶</a></h1>
+<p>Examples for libmemcached</p>
+<div class="section" id="description">
+<h2>DESCRIPTION<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>For full examples, test cases are found in tests/*.c in the main
+distribution. These are always up to date, and are used for each test run of
+the library.</p>
+</div>
+<div class="section" id="connecting-to-servers">
+<h2>Connecting to servers<a class="headerlink" href="#connecting-to-servers" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">config_string</span> <span class="o">=</span>
+  <span class="s">&quot;--SERVER=host10.example.com &quot;</span>
+  <span class="s">&quot;--SERVER=host11.example.com &quot;</span>
+  <span class="s">&quot;--SERVER=host10.example.com&quot;</span><span class="p">;</span>
+<span class="n">memcached_st</span> <span class="o">*</span><span class="n">memc</span><span class="o">=</span> <span class="n">memcached</span><span class="p">(</span><span class="n">config_string</span><span class="p">,</span> <span class="n">strlen</span><span class="p">(</span><span class="n">config_string</span><span class="p">);</span>
+<span class="p">{</span>
+  <span class="c1">// ...</span>
+<span class="p">}</span>
+ <span class="n">memcached_free</span><span class="p">(</span><span class="n">memc</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>In the above code you create a <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_st</span></code></a> object with three server
+by making use of <a class="reference internal" href="memcached_create.html#_CPPv416memcached_createP12memcached_st" title="memcached_create"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_create()</span></code></a>.</p>
+</div>
+<div class="section" id="creating-a-pool-of-servers">
+<h2>Creating a pool of servers<a class="headerlink" href="#creating-a-pool-of-servers" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">config_string</span><span class="o">=</span> <span class="s">&quot;--SERVER=host10.example.com --SERVER=host11.example.com --SERVER=host10.example.com&quot;</span><span class="p">;</span>
+
+<span class="n">memcached_pool_st</span><span class="o">*</span> <span class="n">pool</span><span class="o">=</span> <span class="n">memcached_pool</span><span class="p">(</span><span class="n">config_string</span><span class="p">,</span> <span class="n">strlen</span><span class="p">(</span><span class="n">config_string</span><span class="p">));</span>
+
+<span class="n">memcached_return_t</span> <span class="n">rc</span><span class="p">;</span>
+
+<span class="n">memcached_st</span> <span class="o">*</span><span class="n">memc</span><span class="o">=</span> <span class="n">memcached_pool_pop</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="nb">false</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">rc</span><span class="p">);</span>
+
+<span class="c1">// .... do work</span>
+
+<span class="cm">/*</span>
+<span class="cm">  Release the memc_ptr that was pulled from the pool</span>
+<span class="cm">*/</span>
+<span class="n">memcached_pool_push</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">memc</span><span class="p">);</span>
+
+<span class="cm">/*</span>
+<span class="cm">  Destroy the pool.</span>
+<span class="cm">*/</span>
+<span class="n">memcached_pool_destroy</span><span class="p">(</span><span class="n">pool</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>In the above code you create a <a class="reference internal" href="../libmemcachedutil/memcached_pool.html#_CPPv417memcached_pool_st" title="memcached_pool_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_pool_st</span></code></a> object with three
+server by making use of <a class="reference internal" href="../libmemcachedutil/memcached_pool.html#_CPPv414memcached_poolPKc6size_t" title="memcached_pool"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_pool()</span></code></a>.</p>
+<p>When <a class="reference internal" href="../libmemcachedutil/memcached_pool.html#_CPPv422memcached_pool_destroyP17memcached_pool_st" title="memcached_pool_destroy"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_pool_destroy()</span></code></a> all memory will be released that is associated
+with the pool.</p>
+</div>
+<div class="section" id="adding-a-value-to-the-server">
+<h2>Adding a value to the server<a class="headerlink" href="#adding-a-value-to-the-server" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">char</span> <span class="o">*</span><span class="n">key</span><span class="o">=</span> <span class="s">&quot;foo&quot;</span><span class="p">;</span>
+<span class="kt">char</span> <span class="o">*</span><span class="n">value</span><span class="o">=</span> <span class="s">&quot;value&quot;</span><span class="p">;</span>
+<span class="kt">time_t</span> <span class="n">expires</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="kt">uint32_t</span> <span class="n">flags</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="n">memcached_return_t</span> <span class="n">rc</span> <span class="o">=</span> <span class="n">memcached_set</span><span class="p">(</span><span class="n">memc</span><span class="p">,</span>
+                                     <span class="n">key</span><span class="p">,</span> <span class="n">strlen</span><span class="p">(</span><span class="n">key</span><span class="p">),</span>
+                                     <span class="n">value</span><span class="p">,</span> <span class="n">value_length</span><span class="p">,</span>
+                                     <span class="n">expires</span><span class="p">,</span> <span class="n">flags</span><span class="p">);</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="n">rc</span> <span class="o">!=</span> <span class="n">MEMCACHED_SUCCESS</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// handle failure</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>It is best practice to always look at the return value of any operation.</p>
+</div>
+<div class="section" id="fetching-multiple-values">
+<h2>Fetching multiple values<a class="headerlink" href="#fetching-multiple-values" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">memcached_return_t</span> <span class="n">rc</span><span class="p">;</span>
+<span class="kt">char</span> <span class="o">*</span><span class="n">keys</span><span class="p">[]</span><span class="o">=</span> <span class="p">{</span><span class="s">&quot;fudge&quot;</span><span class="p">,</span> <span class="s">&quot;son&quot;</span><span class="p">,</span> <span class="s">&quot;food&quot;</span><span class="p">};</span>
+<span class="kt">size_t</span> <span class="n">key_length</span><span class="p">[]</span><span class="o">=</span> <span class="p">{</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">};</span>
+<span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">x</span><span class="p">;</span>
+<span class="kt">uint32_t</span> <span class="n">flags</span><span class="p">;</span>
+
+<span class="kt">char</span> <span class="n">return_key</span><span class="p">[</span><span class="n">MEMCACHED_MAX_KEY</span><span class="p">];</span>
+<span class="kt">size_t</span> <span class="n">return_key_length</span><span class="p">;</span>
+<span class="kt">char</span> <span class="o">*</span><span class="n">return_value</span><span class="p">;</span>
+<span class="kt">size_t</span> <span class="n">return_value_length</span><span class="p">;</span>
+
+<span class="n">rc</span><span class="o">=</span> <span class="n">memcached_mget</span><span class="p">(</span><span class="n">memc</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">key_length</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+
+<span class="n">x</span><span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="k">while</span> <span class="p">((</span><span class="n">return_value</span><span class="o">=</span> <span class="n">memcached_fetch</span><span class="p">(</span><span class="n">memc</span><span class="p">,</span> <span class="n">return_key</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">return_key_length</span><span class="p">,</span>
+                                 <span class="o">&amp;</span><span class="n">return_value_length</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">flags</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">rc</span><span class="p">)))</span>
+<span class="p">{</span>
+    <span class="n">free</span><span class="p">(</span><span class="n">return_value</span><span class="p">);</span>
+    <span class="n">x</span><span class="o">++</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Notice that you freed values returned from memcached_fetch(). The define
+<code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_MAX_KEY</span></code> is provided for usage.</p>
+</div>
+<div class="section" id="see-also">
+<h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p><em class="manpage"><a class="manpage reference external" href="http://man7.org/linux/man-pages/man1/memcached.1.html">memcached(1)</a></em></p>
+</div></blockquote>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="versioning.html" class="btn btn-neutral float-right" title="libmemcached Versioning" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="constants.html" class="btn btn-neutral float-left" title="libmemcached Constants and Defaults" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; <a href="../copyright.html">Copyright</a> 
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

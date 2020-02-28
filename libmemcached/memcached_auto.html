@@ -1,0 +1,351 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Incrementing and Decrementing Values &mdash; libmemcached 1.0.99 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="copyright" title="Copyright" href="../copyright.html" />
+    <link rel="next" title="Determine if a keys exists." href="memcached_exist.html" />
+    <link rel="prev" title="Working with Data" href="index_data.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> libmemcached
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">libmemcached</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../libmemcached.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">libmemcached API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index_basics.html">Basics</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index_data.html">Working with Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index_errors.html">Messages and Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index_advanced.html">Advanced Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index_deprecated.html">Deprecated Functionality</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="index_misc.html">Misc</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="constants.html">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="versioning.html">Versioning</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">libmemcachedutil</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../libmemcachedutil.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../libmemcachedutil/index.html">libmemcachedutil API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../libmemcachedutil/memcached_pool.html">Working with memcached pools</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">libhashkit</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../libhashkit.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../libhashkit/index.html">libhashkit API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../libhashkit/hashkit_create.html">Creating a hashkit structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libhashkit/hashkit_function.html">Set Hash Function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libhashkit/hashkit_functions.html">Available Hashes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libhashkit/hashkit_value.html">Generate hash value</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Client Applications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../bin/index.html">Client Applications</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memcapable.html">memcapable - Checking a Memcached server capabilities and compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memcat.html">memcat - “cat” data from a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memcp.html">memcp - Copy data to a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memdump.html">memdump - Dumping your server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memerror.html">memerror - translate an error code to a string</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memflush.html">memflush - flush all data from a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memrm.html">memrm - Remove data from a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memslap.html">memslap - Load testing  and benchmarking a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memaslap.html">memaslap - Load testing  and benchmarking a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memstat.html">memstat - Gather statistics from a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memexist.html">memexist - Check for the existence of a key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memparse.html">memparse - Parse an option string</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memping.html">memping - Test to see if a server is available.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memtouch.html">memtouch - Touches a key.</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">libmemcached</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">libmemcached API</a> &raquo;</li>
+        
+          <li><a href="index_data.html">Working with Data</a> &raquo;</li>
+        
+      <li>Incrementing and Decrementing Values</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="incrementing-and-decrementing-values">
+<h1>Incrementing and Decrementing Values<a class="headerlink" href="#incrementing-and-decrementing-values" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="synopsis">
+<span id="index-0"></span><h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p>#include &lt;libmemcached/memcached.h&gt;</p>
+<dl class="function">
+<dt id="_CPPv419memcached_incrementP12memcached_stPKc6size_t8uint32_tP8uint64_t">
+<span id="_CPPv319memcached_incrementP12memcached_stPKc6size_t8uint32_tP8uint64_t"></span><span id="_CPPv219memcached_incrementP12memcached_stPKc6size_t8uint32_tP8uint64_t"></span><span id="memcached_increment__memcached_stP.cCP.s.uint32_t.uint64_tP"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_increment</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <em class="property">const</em> char *<em>key</em>, size_t <em>key_length</em>, uint32_t <em>offset</em>, uint64_t *<em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419memcached_incrementP12memcached_stPKc6size_t8uint32_tP8uint64_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv419memcached_decrementP12memcached_stPKc6size_t8uint32_tP8uint64_t">
+<span id="_CPPv319memcached_decrementP12memcached_stPKc6size_t8uint32_tP8uint64_t"></span><span id="_CPPv219memcached_decrementP12memcached_stPKc6size_t8uint32_tP8uint64_t"></span><span id="memcached_decrement__memcached_stP.cCP.s.uint32_t.uint64_tP"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_decrement</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <em class="property">const</em> char *<em>key</em>, size_t <em>key_length</em>, uint32_t <em>offset</em>, uint64_t *<em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419memcached_decrementP12memcached_stPKc6size_t8uint32_tP8uint64_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv432memcached_increment_with_initialP12memcached_stPKc6size_t8uint64_t8uint64_t6time_tP8uint64_t">
+<span id="_CPPv332memcached_increment_with_initialP12memcached_stPKc6size_t8uint64_t8uint64_t6time_tP8uint64_t"></span><span id="_CPPv232memcached_increment_with_initialP12memcached_stPKc6size_t8uint64_t8uint64_t6time_tP8uint64_t"></span><span id="memcached_increment_with_initial__memcached_stP.cCP.s.uint64_t.uint64_t.time_t.uint64_tP"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_increment_with_initial</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <em class="property">const</em> char *<em>key</em>, size_t <em>key_length</em>, uint64_t <em>offset</em>, uint64_t <em>initial</em>, time_t <em>expiration</em>, uint64_t *<em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv432memcached_increment_with_initialP12memcached_stPKc6size_t8uint64_t8uint64_t6time_tP8uint64_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv432memcached_decrement_with_initialP12memcached_stPKc6size_t8uint64_t8uint64_t6time_tP8uint64_t">
+<span id="_CPPv332memcached_decrement_with_initialP12memcached_stPKc6size_t8uint64_t8uint64_t6time_tP8uint64_t"></span><span id="_CPPv232memcached_decrement_with_initialP12memcached_stPKc6size_t8uint64_t8uint64_t6time_tP8uint64_t"></span><span id="memcached_decrement_with_initial__memcached_stP.cCP.s.uint64_t.uint64_t.time_t.uint64_tP"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_decrement_with_initial</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <em class="property">const</em> char *<em>key</em>, size_t <em>key_length</em>, uint64_t <em>offset</em>, uint64_t <em>initial</em>, time_t <em>expiration</em>, uint64_t *<em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv432memcached_decrement_with_initialP12memcached_stPKc6size_t8uint64_t8uint64_t6time_tP8uint64_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv426memcached_increment_by_keyP12memcached_stPKc6size_tPKc6size_t8uint32_tP8uint64_t">
+<span id="_CPPv326memcached_increment_by_keyP12memcached_stPKc6size_tPKc6size_t8uint32_tP8uint64_t"></span><span id="_CPPv226memcached_increment_by_keyP12memcached_stPKc6size_tPKc6size_t8uint32_tP8uint64_t"></span><span id="memcached_increment_by_key__memcached_stP.cCP.s.cCP.s.uint32_t.uint64_tP"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_increment_by_key</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <em class="property">const</em> char *<em>group_key</em>, size_t <em>group_key_length</em>, <em class="property">const</em> char *<em>key</em>, size_t <em>key_length</em>, uint32_t <em>offset</em>, uint64_t *<em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426memcached_increment_by_keyP12memcached_stPKc6size_tPKc6size_t8uint32_tP8uint64_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv426memcached_decrement_by_keyP12memcached_stPKc6size_tPKc6size_t8uint32_tP8uint64_t">
+<span id="_CPPv326memcached_decrement_by_keyP12memcached_stPKc6size_tPKc6size_t8uint32_tP8uint64_t"></span><span id="_CPPv226memcached_decrement_by_keyP12memcached_stPKc6size_tPKc6size_t8uint32_tP8uint64_t"></span><span id="memcached_decrement_by_key__memcached_stP.cCP.s.cCP.s.uint32_t.uint64_tP"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_decrement_by_key</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <em class="property">const</em> char *<em>group_key</em>, size_t <em>group_key_length</em>, <em class="property">const</em> char *<em>key</em>, size_t <em>key_length</em>, uint32_t <em>offset</em>, uint64_t *<em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426memcached_decrement_by_keyP12memcached_stPKc6size_tPKc6size_t8uint32_tP8uint64_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv439memcached_increment_with_initial_by_keyP12memcached_stPKc6size_tPKc6size_t8uint64_t8uint64_t6time_tP8uint64_t">
+<span id="_CPPv339memcached_increment_with_initial_by_keyP12memcached_stPKc6size_tPKc6size_t8uint64_t8uint64_t6time_tP8uint64_t"></span><span id="_CPPv239memcached_increment_with_initial_by_keyP12memcached_stPKc6size_tPKc6size_t8uint64_t8uint64_t6time_tP8uint64_t"></span><span id="memcached_increment_with_initial_by_key__memcached_stP.cCP.s.cCP.s.uint64_t.uint64_t.time_t.uint64_tP"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_increment_with_initial_by_key</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <em class="property">const</em> char *<em>group_key</em>, size_t <em>group_key_length</em>, <em class="property">const</em> char *<em>key</em>, size_t <em>key_length</em>, uint64_t <em>offset</em>, uint64_t <em>initial</em>, time_t <em>expiration</em>, uint64_t *<em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv439memcached_increment_with_initial_by_keyP12memcached_stPKc6size_tPKc6size_t8uint64_t8uint64_t6time_tP8uint64_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv439memcached_decrement_with_initial_by_keyP12memcached_stPKc6size_tPKc6size_t8uint64_t8uint64_t6time_tP8uint64_t">
+<span id="_CPPv339memcached_decrement_with_initial_by_keyP12memcached_stPKc6size_tPKc6size_t8uint64_t8uint64_t6time_tP8uint64_t"></span><span id="_CPPv239memcached_decrement_with_initial_by_keyP12memcached_stPKc6size_tPKc6size_t8uint64_t8uint64_t6time_tP8uint64_t"></span><span id="memcached_decrement_with_initial_by_key__memcached_stP.cCP.s.cCP.s.uint64_t.uint64_t.time_t.uint64_tP"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_decrement_with_initial_by_key</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <em class="property">const</em> char *<em>group_key</em>, size_t <em>group_key_length</em>, <em class="property">const</em> char *<em>key</em>, size_t <em>key_length</em>, uint64_t <em>offset</em>, uint64_t <em>initial</em>, time_t <em>expiration</em>, uint64_t *<em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv439memcached_decrement_with_initial_by_keyP12memcached_stPKc6size_tPKc6size_t8uint64_t8uint64_t6time_tP8uint64_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<p>Compile and link with -lmemcached</p>
+</div>
+<div class="section" id="description">
+<h2>DESCRIPTION<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><em class="manpage"><a class="manpage reference external" href="http://man7.org/linux/man-pages/man1/memcached.1.html">memcached(1)</a></em> servers have the ability to increment and decrement keys
+(overflow and underflow are not detected). This gives you the ability to use
+memcached to generate shared sequences of values.</p>
+<p>memcached_increment takes a key and key length and increments the value by
+the offset passed to it. The value is then returned via the uint32_t
+value pointer you pass to it.</p>
+<p>memcached_decrement takes a key and keylength and decrements the value by
+the offset passed to it. The value is then returned via the uint32_t
+value pointer you pass to it.</p>
+<p>memcached_increment_with_initial takes a key and keylength and increments
+the value by the offset passed to it. If the object specified by key does
+not exist, one of two things may happen: If the expiration value is
+MEMCACHED_EXPIRATION_NOT_ADD, the operation will fail. For all other
+expiration values, the operation will succeed by seeding the value for that
+key with a initial value to expire with the provided expiration time. The
+flags will be set to zero.The value is then returned via the uint32_t
+value pointer you pass to it. memcached_increment_with_initial is only available
+when using the binary protocol.</p>
+<p>memcached_decrement_with_initial takes a key and keylength and decrements
+the value by the offset passed to it. If the object specified by key does
+not exist, one of two things may happen: If the expiration value is
+MEMCACHED_EXPIRATION_NOT_ADD, the operation will fail. For all other
+expiration values, the operation will succeed by seeding the value for that
+key with a initial value to expire with the provided expiration time. The
+flags will be set to zero.The value is then returned via the uint32_t
+value pointer you pass to it. memcached_decrement_with_initial is only available
+when using the binary protocol.</p>
+<p><a class="reference internal" href="#_CPPv426memcached_increment_by_keyP12memcached_stPKc6size_tPKc6size_t8uint32_tP8uint64_t" title="memcached_increment_by_key"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_increment_by_key()</span></code></a>, <a class="reference internal" href="#_CPPv426memcached_decrement_by_keyP12memcached_stPKc6size_tPKc6size_t8uint32_tP8uint64_t" title="memcached_decrement_by_key"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_decrement_by_key()</span></code></a>,
+<a class="reference internal" href="#_CPPv439memcached_increment_with_initial_by_keyP12memcached_stPKc6size_tPKc6size_t8uint64_t8uint64_t6time_tP8uint64_t" title="memcached_increment_with_initial_by_key"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_increment_with_initial_by_key()</span></code></a>, and
+<a class="reference internal" href="#_CPPv439memcached_decrement_with_initial_by_keyP12memcached_stPKc6size_tPKc6size_t8uint64_t8uint64_t6time_tP8uint64_t" title="memcached_decrement_with_initial_by_key"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_decrement_with_initial_by_key()</span></code></a> are master key equivalents of the above.</p>
+</div>
+<div class="section" id="return">
+<h2>RETURN<a class="headerlink" href="#return" title="Permalink to this headline">¶</a></h2>
+<p>A value of type <a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a>  is returned.
+On success that value will be <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t17MEMCACHED_SUCCESSE" title="MEMCACHED_SUCCESS"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_SUCCESS</span></code></a>.
+Use memcached_strerror to translate this value to a printable string.</p>
+</div>
+<div class="section" id="see-also">
+<h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="memcached_exist.html" class="btn btn-neutral float-right" title="Determine if a keys exists." accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index_data.html" class="btn btn-neutral float-left" title="Working with Data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; <a href="../copyright.html">Copyright</a> 
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

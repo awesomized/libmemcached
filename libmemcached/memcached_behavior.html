@@ -1,0 +1,700 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Behaviors of the library &mdash; libmemcached 1.0.99 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="copyright" title="Copyright" href="../copyright.html" />
+    <link rel="next" title="Setting callbacks" href="memcached_callback.html" />
+    <link rel="prev" title="Internal Behavior" href="index_advanced_internals.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> libmemcached
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">libmemcached</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../libmemcached.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">libmemcached API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index_basics.html">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index_data.html">Working with Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index_errors.html">Messages and Errors</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index_advanced.html">Advanced Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index_deprecated.html">Deprecated Functionality</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="index_misc.html">Misc</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="constants.html">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="versioning.html">Versioning</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">libmemcachedutil</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../libmemcachedutil.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../libmemcachedutil/index.html">libmemcachedutil API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../libmemcachedutil/memcached_pool.html">Working with memcached pools</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">libhashkit</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../libhashkit.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../libhashkit/index.html">libhashkit API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../libhashkit/hashkit_create.html">Creating a hashkit structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libhashkit/hashkit_function.html">Set Hash Function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libhashkit/hashkit_functions.html">Available Hashes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libhashkit/hashkit_value.html">Generate hash value</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Client Applications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../bin/index.html">Client Applications</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memcapable.html">memcapable - Checking a Memcached server capabilities and compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memcat.html">memcat - “cat” data from a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memcp.html">memcp - Copy data to a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memdump.html">memdump - Dumping your server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memerror.html">memerror - translate an error code to a string</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memflush.html">memflush - flush all data from a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memrm.html">memrm - Remove data from a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memslap.html">memslap - Load testing  and benchmarking a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memaslap.html">memaslap - Load testing  and benchmarking a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memstat.html">memstat - Gather statistics from a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memexist.html">memexist - Check for the existence of a key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memparse.html">memparse - Parse an option string</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memping.html">memping - Test to see if a server is available.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memtouch.html">memtouch - Touches a key.</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">libmemcached</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">libmemcached API</a> &raquo;</li>
+        
+          <li><a href="index_advanced.html">Advanced Topics</a> &raquo;</li>
+        
+          <li><a href="index_advanced_internals.html">Internal Behavior</a> &raquo;</li>
+        
+      <li>Behaviors of the library</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="behaviors-of-the-library">
+<h1>Behaviors of the library<a class="headerlink" href="#behaviors-of-the-library" title="Permalink to this headline">¶</a></h1>
+<p>Manipulate the behavior of a memcached_st structure.</p>
+<div class="section" id="synopsis">
+<span id="index-0"></span><h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<dl class="simple">
+<dt>#include &lt;libmemcached/memcached.h&gt;</dt><dd><p>Compile and link with -lmemcached</p>
+</dd>
+</dl>
+<dl class="type">
+<dt>
+<code class="sig-name descname">typedef enum memcached_behavior_t memcached_behavior_t;</code></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv422memcached_behavior_getP12memcached_st20memcached_behavior_t">
+<span id="_CPPv322memcached_behavior_getP12memcached_st20memcached_behavior_t"></span><span id="_CPPv222memcached_behavior_getP12memcached_st20memcached_behavior_t"></span><span id="memcached_behavior_get__memcached_stP.memcached_behavior_t"></span>uint64_t <code class="sig-name descname">memcached_behavior_get</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <a class="reference internal" href="#_CPPv420memcached_behavior_t" title="memcached_behavior_t">memcached_behavior_t</a> <em>flag</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422memcached_behavior_getP12memcached_st20memcached_behavior_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t">
+<span id="_CPPv322memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t"></span><span id="_CPPv222memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t"></span><span id="memcached_behavior_set__memcached_stP.memcached_behavior_t.uint64_t"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_behavior_set</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <a class="reference internal" href="#_CPPv420memcached_behavior_t" title="memcached_behavior_t">memcached_behavior_t</a> <em>flag</em>, uint64_t <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.17: </span>The <a class="reference internal" href="#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set::data"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">data</span></code></a> argument of <a class="reference internal" href="#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> was changed in
+from taking a pointer to data value, to taking a uin64_t.</p>
+</div>
+</dd></dl>
+
+<dl class="type">
+<dt id="c.memcached_behavior_t">
+enum <a class="reference internal" href="#c.memcached_behavior_t" title="memcached_behavior_t">memcached_behavior_t</a> <code class="sig-name descname">memcached_behavior_t</code><a class="headerlink" href="#c.memcached_behavior_t" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="enum">
+<dt id="_CPPv420memcached_behavior_t">
+<span id="_CPPv320memcached_behavior_t"></span><span id="_CPPv220memcached_behavior_t"></span><em class="property">enum </em><code class="sig-name descname">memcached_behavior_t</code><a class="headerlink" href="#_CPPv420memcached_behavior_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t26MEMCACHED_BEHAVIOR_USE_UDPE">
+<span id="_CPPv3N20memcached_behavior_t26MEMCACHED_BEHAVIOR_USE_UDPE"></span><span id="_CPPv2N20memcached_behavior_t26MEMCACHED_BEHAVIOR_USE_UDPE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_USE_UDP</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t26MEMCACHED_BEHAVIOR_USE_UDPE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Causes <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcached</span></code> to use the UDP transport when communicating with a
+memcached server. Not all I/O operations are tested when this behavior
+is enabled.</p>
+<p>The following operations will return <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t23MEMCACHED_NOT_SUPPORTEDE" title="MEMCACHED_NOT_SUPPORTED"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_NOT_SUPPORTED</span></code></a> when
+executed with <a class="reference internal" href="#_CPPv4N20memcached_behavior_t26MEMCACHED_BEHAVIOR_USE_UDPE" title="memcached_behavior_t::MEMCACHED_BEHAVIOR_USE_UDP"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_USE_UDP</span></code></a> enabled:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="memcached_version.html#_CPPv417memcached_versionP12memcached_st" title="memcached_version"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_version()</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="memcached_stats.html#_CPPv414memcached_statP12memcached_stPcP18memcached_return_t" title="memcached_stat"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_stat()</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="memcached_get.html#_CPPv413memcached_getP12memcached_stPKc6size_tP6size_tP8uint32_tP18memcached_return_t" title="memcached_get"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_get()</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="memcached_get.html#_CPPv420memcached_get_by_keyP12memcached_stPKc6size_tPKc6size_tP6size_tP8uint32_tP18memcached_return_t" title="memcached_get_by_key"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_get_by_key()</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="memcached_get.html#_CPPv414memcached_mgetP12memcached_stPPCKcPK6size_t6size_t" title="memcached_mget"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_mget()</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="memcached_get.html#_CPPv421memcached_mget_by_keyP12memcached_stPKc6size_tPPCKcPK6size_t6size_t" title="memcached_mget_by_key"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_mget_by_key()</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="memcached_fetch.html#_CPPv415memcached_fetchP12memcached_stPcP6size_tP6size_tP8uint32_tP18memcached_return_t" title="memcached_fetch"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_fetch()</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="memcached_get.html#_CPPv422memcached_fetch_resultP12memcached_stP19memcached_result_stP18memcached_return_t" title="memcached_fetch_result"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_fetch_result()</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="memcached_get.html#_CPPv423memcached_fetch_executeP12memcached_stP20memcached_execute_fnPv8uint32_t" title="memcached_fetch_execute"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_fetch_execute()</span></code></a>.</p></li>
+</ul>
+<p>All other operations are tested but are executed in a ‘fire-and-forget’
+mode, in which once the client has executed the operation, no attempt
+will be made to ensure the operation has been received and acted on by
+the server.</p>
+<p><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcached</span></code> does not allow TCP and UDP servers to be shared within
+the same <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcached</span></code> client ‘instance’. An attempt to add a TCP
+server when this behavior is enabled will result in a
+<a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t31MEMCACHED_INVALID_HOST_PROTOCOLE" title="MEMCACHED_INVALID_HOST_PROTOCOL"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_INVALID_HOST_PROTOCOL</span></code></a>, as will attempting to add a UDP
+server when this behavior has not been enabled.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t27MEMCACHED_BEHAVIOR_NO_BLOCKE">
+<span id="_CPPv3N20memcached_behavior_t27MEMCACHED_BEHAVIOR_NO_BLOCKE"></span><span id="_CPPv2N20memcached_behavior_t27MEMCACHED_BEHAVIOR_NO_BLOCKE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_NO_BLOCK</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t27MEMCACHED_BEHAVIOR_NO_BLOCKE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Causes <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcached</span></code> to use asynchronous IO. This is the fastest
+transport available for storage functions.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t30MEMCACHED_BEHAVIOR_SND_TIMEOUTE">
+<span id="_CPPv3N20memcached_behavior_t30MEMCACHED_BEHAVIOR_SND_TIMEOUTE"></span><span id="_CPPv2N20memcached_behavior_t30MEMCACHED_BEHAVIOR_SND_TIMEOUTE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_SND_TIMEOUT</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t30MEMCACHED_BEHAVIOR_SND_TIMEOUTE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>This sets the microsecond behavior of the socket against the SO_SNDTIMEO
+flag.</p>
+<p>In cases where you cannot use non-blocking IO this will allow you to
+still have timeouts on the sending of data.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t30MEMCACHED_BEHAVIOR_RCV_TIMEOUTE">
+<span id="_CPPv3N20memcached_behavior_t30MEMCACHED_BEHAVIOR_RCV_TIMEOUTE"></span><span id="_CPPv2N20memcached_behavior_t30MEMCACHED_BEHAVIOR_RCV_TIMEOUTE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_RCV_TIMEOUT</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t30MEMCACHED_BEHAVIOR_RCV_TIMEOUTE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>This sets the microsecond behavior of the socket against the SO_RCVTIMEO
+flag.</p>
+<p>In cases where you cannot use non-blocking IO this will allow you to
+still have timeouts on the reading of data.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t30MEMCACHED_BEHAVIOR_TCP_NODELAYE">
+<span id="_CPPv3N20memcached_behavior_t30MEMCACHED_BEHAVIOR_TCP_NODELAYE"></span><span id="_CPPv2N20memcached_behavior_t30MEMCACHED_BEHAVIOR_TCP_NODELAYE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_TCP_NODELAY</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t30MEMCACHED_BEHAVIOR_TCP_NODELAYE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Turns on the no-delay feature for connecting sockets (may be faster in
+some environments).</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t23MEMCACHED_BEHAVIOR_HASHE">
+<span id="_CPPv3N20memcached_behavior_t23MEMCACHED_BEHAVIOR_HASHE"></span><span id="_CPPv2N20memcached_behavior_t23MEMCACHED_BEHAVIOR_HASHE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_HASH</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t23MEMCACHED_BEHAVIOR_HASHE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Set the hash algorithm used for keys.</p>
+<p>The value can be set to either:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="memcached_generate_hash_value.html#_CPPv422MEMCACHED_HASH_DEFAULT" title="MEMCACHED_HASH_DEFAULT"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_HASH_DEFAULT</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="memcached_generate_hash_value.html#_CPPv418MEMCACHED_HASH_MD5" title="MEMCACHED_HASH_MD5"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_HASH_MD5</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="memcached_generate_hash_value.html#_CPPv418MEMCACHED_HASH_CRC" title="MEMCACHED_HASH_CRC"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_HASH_CRC</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="memcached_generate_hash_value.html#_CPPv422MEMCACHED_HASH_FNV1_64" title="MEMCACHED_HASH_FNV1_64"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_HASH_FNV1_64</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="memcached_generate_hash_value.html#_CPPv423MEMCACHED_HASH_FNV1A_64" title="MEMCACHED_HASH_FNV1A_64"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_HASH_FNV1A_64</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="memcached_generate_hash_value.html#_CPPv422MEMCACHED_HASH_FNV1_32" title="MEMCACHED_HASH_FNV1_32"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_HASH_FNV1_32</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="memcached_generate_hash_value.html#_CPPv423MEMCACHED_HASH_FNV1A_32" title="MEMCACHED_HASH_FNV1A_32"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_HASH_FNV1A_32</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="memcached_generate_hash_value.html#_CPPv422MEMCACHED_HASH_JENKINS" title="MEMCACHED_HASH_JENKINS"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_HASH_JENKINS</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="memcached_generate_hash_value.html#_CPPv420MEMCACHED_HASH_HSIEH" title="MEMCACHED_HASH_HSIEH"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_HASH_HSIEH</span></code></a>, and</p></li>
+<li><p><a class="reference internal" href="memcached_generate_hash_value.html#_CPPv421MEMCACHED_HASH_MURMUR" title="MEMCACHED_HASH_MURMUR"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_HASH_MURMUR</span></code></a>.</p></li>
+</ul>
+<p>Each hash has its advantages and its weaknesses. If you don’t know or
+don’t care, just go with the default.</p>
+<p>Support for <a class="reference internal" href="memcached_generate_hash_value.html#_CPPv420MEMCACHED_HASH_HSIEH" title="MEMCACHED_HASH_HSIEH"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_HASH_HSIEH</span></code></a> is a compile time option that is
+disabled by default. To enable tests for this hashing algorithm,
+configure and build libmemcached with the Hsieh hash enabled.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t31MEMCACHED_BEHAVIOR_DISTRIBUTIONE">
+<span id="_CPPv3N20memcached_behavior_t31MEMCACHED_BEHAVIOR_DISTRIBUTIONE"></span><span id="_CPPv2N20memcached_behavior_t31MEMCACHED_BEHAVIOR_DISTRIBUTIONE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_DISTRIBUTION</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t31MEMCACHED_BEHAVIOR_DISTRIBUTIONE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Using this you can enable different means of distributing values to
+servers.</p>
+<p>The default method is <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_DISTRIBUTION_MODULA</span></code>.</p>
+<p>You can enable consistent hashing by setting
+<code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_DISTRIBUTION_CONSISTENT</span></code>. Consistent hashing delivers better
+distribution and allows servers to be added to the cluster with minimal
+cache losses.</p>
+<p>Currently <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_DISTRIBUTION_CONSISTENT</span></code> is an alias for the
+value type:<code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA</span></code>.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t32MEMCACHED_BEHAVIOR_CACHE_LOOKUPSE">
+<span id="_CPPv3N20memcached_behavior_t32MEMCACHED_BEHAVIOR_CACHE_LOOKUPSE"></span><span id="_CPPv2N20memcached_behavior_t32MEMCACHED_BEHAVIOR_CACHE_LOOKUPSE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_CACHE_LOOKUPS</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t32MEMCACHED_BEHAVIOR_CACHE_LOOKUPSE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><blockquote>
+<div><div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 0.46(?): </span>DNS lookups are now always cached until an error occurs with the
+server.</p>
+</div>
+</div></blockquote>
+<p>Memcached can cache named lookups so that DNS lookups are made only once.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t30MEMCACHED_BEHAVIOR_SUPPORT_CASE">
+<span id="_CPPv3N20memcached_behavior_t30MEMCACHED_BEHAVIOR_SUPPORT_CASE"></span><span id="_CPPv2N20memcached_behavior_t30MEMCACHED_BEHAVIOR_SUPPORT_CASE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_SUPPORT_CAS</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t30MEMCACHED_BEHAVIOR_SUPPORT_CASE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Support CAS operations (this is not enabled by default at this point in
+the server since it imposes a slight performance penalty).</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t25MEMCACHED_BEHAVIOR_KETAMAE">
+<span id="_CPPv3N20memcached_behavior_t25MEMCACHED_BEHAVIOR_KETAMAE"></span><span id="_CPPv2N20memcached_behavior_t25MEMCACHED_BEHAVIOR_KETAMAE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_KETAMA</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t25MEMCACHED_BEHAVIOR_KETAMAE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Sets the default distribution to
+<code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA</span></code> and the hash to
+<a class="reference internal" href="memcached_generate_hash_value.html#_CPPv418MEMCACHED_HASH_MD5" title="MEMCACHED_HASH_MD5"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_HASH_MD5</span></code></a>.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t34MEMCACHED_BEHAVIOR_KETAMA_WEIGHTEDE">
+<span id="_CPPv3N20memcached_behavior_t34MEMCACHED_BEHAVIOR_KETAMA_WEIGHTEDE"></span><span id="_CPPv2N20memcached_behavior_t34MEMCACHED_BEHAVIOR_KETAMA_WEIGHTEDE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t34MEMCACHED_BEHAVIOR_KETAMA_WEIGHTEDE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Sets the default distribution to
+<code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA</span></code> with the weighted tests.
+Makes the default hashing algorithm for keys use MD5.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t30MEMCACHED_BEHAVIOR_KETAMA_HASHE">
+<span id="_CPPv3N20memcached_behavior_t30MEMCACHED_BEHAVIOR_KETAMA_HASHE"></span><span id="_CPPv2N20memcached_behavior_t30MEMCACHED_BEHAVIOR_KETAMA_HASHE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_KETAMA_HASH</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t30MEMCACHED_BEHAVIOR_KETAMA_HASHE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Sets the hashing algorithm for host mapping on continuum.</p>
+<p>The value can be set to either:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="memcached_generate_hash_value.html#_CPPv422MEMCACHED_HASH_DEFAULT" title="MEMCACHED_HASH_DEFAULT"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_HASH_DEFAULT</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="memcached_generate_hash_value.html#_CPPv418MEMCACHED_HASH_MD5" title="MEMCACHED_HASH_MD5"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_HASH_MD5</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="memcached_generate_hash_value.html#_CPPv418MEMCACHED_HASH_CRC" title="MEMCACHED_HASH_CRC"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_HASH_CRC</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="memcached_generate_hash_value.html#_CPPv422MEMCACHED_HASH_FNV1_64" title="MEMCACHED_HASH_FNV1_64"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_HASH_FNV1_64</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="memcached_generate_hash_value.html#_CPPv423MEMCACHED_HASH_FNV1A_64" title="MEMCACHED_HASH_FNV1A_64"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_HASH_FNV1A_64</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="memcached_generate_hash_value.html#_CPPv422MEMCACHED_HASH_FNV1_32" title="MEMCACHED_HASH_FNV1_32"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_HASH_FNV1_32</span></code></a>, and</p></li>
+<li><p><a class="reference internal" href="memcached_generate_hash_value.html#_CPPv423MEMCACHED_HASH_FNV1A_32" title="MEMCACHED_HASH_FNV1A_32"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_HASH_FNV1A_32</span></code></a>.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t32MEMCACHED_BEHAVIOR_KETAMA_COMPATE">
+<span id="_CPPv3N20memcached_behavior_t32MEMCACHED_BEHAVIOR_KETAMA_COMPATE"></span><span id="_CPPv2N20memcached_behavior_t32MEMCACHED_BEHAVIOR_KETAMA_COMPATE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_KETAMA_COMPAT</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t32MEMCACHED_BEHAVIOR_KETAMA_COMPATE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Sets the compatibility mode. The value can be set to either
+<code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_KETAMA_COMPAT_LIBMEMCACHED</span></code> (this is the default) or
+<code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_KETAMA_COMPAT_SPY</span></code> to be compatible with the SPY Memcached
+client for Java.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t31MEMCACHED_BEHAVIOR_POLL_TIMEOUTE">
+<span id="_CPPv3N20memcached_behavior_t31MEMCACHED_BEHAVIOR_POLL_TIMEOUTE"></span><span id="_CPPv2N20memcached_behavior_t31MEMCACHED_BEHAVIOR_POLL_TIMEOUTE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_POLL_TIMEOUT</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t31MEMCACHED_BEHAVIOR_POLL_TIMEOUTE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Modify the timeout in milliseconds value that is used by poll. The
+default value is -1. An signed int must be passed to
+<a class="reference internal" href="#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> to change this value (this requires casting).
+For <a class="reference internal" href="#_CPPv422memcached_behavior_getP12memcached_st20memcached_behavior_t" title="memcached_behavior_get"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_get()</span></code></a> a ‘signed int’ value will be cast and
+returned as ‘unsigned long long’.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t28MEMCACHED_BEHAVIOR_USER_DATAE">
+<span id="_CPPv3N20memcached_behavior_t28MEMCACHED_BEHAVIOR_USER_DATAE"></span><span id="_CPPv2N20memcached_behavior_t28MEMCACHED_BEHAVIOR_USER_DATAE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_USER_DATA</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t28MEMCACHED_BEHAVIOR_USER_DATAE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version &lt;: </span>0.30</p>
+</div>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t34MEMCACHED_BEHAVIOR_BUFFER_REQUESTSE">
+<span id="_CPPv3N20memcached_behavior_t34MEMCACHED_BEHAVIOR_BUFFER_REQUESTSE"></span><span id="_CPPv2N20memcached_behavior_t34MEMCACHED_BEHAVIOR_BUFFER_REQUESTSE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_BUFFER_REQUESTS</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t34MEMCACHED_BEHAVIOR_BUFFER_REQUESTSE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Enabling buffered IO causes commands to “buffer” instead of being sent.
+Any action that gets data causes this buffer to be be sent to the remote
+connection. Quiting the connection or closing down the connection will
+also cause the buffered data to be pushed to the remote connection.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t29MEMCACHED_BEHAVIOR_VERIFY_KEYE">
+<span id="_CPPv3N20memcached_behavior_t29MEMCACHED_BEHAVIOR_VERIFY_KEYE"></span><span id="_CPPv2N20memcached_behavior_t29MEMCACHED_BEHAVIOR_VERIFY_KEYE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_VERIFY_KEY</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t29MEMCACHED_BEHAVIOR_VERIFY_KEYE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Enabling this will cause <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcached</span></code> to test all keys to verify that
+they are valid keys.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t29MEMCACHED_BEHAVIOR_SORT_HOSTSE">
+<span id="_CPPv3N20memcached_behavior_t29MEMCACHED_BEHAVIOR_SORT_HOSTSE"></span><span id="_CPPv2N20memcached_behavior_t29MEMCACHED_BEHAVIOR_SORT_HOSTSE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_SORT_HOSTS</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t29MEMCACHED_BEHAVIOR_SORT_HOSTSE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Enabling this will cause hosts that are added to be placed in the host
+list in sorted order. This will defeat consistent hashing.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t34MEMCACHED_BEHAVIOR_CONNECT_TIMEOUTE">
+<span id="_CPPv3N20memcached_behavior_t34MEMCACHED_BEHAVIOR_CONNECT_TIMEOUTE"></span><span id="_CPPv2N20memcached_behavior_t34MEMCACHED_BEHAVIOR_CONNECT_TIMEOUTE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t34MEMCACHED_BEHAVIOR_CONNECT_TIMEOUTE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>In non-blocking mode this changes the value of the timeout during socket
+connection in milliseconds. Specifying -1 means an infinite time‐out.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t34MEMCACHED_BEHAVIOR_BINARY_PROTOCOLE">
+<span id="_CPPv3N20memcached_behavior_t34MEMCACHED_BEHAVIOR_BINARY_PROTOCOLE"></span><span id="_CPPv2N20memcached_behavior_t34MEMCACHED_BEHAVIOR_BINARY_PROTOCOLE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_BINARY_PROTOCOL</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t34MEMCACHED_BEHAVIOR_BINARY_PROTOCOLE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Enable the use of the binary protocol. Please note that you cannot
+toggle this flag on an open connection.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t35MEMCACHED_BEHAVIOR_IO_MSG_WATERMARKE">
+<span id="_CPPv3N20memcached_behavior_t35MEMCACHED_BEHAVIOR_IO_MSG_WATERMARKE"></span><span id="_CPPv2N20memcached_behavior_t35MEMCACHED_BEHAVIOR_IO_MSG_WATERMARKE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t35MEMCACHED_BEHAVIOR_IO_MSG_WATERMARKE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Set this value to tune the number of messages that may be sent before
+<code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcached</span></code> should start to automatically drain the input queue.</p>
+<p>Setting this value to high, may cause <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcached</span></code> to deadlock (trying
+to send data, but the send will block because the input buffer in the
+kernel is full).</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t37MEMCACHED_BEHAVIOR_IO_BYTES_WATERMARKE">
+<span id="_CPPv3N20memcached_behavior_t37MEMCACHED_BEHAVIOR_IO_BYTES_WATERMARKE"></span><span id="_CPPv2N20memcached_behavior_t37MEMCACHED_BEHAVIOR_IO_BYTES_WATERMARKE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_IO_BYTES_WATERMARK</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t37MEMCACHED_BEHAVIOR_IO_BYTES_WATERMARKE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Set this value to tune the number of bytes that may be sent before
+<code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcached</span></code> should start to automatically drain the input queue (need
+at least 10 IO requests sent without reading the input buffer).</p>
+<p>Setting this value to high, may cause libmemcached to deadlock (trying to
+send data, but the send will block because the input buffer in the kernel
+is full).</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t34MEMCACHED_BEHAVIOR_IO_KEY_PREFETCHE">
+<span id="_CPPv3N20memcached_behavior_t34MEMCACHED_BEHAVIOR_IO_KEY_PREFETCHE"></span><span id="_CPPv2N20memcached_behavior_t34MEMCACHED_BEHAVIOR_IO_KEY_PREFETCHE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_IO_KEY_PREFETCH</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t34MEMCACHED_BEHAVIOR_IO_KEY_PREFETCHE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>The binary protocol works a bit different than the textual protocol in
+that a multiget is implemented as a pipe of single get-operations which
+are sent to the server in a chunk.</p>
+<p>If you are using large multigets from your application, you may improve
+the latency of the gets by setting this value so you send out the first
+chunk of requests when you hit the specified limit.  It allows the
+servers to start processing the requests to send the data back while the
+rest of the requests are created and sent to the server.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t26MEMCACHED_BEHAVIOR_NOREPLYE">
+<span id="_CPPv3N20memcached_behavior_t26MEMCACHED_BEHAVIOR_NOREPLYE"></span><span id="_CPPv2N20memcached_behavior_t26MEMCACHED_BEHAVIOR_NOREPLYE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_NOREPLY</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t26MEMCACHED_BEHAVIOR_NOREPLYE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Set this value to specify that you really don’t care about the result
+from your storage commands (set, add, replace, append, prepend).</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t37MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICASE">
+<span id="_CPPv3N20memcached_behavior_t37MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICASE"></span><span id="_CPPv2N20memcached_behavior_t37MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICASE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t37MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICASE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Specify the numbers of replicas <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcached</span></code> should store of each item
+(on different servers).</p>
+<p>This replication does not dedicate certain memcached servers to store
+the replicas in, but instead it will store the replicas together with
+all of the other objects (on the ‘n’ next servers specified in your
+server list).</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t41MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READE">
+<span id="_CPPv3N20memcached_behavior_t41MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READE"></span><span id="_CPPv2N20memcached_behavior_t41MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t41MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Allows randomizing the replica reads starting point. Normally the read
+is done from primary server and in case of miss the read is done from
+primary + 1, then primary + 2 all the way to ‘n’ replicas.</p>
+<p>If this option is set on the starting point of the replica reads is
+randomized between the servers.  This allows distributing read load to
+multiple servers with the expense of more write traffic.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t23MEMCACHED_BEHAVIOR_CORKE">
+<span id="_CPPv3N20memcached_behavior_t23MEMCACHED_BEHAVIOR_CORKE"></span><span id="_CPPv2N20memcached_behavior_t23MEMCACHED_BEHAVIOR_CORKE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_CORK</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t23MEMCACHED_BEHAVIOR_CORKE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version ?: </span>This open has been deprecated with the behavior now built and used
+appropriately on selected platforms.</p>
+</div>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t28MEMCACHED_BEHAVIOR_KEEPALIVEE">
+<span id="_CPPv3N20memcached_behavior_t28MEMCACHED_BEHAVIOR_KEEPALIVEE"></span><span id="_CPPv2N20memcached_behavior_t28MEMCACHED_BEHAVIOR_KEEPALIVEE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_KEEPALIVE</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t28MEMCACHED_BEHAVIOR_KEEPALIVEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Enable TCP_KEEPALIVE behavior.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t33MEMCACHED_BEHAVIOR_KEEPALIVE_IDLEE">
+<span id="_CPPv3N20memcached_behavior_t33MEMCACHED_BEHAVIOR_KEEPALIVE_IDLEE"></span><span id="_CPPv2N20memcached_behavior_t33MEMCACHED_BEHAVIOR_KEEPALIVE_IDLEE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_KEEPALIVE_IDLE</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t33MEMCACHED_BEHAVIOR_KEEPALIVE_IDLEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Specify time, in seconds, to mark a connection as idle. This is only
+available as an option Linux.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t35MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZEE">
+<span id="_CPPv3N20memcached_behavior_t35MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZEE"></span><span id="_CPPv2N20memcached_behavior_t35MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZEE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t35MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Find the current size of SO_SNDBUF. A value of 0 means either an error
+occurred or no hosts were available. It is safe to assume system default
+if this occurs.</p>
+<p>If an error occurs you can check the last cached errno to find the
+specific error.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t35MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZEE">
+<span id="_CPPv3N20memcached_behavior_t35MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZEE"></span><span id="_CPPv2N20memcached_behavior_t35MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZEE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t35MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Find the current size of SO_RCVBUF. A value of 0 means either an error
+occurred or no hosts were available. It is safe to assume system default
+if this occurs.</p>
+<p>If an error occurs you can check the last cached errno to find the
+specific error.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t39MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMITE">
+<span id="_CPPv3N20memcached_behavior_t39MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMITE"></span><span id="_CPPv2N20memcached_behavior_t39MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMITE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t39MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMITE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 0.48: </span>See <a class="reference internal" href="#_CPPv4N20memcached_behavior_t40MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERSE" title="memcached_behavior_t::MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS</span></code></a></p>
+</div>
+<p>Set this value to enable the server be removed after continuous
+<a class="reference internal" href="#_CPPv4N20memcached_behavior_t39MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMITE" title="memcached_behavior_t::MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT</span></code></a> times connection failure.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t35MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTSE">
+<span id="_CPPv3N20memcached_behavior_t35MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTSE"></span><span id="_CPPv2N20memcached_behavior_t35MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTSE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t35MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTSE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 0.48: </span>See <a class="reference internal" href="#_CPPv4N20memcached_behavior_t40MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERSE" title="memcached_behavior_t::MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS</span></code></a></p>
+</div>
+<p>If enabled any hosts which have been flagged as disabled will be removed
+from the list of servers in the <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> structure. This must be
+used in combination with <a class="reference internal" href="#_CPPv4N20memcached_behavior_t39MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMITE" title="memcached_behavior_t::MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT</span></code></a>.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t40MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERSE">
+<span id="_CPPv3N20memcached_behavior_t40MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERSE"></span><span id="_CPPv2N20memcached_behavior_t40MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERSE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t40MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERSE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>If enabled any hosts which have been flagged as disabled will be removed
+from the list of servers in the <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> structure.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t32MEMCACHED_BEHAVIOR_RETRY_TIMEOUTE">
+<span id="_CPPv3N20memcached_behavior_t32MEMCACHED_BEHAVIOR_RETRY_TIMEOUTE"></span><span id="_CPPv2N20memcached_behavior_t32MEMCACHED_BEHAVIOR_RETRY_TIMEOUTE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_RETRY_TIMEOUT</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t32MEMCACHED_BEHAVIOR_RETRY_TIMEOUTE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>When enabled a host which is problematic will only be checked for usage
+based on the amount of time set by this behavior. The value is in
+seconds.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N20memcached_behavior_t39MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEYE">
+<span id="_CPPv3N20memcached_behavior_t39MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEYE"></span><span id="_CPPv2N20memcached_behavior_t39MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEYE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t39MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEYE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>When enabled the prefix key will be added to the key when determining
+server by hash. See <a class="reference internal" href="memcached_callback.html#_CPPv4N20memcached_callback_t28MEMCACHED_CALLBACK_NAMESPACEE" title="MEMCACHED_CALLBACK_NAMESPACE"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_CALLBACK_NAMESPACE</span></code></a> for additional
+information.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="description">
+<h2>DESCRIPTION<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcached</span></code> behavior can be modified by using <a class="reference internal" href="#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a>.
+Default behavior is the library strives to be quick and accurate. Some behavior,
+while being faster, can also result in not entirely accurate behavior (for
+instance, <a class="reference internal" href="memcached_set.html#_CPPv413memcached_setP12memcached_stPKc6size_tPKc6size_t6time_t8uint32_t" title="memcached_set"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_set()</span></code></a> will always respond with <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t17MEMCACHED_SUCCESSE" title="MEMCACHED_SUCCESS"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_SUCCESS</span></code></a>).</p>
+<p><a class="reference internal" href="#_CPPv422memcached_behavior_getP12memcached_st20memcached_behavior_t" title="memcached_behavior_get"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_behavior_get()</span></code></a> takes a behavior flag and returns whether or not
+that behavior is currently enabled in the client.</p>
+<p><a class="reference internal" href="#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> changes the value of a particular option of the
+client. It takes both a flag (listed below) and a value. For simple on or off
+options you just need to pass in a value of 1. Calls to
+<a class="reference internal" href="#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> will flush and reset all connections.</p>
+</div>
+<div class="section" id="return-value">
+<h2>RETURN VALUE<a class="headerlink" href="#return-value" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="#_CPPv422memcached_behavior_getP12memcached_st20memcached_behavior_t" title="memcached_behavior_get"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_behavior_get()</span></code></a> returns either the current value of the key, or 0
+or 1 on simple flag behaviors (1 being enabled). <a class="reference internal" href="#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a>
+returns failure or success.</p>
+</div>
+<div class="section" id="notes">
+<h2>NOTES<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">data</span></code> argument of <a class="reference internal" href="#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> was changed in version
+0.17 from taking a pointer to data value, to taking a uin64_t.</p>
+</div>
+<div class="section" id="see-also">
+<h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><em class="manpage"><a class="manpage reference external" href="http://man7.org/linux/man-pages/man1/memcached.1.html">memcached(1)</a></em></p></li>
+<li><p><em class="manpage"><a class="manpage reference external" href="http://man7.org/linux/man-pages/man3/setsockopt.3.html">setsockopt(3)</a></em></p></li>
+<li><p><a class="reference internal" href="../libmemcached.html"><span class="doc">C/C++ Client Library for memcached</span></a></p></li>
+<li><p><a class="reference internal" href="memcached_strerror.html"><span class="doc">Converting Error Codes to Messages</span></a></p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="memcached_callback.html" class="btn btn-neutral float-right" title="Setting callbacks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index_advanced_internals.html" class="btn btn-neutral float-left" title="Internal Behavior" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; <a href="../copyright.html">Copyright</a> 
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

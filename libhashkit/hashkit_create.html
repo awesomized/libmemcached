@@ -1,0 +1,325 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Creating a hashkit structure &mdash; libmemcached 1.0.99 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="copyright" title="Copyright" href="../copyright.html" />
+    <link rel="next" title="Set Hash Function" href="hashkit_function.html" />
+    <link rel="prev" title="libhashkit API" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> libmemcached
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">libmemcached</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../libmemcached.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../libmemcached/index.html">libmemcached API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../libmemcached/index_basics.html">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libmemcached/index_data.html">Working with Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libmemcached/index_errors.html">Messages and Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libmemcached/index_advanced.html">Advanced Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libmemcached/index_deprecated.html">Deprecated Functionality</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../libmemcached/index_misc.html">Misc</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../libmemcached/configuration.html">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libmemcached/constants.html">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libmemcached/examples.html">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libmemcached/versioning.html">Versioning</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">libmemcachedutil</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../libmemcachedutil.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../libmemcachedutil/index.html">libmemcachedutil API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../libmemcachedutil/memcached_pool.html">Working with memcached pools</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">libhashkit</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../libhashkit.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">libhashkit API</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Creating a hashkit structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hashkit_function.html">Set Hash Function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hashkit_functions.html">Available Hashes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hashkit_value.html">Generate hash value</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Client Applications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../bin/index.html">Client Applications</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memcapable.html">memcapable - Checking a Memcached server capabilities and compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memcat.html">memcat - “cat” data from a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memcp.html">memcp - Copy data to a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memdump.html">memdump - Dumping your server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memerror.html">memerror - translate an error code to a string</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memflush.html">memflush - flush all data from a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memrm.html">memrm - Remove data from a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memslap.html">memslap - Load testing  and benchmarking a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memaslap.html">memaslap - Load testing  and benchmarking a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memstat.html">memstat - Gather statistics from a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memexist.html">memexist - Check for the existence of a key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memparse.html">memparse - Parse an option string</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memping.html">memping - Test to see if a server is available.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memtouch.html">memtouch - Touches a key.</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">libmemcached</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">libhashkit API</a> &raquo;</li>
+        
+      <li>Creating a hashkit structure</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="creating-a-hashkit-structure">
+<h1>Creating a hashkit structure<a class="headerlink" href="#creating-a-hashkit-structure" title="Permalink to this headline">¶</a></h1>
+<p>Create, copy and free a hashkit structure</p>
+<div class="section" id="synopsis">
+<h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<dl class="simple">
+<dt>#include &lt;libhashkit-1.0/hashkit.h&gt;</dt><dd><p>Compile and link with -lhashkit</p>
+</dd>
+</dl>
+<dl class="type">
+<dt id="_CPPv410hashkit_st">
+<span id="_CPPv310hashkit_st"></span><span id="_CPPv210hashkit_st"></span><span id="hashkit_st"></span><em class="property">typedef </em><em class="property">struct</em> <a class="reference internal" href="#_CPPv410hashkit_st" title="hashkit_st">hashkit_st</a> <code class="sig-name descname">hashkit_st</code><a class="headerlink" href="#_CPPv410hashkit_st" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv414hashkit_createP10hashkit_st">
+<span id="_CPPv314hashkit_createP10hashkit_st"></span><span id="_CPPv214hashkit_createP10hashkit_st"></span><span id="hashkit_create__hashkit_stP"></span><a class="reference internal" href="#_CPPv410hashkit_st" title="hashkit_st">hashkit_st</a> *<code class="sig-name descname">hashkit_create</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv410hashkit_st" title="hashkit_st">hashkit_st</a> *<em>hash</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414hashkit_createP10hashkit_st" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv413hashkit_cloneP10hashkit_stPK10hashkit_st">
+<span id="_CPPv313hashkit_cloneP10hashkit_stPK10hashkit_st"></span><span id="_CPPv213hashkit_cloneP10hashkit_stPK10hashkit_st"></span><span id="hashkit_clone__hashkit_stP.hashkit_stCP"></span><a class="reference internal" href="#_CPPv410hashkit_st" title="hashkit_st">hashkit_st</a> *<code class="sig-name descname">hashkit_clone</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv410hashkit_st" title="hashkit_st">hashkit_st</a> *<em>destination</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv410hashkit_st" title="hashkit_st">hashkit_st</a> *<em>ptr</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413hashkit_cloneP10hashkit_stPK10hashkit_st" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv412hashkit_freeP10hashkit_st">
+<span id="_CPPv312hashkit_freeP10hashkit_st"></span><span id="_CPPv212hashkit_freeP10hashkit_st"></span><span id="hashkit_free__hashkit_stP"></span>void <code class="sig-name descname">hashkit_free</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv410hashkit_st" title="hashkit_st">hashkit_st</a> *<em>hash</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412hashkit_freeP10hashkit_st" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv420hashkit_is_allocatedPK10hashkit_st">
+<span id="_CPPv320hashkit_is_allocatedPK10hashkit_st"></span><span id="_CPPv220hashkit_is_allocatedPK10hashkit_st"></span><span id="hashkit_is_allocated__hashkit_stCP"></span>bool <code class="sig-name descname">hashkit_is_allocated</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="#_CPPv410hashkit_st" title="hashkit_st">hashkit_st</a> *<em>hash</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420hashkit_is_allocatedPK10hashkit_st" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="description">
+<h2>DESCRIPTION<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="#_CPPv414hashkit_createP10hashkit_st" title="hashkit_create"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">hashkit_create()</span></code></a> function initializes a hashkit object for use. If
+you pass a NULL argument for hash, then the memory for the object is
+allocated. If you specify a pre-allocated piece of memory, that is
+initialized for use.</p>
+<p>The <a class="reference internal" href="#_CPPv413hashkit_cloneP10hashkit_stPK10hashkit_st" title="hashkit_clone"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">hashkit_clone()</span></code></a> function initializes a hashkit object much like
+<a class="reference internal" href="#_CPPv414hashkit_createP10hashkit_st" title="hashkit_create"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">hashkit_create()</span></code></a>, but instead of using default settings it will use
+the settings of the ptr hashkit object.</p>
+<p>The <a class="reference internal" href="#_CPPv412hashkit_freeP10hashkit_st" title="hashkit_free"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">hashkit_free()</span></code></a> frees any resources being consumed by the hashkit
+objects that were initialized with <a class="reference internal" href="#_CPPv414hashkit_createP10hashkit_st" title="hashkit_create"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">hashkit_create()</span></code></a> or <a class="reference internal" href="#_CPPv413hashkit_cloneP10hashkit_stPK10hashkit_st" title="hashkit_clone"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">hashkit_clone()</span></code></a>.</p>
+<p>The <a class="reference internal" href="#_CPPv420hashkit_is_allocatedPK10hashkit_st" title="hashkit_is_allocated"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">hashkit_is_allocated()</span></code></a> reports where the memory was allocated
+for a hashkit object.</p>
+</div>
+<div class="section" id="return-value">
+<h2>RETURN VALUE<a class="headerlink" href="#return-value" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="#_CPPv414hashkit_createP10hashkit_st" title="hashkit_create"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">hashkit_create()</span></code></a> and <a class="reference internal" href="#_CPPv413hashkit_cloneP10hashkit_stPK10hashkit_st" title="hashkit_clone"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">hashkit_clone()</span></code></a> will return NULL on
+failure or non-NULL on success.</p>
+<p><a class="reference internal" href="#_CPPv420hashkit_is_allocatedPK10hashkit_st" title="hashkit_is_allocated"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">hashkit_is_allocated()</span></code></a> returns true if the memory for the hashkit
+object was allocated inside of <a class="reference internal" href="#_CPPv414hashkit_createP10hashkit_st" title="hashkit_create"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">hashkit_create()</span></code></a> or
+<a class="reference internal" href="#_CPPv413hashkit_cloneP10hashkit_stPK10hashkit_st" title="hashkit_clone"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">hashkit_clone()</span></code></a>, otherwise it is false and was user-supplied memory.</p>
+</div>
+<div class="section" id="see-also">
+<h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../libhashkit.html"><span class="doc">libhashkit - C/C++ hashing library</span></a></p></li>
+<li><p><a class="reference internal" href="hashkit_value.html"><span class="doc">Generate hash value</span></a></p></li>
+<li><p><a class="reference internal" href="hashkit_function.html"><span class="doc">Set Hash Function</span></a></p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="hashkit_function.html" class="btn btn-neutral float-right" title="Set Hash Function" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="libhashkit API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; <a href="../copyright.html">Copyright</a> 
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

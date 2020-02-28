@@ -1,0 +1,563 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>libmemcached Configuration &mdash; libmemcached 1.0.99 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="copyright" title="Copyright" href="../copyright.html" />
+    <link rel="next" title="libmemcached Constants and Defaults" href="constants.html" />
+    <link rel="prev" title="Misc" href="index_misc.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> libmemcached
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">libmemcached</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../libmemcached.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">libmemcached API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="index_basics.html">Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index_data.html">Working with Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index_errors.html">Messages and Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index_advanced.html">Advanced Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index_deprecated.html">Deprecated Functionality</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="index_misc.html">Misc</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="constants.html">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="versioning.html">Versioning</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">libmemcachedutil</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../libmemcachedutil.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../libmemcachedutil/index.html">libmemcachedutil API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../libmemcachedutil/memcached_pool.html">Working with memcached pools</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">libhashkit</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../libhashkit.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../libhashkit/index.html">libhashkit API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../libhashkit/hashkit_create.html">Creating a hashkit structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libhashkit/hashkit_function.html">Set Hash Function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libhashkit/hashkit_functions.html">Available Hashes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../libhashkit/hashkit_value.html">Generate hash value</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Client Applications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../bin/index.html">Client Applications</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memcapable.html">memcapable - Checking a Memcached server capabilities and compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memcat.html">memcat - “cat” data from a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memcp.html">memcp - Copy data to a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memdump.html">memdump - Dumping your server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memerror.html">memerror - translate an error code to a string</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memflush.html">memflush - flush all data from a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memrm.html">memrm - Remove data from a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memslap.html">memslap - Load testing  and benchmarking a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memaslap.html">memaslap - Load testing  and benchmarking a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memstat.html">memstat - Gather statistics from a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memexist.html">memexist - Check for the existence of a key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memparse.html">memparse - Parse an option string</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memping.html">memping - Test to see if a server is available.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bin/memtouch.html">memtouch - Touches a key.</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">libmemcached</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index_misc.html">Misc</a> &raquo;</li>
+        
+      <li>libmemcached Configuration</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="libmemcached-configuration">
+<h1>libmemcached Configuration<a class="headerlink" href="#libmemcached-configuration" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="synopsis">
+<h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<dl class="simple">
+<dt>#include &lt;libmemcached-1.0/memcached.h&gt;</dt><dd><p>Compile and link with -lmemcached</p>
+</dd>
+</dl>
+<dl class="function">
+<dt id="_CPPv49memcachedPKc6size_t">
+<span id="_CPPv39memcachedPKc6size_t"></span><span id="_CPPv29memcachedPKc6size_t"></span><span id="memcached__cCP.s"></span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<code class="sig-name descname">memcached</code><span class="sig-paren">(</span><em class="property">const</em> char *<em>string</em>, size_t <em>string_length</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49memcachedPKc6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="_CPPv432libmemcached_check_configurationPKc6size_tPc6size_t">
+<span id="_CPPv332libmemcached_check_configurationPKc6size_tPc6size_t"></span><span id="_CPPv232libmemcached_check_configurationPKc6size_tPc6size_t"></span><span id="libmemcached_check_configuration__cCP.s.cP.s"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">libmemcached_check_configuration</code><span class="sig-paren">(</span><em class="property">const</em> char *<em>option_string</em>, size_t <em>length</em>, char *<em>error_buffer</em>, size_t <em>error_buffer_size</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv432libmemcached_check_configurationPKc6size_tPc6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="description">
+<h2>DESCRIPTION<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcached</span></code> implements a custom language for configuring and modifying
+servers. By passing in an option string you can generate a <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> object
+that you can use in your application directly.</p>
+<div class="section" id="general-options">
+<h3>General Options:<a class="headerlink" href="#general-options" title="Permalink to this headline">¶</a></h3>
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--SERVER=&lt;servername&gt;:&lt;optional_port&gt;/?&lt;optional_weight&gt;</code></dt>
+<dd><p>Provide a servername to be used by the client.</p>
+<p>Providing a weight will cause weighting to occur with all hosts with each
+server getting a default weight of 1.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--SOCKET=&quot;&lt;filepath&gt;/?&lt;optional_weight&gt;&quot;</code></dt>
+<dd><p>Provide a filepath to a UNIX socket file. Providing a weight will cause
+weighting to occur with all hosts with each server getting a default weight
+of 1.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--VERIFY-KEY</code></dt>
+<dd><p>Verify that keys that are being used fit within the design of the protocol
+being used.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--REMOVE_FAILED_SERVERS</code></dt>
+<dd><p>Enable the behavior <a class="reference internal" href="memcached_behavior.html#_CPPv4N20memcached_behavior_t40MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERSE" title="MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS</span></code></a>.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--BINARY-PROTOCOL</code></dt>
+<dd><p>Force all connections to use the binary protocol.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--BUFFER-REQUESTS</code></dt>
+<dd><p>Please see <a class="reference internal" href="memcached_behavior.html#_CPPv4N20memcached_behavior_t34MEMCACHED_BEHAVIOR_BUFFER_REQUESTSE" title="MEMCACHED_BEHAVIOR_BUFFER_REQUESTS"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_BUFFER_REQUESTS</span></code></a>.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--CONFIGURE-FILE=</code></dt>
+<dd><p>Provide a configuration file to be used to load requests. Beware that by
+using a configuration file <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcached</span></code> will reset <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> based
+on information only contained in the file.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--CONNECT-TIMEOUT=</code></dt>
+<dd><p>See <a class="reference internal" href="memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> for <a class="reference internal" href="memcached_behavior.html#_CPPv4N20memcached_behavior_t34MEMCACHED_BEHAVIOR_CONNECT_TIMEOUTE" title="MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT</span></code></a>.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--DISTRIBUTION=</code></dt>
+<dd><p>Set the distribution model used by the client.
+See <a class="reference internal" href="memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> for more details.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--HASH=</code></dt>
+<dd><p>Set the hashing algorithm used for placing keys on servers.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--HASH-WITH-NAMESPACE</code></dt>
+<dd><p>When enabled the prefix key will be added to the key when determining which
+server to store the data in.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--NOREPLY</code></dt>
+<dd><p>Enable “no reply” for all calls that support this. It is highly recommended
+that you use this option with the binary protocol only.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--NUMBER-OF-REPLICAS=</code></dt>
+<dd><p>Set the number of servers that keys will be replicated to.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--RANDOMIZE-REPLICA-READ</code></dt>
+<dd><p>Select randomly the server within the replication pool to read from.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--SORT-HOSTS</code></dt>
+<dd><p>When adding new servers always calculate their distribution based on sorted
+naming order.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--SUPPORT-CAS</code></dt>
+<dd><p>See <a class="reference internal" href="memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> for <a class="reference internal" href="memcached_behavior.html#_CPPv4N20memcached_behavior_t30MEMCACHED_BEHAVIOR_SUPPORT_CASE" title="MEMCACHED_BEHAVIOR_SUPPORT_CAS"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_SUPPORT_CAS</span></code></a></p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--USE-UDP</code></dt>
+<dd><p>See <a class="reference internal" href="memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> for <a class="reference internal" href="memcached_behavior.html#_CPPv4N20memcached_behavior_t26MEMCACHED_BEHAVIOR_USE_UDPE" title="MEMCACHED_BEHAVIOR_USE_UDP"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_USE_UDP</span></code></a></p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--NAMESPACE=</code></dt>
+<dd><p>A namespace is a container that provides context for keys, only other
+requests that know the namespace can access these values. This is
+accomplished by prepending the namespace value to all keys.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="memcached-pool-options">
+<h3>Memcached Pool Options:<a class="headerlink" href="#memcached-pool-options" title="Permalink to this headline">¶</a></h3>
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--POOL-MIN</code></dt>
+<dd><p>Initial size of pool.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--POOL-MAX</code></dt>
+<dd><p>Maximize size of the pool.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="i-o-options">
+<h3>I/O Options:<a class="headerlink" href="#i-o-options" title="Permalink to this headline">¶</a></h3>
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--TCP-NODELAY</code></dt>
+<dd><p>See <a class="reference internal" href="memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> for <a class="reference internal" href="memcached_behavior.html#_CPPv4N20memcached_behavior_t30MEMCACHED_BEHAVIOR_TCP_NODELAYE" title="MEMCACHED_BEHAVIOR_TCP_NODELAY"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_TCP_NODELAY</span></code></a></p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--TCP-KEEPALIVE</code></dt>
+<dd><p>See <a class="reference internal" href="memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> for <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_TCP_KEEPALIVE</span></code></p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--RETRY-TIMEOUT=</code></dt>
+<dd><p>See <a class="reference internal" href="memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> for <a class="reference internal" href="memcached_behavior.html#_CPPv4N20memcached_behavior_t32MEMCACHED_BEHAVIOR_RETRY_TIMEOUTE" title="MEMCACHED_BEHAVIOR_RETRY_TIMEOUT"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_RETRY_TIMEOUT</span></code></a></p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--SERVER-FAILURE-LIMIT=</code></dt>
+<dd><p>See <a class="reference internal" href="memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> for <a class="reference internal" href="memcached_behavior.html#_CPPv4N20memcached_behavior_t39MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMITE" title="MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT</span></code></a></p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--SND-TIMEOUT=</code></dt>
+<dd><p>See <a class="reference internal" href="memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> for <a class="reference internal" href="memcached_behavior.html#_CPPv4N20memcached_behavior_t30MEMCACHED_BEHAVIOR_SND_TIMEOUTE" title="MEMCACHED_BEHAVIOR_SND_TIMEOUT"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_SND_TIMEOUT</span></code></a></p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--SOCKET-RECV-SIZE=</code></dt>
+<dd><p>See <a class="reference internal" href="memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> for <a class="reference internal" href="memcached_behavior.html#_CPPv4N20memcached_behavior_t35MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZEE" title="MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE</span></code></a></p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--SOCKET-SEND-SIZE=</code></dt>
+<dd><p>See <a class="reference internal" href="memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> for <a class="reference internal" href="memcached_behavior.html#_CPPv4N20memcached_behavior_t35MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZEE" title="MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE</span></code></a></p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--POLL-TIMEOUT=</code></dt>
+<dd><p>Set the timeout used by <em class="manpage"><a class="manpage reference external" href="http://man7.org/linux/man-pages/man3/poll.3.html">poll(3)</a></em>.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--IO-BYTES-WATERMARK=</code></dt>
+<dd></dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--IO-KEY-PREFETCH=</code></dt>
+<dd></dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--IO-MSG-WATERMARK=</code></dt>
+<dd></dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--TCP-KEEPIDLE</code></dt>
+<dd></dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">--RCV-TIMEOUT=</code></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="other-options">
+<h3>Other Options:<a class="headerlink" href="#other-options" title="Permalink to this headline">¶</a></h3>
+<dl class="describe">
+<dt>
+<code class="sig-name descname">INCLUDE</code></dt>
+<dd><p>Include a file in configuration.
+Unlike –CONFIGURE-FILE= this will not reset <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a>.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">RESET</code></dt>
+<dd><p>Reset <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> and continue to process.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">END</code></dt>
+<dd><p>End configuration processing.</p>
+</dd></dl>
+
+<dl class="describe">
+<dt>
+<code class="sig-name descname">ERROR</code></dt>
+<dd><p>End configuration processing and throw an error.</p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="environment">
+<h2>ENVIRONMENT<a class="headerlink" href="#environment" title="Permalink to this headline">¶</a></h2>
+<dl class="envvar">
+<dt id="envvar-LIBMEMCACHED">
+<code class="sig-name descname">LIBMEMCACHED</code><a class="headerlink" href="#envvar-LIBMEMCACHED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="return-value">
+<h2>RETURN VALUE<a class="headerlink" href="#return-value" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="#_CPPv49memcachedPKc6size_t" title="memcached"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached()</span></code></a> returns a pointer to the memcached_st that was
+created (or initialized).  On an allocation failure, it returns NULL.</p>
+</div>
+<div class="section" id="example">
+<h2>EXAMPLE<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">config_string</span><span class="o">=</span>
+  <span class="s">&quot;--SERVER=host10.example.com &quot;</span>
+  <span class="s">&quot;--SERVER=host11.example.com &quot;</span>
+  <span class="s">&quot;--SERVER=host10.example.com&quot;</span><span class="p">;</span>
+<span class="n">memcached_st</span> <span class="o">*</span><span class="n">memc</span><span class="o">=</span> <span class="n">memcached</span><span class="p">(</span><span class="n">config_string</span><span class="p">,</span> <span class="n">strlen</span><span class="p">(</span><span class="n">config_string</span><span class="p">));</span>
+<span class="p">{</span>
+  <span class="c1">// ...</span>
+<span class="p">}</span>
+<span class="n">memcached_free</span><span class="p">(</span><span class="n">memc</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="see-also">
+<h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><em class="manpage"><a class="manpage reference external" href="http://man7.org/linux/man-pages/man1/memcached.1.html">memcached(1)</a></em></p></li>
+<li><p><a class="reference internal" href="../libmemcached.html"><span class="doc">C/C++ Client Library for memcached</span></a></p></li>
+<li><p><a class="reference internal" href="memcached_strerror.html"><span class="doc">Converting Error Codes to Messages</span></a></p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="constants.html" class="btn btn-neutral float-right" title="libmemcached Constants and Defaults" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index_misc.html" class="btn btn-neutral float-left" title="Misc" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; <a href="../copyright.html">Copyright</a> 
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
