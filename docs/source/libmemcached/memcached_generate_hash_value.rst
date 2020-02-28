@@ -1,4 +1,3 @@
-===============================
 Generating hash values directly
 ===============================
 
@@ -41,7 +40,6 @@ SYNOPSIS
 
 Compile and link with -lmemcachedutil -lmemcached
 
------------
 DESCRIPTION
 -----------
 
@@ -60,7 +58,6 @@ defaults of :type:`memcached_st`.
 As of version 0.36 all hash methods have been placed into the library
 libhashkit(3) which is linked with libmemcached(3). For more information please see its documentation.
 
-------
 RETURN
 ------
 
@@ -68,7 +65,6 @@ A 32-bit integer which is the result of hashing the given key.
 For 64-bit hash algorithms, only the least-significant 32 bits are
 returned.
 
---------
 SEE ALSO
 --------
 

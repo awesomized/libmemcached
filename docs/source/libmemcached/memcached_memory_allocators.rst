@@ -1,4 +1,3 @@
-========================================
 Use custom allocators for embedded usage
 ========================================
 
@@ -6,7 +5,6 @@ Use custom allocators for embedded usage
 
 Manage memory allocator functions
 
---------
 SYNOPSIS
 --------
 
@@ -28,7 +26,6 @@ SYNOPSIS
 
 Compile and link with -lmemcached
 
------------
 DESCRIPTION
 -----------
 
@@ -52,7 +49,6 @@ The first argument to the memory allocator functions is a pointer to a
 memcached structure, the is passed as const and you will need to clone
 it in order to make use of any operation which would modify it.
 
------
 NOTES
 -----
 
@@ -60,7 +56,6 @@ In version 0.38 all functions were modified to have a context void pointer
 passed to them. This was so that customer allocators could have their
 own space for memory.
 
-------
 RETURN
 ------
 
@@ -68,7 +63,6 @@ RETURN
 upon success, and `MEMCACHED_FAILURE` if you don't pass a complete set 
 of function pointers.
 
---------
 SEE ALSO
 --------
 

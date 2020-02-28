@@ -1,4 +1,3 @@
-=======================
 Flushing client buffers
 =======================
 
@@ -6,7 +5,6 @@ Flushing client buffers
 
 Flush and send buffered commands
 
---------
 SYNOPSIS
 --------
 
@@ -16,14 +14,12 @@ SYNOPSIS
 
 Compile and link with -lmemcached
 
------------
 DESCRIPTION
 -----------
 
 :func:`memcached_flush_buffers` is used in conjunction with
 `MEMCACHED_BEHAVIOR_BUFFER_REQUESTS` (see memcached_behavior(3)) to flush all buffers by sending the buffered commands to the server for processing.
 
-------
 RETURN
 ------
 
@@ -32,7 +28,6 @@ On success that value will be `MEMCACHED_SUCCESS`.
 Use :func:`memcached_strerror` to translate this value to a printable 
 string.
 
---------
 SEE ALSO
 --------
 

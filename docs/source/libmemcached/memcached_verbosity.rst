@@ -1,4 +1,3 @@
-=================================
 Setting the verbosity of a server
 =================================
 
@@ -6,7 +5,6 @@ Setting the verbosity of a server
 
 Modify verbosity of servers
 
---------
 SYNOPSIS
 --------
 
@@ -16,14 +14,12 @@ SYNOPSIS
 
 Compile and link with -lmemcached
 
------------
 DESCRIPTION
 -----------
 
 :func:`memcached_verbosity` modifies the "verbosity" of the
 memcached(1) servers referenced in the :type:`memcached_st`  parameter.
 
-------
 RETURN
 ------
 
@@ -33,7 +29,6 @@ On success that value will be `MEMCACHED_SUCCESS`.
 
 Use :func:`memcached_strerror` to translate this value to a printable string.
 
---------
 SEE ALSO
 --------
 

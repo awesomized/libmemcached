@@ -1,10 +1,8 @@
-====================================
 Disconnecting a client from a server
 ====================================
 
 .. index:: object: memcached_st
 
---------
 SYNOPSIS
 --------
 
@@ -14,7 +12,6 @@ SYNOPSIS
 
 Compile and link with -lmemcached
 
------------
 DESCRIPTION
 -----------
 
@@ -27,7 +24,6 @@ hashes and parameters will handle connections to the server for you. This
 function is provided mainly so that you can timeout your connections or
 reset connections during the middle of a :func:`memcached_fetch`.
 
-------
 RETURN
 ------
 
@@ -35,7 +31,6 @@ A value of type :type:`memcached_return_t` is returned On success that value
 will be `MEMCACHED_SUCCESS`.  Use :func:`memcached_strerror` to
 translate this value to a printable string.
 
---------
 SEE ALSO
 --------
 

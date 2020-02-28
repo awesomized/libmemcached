@@ -1,4 +1,3 @@
-=====================================
 Wiping clean the contents of a server
 =====================================
 
@@ -6,7 +5,6 @@ Wiping clean the contents of a server
 
 Wipe contents of memcached servers
 
---------
 SYNOPSIS
 --------
 
@@ -16,7 +14,6 @@ SYNOPSIS
 
 Compile and link with -lmemcached
 
------------
 DESCRIPTION
 -----------
 
@@ -34,7 +31,6 @@ A value of type :type:`memcached_return_t` is returned
 On success that value will be `MEMCACHED_SUCCESS`.
 Use :type:`memcached_strerror` to translate this value to a printable string.
 
---------
 SEE ALSO
 --------
 

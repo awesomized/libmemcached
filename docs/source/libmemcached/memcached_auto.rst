@@ -1,10 +1,8 @@
-====================================
 Incrementing and Decrementing Values
 ====================================
 
 .. index:: object: memcached_st
 
---------
 SYNOPSIS
 --------
 
@@ -28,7 +26,6 @@ SYNOPSIS
 
 Compile and link with -lmemcached
 
------------
 DESCRIPTION
 -----------
 
@@ -68,7 +65,6 @@ when using the binary protocol.
 :func:`memcached_increment_with_initial_by_key`, and
 :func:`memcached_decrement_with_initial_by_key` are master key equivalents of the above.
 
-------
 RETURN
 ------
 
@@ -76,7 +72,6 @@ A value of type :type:`memcached_return_t`  is returned.
 On success that value will be `MEMCACHED_SUCCESS`.
 Use memcached_strerror to translate this value to a printable string.
 
---------
 SEE ALSO
 --------
 

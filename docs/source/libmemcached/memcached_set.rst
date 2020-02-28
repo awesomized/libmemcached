@@ -3,7 +3,6 @@ Storing data on the server
 
 .. index:: object: memcached_st
 
---------
 SYNOPSIS
 --------
 
@@ -22,7 +21,6 @@ SYNOPSIS
 
 .. function:: memcached_return_t memcached_replace_by_key(memcached_st *ptr, const char *group_key, size_t group_key_length, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags)
 
------------
 DESCRIPTION
 -----------
 

@@ -1,4 +1,3 @@
-==========================
 Dumping data from a server
 ==========================
 
@@ -6,7 +5,6 @@ Get a list of keys found on memcached servers
 
 .. index:: object: memcached_st
 
---------
 SYNOPSIS
 --------
 
@@ -18,7 +16,6 @@ SYNOPSIS
 
 Compile and link with -lmemcached
 
------------
 DESCRIPTION
 -----------
 
@@ -37,7 +34,6 @@ On success that value will be `MEMCACHED_SUCCESS`.
 Use :func:`memcached_strerror` to translate this value to a printable 
 string.
 
---------
 SEE ALSO
 --------
 

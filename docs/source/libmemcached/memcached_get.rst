@@ -1,10 +1,8 @@
-===============================
 Retrieving data from the server
 ===============================
 
 .. index:: object: memcached_st
 
---------
 SYNOPSIS
 --------
 
@@ -30,7 +28,6 @@ SYNOPSIS
 
 Compile and link with -lmemcached
 
------------
 DESCRIPTION
 -----------
 
@@ -109,7 +106,6 @@ keys at all were found.
 to `MEMCACHED_END` upon successful conclusion.
 `MEMCACHED_NOTFOUND` will be return if no keys at all were found.
 
---------
 SEE ALSO
 --------
 

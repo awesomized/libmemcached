@@ -4,7 +4,6 @@ memcached_touch, memcached_touch_by_key
 
 .. index:: object: memcached_st
 
---------
 SYNOPSIS
 --------
 
@@ -16,7 +15,6 @@ SYNOPSIS
 
 Compile and link with -lmemcached
 
------------
 DESCRIPTION
 -----------
 
@@ -24,7 +22,6 @@ DESCRIPTION
 :func:`memcached_touch_by_key` works the same, but it takes a master key 
 to find the given value.
 
-------
 RETURN
 ------
 
@@ -33,7 +30,6 @@ On success that value will be `MEMCACHED_SUCCESS`.
 Use :func:`memcached_strerror` to translate this value to a printable 
 string.
 
---------
 SEE ALSO
 --------
 

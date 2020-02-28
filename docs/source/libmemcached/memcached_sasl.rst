@@ -1,10 +1,8 @@
-============
 SASL support
 ============
 
 .. index:: object: memcached_st
 
---------
 SYNOPSIS
 --------
 
@@ -20,7 +18,6 @@ SYNOPSIS
 
 Compile and link with -lmemcached
 
------------
 DESCRIPTION
 -----------
 
@@ -38,7 +35,6 @@ in memory. If you choose to use this method you have to call
 :type:`memcached_destroy_sasl_auth_data` if you specify your own callback 
 function with :func:`memcached_set_sasl_callbacks`.
 
-------
 RETURN
 ------
 
@@ -46,7 +42,6 @@ RETURN
 this memcached handle. :func:`memcached_set_sasl_auth_data` returns
 `MEMCACHED_SUCCESS` upon success.
 
---------
 SEE ALSO
 --------
 

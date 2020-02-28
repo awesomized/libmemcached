@@ -1,8 +1,6 @@
-=======================================================
 Getting version information about the client and server
 =======================================================
 
---------
 SYNOPSIS
 --------
 
@@ -14,7 +12,6 @@ SYNOPSIS
 
 Compile and link with -lmemcached
 
------------
 DESCRIPTION
 -----------
 
@@ -22,7 +19,6 @@ DESCRIPTION
 
 :func:`memcached_version` is used to set the major, minor, and micro versions of each memcached server being used by the memcached_st connection structure. It returns the memcached server return code.
 
-------
 RETURN
 ------
 
@@ -38,7 +34,6 @@ If called with the `MEMCACHED_BEHAVIOR_USE_UDP` behavior set, the value
 Use :func:`memcached_strerror` to translate this value to
 a printable string.
 
---------
 SEE ALSO
 --------
 

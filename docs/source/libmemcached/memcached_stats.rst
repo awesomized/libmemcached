@@ -1,4 +1,3 @@
-==================================================
 Working with statistical information from a server
 ==================================================
 
@@ -6,7 +5,6 @@ Get memcached statistics
 
 .. index:: object: memcached_st
 
---------
 SYNOPSIS
 --------
 
@@ -28,7 +26,6 @@ SYNOPSIS
 
 Compile and link with -lmemcached
 
------------
 DESCRIPTION
 -----------
 
@@ -52,7 +49,6 @@ obtain information on.
 A command line tool, memstat(1), is provided so that you do not have to write
 an application to do this.
 
-------
 RETURN
 ------
 
@@ -61,7 +57,6 @@ Varies, see particular functions.
 Any method returning a :type:`memcached_stat_st` expects you to free the
 memory allocated for it.
 
---------
 SEE ALSO
 --------
 

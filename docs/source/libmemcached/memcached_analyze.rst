@@ -1,10 +1,8 @@
-=================
 Analyzing servers
 =================
 
 Analyze server information
 
---------
 SYNOPSIS
 --------
 
@@ -19,7 +17,6 @@ SYNOPSIS
  
 .. function::  memcached_analysis_st *memcached_analyze(memcached_st *ptr, memcached_stat_st *stat, memcached_return_t *error)
 
------------
 DESCRIPTION
 -----------
 
@@ -34,7 +31,6 @@ structure. The return value must be freed by the calling application.
 A command line tool, :program:`memstat` with the option :option:`memstat --analyze`,
 is provided so that you do not have to write an application to use this method.
 
-------
 RETURN
 ------
 
@@ -45,7 +41,6 @@ checking the :type:`memcached_return_t` value.
 Any method returning a :type:`memcached_analysis_st` expects you to free the
 memory allocated for it.
 
---------
 SEE ALSO
 --------
 

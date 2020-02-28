@@ -6,13 +6,11 @@ Storing custom user information in the client.
 
 Manage user specific data
 
--------
 LIBRARY
 -------
 
 C Client Library for memcached (libmemcached, -lmemcached)
 
---------
 SYNOPSIS
 --------
 
@@ -24,7 +22,6 @@ SYNOPSIS
 
 Compile and link with -lmemcached
 
------------
 DESCRIPTION
 -----------
 
@@ -36,7 +33,6 @@ the memcached_st structure.
 
 :func:`memcached_get_user_data` is used to retrieve the user specific data in the :type:`memcached_st` structure.
 
-------
 RETURN
 ------
 
@@ -44,7 +40,6 @@ RETURN
 
 :func:`memcached_get_user_data` returns the current value uf the user specific data.
 
---------
 SEE ALSO
 --------
 

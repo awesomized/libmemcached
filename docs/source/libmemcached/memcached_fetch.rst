@@ -1,10 +1,8 @@
-=================
 memcached_fetch
 =================
 
 .. index:: object: memcached_st
 
---------
 SYNOPSIS
 --------
 
@@ -17,7 +15,6 @@ SYNOPSIS
 
 Compile and link with -lmemcached
 
------------
 DESCRIPTION
 -----------
 
@@ -34,7 +31,6 @@ All of the above functions are not tested when the
 `MEMCACHED_BEHAVIOR_USE_UDP` has been set. Executing any of these 
 functions with this behavior on will result in `MEMCACHED_NOT_SUPPORTED` being returned, or for those functions which do not return a :type:`memcached_return_t`, the error function parameter will be set to `MEMCACHED_NOT_SUPPORTED`.
 
-------
 RETURN
 ------
 
@@ -46,7 +42,6 @@ to `MEMCACHED_END` upon successful conclusion.
 and the key was set larger then `MEMCACHED_MAX_KEY`, which was the largest
 key allowed for the original memcached ascii server.
 
---------
 SEE ALSO
 --------
 

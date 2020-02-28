@@ -1,8 +1,6 @@
-======================================
 Creating and destroying a memcached_st
 ======================================
 
---------
 SYNOPSIS
 --------
 
@@ -20,7 +18,6 @@ SYNOPSIS
 
 Compile and link with -lmemcached
 
------------
 DESCRIPTION
 -----------
 
@@ -52,7 +49,6 @@ You may wish to avoid using memcached_create(3) or memcached_clone(3) with a
 stack based allocation. The most common issues related to ABI safety involve
 heap allocated structures.
 
-------
 RETURN
 ------
 
@@ -62,7 +58,6 @@ that was created (or initialized). On an allocation failure, it returns NULL.
 :func:`memcached_clone` returns a pointer to the :type:`memcached_st`
 that was created (or initialized). On an allocation failure, it returns NULL.
 
---------
 SEE ALSO
 --------
 

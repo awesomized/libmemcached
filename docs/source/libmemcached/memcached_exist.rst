@@ -4,7 +4,6 @@ Determine if a keys exists.
 
 .. index:: object: memcached_st
 
---------
 SYNOPSIS
 --------
 
@@ -18,13 +17,11 @@ Compile and link with -lmemcached
 
 .. versionadded:: 0.53
 
------------
 DESCRIPTION
 -----------
 
 :func:`memcached_exist()` can be used to check if a key exists.
 
-------
 RETURN
 ------
 
@@ -34,7 +31,6 @@ RETURN
 `MEMCACHED_NOTFOUND`
   The key was not found.
 
---------
 SEE ALSO
 --------
 

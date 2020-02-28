@@ -1,10 +1,8 @@
-====================================================
 Working with data on the server in an atomic fashion
 ====================================================
 
 .. index:: object: memcached_st
 
---------
 SYNOPSIS
 --------
 
@@ -16,7 +14,6 @@ SYNOPSIS
 
 Compile and link with -lmemcached
 
------------
 DESCRIPTION
 -----------
 
@@ -46,7 +43,6 @@ non-cas ASCII set operations, there are at least 1335 bytes available to
 split among the key, key_prefix, and value; for cas ASCII operations there 
 are at least 1318 bytes available to split among the key, key_prefix and value. If the total size of the command, including overhead, exceeds 1400 bytes, a `MEMCACHED_WRITE_FAILURE` will be returned.
 
-------
 RETURN
 ------
 
@@ -55,7 +51,6 @@ On success the value will be `MEMCACHED_SUCCESS`.
 Use :func:`memcached_strerror` to translate this value to a printable 
 string.
 
---------
 SEE ALSO
 --------
 
