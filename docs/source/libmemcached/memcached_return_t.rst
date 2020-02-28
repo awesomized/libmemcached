@@ -1,126 +1,233 @@
-================================
-Error Codes (memcached_return_t)
+Error Codes - memcached_return_t
 ================================
 
---------
 SYNOPSIS
 --------
 
 #include <libmemcached/memcached.h>
+  Compile and link with -lmemcached
 
-.. c:type:: memcached_return_t
+.. function:: bool memcached_success(memcached_return_t)
 
-.. c:function:: bool memcached_success(memcached_return_t)
+.. function:: bool memcached_continue(memcached_return_t rc)
 
-.. c:function:: bool memcached_continue(memcached_return_t rc)
+.. function:: bool memcached_failed(memcached_return_t)
 
-.. c:function:: bool memcached_failed(memcached_return_t)
+.. function:: bool memcached_fatal(memcached_return_t)
 
-.. c:function:: bool memcached_fatal(memcached_return_t)
+.. c:type:: typedef enum memcached_return_t memcached_return_t
 
+.. enum:: memcached_return_t
 
-Libmemcached return types:
-++++++++++++++++++++++++++
+    .. enumerator:: MEMCACHED_AUTH_CONTINUE
 
+        Authentication has been paused.
 
-:c:type:`MEMCACHED_SUCCESS`
+    .. enumerator:: MEMCACHED_AUTH_FAILURE
 
-:c:type:`MEMCACHED_FAILURE`
+        The credentials provided are not valid for this server.
 
-:c:type:`MEMCACHED_HOST_LOOKUP_FAILURE`
+    .. enumerator:: MEMCACHED_AUTH_PROBLEM
 
-:c:type:`MEMCACHED_CONNECTION_FAILURE`
+        An unknown issue has occurred during authentication.
 
-:c:type:`MEMCACHED_CONNECTION_BIND_FAILURE`
+    .. enumerator:: MEMCACHED_BAD_KEY_PROVIDED
 
-:c:type:`MEMCACHED_WRITE_FAILURE`
+        The key provided is not a valid key.
 
-:c:type:`MEMCACHED_READ_FAILURE`
+    .. enumerator:: MEMCACHED_BUFFERED
 
-:c:type:`MEMCACHED_UNKNOWN_READ_FAILURE`
+        The request has been buffered.
 
-:c:type:`MEMCACHED_PROTOCOL_ERROR`
+    .. enumerator:: MEMCACHED_CLIENT_ERROR
 
-:c:type:`MEMCACHED_CLIENT_ERROR`
+        An unknown client error has occurred internally.
 
-:c:type:`MEMCACHED_SERVER_ERROR`
+    .. enumerator:: MEMCACHED_CONNECTION_BIND_FAILURE
 
-:c:type:`MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE`
+        .. deprecated:: <0.30
 
-:c:type:`MEMCACHED_DATA_EXISTS`
+        We were not able to bind() to the socket.
 
-:c:type:`MEMCACHED_DATA_DOES_NOT_EXIST`
+    .. enumerator:: MEMCACHED_CONNECTION_FAILURE
 
-:c:type:`MEMCACHED_NOTSTORED`
+        A unknown error has occurred while trying to connect to a server.
 
-:c:type:`MEMCACHED_STORED`
+    .. enumerator:: MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE
 
-:c:type:`MEMCACHED_NOTFOUND`
+        .. deprecated:: <0.30
 
-:c:type:`MEMCACHED_MEMORY_ALLOCATION_FAILURE`
+        An error has occurred while trying to connect to a server. It is likely that either the number of file descriptors need to be increased or you are out of memory.
 
-:c:type:`MEMCACHED_PARTIAL_READ`
+    .. enumerator:: MEMCACHED_DATA_DOES_NOT_EXIST
 
-:c:type:`MEMCACHED_SOME_ERRORS`
+        The data requested with the key given was not found.
 
-:c:type:`MEMCACHED_NO_SERVERS`
+    .. enumerator:: MEMCACHED_DATA_EXISTS
 
-:c:type:`MEMCACHED_END`
+        The data requested with the key given was not found.
 
-:c:type:`MEMCACHED_DELETED`
+    .. enumerator:: MEMCACHED_DELETED
 
-:c:type:`MEMCACHED_VALUE`
+        The object requested by the key has been deleted.
 
-:c:type:`MEMCACHED_STAT`
+    .. enumerator:: MEMCACHED_DEPRECATED
 
-:c:type:`MEMCACHED_ITEM`
+        The method that was requested has been deprecated.
 
-:c:type:`MEMCACHED_ERRNO`
+    .. enumerator:: MEMCACHED_E2BIG
 
-:c:type:`MEMCACHED_FAIL_UNIX_SOCKET`
+        Item is too large for the server to store.
 
-:c:type:`MEMCACHED_NOT_SUPPORTED`
+    .. enumerator:: MEMCACHED_END
 
-:c:type:`MEMCACHED_NO_KEY_PROVIDED`
+        The server has completed returning all of the objects requested.
 
-:c:type:`MEMCACHED_FETCH_NOTFINISHED`
+    .. enumerator:: MEMCACHED_ERRNO
 
-:c:type:`MEMCACHED_TIMEOUT`
+        An error has occurred in the driver which has set errno.
 
-:c:type:`MEMCACHED_BUFFERED`
+    .. enumerator:: MEMCACHED_FAIL_UNIX_SOCKET
 
-:c:type:`MEMCACHED_BAD_KEY_PROVIDED`
+        A connection was not established with the server via a unix domain socket.
 
-:c:type:`MEMCACHED_INVALID_HOST_PROTOCOL`
+    .. enumerator:: MEMCACHED_FAILURE
 
-:c:type:`MEMCACHED_SERVER_MARKED_DEAD`
+        .. deprecated:: <0.30
 
-:c:type:`MEMCACHED_UNKNOWN_STAT_KEY`
+        A unknown failure has occurred in the server.
 
-:c:type:`MEMCACHED_E2BIG`
+    .. enumerator:: MEMCACHED_FETCH_NOTFINISHED
 
-:c:type:`MEMCACHED_INVALID_ARGUMENTS`
+        A request has been made, but the server has not finished the fetch of the last request.
 
-:c:type:`MEMCACHED_KEY_TOO_BIG`
+    .. enumerator:: MEMCACHED_HOST_LOOKUP_FAILURE
 
-:c:type:`MEMCACHED_AUTH_PROBLEM`
+        A DNS failure has occurred.
 
-:c:type:`MEMCACHED_AUTH_FAILURE`
+    .. enumerator:: MEMCACHED_INVALID_ARGUMENTS
 
-:c:type:`MEMCACHED_AUTH_CONTINUE`
+        The arguments supplied to the given function were not valid.
 
-:c:type:`MEMCACHED_PARSE_ERROR`
+    .. enumerator:: MEMCACHED_INVALID_HOST_PROTOCOL
 
-:c:type:`MEMCACHED_PARSE_USER_ERROR`
+        The server you are connecting too has an invalid protocol. Most likely you are connecting to an older server that does not speak the binary protocol.
 
-:c:type:`MEMCACHED_DEPRECATED`
+    .. enumerator:: MEMCACHED_ITEM
 
-:c:type:`MEMCACHED_UNIX_SOCKET_PATH_TOO_BIG`
-   
---------
+        An item has been fetched (this is an internal error only).
+
+    .. enumerator:: MEMCACHED_KEY_TOO_BIG
+
+        The key that has been provided is too large for the given server.
+
+    .. enumerator:: MEMCACHED_MAXIMUM_RETURN
+
+        This in an internal only state.
+
+    .. enumerator:: MEMCACHED_MEMORY_ALLOCATION_FAILURE
+
+        An error has occurred while trying to allocate memory.
+
+    .. enumerator:: MEMCACHED_NO_KEY_PROVIDED
+
+        .. deprecated:: <0.30
+            Use `MEMCACHED_BAD_KEY_PROVIDED` instead.
+
+        No key was provided.
+
+    .. enumerator:: MEMCACHED_NO_SERVERS
+
+        No servers have been added to the memcached_st object.
+
+    .. enumerator:: MEMCACHED_NOTFOUND
+
+        The object requested was not found.
+
+    .. enumerator:: MEMCACHED_NOTSTORED
+
+        The request to store an object failed.
+
+    .. enumerator:: MEMCACHED_NOT_SUPPORTED
+
+        The given method is not supported in the server.
+
+    .. enumerator:: MEMCACHED_PARSE_ERROR
+
+        An error has occurred while trying to parse the configuration string. You should use memparse to determine what the error was.
+
+    .. enumerator:: MEMCACHED_PARSE_USER_ERROR
+
+        An error has occurred  in parsing the configuration string.
+
+    .. enumerator:: MEMCACHED_PARTIAL_READ
+
+        The read was only partially successful.
+
+    .. enumerator:: MEMCACHED_PROTOCOL_ERROR
+
+        An unknown error has occurred in the protocol.
+
+    .. enumerator:: MEMCACHED_READ_FAILURE
+
+        A read failure has occurred.
+
+    .. enumerator:: MEMCACHED_SERVER_ERROR
+
+        An unknown error has occurred in the server.
+
+    .. enumerator:: MEMCACHED_SERVER_MARKED_DEAD
+
+        The requested server has been marked dead.
+
+    .. enumerator:: MEMCACHED_SOME_ERRORS
+
+        A multi request has been made, and some undetermined number of errors have occurred.
+
+    .. enumerator:: MEMCACHED_STAT
+
+        A "stat" command has been returned in the protocol.
+
+    .. enumerator:: MEMCACHED_STORED
+
+        The requested object has been successfully stored on the server.
+
+    .. enumerator:: MEMCACHED_SUCCESS
+
+        The request was successfully executed.
+
+    .. enumerator:: MEMCACHED_TIMEOUT
+
+        Operation has timed out.
+
+    .. enumerator:: MEMCACHED_UNKNOWN_READ_FAILURE
+
+        An unknown read failure only occurs when either there is a bug in the server, or in rare cases where an ethernet nic is reporting dubious information.
+
+    .. enumerator:: MEMCACHED_UNKNOWN_STAT_KEY
+
+        The server you are communicating with has a stat key which has not be defined in the protocol.
+
+    .. enumerator:: MEMCACHED_VALUE
+
+        A value has been returned from the server (this is an internal condition only).
+
+    .. enumerator:: MEMCACHED_WRITE_FAILURE
+
+        An error has occurred while trying to write to a server.
+
 SEE ALSO
 --------
 
 .. only:: man
 
-  :manpage:`memcached` :manpage:`libmemcached` :manpage:`memcached_str_error`
+    :manpage:`memcached(1)`
+    :manpage:`libmemcached(3)`
+    :manpage:`memcached_strerror(3)`
+
+.. only:: html
+
+    * :manpage:`memcached(1)`
+    * :doc:`../libmemcached`
+    * :doc:`memcached_strerror`
+

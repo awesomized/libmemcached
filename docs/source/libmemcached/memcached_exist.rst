@@ -11,9 +11,9 @@ SYNOPSIS
 
 #include <libmemcached/memcached.h>
  
-.. c:function::  memcached_return_t memcached_exist(memcached_st *ptr, char *key, size_t *key_length)
+.. function::  memcached_return_t memcached_exist(memcached_st *ptr, char *key, size_t *key_length)
 
-.. c:function::  memcached_return_t memcached_exist_by_key(memcached_st *ptr, char *group_key, size_t *group_key_length, char *key, size_t *key_length)
+.. function::  memcached_return_t memcached_exist_by_key(memcached_st *ptr, char *group_key, size_t *group_key_length, char *key, size_t *key_length)
 
 Compile and link with -lmemcached
 
@@ -24,17 +24,17 @@ Compile and link with -lmemcached
 DESCRIPTION
 -----------
 
-:c:func:`memcached_exist()` can be used to check if a key exists.
+:func:`memcached_exist()` can be used to check if a key exists.
 
 
 ------
 RETURN
 ------
 
-:c:type:`MEMCACHED_SUCCESS`
+`MEMCACHED_SUCCESS`
   The key exists.
 
-:c:type:`MEMCACHED_NOTFOUND`
+`MEMCACHED_NOTFOUND`
   The key was not found.
 
 --------

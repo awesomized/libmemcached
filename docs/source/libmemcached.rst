@@ -1,8 +1,6 @@
-==============================================
-Introducing the C Client Library for memcached
-==============================================
+C/C++ Client Library for memcached
+==================================
 
---------
 SYNOPSIS
 --------
 
@@ -11,10 +9,12 @@ SYNOPSIS
 
 =======
 
-libMemcached is an open source C/C++ client library and tools for the memcached server (http://memcached.org/).
-It has been designed to be light on memory usage, thread safe, and provide full access to server side methods.
+`libmemcached` is an open source C/C++ client library and tools for the
+memcached server (http://memcached.org/). It has been designed to be light on
+memory usage, thread safe, and provide full access to server side methods.
 
-libMemcached was designed to provide the greatest number of options to use Memcached. Some of the features provided:
+`libmemcached` was designed to provide the greatest number of options to use
+Memcached. Some of the features provided:
 
 1. Asynchronous and Synchronous Transport Support.
 2. Consistent Hashing and Distribution.
@@ -24,16 +24,15 @@ libMemcached was designed to provide the greatest number of options to use Memca
 6. A complete reference guide and documentation to the API.
 7. Tools to Manage your Memcached networks.
 
------------
 DESCRIPTION
 -----------
 
-
 "Memcached is a high-performance, distributed memory object caching
 system, generic in nature, but intended for use in speeding up dynamic web
-applications by alleviating database load." `http://memcached.org/ <http://memcached.org/>`_
+applications by alleviating database load."
+`http://memcached.org/ <http://memcached.org/>`_
 
-:program:`libmemcached` is a small, thread-safe client library for the
+`libmemcached` is a small, thread-safe client library for the
 memcached protocol. The code has all been written to allow
 for both web and embedded usage. It handles the work behind routing
 individual keys to specific servers specified by the developer (and values are
@@ -41,105 +40,67 @@ matched based on server order as supplied by the user). It implements
 a modular and consistent method of object distribution.
 
 There are multiple implemented routing and hashing methods. See the
-:c:func:`memcached_behavior_set` manpage for more information.
+:func:`memcached_behavior_set` manpage for more information.
 
-All operations are performed against a :c:type:`memcached_st` structure.
+All operations are performed against a :type:`memcached_st` structure.
 These structures can either be dynamically allocated or statically
-allocated and then initialized by :c:func:`memcached_create`. Functions have 
-been written in order to encapsulate the :c:type:`memcached_st`. It is not
+allocated and then initialized by :func:`memcached_create`. Functions have 
+been written in order to encapsulate the :type:`memcached_st`. It is not
 recommended that you operate directly against the structure.
 
-Nearly all functions return a :c:type:`memcached_return_t` value.
+Nearly all functions return a :type:`memcached_return_t` value.
 This value can be translated to a printable string with 
-:c:type:`memcached_strerror`.
+:type:`memcached_strerror`.
 
-Objects are stored on servers by hashing keys. The hash value maps the key to a particular server.
-All clients understand how this hashing works, so it is possibly to reliably both push data to a server and retrieve data from a server.
+Objects are stored on servers by hashing keys. The hash value maps the key to a
+particular server. All clients understand how this hashing works, so it is
+possibly to reliably both push data to a server and retrieve data from a server.
 
 Group keys can be optionally used to group sets of objects with servers. 
 
-Namespaces are supported, and can be used to partition caches so that multiple applications can use the same memcached servers.
+Namespaces are supported, and can be used to partition caches so that multiple
+applications can use the same memcached servers.
 
-:c:type:`memcached_st` structures are thread-safe, but each thread must
-contain its own structure (that is, if you want to share these among
-threads you must provide your own locking). No global variables are
-used in this library.
+Some features of the library must be enabled through `memcached_behavior_set`.
 
-If you are working with GNU autotools you will want to add the following to
-your COPYING to properly include libmemcached in your application.
-
-PKG_CHECK_MODULES(DEPS, libmemcached >= 0.8.0)
-AC_SUBST(DEPS_CFLAGS)
-AC_SUBST(DEPS_LIBS)
-
-Some features of the library must be enabled through :c:func:`memcached_behavior_set`.
-
-
----------
 CONSTANTS
 ---------
 
-
 A number of constants have been provided for in the library.
 
+.. only:: man
 
-.. c:macro:: MEMCACHED_DEFAULT_PORT
- 
- The default port used by memcached(3).
- 
+    See :manpage:`libmemcached_constants(3)`.
 
-.. c:macro:: MEMCACHED_MAX_KEY
- 
- Default maximum size of a key (which includes the null pointer). Master keys
- have no limit, this only applies to keys used for storage.
- 
+.. only:: html
 
-.. c:macro:: MEMCACHED_MAX_BUFFER
- 
- Default size of read/write buffers (which includes the null pointer).
- 
+    See :doc:`libmemcached/constants`.
 
-.. c:macro:: MEMCACHED_STRIDE
- 
- This is the "stride" used in the consistent hash used between replicas.
- 
-
-.. c:macro:: MEMCACHED_MAX_HOST_LENGTH
- 
- Maximum allowed size of the hostname.
- 
-
-.. c:macro:: LIBMEMCACHED_VERSION_STRING
- 
- String value of libmemcached version such as "1.23.4"
-
-
-.. c:macro:: LIBMEMCACHED_VERSION_HEX
- 
- Hex value of the version number. "0x00048000" This can be used for comparing versions based on number.
- 
-
-.. c:macro:: MEMCACHED_PREFIX_KEY_MAX_SIZE
-
- Maximum length allowed for namespacing of a key.
-
-
-
----------------------
 THREADS AND PROCESSES
 ---------------------
 
+No global variables are used in this library.
 
-When using threads or forked processes it is important to keep one instance
-of :c:type:`memcached_st` per process or thread. Without creating your own 
-locking structures you can not share a single :c:type:`memcached_st`. However, 
-you can call :c:func:`memcached_quit` on a :c:type:`memcached_st` and then use the resulting cloned structure.
+:type:`memcached_st` structures are thread-safe, but when using threads or
+forked processes it is important to keep one instance of :type:`memcached_st`
+per process or thread. Without creating your own locking structures you can not
+share a single :type:`memcached_st`. However, you can call
+:func:`memcached_quit` on a :type:`memcached_st` and then use the resulting
+cloned structure.
 
+SYSTEMTAP
+---------
 
+`libmemcached` can be built to support Systemtap on Linux when enabled at
+compile time.
 
---------
-SEE ALSO
---------
+Please see :manpage:`stap(1)` and :manpage:`dtrace(1)` for more information
+about Systemtap.
+
+CLIENT PROGRAMS
+---------------
+
+`libmemcached` comes with a few useful client programs:
 
 .. only:: man
 
@@ -158,10 +119,48 @@ SEE ALSO
     :manpage:`memslap(1)`
     :manpage:`memstat(1)`
     :manpage:`memtouch(1)`
+
+.. only:: html
+
+    * :doc:`bin/memaslap`
+    * :doc:`bin/memcapable`
+    * :doc:`bin/memcat`
+    * :doc:`bin/memcp`
+    * :doc:`bin/memdump`
+    * :doc:`bin/memerror`
+    * :doc:`bin/memexist`
+    * :doc:`bin/memflush`
+    * :doc:`bin/memparse`
+    * :doc:`bin/memping`
+    * :doc:`bin/memrm`
+    * :doc:`bin/memslap`
+    * :doc:`bin/memstat`
+    * :doc:`bin/memtouch`
+
+UTILITY LIBRARIES
+-----------------
+
+.. only:: man
+
     :manpage:`libhashkit(3)`
+    :manpage:`libmemcachedutil(3)`
+
+.. only:: html
+
+    * :doc:`libhashkit`
+    * :doc:`libmemcachedutil`
+
+
+SEE ALSO
+--------
+
+.. only:: man
+
+    :manpage:`memcached(1)`
+
     :manpage:`libmemcached_configuration(3)`
     :manpage:`libmemcached_examples(3)`
-    :manpage:`libmemcachedutil(3)`
+
     :manpage:`memcached_analyze(3)`
     :manpage:`memcached_append(3)`
     :manpage:`memcached_auto(3)`
@@ -198,53 +197,7 @@ SEE ALSO
 .. only:: html
 
     * :manpage:`memcached(1)`
-    * :doc:`bin/memaslap`
-    * :doc:`bin/memcapable`
-    * :doc:`bin/memcat`
-    * :doc:`bin/memcp`
-    * :doc:`bin/memdump`
-    * :doc:`bin/memerror`
-    * :doc:`bin/memexist`
-    * :doc:`bin/memflush`
-    * :doc:`bin/memparse`
-    * :doc:`bin/memping`
-    * :doc:`bin/memrm`
-    * :doc:`bin/memslap`
-    * :doc:`bin/memstat`
-    * :doc:`bin/memtouch`
-    * :doc:`libhashkit`
-    * :doc:`libmemcached_configuration`
-    * :doc:`libmemcached_examples`
-    * :doc:`libmemcachedutil`
-    * :doc:`memcached_analyze`
-    * :doc:`memcached_append`
-    * :doc:`memcached_auto`
-    * :doc:`memcached_behavior`
-    * :doc:`memcached_callback`
-    * :doc:`memcached_cas`
-    * :doc:`memcached_create`
-    * :doc:`memcached_delete`
-    * :doc:`memcached_dump`
-    * :doc:`libmemcached/memcached_exist`
-    * :doc:`libmemcached/memcached_fetch`
-    * :doc:`memcached_flush`
-    * :doc:`memcached_flush_buffers`
-    * :doc:`memcached_generate_hash_value`
-    * :doc:`memcached_get`
-    * :doc:`libmemcached/memcached_last_error_message`
-    * :doc:`memcached_memory_allocators`
-    * :doc:`memcached_pool`
-    * :doc:`memcached_quit`
-    * :doc:`memcached_result_st`
-    * :doc:`libmemcached/memcached_return_t`
-    * :doc:`memcached_sasl`
-    * :doc:`memcached_servers`
-    * :doc:`memcached_server_st`
-    * :doc:`memcached_set`
-    * :doc:`libmemcached-1.0/memcached_set_encoding_key`
-    * :doc:`memcached_stats`
-    * :doc:`memcached_strerror`
-    * :doc:`libmemcached-1.0/memcached_touch`
-    * :doc:`memcached_user_data`
-    * :doc:`memcached_verbosity`
-    * :doc:`memcached_version`
+
+    * :doc:`libmemcached/configuration`
+    * :doc:`libmemcached/examples`
+
