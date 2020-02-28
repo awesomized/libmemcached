@@ -16,7 +16,6 @@ memory usage, thread safe, and provide full access to server side methods.
     libmemcached/index
     libmemcached/index_misc
 
-
 .. toctree::
     :titlesonly:
     :caption: libmemcachedutil

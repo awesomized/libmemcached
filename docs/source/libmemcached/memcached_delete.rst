@@ -1,28 +1,23 @@
-===========================
 Deleting data from a server
 ===========================
 
 .. index:: object: memcached_st
 
---------
 SYNOPSIS
 --------
 
-
 #include <libmemcached/memcached.h>
- 
+
 .. function:: memcached_return_t memcached_delete (memcached_st *ptr, const char *key, size_t key_length, time_t expiration)
 
 .. function:: memcached_return_t memcached_delete_by_key (memcached_st *ptr, const char *group_key, size_t group_key_length, const char *key, size_t key_length, time_t expiration)
 
 Compile and link with -lmemcached
 
------------
 DESCRIPTION
 -----------
 
-
-:func:`memcached_delete` is used to delete a particular key. 
+:func:`memcached_delete` is used to delete a particular key.
 :func:`memcached_delete_by_key` works the same, but it takes a master key 
 to find the given value.
 
@@ -34,11 +29,8 @@ succeed, however). After the time passes, the item is finally deleted from serve
 Please note the the memcached server removed tests for expiration in
 the 1.4 version.
 
-
-------
 RETURN
 ------
-
 
 A value of type :type:`memcached_return_t` is returned
 On success that value will be `MEMCACHED_SUCCESS`.
@@ -48,9 +40,6 @@ string.
 If you are using the non-blocking mode of the library, success only
 means that the message was queued for delivery.
 
-
-
---------
 SEE ALSO
 --------
 

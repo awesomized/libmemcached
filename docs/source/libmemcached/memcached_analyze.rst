@@ -27,18 +27,18 @@ DESCRIPTION
 collection of servers) for their current state. Queries to find state return a
 :type:`memcached_analysis_st` structure. You are responsible for freeing this structure.
 
-:func:`memcached_analyze` analyzes useful information based on the 
+:func:`memcached_analyze` analyzes useful information based on the
 provided servers and sets the result to the :type:`memcached_analysis_st` 
 structure. The return value must be freed by the calling application.
 
-A command line tool, :program:`memstat` with the option :option:`memstat --analyze`, 
+A command line tool, :program:`memstat` with the option :option:`memstat --analyze`,
 is provided so that you do not have to write an application to use this method.
 
 ------
 RETURN
 ------
 
-A pointer to the allocated :type:`memcached_analysis_st` structure on 
+A pointer to the allocated :type:`memcached_analysis_st` structure on
 success and a NULL pointer on failure. You may inspect the error detail by 
 checking the :type:`memcached_return_t` value.
 

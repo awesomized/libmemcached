@@ -2,8 +2,6 @@
 memaslap - Load testing  and benchmarking a server
 ==================================================
 
-
---------
 SYNOPSIS
 --------
 
@@ -15,10 +13,8 @@ memaslap [options]
 
 .. envvar:: MEMCACHED_SERVERS
 
------------
 DESCRIPTION
 -----------
-
 
 :program:`memaslap` is a load generation and benchmark tool for memcached
 servers. It generates configurable workload such as threads, concurrency,
@@ -36,82 +32,48 @@ value size distribution, and command distribution by itself.
 You can specify servers via the :option:`memslap --servers` option or via the
 environment variable :envvar:`MEMCACHED_SERVERS`.
 
-
---------
 FEATURES
 --------
 
-
 Memslap is developed to for the following purposes:
-
 
 Manages network connections with libevent asynchronously.
 
-
-
 Set both TCP and UDP up to use non-blocking IO.
-
-
 
 Improves parallelism: higher performance in multi-threads environments.
 
-
-
 Improves time efficiency: faster processing speed.
-
-
 
 Generates key and value more efficiently; key size distribution and value size distribution are configurable.
 
-
-
 Supports get, multi-get, and set commands; command distribution is configurable.
-
-
 
 Supports controllable miss rate and overwrite rate.
 
-
-
 Supports data and expire-time verification.
-
-
 
 Supports dumping statistic information periodically.
 
-
-
 Supports thousands of TCP connections.
-
-
 
 Supports binary protocol.
 
-
-
 Supports facebook test (set with TCP and multi-get with UDP) and replication test.
 
-
-
-
--------
 DETAILS
 -------
 
-
 Effective implementation of network.
 ____________________________________
-
 
 For memaslap, both TCP and UDP use non-blocking network IO. All
 the network events are managed by libevent as memcached. The network module
 of memaslap is similar to memcached. Libevent can ensure
 memaslap can handle network very efficiently.
 
-
 Effective implementation of multi-threads and concurrency
 _________________________________________________________
-
 
 Memslap has the similar implementation of multi-threads to
 memcached. Memslap creates one or more self-governed threads;
@@ -131,12 +93,10 @@ socket connection at any given time. Users can specify the number of
 concurrency and socket connections of each concurrency according to their
 expected workload.
 
-
 Effective implementation of generating key and value
 ____________________________________________________
 
-
-In order to improve time efficiency and space efficiency, 
+In order to improve time efficiency and space efficiency,
 memaslap creates a random characters table with 10M characters. All the
 suffixes of keys and values are generated from this random characters table.
 
@@ -159,10 +119,8 @@ object from the window to do set operation or get operation. At the same
 time, each concurrency kicks objects out of its window and adds new object
 into it.
 
-
 Simple but useful task scheduling
 _________________________________
-
 
 Memslap uses libevent to schedule all concurrent tasks of
 threads, and each concurrency schedules tasks based on the local task
@@ -191,10 +149,8 @@ cache layer. It causes the first cache layer to miss. So the user can
 specify the window size to get the expected miss rate of the first cache
 layer.
 
-
 Useful implementation of multi-servers , UDP, TCP, multi-get and binary protocol
 ________________________________________________________________________________
-
 
 Because each thread is self-governed, memaslap can assign
 different threads to handle different memcached servers. This is just one of
@@ -219,43 +175,24 @@ one command from the server and reorders the response data. If some packages
 get lost, the waiting timeout mechanism can ensure half-baked packages will
 be discarded and the next command will be sent.
 
-
-
------
 USAGE
 -----
 
-
 Below are some usage samples:
-
 
 memaslap -s 127.0.0.1:11211 -S 5s
 
-
-
 memaslap -s 127.0.0.1:11211 -t 2m -v 0.2 -e 0.05 -b
-
-
 
 memaslap -s 127.0.0.1:11211 -F config -t 2m -w 40k -S 20s -o 0.2
 
-
-
 memaslap -s 127.0.0.1:11211 -F config -t 2m -T 4 -c 128 -d 20 -P 40k
-
-
 
 memaslap -s 127.0.0.1:11211 -F config -t 2m -d 50 -a -n 40
 
-
-
 memaslap -s 127.0.0.1:11211,127.0.0.1:11212 -F config -t 2m
 
-
-
 memaslap -s 127.0.0.1:11211,127.0.0.1:11212 -F config -t 2m -p 2
-
-
 
 The user must specify one server at least to run memaslap. The
 rest of the parameters have default values, as shown below:
@@ -284,10 +221,8 @@ TCP = true                            Limit throughput = false
 
 Facebook test = false                 Replication test = false
 
-
 Key size, value size and command distribution.
 ______________________________________________
-
 
 All the distributions are read from the configuration file specified by user
 with "—cfg_cmd" option. If the user does not specify a configuration file,
@@ -306,10 +241,8 @@ Currently, memaslap only tests set and get commands. And it
 testss 100% set and 100% get. For 100% get, it will preset some objects to
 the server.
 
-
 Multi-thread and concurrency
 ____________________________
-
 
 The high performance of memaslap benefits from the special
 schedule of thread and concurrency. It's important to specify the proper
@@ -366,10 +299,8 @@ kops/s for a specific configuration, you can specify
 the throughput equal to or less than the maximum
 throughput using "--tps" option.
 
-
 Window size
 ___________
-
 
 Most of the time, the user does not need to specify the window size. The
 default window size is 10k. For Schooner Memcached, the user can specify
@@ -415,10 +346,8 @@ The formula for calculating window size for cache miss rate 5%:
 
 cache_size / concurrency / (key_size + value_size) \* 0.7
 
-
 Verification
 ____________
-
 
 Memslap testss both data verification and expire-time
 verification. The user can use "--verify=" or "-v" to specify the proportion
@@ -428,15 +357,13 @@ expire-time verification. In theory, it testss 100% expire-time
 verification. Specify the "--verbose" options to get more detailed error
 information.
 
-For example: --exp_verify=0.01 –verify=0.1 , it means that 1% of the objects 
+For example: --exp_verify=0.01 –verify=0.1 , it means that 1% of the objects
 set with expire-time, 10% of the objects gotten will be verified. If the
 objects are gotten, memaslap will verify the expire-time and
 value.
 
-
 multi-servers and multi-config
 _______________________________
-
 
 Memslap testss multi-servers based on self-governed thread.
 There is a limitation that the number of servers cannot be greater than the
@@ -455,16 +382,14 @@ and 4 handle server 1 (10.1.1.2); and thread 2 and 5 handle server 2
 
 All the threads and concurrencies in memaslap are self-governed.
 
-So is memaslap. The user can start up several 
+So is memaslap. The user can start up several
 memaslap instances. The user can run memaslap on different client
 machines to communicate with the same memcached server at the same. It is
 recommended that the user start different memaslap on different
 machines using the same configuration.
 
-
 Run with execute number mode or time mode
 _________________________________________
-
 
 The default memaslap runs with time mode. The default run time
 is 10 minutes. If it times out, memaslap will exit. Do not
@@ -477,10 +402,8 @@ For example:
 
 --execute_number=100000 (It means that after running 100000 commands, the test will exit.)
 
-
 Dump statistic information periodically.
 ________________________________________
-
 
 The user can use "--stat_freq=" or "-S" to specify the frequency.
 
@@ -493,10 +416,8 @@ seconds.
 
 For more information on the format of dumping statistic information, refer to "Format of Output" section.
 
-
 Multi-get
 _________
-
 
 The user can use "--division=" or "-d" to specify multi-get keys count.
 Memslap by default does single get with TCP. Memslap also testss data 
@@ -509,10 +430,8 @@ memaslap sends one "multi-get" to the server once. For the
 binary protocol, memaslap sends several single get commands
 together as "multi-get" to the server.
 
-
 UDP and TCP
 ___________
-
 
 Memslap testss both UDP and TCP. For TCP,
 memaslap does not reconnect the memcached server if socket connections are
@@ -530,10 +449,8 @@ memcached does not tests that.
 
 UDP doesn't tests reconnection.
 
-
 Facebook test
 _____________
-
 
 Set data with TCP and multi-get with UDP. Specify the following options:
 
@@ -554,10 +471,8 @@ objects once with the UDP socket.
 If you specify "--division=50", the key size must be less that 25 bytes
 because the UDP packet size is 1400 bytes.
 
-
 Replication test
 ________________
-
 
 For replication test, the user must specify at least two memcached servers.
 The user can use "—rep_write=" option to enable feature.
@@ -574,10 +489,8 @@ memaslap will only get objects from server 1. If server 0 comes
 back to life again, memaslap will reconnect server 0. If both
 server 0 and server 1 crash, memaslap will exit.
 
-
 Supports thousands of TCP connections
 _____________________________________
-
 
 Start memaslap with "--conn_sock=" or "-n" to enable this
 feature. Make sure that your system can tests opening thousands of files
@@ -593,10 +506,8 @@ thread has 16 concurrencies, each concurrency has 128 TCP socket
 connections, and the total number of TCP socket connections is 128 \* 128 =
 16384.
 
-
 Supports binary protocol
 ________________________
-
 
 Start memaslap with "--binary" or "-B" options to enable this
 feature. It testss all the above features except UDP, because the latest
@@ -611,19 +522,14 @@ memaslap does not tests UDP. In addition, memcached 1.3.3 does not tests
 multi-get. If you specify "--division=50" option, it just sends 50 get
 commands together as "multi-get" to the server.
 
-
-
-------------------
 Configuration file
 ------------------
-
 
 This section describes the format of the configuration file.  By default
 when no configuration file is specified memaslap reads the default
 one located at ~/.memaslap.cnf.
 
 Below is a sample configuration file:
-
 
 .. code-block:: perl
 
@@ -699,48 +605,27 @@ Below is a sample configuration file:
   0    0.1
   1.0 0.9
 
-
-
-----------------
 Format of output
 ----------------
 
-
 At the beginning, memaslap displays some configuration information as follows:
-
 
 servers : 127.0.0.1:11211
 
-
-
 threads count: 1
-
-
 
 concurrency: 16
 
-
-
 run time: 20s
-
-
 
 windows size: 10k
 
-
-
 set proportion: set_prop=0.10
-
-
 
 get proportion: get_prop=0.90
 
-
-
 Where
 _____
-
-
 
 servers : "servers"
  
@@ -786,7 +671,6 @@ get proportion
 
 The output of dynamic statistics is something like this:
 
-
 .. code-block:: perl
 
   ---------------------------------------------------------------------------------------------------------------------------------
@@ -817,12 +701,8 @@ The output of dynamic statistics is something like this:
   117.93     195.60
   ---------------------------------------------------------------------------------------------------------------------------------
 
-
-
 Where
 _____
-
-
 
 Get Statistics
  
@@ -910,7 +790,6 @@ Geo_dist
 
 At the end, memaslap will output something like this:
 
-
 .. code-block:: perl
 
    ---------------------------------------------------------------------------------------------------------------------------------
@@ -968,8 +847,6 @@ At the end, memaslap will output something like this:
 
 Where
 _____
-
-
 
 Get Statistics
  
@@ -1123,10 +1000,8 @@ Net_rate
 
 
 
--------
 OPTIONS
 -------
-
 
 -s, --servers=
     List one or more servers to connect. Servers count must be less than
@@ -1177,17 +1052,17 @@ OPTIONS
     The proportion of objects need overwrite, e.g.: --overwrite=0.01.
     Default never overwrite object.
 
--R, --reconnect 
+-R, --reconnect
     Reconnect tests, when connection is closed it will be reconnected.
 
--U, --udp 
+-U, --udp
     UDP tests, default memaslap uses TCP, TCP port and UDP port of
     server must be same.
 
--a, --facebook 
+-a, --facebook
     Whether it enables facebook test feature, set with TCP and multi-get with UDP.
 
--B, --binary 
+-B, --binary
     Whether it enables binary protocol. Default with ASCII protocol.
 
 -P, --tps=
@@ -1196,20 +1071,17 @@ OPTIONS
 -p, --rep_write=
     The first nth servers can write data, e.g.: --rep_write=2.
 
--b, --verbose 
+-b, --verbose
     Whether it outputs detailed information when verification fails.
 
--h, --help 
+-h, --help
     Display this message and then exit.
 
--V, --version 
+-V, --version
     Display the version of the application and then exit.
 
-
---------
 EXAMPLES
 --------
-
 
 memaslap -s 127.0.0.1:11211 -S 5s
 
@@ -1225,7 +1097,6 @@ memaslap -s 127.0.0.1:11211,127.0.0.1:11212 -F config -t 2m
 
 memaslap -s 127.0.0.1:11211,127.0.0.1:11212 -F config -t 2m -p 2
 
---------
 SEE ALSO
 --------
 

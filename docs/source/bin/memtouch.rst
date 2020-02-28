@@ -2,8 +2,6 @@
 memtouch - Touches a key.
 =========================
 
-
---------
 SYNOPSIS
 --------
 
@@ -11,18 +9,13 @@ memtouch [options] key
 
 .. program:: memtouch
 
-
------------
 DESCRIPTION
 -----------
 
-
 :program:`memtouch` does a "touch" on the specified key.
 
--------
 OPTIONS
 -------
-
 
 You can specify servers via the option:
 
@@ -38,9 +31,6 @@ For a full list of operations run the tool with the option:
 
 .. option:: --help
 
-
-
---------
 SEE ALSO
 --------
 

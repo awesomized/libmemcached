@@ -9,7 +9,7 @@ SYNOPSIS
 --------
 
 #include <libmemcached/memcached.h>
- 
+
 .. function:: memcached_return_t memcached_increment (memcached_st *ptr, const char *key, size_t key_length, uint32_t offset, uint64_t *value)
 
 .. function:: memcached_return_t memcached_decrement (memcached_st *ptr, const char *key, size_t key_length, uint32_t offset, uint64_t *value)
@@ -28,11 +28,9 @@ SYNOPSIS
 
 Compile and link with -lmemcached
 
-
 -----------
 DESCRIPTION
 -----------
-
 
 :manpage:`memcached(1)` servers have the ability to increment and decrement keys
 (overflow and underflow are not detected). This gives you the ability to use
@@ -70,7 +68,6 @@ when using the binary protocol.
 :func:`memcached_increment_with_initial_by_key`, and
 :func:`memcached_decrement_with_initial_by_key` are master key equivalents of the above.
 
-
 ------
 RETURN
 ------
@@ -79,7 +76,6 @@ RETURN
 A value of type :type:`memcached_return_t`  is returned.
 On success that value will be `MEMCACHED_SUCCESS`.
 Use memcached_strerror to translate this value to a printable string.
-
 
 --------
 SEE ALSO

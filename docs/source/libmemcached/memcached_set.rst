@@ -31,7 +31,7 @@ store the object. Keys are currently limited to 250 characters by the
 memcached(1) server. You must supply both a value and a length. Optionally you
 may test an expiration time for the object and a 16 byte value (it is meant to be used as a bitmap). "flags" is a 4byte space that is stored alongside of the main value. Many sub libraries make use of this field, so in most cases users should avoid making use of it.
 
-:func:`memcached_set` will write an object to the server. If an object 
+:func:`memcached_set` will write an object to the server. If an object
 already exists it will overwrite what is in the server. If the object does not 
 exist it will be written. If you are using the non-blocking mode this function
 will always return true unless a network error occurs.

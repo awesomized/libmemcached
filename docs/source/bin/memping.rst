@@ -2,8 +2,6 @@
 memping - Test to see if a server is available.
 ===============================================
 
-
---------
 SYNOPSIS
 --------
 
@@ -11,18 +9,13 @@ memping [options] [server]
 
 .. program:: memping
 
-
------------
 DESCRIPTION
 -----------
 
-
 :program:`memping` can be used to ping a memcached server to see if it is taking connections.
 
--------
 OPTIONS
 -------
-
 
 You can specify servers via the option:
 
@@ -38,8 +31,6 @@ For a full list of operations run the tool with the option:
 
 .. option:: --help
 
-
---------
 SEE ALSO
 --------
 

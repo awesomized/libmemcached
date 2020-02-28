@@ -56,7 +56,7 @@ Objects are stored on servers by hashing keys. The hash value maps the key to a
 particular server. All clients understand how this hashing works, so it is
 possibly to reliably both push data to a server and retrieve data from a server.
 
-Group keys can be optionally used to group sets of objects with servers. 
+Group keys can be optionally used to group sets of objects with servers.
 
 Namespaces are supported, and can be used to partition caches so that multiple
 applications can use the same memcached servers.
@@ -149,7 +149,6 @@ UTILITY LIBRARIES
 
     * :doc:`libhashkit`
     * :doc:`libmemcachedutil`
-
 
 SEE ALSO
 --------

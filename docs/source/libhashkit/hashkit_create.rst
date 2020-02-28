@@ -34,13 +34,13 @@ the settings of the ptr hashkit object.
 The :func:`hashkit_free` frees any resources being consumed by the hashkit
 objects that were initialized with :func:`hashkit_create` or :func:`hashkit_clone`.
 
-The :func:`hashkit_is_allocated` reports where the memory was allocated 
+The :func:`hashkit_is_allocated` reports where the memory was allocated
 for a hashkit object.
 
 RETURN VALUE
 ------------
 
-:func:`hashkit_create` and :func:`hashkit_clone` will return NULL on 
+:func:`hashkit_create` and :func:`hashkit_clone` will return NULL on
 failure or non-NULL on success.
 
 :func:`hashkit_is_allocated` returns true if the memory for the hashkit

@@ -2,11 +2,9 @@
 Working with statistical information from a server
 ==================================================
 
-
 Get memcached statistics
 
 .. index:: object: memcached_st
-
 
 --------
 SYNOPSIS
@@ -34,7 +32,6 @@ Compile and link with -lmemcached
 DESCRIPTION
 -----------
 
-
 libmemcached(3) has the ability to query a memcached server (or collection
 of servers) for their current state. Queries to find state return a
 :type:`memcached_stat_st` structure. You are responsible for freeing this structure. While it is possible to access the structure directly it is not advisable. :func:`memcached_stat_get_value` has been provided to query the structure.
@@ -55,18 +52,14 @@ obtain information on.
 A command line tool, memstat(1), is provided so that you do not have to write
 an application to do this.
 
-
 ------
 RETURN
 ------
-
 
 Varies, see particular functions.
 
 Any method returning a :type:`memcached_stat_st` expects you to free the
 memory allocated for it.
-
-
 
 --------
 SEE ALSO

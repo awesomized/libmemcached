@@ -1,8 +1,6 @@
-============================
 Working with memcached pools
 ============================
 
---------
 SYNOPSIS
 --------
 
@@ -11,10 +9,10 @@ SYNOPSIS
 
 .. type:: struct memcached_pool_st memcached_pool_st
 
-.. function:: memcached_pool_st* memcached_pool(const char *option_string, size_t option_string_length) 
+.. function:: memcached_pool_st* memcached_pool(const char *option_string, size_t option_string_length)
 
 .. function:: memcached_st* memcached_pool_destroy(memcached_pool_st* pool)
- 
+
 .. function:: memcached_st* memcached_pool_fetch(memcached_pool_st*, struct timespec* relative_time, memcached_return_t* rc)
 .. versionadded:: 0.53
    Synonym for memcached_pool_pop
@@ -22,11 +20,10 @@ SYNOPSIS
 .. function:: memcached_return_t memcached_pool_release(memcached_pool_st* pool, memcached_st* mmc)
 .. versionadded:: 0.53
    Synonym for memcached_pool_push.
- 
-.. function:: memcached_return_t memcached_pool_behavior_set(memcached_pool_st *pool, memcached_behavior_t flag, uint64_t data)
- 
-.. function:: memcached_return_t memcached_pool_behavior_get(memcached_pool_st *pool, memcached_behavior_t flag, uint64_t *value)
 
+.. function:: memcached_return_t memcached_pool_behavior_set(memcached_pool_st *pool, memcached_behavior_t flag, uint64_t data)
+
+.. function:: memcached_return_t memcached_pool_behavior_get(memcached_pool_st *pool, memcached_behavior_t flag, uint64_t *value)
 
 .. function:: memcached_pool_st* memcached_pool_create(memcached_st* mmc, int initial, int max)
 .. deprecated:: 0.46
@@ -40,13 +37,10 @@ SYNOPSIS
 .. deprecated:: 0.53
    Use :func:`memcached_pool_release`
 
-
------------
 DESCRIPTION
 -----------
 
-
-:func:`memcached_pool` is used to create a connection pool of objects you 
+:func:`memcached_pool` is used to create a connection pool of objects you
 may use to remove the overhead of using memcached_clone for short lived
 :type:`memcached_st` objects. Please see :doc:`../libmemcached/configuration`
 for details on the format of the configuration string.
@@ -72,7 +66,6 @@ is used to get/set behavior flags on all connections in the pool.
 Both :func:`memcached_pool_release` and :func:`memcached_pool_fetch` are
 thread safe.
 
-------
 RETURN
 ------
 
@@ -96,9 +89,6 @@ memcached_pool_fetch may return MEMCACHED_TIMEOUT if a timeout occurs while
 waiting for a free memcached_st. MEMCACHED_NOTFOUND if no memcached_st was
 available.
 
-
-
---------
 SEE ALSO
 --------
 

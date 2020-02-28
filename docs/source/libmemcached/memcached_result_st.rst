@@ -36,14 +36,11 @@ SYNOPSIS
 
 Compile and link with -lmemcachedutil -lmemcached
 
-
-
 -----------
 DESCRIPTION
 -----------
 
-
-libmemcached(3) can optionally return a :type:`memcached_result_st` which 
+libmemcached(3) can optionally return a :type:`memcached_result_st` which
 acts as a result object. The result objects have added benefits over the 
 character pointer returns, in that they are forward compatible with new 
 return items that future memcached servers may implement (the best current 
@@ -63,7 +60,7 @@ structure. If the structure was also allocated, it will deallocate it.
 :func:`memcached_result_key_value` returns the key value associated with the
 current result object.
 
-:func:`memcached_result_key_length` returns the key length associated with 
+:func:`memcached_result_key_length` returns the key length associated with
 the current result object.
 
 :func:`memcached_result_value` returns the result value associated with the
@@ -74,7 +71,7 @@ associated with the current result object. You must call free() to release this
 value, unless you have made use of a custom allocator. Use of a custom
 allocator requires that you create your own custom free() to release it.
 
-:func:`memcached_result_length` returns the result length associated with 
+:func:`memcached_result_length` returns the result length associated with
 the current result object.
 
 :func:`memcached_result_flags` returns the flags associated with the
@@ -98,17 +95,13 @@ You may wish to avoid using memcached_result_create(3) with a
 stack based allocation. The most common issues related to ABI safety involve
 heap allocated structures.
 
-
 ------
 RETURN
 ------
 
-
 Varies, see particular functions. All structures must have
 :func:`memcached_result_free` called on them for cleanup purposes. Failure 
 to do this will result in leaked memory.
-
-
 
 --------
 SEE ALSO

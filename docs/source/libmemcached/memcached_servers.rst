@@ -2,12 +2,11 @@
 Manipulate the server information stored in memcached_st
 ========================================================
 
--------- 
 SYNOPSIS 
 --------
 
 #include <libmemcached/memcached.h>
- 
+
 .. type:: memcached_server_fn
 
 .. function:: uint32_t memcached_server_count (memcached_st *ptr)
@@ -18,7 +17,7 @@ SYNOPSIS
 
 .. function:: memcached_return_t memcached_server_add_unix_socket (memcached_st *ptr, const char *socket)
 
-.. function:: memcached_return_t memcached_server_push (memcached_st *ptr, const memcached_server_st *list) 
+.. function:: memcached_return_t memcached_server_push (memcached_st *ptr, const memcached_server_st *list)
 
 .. function:: const memcached_instance_st * memcached_server_by_key (memcached_st *ptr, const char *key, size_t key_length, memcached_return_t *error)
 
@@ -28,12 +27,8 @@ SYNOPSIS
 
 compile and link with -lmemcached
 
-
-
------------
 DESCRIPTION
 -----------
-
 
 `libmemcached` performs operations on a list of hosts. The order of
 these hosts determine routing to keys. Functions are provided to add keys to
@@ -46,7 +41,7 @@ servers being used by a :type:`memcached_st` structure.
 :func:`memcached_server_add` pushes a single TCP server into the :type:`memcached_st` structure. This server will be placed at the end. Duplicate servers
  are allowed, so duplication is not checked. Executing this function with the `MEMCACHED_BEHAVIOR_USE_UDP` behavior set will result in a `MEMCACHED_INVALID_HOST_PROTOCOL`.
 
-:func:`memcached_server_add_udp` pushes a single UDP server into the :type:`memcached_st` structure. This server will be placed at the end. Duplicate 
+:func:`memcached_server_add_udp` pushes a single UDP server into the :type:`memcached_st` structure. This server will be placed at the end. Duplicate
 servers are allowed, so duplication is not checked. Executing this function with out setting the `MEMCACHED_BEHAVIOR_USE_UDP` behavior will result in a
 `MEMCACHED_INVALID_HOST_PROTOCOL`.
 
@@ -54,7 +49,7 @@ servers are allowed, so duplication is not checked. Executing this function with
 Duplicate servers are allowed, so duplication is not checked. The length
 of the filename must be one character less than `MEMCACHED_MAX_HOST_LENGTH`.
 
-:func:`memcached_server_push` pushes an array of :type:`memcached_server_st` into the :type:`memcached_st` structure. These servers will be placed at 
+:func:`memcached_server_push` pushes an array of :type:`memcached_server_st` into the :type:`memcached_st` structure. These servers will be placed at
 the end. Duplicate servers are allowed, so duplication is not checked. A
 copy is made of structure so the list provided (and any operations on
 the list) are not saved.
@@ -62,25 +57,22 @@ the list) are not saved.
 :func:`memcached_server_by_key` allows you to provide a key and retrieve the
 server which would be used for assignment.
 
-:func:`memcached_server_get_last_disconnect` returns a pointer to the last 
+:func:`memcached_server_get_last_disconnect` returns a pointer to the last
 server for which there was a connection problem. It does not mean this 
 particular server is currently dead but if the library is reporting a server 
 is, the returned server is a very good candidate.
 
-:func:`memcached_server_cursor` takes a memcached_st and loops through the 
+:func:`memcached_server_cursor` takes a memcached_st and loops through the
 list of hosts currently in the cursor calling the list of callback 
 functions provided. You can optionally pass in a value via 
 context which will be provided to each callback function. An error
 return from any callback will terminate the loop. :func:`memcached_server_cursor` is passed the original caller :type:`memcached_st` in its current state.
 
-
 ------
 RETURN
 ------
 
-
 Varies, see particular functions.
-
 
 --------
 SEE ALSO

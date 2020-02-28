@@ -16,13 +16,13 @@ SYNOPSIS
 .. function:: const memcached_instance_st * memcached_server_list (memcached_st *ptr)
 
 .. function:: void memcached_server_list_free (memcached_server_list_st list)
- 
+
 .. function:: memcached_server_list_st memcached_server_list_append (memcached_server_list_st list, const char *hostname, in_port_t port, memcached_return_t *error)
- 
+
 .. function:: uint32_t memcached_server_list_count (memcached_server_list_st list)
- 
+
 .. function:: const char *memcached_server_error (const memcached_instance_st * instance)
- 
+
 .. function:: void memcached_server_error_reset (const memcached_instance_st * list)
 
     .. deprecated:: 0.39

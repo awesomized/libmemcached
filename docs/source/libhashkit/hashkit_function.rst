@@ -31,7 +31,6 @@ DESCRIPTION
 
 These functions are used to set and retrieve the key and distribution hash functions.
 
-
 RETURN VALUE
 ------------
 

@@ -4,7 +4,6 @@ SASL support
 
 .. index:: object: memcached_st
 
-
 --------
 SYNOPSIS
 --------
@@ -21,12 +20,9 @@ SYNOPSIS
 
 Compile and link with -lmemcached
 
-
-
 -----------
 DESCRIPTION
 -----------
-
 
 libmemcached(3) allows you to plug in your own callbacks function used by
 libsasl to perform SASL authentication.
@@ -42,17 +38,13 @@ in memory. If you choose to use this method you have to call
 :type:`memcached_destroy_sasl_auth_data` if you specify your own callback 
 function with :func:`memcached_set_sasl_callbacks`.
 
-
 ------
 RETURN
 ------
 
-
 :func:`memcached_get_sasl_callbacks` returns the callbacks currently used by
 this memcached handle. :func:`memcached_set_sasl_auth_data` returns
 `MEMCACHED_SUCCESS` upon success.
-
-
 
 --------
 SEE ALSO

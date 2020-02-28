@@ -6,14 +6,12 @@ Appending or Prepending to data on the server
 
 Appending or Prepending to data on the server
 
-
 --------
 SYNOPSIS
 --------
 
-
 #include <libmemcached/memcached.h>
- 
+
 .. function:: memcached_return_t memcached_prepend(memcached_st *ptr, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags)
 
 .. function:: memcached_return_t memcached_append(memcached_st *ptr, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags)
@@ -24,13 +22,11 @@ SYNOPSIS
 
 Compile and link with -lmemcached
 
-
 -----------
 DESCRIPTION
 -----------
 
-
-:func:`memcached_prepend` and memcached_append are used to 
+:func:`memcached_prepend` and memcached_append are used to
 modify information on a server. All methods take a key, and its length to
 store the object. Keys are currently limited to 250 characters when using 
 either a version of memcached which is 1.4 or below, or when using the text 
@@ -40,13 +36,13 @@ meant to be used as a bitmap). "flags" is a 4byte space that is stored
 alongside of the main value. Many sub libraries make use of this field, 
 so in most cases users should avoid making use of it.
 
-:func:`memcached_prepend` places a segment of data before the last piece 
+:func:`memcached_prepend` places a segment of data before the last piece
 of data stored. Currently expiration and key are not used in the server.
 
-:func:`memcached_append` places a segment of data at the end of the last 
+:func:`memcached_append` places a segment of data at the end of the last
 piece of data stored. Currently expiration and key are not used in the server.
 
-:func:`memcached_prepend_by_key` and 
+:func:`memcached_prepend_by_key` and
 :func:`memcached_append_by_key` methods both behave in a similar 
 method as the non key methods. The difference is that they use their 
 group_key parameter to map objects to particular servers.
@@ -73,17 +69,14 @@ there are at least 1318 bytes available to split among the key, key_prefix
 and value. If the total size of the command, including overhead, exceeds 
 1400 bytes, a `MEMCACHED_WRITE_FAILURE` will be returned.
 
-
 ------
 RETURN
 ------
-
 
 All methods return a value of type :type:`memcached_return_t`.
 On success the value will be `MEMCACHED_SUCCESS`.
 Use :func:`memcached_strerror` to translate this value to a printable 
 string.
-
 
 --------
 SEE ALSO
@@ -91,5 +84,5 @@ SEE ALSO
 
 .. only:: man
 
-  :manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)` :manpage:`memcached_set(3)` :manpage:`memcached_add(3)` :manpage:`memcached_cas(3)` :manpage:`memcached_replace(3)`
+:manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)` :manpage:`memcached_set(3)` :manpage:`memcached_add(3)` :manpage:`memcached_cas(3)` :manpage:`memcached_replace(3)`
 

@@ -2,8 +2,6 @@
 memexist - Check for the existence of a key
 ===========================================
 
-
---------
 SYNOPSIS
 --------
 
@@ -11,18 +9,13 @@ memexist [options] [key]
 
 .. program:: memexist
 
-
------------
 DESCRIPTION
 -----------
 
 :program:`memexist` checks for the existance of a key within a cluster.
 
-
--------
 OPTIONS
 -------
-
 
 You can specify servers via the option:
 
@@ -38,8 +31,6 @@ For a full list of operations run the tool with the option:
 
 .. option:: --help
 
-
---------
 SEE ALSO
 --------
 

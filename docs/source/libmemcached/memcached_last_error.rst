@@ -8,7 +8,7 @@ SYNOPSIS
   Compile and link with -lmemcached
 
 .. function:: memcached_return_t memcached_last_error(const memcached_st *)
- 
+
 .. function:: const char *memcached_last_error_message(const memcached_st *)
 
 .. function:: int memcached_last_error_errno(const memcached_st *)
@@ -30,7 +30,6 @@ need to be de-allocated. NULL will be returned if no error has occurred.
 
 `memcached_last_error_errno` returns any last local error code obtained from
 :manpage:`errno(3)`.
-
 
 SEE ALSO
 --------

@@ -2,11 +2,8 @@
 memcp - Copy data to a server
 =============================
 
-
 Copies files to a collection of memcached servers
 
-
---------
 SYNOPSIS
 --------
 
@@ -14,11 +11,8 @@ memcp [options] [file] [server]
 
 .. program:: memcp
 
-
------------
 DESCRIPTION
 -----------
-
 
 :program:`memcp` copies one or more files into memcached(1) servers.
 It is similar to the standard UNIX cp(1) command.
@@ -26,11 +20,8 @@ It is similar to the standard UNIX cp(1) command.
 The key names will be the names of the files,
 without any directory path.
 
-
--------
 OPTIONS
 -------
-
 
 You can specify servers via the option:
 
@@ -46,9 +37,6 @@ For a full list of operations run the tool with the option:
 
 .. option:: --help
 
-
-
---------
 SEE ALSO
 --------
 

@@ -9,7 +9,6 @@ Working with data on the server in an atomic fashion
 SYNOPSIS
 --------
 
-
 #include <libmemcached/memcached.h>
 
 .. function:: memcached_return_t memcached_cas(memcached_st *ptr, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags, uint64_t cas)
@@ -18,19 +17,18 @@ SYNOPSIS
 
 Compile and link with -lmemcached
 
-
 -----------
 DESCRIPTION
 -----------
 
-:func:`memcached_cas` overwrites data in the server as long as the "cas" 
+:func:`memcached_cas` overwrites data in the server as long as the "cas"
 value is still the same in the server. You can get the cas value of a result 
 by calling :func:`memcached_result_cas` on a memcached_result_st(3) 
 structure. At the point that this note was written cas is still buggy in memcached.
 Turning on tests for it in libmemcached(3) is optional. Please see
 :func:`memcached_set` for information on how to do this.
 
-:func:`memcached_cas_by_key` method behaves in a similar method as the non 
+:func:`memcached_cas_by_key` method behaves in a similar method as the non
 key methods. The difference is that it uses the group_key parameter 
 to map objects to particular servers.
 
@@ -49,17 +47,14 @@ non-cas ASCII set operations, there are at least 1335 bytes available to
 split among the key, key_prefix, and value; for cas ASCII operations there 
 are at least 1318 bytes available to split among the key, key_prefix and value. If the total size of the command, including overhead, exceeds 1400 bytes, a `MEMCACHED_WRITE_FAILURE` will be returned.
 
-
 ------
 RETURN
 ------
-
 
 All methods return a value of type :type:`memcached_return_t`.
 On success the value will be `MEMCACHED_SUCCESS`.
 Use :func:`memcached_strerror` to translate this value to a printable 
 string.
-
 
 --------
 SEE ALSO
