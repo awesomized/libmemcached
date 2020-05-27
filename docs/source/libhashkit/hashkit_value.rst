@@ -9,6 +9,10 @@ SYNOPSIS
 
 .. function:: uint32_t hashkit_value(hashkit_st *hash, const char *key, size_t key_length)
 
+    :param hash: pointer to an initialized `hashkit_st` struct
+    :param key: the key to genereate a hash of
+    :param key_length: the length of the `key` without any terminating zero byte
+
 DESCRIPTION
 -----------
 

@@ -33,11 +33,12 @@ DESCRIPTION
 -----------
 
 These functions generate hash values from a key using a variety of
-algorithms. These functions can be used standalone, or as arguments
-to :func:`hashkit_set_hash_fn` or :func:`hashkit_set_continuum_hash_fn`.
+algorithms. These functions can be used standalone, or will be used
+according to the algorithm set with `hashkit_set_function`
+or `hashkit_set_distribution_function`.
 
-The :func:`hashkit_hsieh` is only available if the library is built with
-the appropriate flag enabled.
+The `hashkit_hsieh`, `hashkit_murmur` and `hashkit_murmur3` functions are
+only available if the library is built with the appropriate flag enabled.
 
 RETURN VALUE
 ------------
