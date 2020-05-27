@@ -195,67 +195,67 @@
 <div class="section" id="synopsis">
 <h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
 <p>#include &lt;libmemcached/memcached_pool.h&gt;</p>
-<dl class="type">
+<dl class="cpp type">
 <dt id="_CPPv419memcached_result_st">
 <span id="_CPPv319memcached_result_st"></span><span id="_CPPv219memcached_result_st"></span><span id="memcached_result_st"></span><em class="property">type </em><code class="sig-name descname">memcached_result_st</code><a class="headerlink" href="#_CPPv419memcached_result_st" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv423memcached_result_createP12memcached_stP19memcached_result_st">
 <span id="_CPPv323memcached_result_createP12memcached_stP19memcached_result_st"></span><span id="_CPPv223memcached_result_createP12memcached_stP19memcached_result_st"></span><span id="memcached_result_create__memcached_stP.memcached_result_stP"></span><a class="reference internal" href="#_CPPv419memcached_result_st" title="memcached_result_st">memcached_result_st</a> *<code class="sig-name descname">memcached_result_create</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <a class="reference internal" href="#_CPPv419memcached_result_st" title="memcached_result_st">memcached_result_st</a> *<em>result</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423memcached_result_createP12memcached_stP19memcached_result_st" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv421memcached_result_freeP19memcached_result_st">
 <span id="_CPPv321memcached_result_freeP19memcached_result_st"></span><span id="_CPPv221memcached_result_freeP19memcached_result_st"></span><span id="memcached_result_free__memcached_result_stP"></span>void <code class="sig-name descname">memcached_result_free</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv419memcached_result_st" title="memcached_result_st">memcached_result_st</a> *<em>result</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421memcached_result_freeP19memcached_result_st" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv426memcached_result_key_valueP19memcached_result_st">
 <span id="_CPPv326memcached_result_key_valueP19memcached_result_st"></span><span id="_CPPv226memcached_result_key_valueP19memcached_result_st"></span><span id="memcached_result_key_value__memcached_result_stP"></span><em class="property">const</em> char *<code class="sig-name descname">memcached_result_key_value</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv419memcached_result_st" title="memcached_result_st">memcached_result_st</a> *<em>result</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426memcached_result_key_valueP19memcached_result_st" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv427memcached_result_key_lengthPK19memcached_result_st">
 <span id="_CPPv327memcached_result_key_lengthPK19memcached_result_st"></span><span id="_CPPv227memcached_result_key_lengthPK19memcached_result_st"></span><span id="memcached_result_key_length__memcached_result_stCP"></span>size_t <code class="sig-name descname">memcached_result_key_length</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="#_CPPv419memcached_result_st" title="memcached_result_st">memcached_result_st</a> *<em>result</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427memcached_result_key_lengthPK19memcached_result_st" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv422memcached_result_valueP19memcached_result_st">
 <span id="_CPPv322memcached_result_valueP19memcached_result_st"></span><span id="_CPPv222memcached_result_valueP19memcached_result_st"></span><span id="memcached_result_value__memcached_result_stP"></span><em class="property">const</em> char *<code class="sig-name descname">memcached_result_value</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv419memcached_result_st" title="memcached_result_st">memcached_result_st</a> *<em>ptr</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422memcached_result_valueP19memcached_result_st" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv427memcached_result_take_valueP19memcached_result_st">
 <span id="_CPPv327memcached_result_take_valueP19memcached_result_st"></span><span id="_CPPv227memcached_result_take_valueP19memcached_result_st"></span><span id="memcached_result_take_value__memcached_result_stP"></span>char *<code class="sig-name descname">memcached_result_take_value</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv419memcached_result_st" title="memcached_result_st">memcached_result_st</a> *<em>ptr</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427memcached_result_take_valueP19memcached_result_st" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv423memcached_result_lengthPK19memcached_result_st">
 <span id="_CPPv323memcached_result_lengthPK19memcached_result_st"></span><span id="_CPPv223memcached_result_lengthPK19memcached_result_st"></span><span id="memcached_result_length__memcached_result_stCP"></span>size_t <code class="sig-name descname">memcached_result_length</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="#_CPPv419memcached_result_st" title="memcached_result_st">memcached_result_st</a> *<em>ptr</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423memcached_result_lengthPK19memcached_result_st" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv422memcached_result_flagsPK19memcached_result_st">
 <span id="_CPPv322memcached_result_flagsPK19memcached_result_st"></span><span id="_CPPv222memcached_result_flagsPK19memcached_result_st"></span><span id="memcached_result_flags__memcached_result_stCP"></span>uint32_t <code class="sig-name descname">memcached_result_flags</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="#_CPPv419memcached_result_st" title="memcached_result_st">memcached_result_st</a> *<em>result</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422memcached_result_flagsPK19memcached_result_st" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv420memcached_result_casPK19memcached_result_st">
 <span id="_CPPv320memcached_result_casPK19memcached_result_st"></span><span id="_CPPv220memcached_result_casPK19memcached_result_st"></span><span id="memcached_result_cas__memcached_result_stCP"></span>uint64_t <code class="sig-name descname">memcached_result_cas</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="#_CPPv419memcached_result_st" title="memcached_result_st">memcached_result_st</a> *<em>result</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420memcached_result_casPK19memcached_result_st" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv426memcached_result_set_valueP19memcached_result_stPKc6size_t">
 <span id="_CPPv326memcached_result_set_valueP19memcached_result_stPKc6size_t"></span><span id="_CPPv226memcached_result_set_valueP19memcached_result_stPKc6size_t"></span><span id="memcached_result_set_value__memcached_result_stP.cCP.s"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_result_set_value</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv419memcached_result_st" title="memcached_result_st">memcached_result_st</a> *<em>ptr</em>, <em class="property">const</em> char *<em>value</em>, size_t <em>length</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426memcached_result_set_valueP19memcached_result_stPKc6size_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv426memcached_result_set_flagsP19memcached_result_st8uint32_t">
 <span id="_CPPv326memcached_result_set_flagsP19memcached_result_st8uint32_t"></span><span id="_CPPv226memcached_result_set_flagsP19memcached_result_st8uint32_t"></span><span id="memcached_result_set_flags__memcached_result_stP.uint32_t"></span>void <code class="sig-name descname">memcached_result_set_flags</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv419memcached_result_st" title="memcached_result_st">memcached_result_st</a> *<em>ptr</em>, uint32_t <em>flags</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426memcached_result_set_flagsP19memcached_result_st8uint32_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv431memcached_result_set_expirationP19memcached_result_st6time_t">
 <span id="_CPPv331memcached_result_set_expirationP19memcached_result_st6time_t"></span><span id="_CPPv231memcached_result_set_expirationP19memcached_result_st6time_t"></span><span id="memcached_result_set_expiration__memcached_result_stP.time_t"></span>void <code class="sig-name descname">memcached_result_set_expiration</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv419memcached_result_st" title="memcached_result_st">memcached_result_st</a> *<em>ptr</em>, time_t<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431memcached_result_set_expirationP19memcached_result_st6time_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>

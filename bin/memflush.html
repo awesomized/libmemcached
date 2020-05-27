@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>memflush - flush all data from a server &mdash; libmemcached 1.0.99 documentation</title>
+  <title>memflush &mdash; libmemcached 1.0.99 documentation</title>
   
 
   
@@ -36,8 +36,8 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="copyright" title="Copyright" href="../copyright.html" />
-    <link rel="next" title="memrm - Remove data from a server" href="memrm.html" />
-    <link rel="prev" title="memerror - translate an error code to a string" href="memerror.html" /> 
+    <link rel="next" title="Copyright" href="../copyright.html" />
+    <link rel="prev" title="memdump" href="memdump.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -104,26 +104,20 @@
 <p class="caption"><span class="caption-text">Client Applications</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Client Applications</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="memcapable.html">memcapable - Checking a Memcached server capabilities and compatibility</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memcat.html">memcat - “cat” data from a server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memcp.html">memcp - Copy data to a server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memdump.html">memdump - Dumping your server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memerror.html">memerror - translate an error code to a string</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">memflush - flush all data from a server</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#synopsis">SYNOPSIS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#description">DESCRIPTION</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#options">OPTIONS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#see-also">SEE ALSO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#data-manipulation">Data Manipulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#tests-and-analysis">Tests and Analysis</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#server-administration">Server Administration</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="memdump.html">memdump — Dump a server's data</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">memflush — Flush a server (erase all cached data)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#description">DESCRIPTION</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#options">OPTIONS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#environment">ENVIRONMENT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#see-also">SEE ALSO</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="memrm.html">memrm - Remove data from a server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memslap.html">memslap - Load testing  and benchmarking a server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memaslap.html">memaslap - Load testing  and benchmarking a server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memstat.html">memstat - Gather statistics from a server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memexist.html">memexist - Check for the existence of a key</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memparse.html">memparse - Parse an option string</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memping.html">memping - Test to see if a server is available.</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memtouch.html">memtouch - Touches a key.</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -177,7 +171,7 @@
         
           <li><a href="index.html">Client Applications</a> &raquo;</li>
         
-      <li>memflush - flush all data from a server</li>
+      <li>memflush</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -194,41 +188,121 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="memflush-flush-all-data-from-a-server">
-<h1>memflush - flush all data from a server<a class="headerlink" href="#memflush-flush-all-data-from-a-server" title="Permalink to this headline">¶</a></h1>
-<p>Reset a server or list of servers</p>
+  <div class="section" id="memflush">
+<h1>memflush<a class="headerlink" href="#memflush" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="synopsis">
 <h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
 <p>memflush [options]</p>
+<p>Reset a server or list of servers</p>
 </div>
 <div class="section" id="description">
 <h2>DESCRIPTION<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
-<p><strong class="program">memflush</strong>  resets the contents of memcached(1) servers.
-This means that all data in the specified servers will be deleted.</p>
+<p><strong class="program">memflush</strong>  resets the contents of <em class="manpage"><a class="manpage reference external" href="https://linux.die.net/man/1/memcached">memcached(1)</a></em> servers.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This means that all data in the specified servers will be deleted.</p>
+</div>
 </div>
 <div class="section" id="options">
 <h2>OPTIONS<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
-<p>You can specify servers via the option:</p>
-<dl class="option">
-<dt id="cmdoption-memflush-servers">
-<code class="sig-name descname">--servers</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-memflush-servers" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<p>or via the environment variable:</p>
-<dl class="envvar">
-<dt id="envvar-`MEMCACHED_SERVERS`">
-<code class="sig-name descname">`MEMCACHED_SERVERS`</code><a class="headerlink" href="#envvar-`MEMCACHED_SERVERS`" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<p>For a full list of operations run the tool with option:</p>
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-memflush-help">
 <code class="sig-name descname">--help</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-memflush-help" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Display help.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-memflush-version">
+<code class="sig-name descname">--version</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-memflush-version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display version.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-memflush-quiet">
+<code class="sig-name descname">--quiet</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-memflush-quiet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Operate quietly.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-memflush-verbose">
+<code class="sig-name descname">--verbose</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-memflush-verbose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Operate more verbosely.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-memflush-debug">
+<code class="sig-name descname">--debug</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-memflush-debug" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <a class="reference internal" href="#cmdoption-memflush-verbose"><code class="xref std std-option docutils literal notranslate"><span class="pre">--verbose</span></code></a>.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-memflush-servers">
+<code class="sig-name descname">--servers</code><code class="sig-prename descclassname"> &lt;list of servers&gt;</code><a class="headerlink" href="#cmdoption-memflush-servers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specify the list of servers as <em>hostname[:port][,hostname[:port]...]</em>.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-memflush-binary">
+<code class="sig-name descname">--binary</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-memflush-binary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable binary protocol.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-memflush-username">
+<code class="sig-name descname">--username</code><code class="sig-prename descclassname"> &lt;username&gt;</code><a class="headerlink" href="#cmdoption-memflush-username" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use <em>username</em> for SASL authentication.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-memflush-password">
+<code class="sig-name descname">--password</code><code class="sig-prename descclassname"> &lt;password&gt;</code><a class="headerlink" href="#cmdoption-memflush-password" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use <em>password</em> for SASL authentication.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-memflush-expire">
+<code class="sig-name descname">--expire</code><code class="sig-prename descclassname"> &lt;expiration&gt;</code><a class="headerlink" href="#cmdoption-memflush-expire" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use <em>expiration</em> seconds (or a UNIX timestamp).</p>
+</dd></dl>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Using an expiration time (period), all keys, which have not bean updated until expiration will cease to exist.</p>
+<p>Quoting the <a class="reference external" href="https://github.com/memcached/memcached/blob/master/doc/protocol.txt">memcached protocol documentation</a>, it states:</p>
+<blockquote>
+<div><p>Its effect is to invalidate all
+existing items immediately (by default) or after the expiration
+specified.  After invalidation none of the items will be returned in
+response to a retrieval command (unless it's stored again under the
+same key <em>after</em> flush_all has invalidated the items).</p>
+<p>The most precise
+definition of what flush_all does is the following: it causes all
+items whose update time is earlier than the time at which flush_all
+was set to be executed to be ignored for retrieval purposes.</p>
+<p>The intent of flush_all with a delay, was that in a setting where you
+have a pool of memcached servers, and you need to flush all content,
+you have the option of not resetting all memcached servers at the
+same time (which could e.g. cause a spike in database load with all
+clients suddenly needing to recreate content that would otherwise
+have been found in the memcached daemon).</p>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="environment">
+<h2>ENVIRONMENT<a class="headerlink" href="#environment" title="Permalink to this headline">¶</a></h2>
+<dl class="std envvar">
+<dt id="envvar-MEMCACHED_SERVERS">
+<code class="sig-name descname">MEMCACHED_SERVERS</code><a class="headerlink" href="#envvar-MEMCACHED_SERVERS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specify the list of servers.</p>
+</dd></dl>
 
 </div>
 <div class="section" id="see-also">
 <h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../libmemcached.html"><span class="doc">C/C++ Client Library for memcached</span></a></p></li>
+<li><p><a class="reference internal" href="../libmemcached/memcached_flush.html"><span class="doc">Wiping clean the contents of a server</span></a></p></li>
+</ul>
 </div>
 </div>
 
@@ -240,10 +314,10 @@ This means that all data in the specified servers will be deleted.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="memrm.html" class="btn btn-neutral float-right" title="memrm - Remove data from a server" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../copyright.html" class="btn btn-neutral float-right" title="Copyright" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="memerror.html" class="btn btn-neutral float-left" title="memerror - translate an error code to a string" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="memdump.html" class="btn btn-neutral float-left" title="memdump" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

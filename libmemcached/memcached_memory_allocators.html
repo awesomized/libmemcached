@@ -205,37 +205,37 @@
 <dt>#include &lt;libmemcached/memcached.h&gt;</dt><dd><p>Compile and link with -lmemcached</p>
 </dd>
 </dl>
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv431memcached_set_memory_allocatorsP12memcached_st19memcached_malloc_fn17memcached_free_fn20memcached_realloc_fn19memcached_calloc_fnPv">
 <span id="_CPPv331memcached_set_memory_allocatorsP12memcached_st19memcached_malloc_fn17memcached_free_fn20memcached_realloc_fn19memcached_calloc_fnPv"></span><span id="_CPPv231memcached_set_memory_allocatorsP12memcached_st19memcached_malloc_fn17memcached_free_fn20memcached_realloc_fn19memcached_calloc_fnPv"></span><span id="memcached_set_memory_allocators__memcached_stP.memcached_malloc_fn.memcached_free_fn.memcached_realloc_fn.memcached_calloc_fn.voidP"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_set_memory_allocators</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <a class="reference internal" href="#_CPPv419memcached_malloc_fn" title="memcached_malloc_fn">memcached_malloc_fn</a> <em>mem_malloc</em>, <a class="reference internal" href="#_CPPv417memcached_free_fn" title="memcached_free_fn">memcached_free_fn</a> <em>mem_free</em>, <a class="reference internal" href="#_CPPv420memcached_realloc_fn" title="memcached_realloc_fn">memcached_realloc_fn</a> <em>mem_realloc</em>, <a class="reference internal" href="#_CPPv419memcached_calloc_fn" title="memcached_calloc_fn">memcached_calloc_fn</a> <em>mem_calloc</em>, void *<em>context</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431memcached_set_memory_allocatorsP12memcached_st19memcached_malloc_fn17memcached_free_fn20memcached_realloc_fn19memcached_calloc_fnPv" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv431memcached_get_memory_allocatorsP12memcached_stP19memcached_malloc_fnP17memcached_free_fnP20memcached_realloc_fnP19memcached_calloc_fn">
 <span id="_CPPv331memcached_get_memory_allocatorsP12memcached_stP19memcached_malloc_fnP17memcached_free_fnP20memcached_realloc_fnP19memcached_calloc_fn"></span><span id="_CPPv231memcached_get_memory_allocatorsP12memcached_stP19memcached_malloc_fnP17memcached_free_fnP20memcached_realloc_fnP19memcached_calloc_fn"></span><span id="memcached_get_memory_allocators__memcached_stP.memcached_malloc_fnP.memcached_free_fnP.memcached_realloc_fnP.memcached_calloc_fnP"></span>void <code class="sig-name descname">memcached_get_memory_allocators</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <a class="reference internal" href="#_CPPv419memcached_malloc_fn" title="memcached_malloc_fn">memcached_malloc_fn</a> *<em>mem_malloc</em>, <a class="reference internal" href="#_CPPv417memcached_free_fn" title="memcached_free_fn">memcached_free_fn</a> *<em>mem_free</em>, <a class="reference internal" href="#_CPPv420memcached_realloc_fn" title="memcached_realloc_fn">memcached_realloc_fn</a> *<em>mem_realloc</em>, <a class="reference internal" href="#_CPPv419memcached_calloc_fn" title="memcached_calloc_fn">memcached_calloc_fn</a> *<em>mem_calloc</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431memcached_get_memory_allocatorsP12memcached_stP19memcached_malloc_fnP17memcached_free_fnP20memcached_realloc_fnP19memcached_calloc_fn" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv439memcached_get_memory_allocators_contextPK12memcached_st">
 <span id="_CPPv339memcached_get_memory_allocators_contextPK12memcached_st"></span><span id="_CPPv239memcached_get_memory_allocators_contextPK12memcached_st"></span><span id="memcached_get_memory_allocators_context__memcached_stCP"></span>void *<code class="sig-name descname">memcached_get_memory_allocators_context</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv439memcached_get_memory_allocators_contextPK12memcached_st" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="type">
+<dl class="cpp type">
 <dt id="_CPPv419memcached_malloc_fn">
 <span id="_CPPv319memcached_malloc_fn"></span><span id="_CPPv219memcached_malloc_fn"></span><span id="memcached_malloc_fn"></span><em class="property">typedef </em>void *(*<code class="sig-name descname">memcached_malloc_fn</code>)<span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *ptr, <em class="property">const</em> size_t size, void *context<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419memcached_malloc_fn" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="type">
+<dl class="cpp type">
 <dt id="_CPPv420memcached_realloc_fn">
 <span id="_CPPv320memcached_realloc_fn"></span><span id="_CPPv220memcached_realloc_fn"></span><span id="memcached_realloc_fn"></span><em class="property">typedef </em>void *(*<code class="sig-name descname">memcached_realloc_fn</code>)<span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *ptr, void *mem, <em class="property">const</em> size_t size, void *context<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420memcached_realloc_fn" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="type">
+<dl class="cpp type">
 <dt id="_CPPv417memcached_free_fn">
 <span id="_CPPv317memcached_free_fn"></span><span id="_CPPv217memcached_free_fn"></span><span id="memcached_free_fn"></span><em class="property">typedef </em>void (*<code class="sig-name descname">memcached_free_fn</code>)<span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *ptr, void *mem, void *context<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417memcached_free_fn" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="type">
+<dl class="cpp type">
 <dt id="_CPPv419memcached_calloc_fn">
 <span id="_CPPv319memcached_calloc_fn"></span><span id="_CPPv219memcached_calloc_fn"></span><span id="memcached_calloc_fn"></span><em class="property">typedef </em>void *(*<code class="sig-name descname">memcached_calloc_fn</code>)<span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *ptr, size_t nelem, <em class="property">const</em> size_t elsize, void *context<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419memcached_calloc_fn" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
@@ -269,12 +269,12 @@ for memory.</p>
 <div class="section" id="return-value">
 <h2>RETURN VALUE<a class="headerlink" href="#return-value" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference internal" href="#_CPPv431memcached_set_memory_allocatorsP12memcached_st19memcached_malloc_fn17memcached_free_fn20memcached_realloc_fn19memcached_calloc_fnPv" title="memcached_set_memory_allocators"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_set_memory_allocators()</span></code></a> return <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t17MEMCACHED_SUCCESSE" title="MEMCACHED_SUCCESS"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_SUCCESS</span></code></a> upon success,
-and <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t17MEMCACHED_FAILUREE" title="MEMCACHED_FAILURE"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_FAILURE</span></code></a> if you don’t pass a complete set of function pointers.</p>
+and <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t17MEMCACHED_FAILUREE" title="MEMCACHED_FAILURE"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_FAILURE</span></code></a> if you don't pass a complete set of function pointers.</p>
 </div>
 <div class="section" id="see-also">
 <h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><em class="manpage"><a class="manpage reference external" href="http://man7.org/linux/man-pages/man1/memcached.1.html">memcached(1)</a></em></p></li>
+<li><p><em class="manpage"><a class="manpage reference external" href="https://linux.die.net/man/1/memcached">memcached(1)</a></em></p></li>
 <li><p><a class="reference internal" href="../libmemcached.html"><span class="doc">C/C++ Client Library for memcached</span></a></p></li>
 <li><p><a class="reference internal" href="memcached_strerror.html"><span class="doc">Converting Error Codes to Messages</span></a></p></li>
 </ul>

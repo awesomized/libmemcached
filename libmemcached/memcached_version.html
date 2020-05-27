@@ -201,12 +201,12 @@
 <div class="section" id="synopsis">
 <h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
 <p>#include &lt;libmemcached/memcached.h&gt;</p>
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv421memcached_lib_versionv">
 <span id="_CPPv321memcached_lib_versionv"></span><span id="_CPPv221memcached_lib_versionv"></span><span id="memcached_lib_version__void"></span><em class="property">const</em> char *<code class="sig-name descname">memcached_lib_version</code><span class="sig-paren">(</span>void<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421memcached_lib_versionv" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv417memcached_versionP12memcached_st">
 <span id="_CPPv317memcached_versionP12memcached_st"></span><span id="_CPPv217memcached_versionP12memcached_st"></span><span id="memcached_version__memcached_stP"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_version</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417memcached_versionP12memcached_st" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
@@ -221,7 +221,7 @@
 <div class="section" id="return-value">
 <h2>RETURN VALUE<a class="headerlink" href="#return-value" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference internal" href="#_CPPv421memcached_lib_versionv" title="memcached_lib_version"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_lib_version()</span></code></a> returns a string with the version of the libmemcached driver.</p>
-<p>A value of <a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> is returned from :func:’memcached_version’</p>
+<p>A value of <a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> is returned from :func:'memcached_version'</p>
 <p>On success that value will be <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t17MEMCACHED_SUCCESSE" title="MEMCACHED_SUCCESS"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_SUCCESS</span></code></a>.</p>
 <p>If called with the <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_USE_UDP</span></code> behavior set, the value
 <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t23MEMCACHED_NOT_SUPPORTEDE" title="MEMCACHED_NOT_SUPPORTED"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_NOT_SUPPORTED</span></code></a> will be returned.</p>

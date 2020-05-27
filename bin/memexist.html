@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>memexist - Check for the existence of a key &mdash; libmemcached 1.0.99 documentation</title>
+  <title>memexist &mdash; libmemcached 1.0.99 documentation</title>
   
 
   
@@ -36,8 +36,8 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="copyright" title="Copyright" href="../copyright.html" />
-    <link rel="next" title="memparse - Parse an option string" href="memparse.html" />
-    <link rel="prev" title="memstat - Gather statistics from a server" href="memstat.html" /> 
+    <link rel="next" title="memcat" href="memcat.html" />
+    <link rel="prev" title="Client Applications" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -104,26 +104,23 @@
 <p class="caption"><span class="caption-text">Client Applications</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Client Applications</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="memcapable.html">memcapable - Checking a Memcached server capabilities and compatibility</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memcat.html">memcat - “cat” data from a server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memcp.html">memcp - Copy data to a server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memdump.html">memdump - Dumping your server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memerror.html">memerror - translate an error code to a string</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memflush.html">memflush - flush all data from a server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memrm.html">memrm - Remove data from a server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memslap.html">memslap - Load testing  and benchmarking a server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memaslap.html">memaslap - Load testing  and benchmarking a server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memstat.html">memstat - Gather statistics from a server</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">memexist - Check for the existence of a key</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#synopsis">SYNOPSIS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#description">DESCRIPTION</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#options">OPTIONS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#see-also">SEE ALSO</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#data-manipulation">Data Manipulation</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">memexist — Check for the existence of a key</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#description">DESCRIPTION</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#options">OPTIONS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#environment">ENVIRONMENT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#see-also">SEE ALSO</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="memparse.html">memparse - Parse an option string</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memping.html">memping - Test to see if a server is available.</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memtouch.html">memtouch - Touches a key.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memcat.html">memcat — &quot;cat&quot; data from a server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memcp.html">memcp — &quot;cp&quot; files to a server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memtouch.html">memtouch — &quot;touch&quot; a key</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memrm.html">memrm – &quot;rm&quot; a key</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#tests-and-analysis">Tests and Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#server-administration">Server Administration</a></li>
 </ul>
 </li>
 </ul>
@@ -177,7 +174,7 @@
         
           <li><a href="index.html">Client Applications</a> &raquo;</li>
         
-      <li>memexist - Check for the existence of a key</li>
+      <li>memexist</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -194,40 +191,96 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="memexist-check-for-the-existence-of-a-key">
-<h1>memexist - Check for the existence of a key<a class="headerlink" href="#memexist-check-for-the-existence-of-a-key" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="memexist">
+<h1>memexist<a class="headerlink" href="#memexist" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="synopsis">
 <h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p>memexist [options] [key]</p>
+<p>memexist [options] &lt;key&gt;</p>
+<p>Check for the existence of a key.</p>
 </div>
 <div class="section" id="description">
 <h2>DESCRIPTION<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
-<p><strong class="program">memexist</strong> checks for the existance of a key within a cluster.</p>
+<p><strong class="program">memexist</strong> checks for the existence of a key within a cluster.</p>
 </div>
 <div class="section" id="options">
 <h2>OPTIONS<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
-<p>You can specify servers via the option:</p>
-<dl class="option">
-<dt id="cmdoption-memexist-servers">
-<code class="sig-name descname">--servers</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-memexist-servers" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<p>or via the environment variable:</p>
-<dl class="envvar">
-<dt id="envvar-`MEMCACHED_SERVERS`">
-<code class="sig-name descname">`MEMCACHED_SERVERS`</code><a class="headerlink" href="#envvar-`MEMCACHED_SERVERS`" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<p>If you do not specify either these, the final value in the command line list is the name of a server(s).</p>
-<p>For a full list of operations run the tool with the option:</p>
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-memexist-help">
 <code class="sig-name descname">--help</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-memexist-help" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Display help.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-memexist-version">
+<code class="sig-name descname">--version</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-memexist-version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display version.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-memexist-quiet">
+<code class="sig-name descname">--quiet</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-memexist-quiet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Operate quietly.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-memexist-verbose">
+<code class="sig-name descname">--verbose</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-memexist-verbose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Operate more verbosely.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-memexist-debug">
+<code class="sig-name descname">--debug</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-memexist-debug" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <a class="reference internal" href="#cmdoption-memexist-verbose"><code class="xref std std-option docutils literal notranslate"><span class="pre">--verbose</span></code></a>.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-memexist-servers">
+<code class="sig-name descname">--servers</code><code class="sig-prename descclassname"> &lt;list of servers&gt;</code><a class="headerlink" href="#cmdoption-memexist-servers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specify the list of servers as <em>hostname[:port][,hostname[:port]...]</em>.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-memexist-binary">
+<code class="sig-name descname">--binary</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-memexist-binary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable binary protocol.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-memexist-hash">
+<code class="sig-name descname">--hash</code><code class="sig-prename descclassname"> &lt;algorithm&gt;</code><a class="headerlink" href="#cmdoption-memexist-hash" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use <em>algorithm</em> as key hash algo.
+See <a class="reference internal" href="../libmemcached/memcached_behavior.html#_CPPv4N20memcached_behavior_t23MEMCACHED_BEHAVIOR_HASHE" title="memcached_behavior_t::MEMCACHED_BEHAVIOR_HASH"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">memcached_behavior_t::MEMCACHED_BEHAVIOR_HASH</span></code></a>.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-memexist-username">
+<code class="sig-name descname">--username</code><code class="sig-prename descclassname"> &lt;username&gt;</code><a class="headerlink" href="#cmdoption-memexist-username" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use <em>username</em> for SASL authentication.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-memexist-password">
+<code class="sig-name descname">--password</code><code class="sig-prename descclassname"> &lt;password&gt;</code><a class="headerlink" href="#cmdoption-memexist-password" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use <em>password</em> for SASL authentication.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="environment">
+<h2>ENVIRONMENT<a class="headerlink" href="#environment" title="Permalink to this headline">¶</a></h2>
+<dl class="std envvar">
+<dt id="envvar-MEMCACHED_SERVERS">
+<code class="sig-name descname">MEMCACHED_SERVERS</code><a class="headerlink" href="#envvar-MEMCACHED_SERVERS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specify the list of servers.</p>
+</dd></dl>
 
 </div>
 <div class="section" id="see-also">
 <h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../libmemcached.html"><span class="doc">C/C++ Client Library for memcached</span></a></p></li>
+<li><p><a class="reference internal" href="../libmemcached/memcached_exist.html"><span class="doc">Determine if a keys exists.</span></a></p></li>
+</ul>
 </div>
 </div>
 
@@ -239,10 +292,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="memparse.html" class="btn btn-neutral float-right" title="memparse - Parse an option string" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="memcat.html" class="btn btn-neutral float-right" title="memcat" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="memstat.html" class="btn btn-neutral float-left" title="memstat - Gather statistics from a server" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Client Applications" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

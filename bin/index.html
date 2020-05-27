@@ -36,7 +36,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="copyright" title="Copyright" href="../copyright.html" />
-    <link rel="next" title="memcapable - Checking a Memcached server capabilities and compatibility" href="memcapable.html" />
+    <link rel="next" title="memexist" href="memexist.html" />
     <link rel="prev" title="Generate hash value" href="../libhashkit/hashkit_value.html" /> 
 </head>
 
@@ -104,20 +104,29 @@
 <p class="caption"><span class="caption-text">Client Applications</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Client Applications</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="memcapable.html">memcapable - Checking a Memcached server capabilities and compatibility</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memcat.html">memcat - “cat” data from a server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memcp.html">memcp - Copy data to a server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memdump.html">memdump - Dumping your server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memerror.html">memerror - translate an error code to a string</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memflush.html">memflush - flush all data from a server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memrm.html">memrm - Remove data from a server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memslap.html">memslap - Load testing  and benchmarking a server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memaslap.html">memaslap - Load testing  and benchmarking a server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memstat.html">memstat - Gather statistics from a server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memexist.html">memexist - Check for the existence of a key</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memparse.html">memparse - Parse an option string</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memping.html">memping - Test to see if a server is available.</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memtouch.html">memtouch - Touches a key.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-manipulation">Data Manipulation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="memexist.html">memexist — Check for the existence of a key</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memcat.html">memcat — &quot;cat&quot; data from a server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memcp.html">memcp — &quot;cp&quot; files to a server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memtouch.html">memtouch — &quot;touch&quot; a key</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memrm.html">memrm – &quot;rm&quot; a key</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#tests-and-analysis">Tests and Analysis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="memaslap.html">memaslap - Load testing  and benchmarking a server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memslap.html">memslap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memping.html">memping – Ping a server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memstat.html">memstat – Gather statistics from a server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memerror.html">memerror — Translate libmemcached error codes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memparse.html">memparse — Parse and validate an option string</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memcapable.html">memcapable — Check a server's capabilities and compatibility</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#server-administration">Server Administration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="memdump.html">memdump — Dump a server's data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memflush.html">memflush — Flush a server (erase all cached data)</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -188,23 +197,40 @@
             
   <div class="section" id="client-applications">
 <h1>Client Applications<a class="headerlink" href="#client-applications" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="data-manipulation">
+<h2>Data Manipulation<a class="headerlink" href="#data-manipulation" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="memcapable.html">memcapable - Checking a Memcached server capabilities and compatibility</a></li>
-<li class="toctree-l1"><a class="reference internal" href="memcat.html">memcat - “cat” data from a server</a></li>
-<li class="toctree-l1"><a class="reference internal" href="memcp.html">memcp - Copy data to a server</a></li>
-<li class="toctree-l1"><a class="reference internal" href="memdump.html">memdump - Dumping your server</a></li>
-<li class="toctree-l1"><a class="reference internal" href="memerror.html">memerror - translate an error code to a string</a></li>
-<li class="toctree-l1"><a class="reference internal" href="memflush.html">memflush - flush all data from a server</a></li>
-<li class="toctree-l1"><a class="reference internal" href="memrm.html">memrm - Remove data from a server</a></li>
-<li class="toctree-l1"><a class="reference internal" href="memslap.html">memslap - Load testing  and benchmarking a server</a></li>
-<li class="toctree-l1"><a class="reference internal" href="memaslap.html">memaslap - Load testing  and benchmarking a server</a></li>
-<li class="toctree-l1"><a class="reference internal" href="memstat.html">memstat - Gather statistics from a server</a></li>
-<li class="toctree-l1"><a class="reference internal" href="memexist.html">memexist - Check for the existence of a key</a></li>
-<li class="toctree-l1"><a class="reference internal" href="memparse.html">memparse - Parse an option string</a></li>
-<li class="toctree-l1"><a class="reference internal" href="memping.html">memping - Test to see if a server is available.</a></li>
-<li class="toctree-l1"><a class="reference internal" href="memtouch.html">memtouch - Touches a key.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memexist.html">memexist — Check for the existence of a key</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memcat.html">memcat — &quot;cat&quot; data from a server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memcp.html">memcp — &quot;cp&quot; files to a server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memtouch.html">memtouch — &quot;touch&quot; a key</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memrm.html">memrm – &quot;rm&quot; a key</a></li>
 </ul>
+</div>
+</div>
+<div class="section" id="tests-and-analysis">
+<h2>Tests and Analysis<a class="headerlink" href="#tests-and-analysis" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="memaslap.html">memaslap - Load testing  and benchmarking a server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memslap.html">memslap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memping.html">memping – Ping a server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memstat.html">memstat – Gather statistics from a server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memerror.html">memerror — Translate libmemcached error codes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memparse.html">memparse — Parse and validate an option string</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memcapable.html">memcapable — Check a server's capabilities and compatibility</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="server-administration">
+<h2>Server Administration<a class="headerlink" href="#server-administration" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="memdump.html">memdump — Dump a server's data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memflush.html">memflush — Flush a server (erase all cached data)</a></li>
+</ul>
+</div>
 </div>
 </div>
 
@@ -216,7 +242,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="memcapable.html" class="btn btn-neutral float-right" title="memcapable - Checking a Memcached server capabilities and compatibility" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="memexist.html" class="btn btn-neutral float-right" title="memexist" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="../libhashkit/hashkit_value.html" class="btn btn-neutral float-left" title="Generate hash value" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

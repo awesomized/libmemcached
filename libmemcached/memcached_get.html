@@ -193,47 +193,47 @@
 <div class="section" id="synopsis">
 <span id="index-0"></span><h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
 <p>#include &lt;libmemcached/memcached.h&gt;</p>
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv422memcached_fetch_resultP12memcached_stP19memcached_result_stP18memcached_return_t">
 <span id="_CPPv322memcached_fetch_resultP12memcached_stP19memcached_result_stP18memcached_return_t"></span><span id="_CPPv222memcached_fetch_resultP12memcached_stP19memcached_result_stP18memcached_return_t"></span><span id="memcached_fetch_result__memcached_stP.memcached_result_stP.memcached_return_tP"></span><a class="reference internal" href="memcached_result_st.html#_CPPv419memcached_result_st" title="memcached_result_st">memcached_result_st</a> *<code class="sig-name descname">memcached_fetch_result</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <a class="reference internal" href="memcached_result_st.html#_CPPv419memcached_result_st" title="memcached_result_st">memcached_result_st</a> *<em>result</em>, <a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> *<em>error</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422memcached_fetch_resultP12memcached_stP19memcached_result_stP18memcached_return_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv413memcached_getP12memcached_stPKc6size_tP6size_tP8uint32_tP18memcached_return_t">
 <span id="_CPPv313memcached_getP12memcached_stPKc6size_tP6size_tP8uint32_tP18memcached_return_t"></span><span id="_CPPv213memcached_getP12memcached_stPKc6size_tP6size_tP8uint32_tP18memcached_return_t"></span><span id="memcached_get__memcached_stP.cCP.s.sP.uint32_tP.memcached_return_tP"></span>char *<code class="sig-name descname">memcached_get</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <em class="property">const</em> char *<em>key</em>, size_t <em>key_length</em>, size_t *<em>value_length</em>, uint32_t *<em>flags</em>, <a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> *<em>error</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413memcached_getP12memcached_stPKc6size_tP6size_tP8uint32_tP18memcached_return_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv414memcached_mgetP12memcached_stPPCKcPK6size_t6size_t">
 <span id="_CPPv314memcached_mgetP12memcached_stPPCKcPK6size_t6size_t"></span><span id="_CPPv214memcached_mgetP12memcached_stPPCKcPK6size_t6size_t"></span><span id="memcached_mget__memcached_stP.cCPCP.sCP.s"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_mget</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <em class="property">const</em> char *<em class="property">const</em> *<em>keys</em>, <em class="property">const</em> size_t *<em>key_length</em>, size_t <em>number_of_keys</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414memcached_mgetP12memcached_stPPCKcPK6size_t6size_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv420memcached_get_by_keyP12memcached_stPKc6size_tPKc6size_tP6size_tP8uint32_tP18memcached_return_t">
 <span id="_CPPv320memcached_get_by_keyP12memcached_stPKc6size_tPKc6size_tP6size_tP8uint32_tP18memcached_return_t"></span><span id="_CPPv220memcached_get_by_keyP12memcached_stPKc6size_tPKc6size_tP6size_tP8uint32_tP18memcached_return_t"></span><span id="memcached_get_by_key__memcached_stP.cCP.s.cCP.s.sP.uint32_tP.memcached_return_tP"></span>char *<code class="sig-name descname">memcached_get_by_key</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <em class="property">const</em> char *<em>group_key</em>, size_t <em>group_key_length</em>, <em class="property">const</em> char *<em>key</em>, size_t <em>key_length</em>, size_t *<em>value_length</em>, uint32_t *<em>flags</em>, <a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> *<em>error</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420memcached_get_by_keyP12memcached_stPKc6size_tPKc6size_tP6size_tP8uint32_tP18memcached_return_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv421memcached_mget_by_keyP12memcached_stPKc6size_tPPCKcPK6size_t6size_t">
 <span id="_CPPv321memcached_mget_by_keyP12memcached_stPKc6size_tPPCKcPK6size_t6size_t"></span><span id="_CPPv221memcached_mget_by_keyP12memcached_stPKc6size_tPPCKcPK6size_t6size_t"></span><span id="memcached_mget_by_key__memcached_stP.cCP.s.cCPCP.sCP.s"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_mget_by_key</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <em class="property">const</em> char *<em>group_key</em>, size_t <em>group_key_length</em>, <em class="property">const</em> char *<em class="property">const</em> *<em>keys</em>, <em class="property">const</em> size_t *<em>key_length</em>, size_t <em>number_of_keys</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421memcached_mget_by_keyP12memcached_stPKc6size_tPPCKcPK6size_t6size_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv423memcached_fetch_executeP12memcached_stP20memcached_execute_fnPv8uint32_t">
 <span id="_CPPv323memcached_fetch_executeP12memcached_stP20memcached_execute_fnPv8uint32_t"></span><span id="_CPPv223memcached_fetch_executeP12memcached_stP20memcached_execute_fnPv8uint32_t"></span><span id="memcached_fetch_execute__memcached_stP.memcached_execute_fnP.voidP.uint32_t"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_fetch_execute</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <a class="reference internal" href="#_CPPv420memcached_execute_fn" title="memcached_execute_fn">memcached_execute_fn</a> *<em>callback</em>, void *<em>context</em>, uint32_t <em>number_of_callbacks</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423memcached_fetch_executeP12memcached_stP20memcached_execute_fnPv8uint32_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv422memcached_mget_executeP12memcached_stPPCKcPK6size_t6size_tP20memcached_execute_fnPv8uint32_t">
 <span id="_CPPv322memcached_mget_executeP12memcached_stPPCKcPK6size_t6size_tP20memcached_execute_fnPv8uint32_t"></span><span id="_CPPv222memcached_mget_executeP12memcached_stPPCKcPK6size_t6size_tP20memcached_execute_fnPv8uint32_t"></span><span id="memcached_mget_execute__memcached_stP.cCPCP.sCP.s.memcached_execute_fnP.voidP.uint32_t"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_mget_execute</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <em class="property">const</em> char *<em class="property">const</em> *<em>keys</em>, <em class="property">const</em> size_t *<em>key_length</em>, size_t <em>number_of_keys</em>, <a class="reference internal" href="#_CPPv420memcached_execute_fn" title="memcached_execute_fn">memcached_execute_fn</a> *<em>callback</em>, void *<em>context</em>, uint32_t <em>number_of_callbacks</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422memcached_mget_executeP12memcached_stPPCKcPK6size_t6size_tP20memcached_execute_fnPv8uint32_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv429memcached_mget_execute_by_keyP12memcached_stPKc6size_tPPCKcPK6size_t6size_tP20memcached_execute_fnPv8uint32_t">
 <span id="_CPPv329memcached_mget_execute_by_keyP12memcached_stPKc6size_tPPCKcPK6size_t6size_tP20memcached_execute_fnPv8uint32_t"></span><span id="_CPPv229memcached_mget_execute_by_keyP12memcached_stPKc6size_tPPCKcPK6size_t6size_tP20memcached_execute_fnPv8uint32_t"></span><span id="memcached_mget_execute_by_key__memcached_stP.cCP.s.cCPCP.sCP.s.memcached_execute_fnP.voidP.uint32_t"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_mget_execute_by_key</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <em class="property">const</em> char *<em>group_key</em>, size_t <em>group_key_length</em>, <em class="property">const</em> char *<em class="property">const</em> *<em>keys</em>, <em class="property">const</em> size_t *<em>key_length</em>, size_t <em>number_of_keys</em>, <a class="reference internal" href="#_CPPv420memcached_execute_fn" title="memcached_execute_fn">memcached_execute_fn</a> *<em>callback</em>, void *<em>context</em>, uint32_t <em>number_of_callbacks</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429memcached_mget_execute_by_keyP12memcached_stPKc6size_tPPCKcPK6size_t6size_tP20memcached_execute_fnPv8uint32_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="type">
+<dl class="cpp type">
 <dt id="_CPPv420memcached_execute_fn">
 <span id="_CPPv320memcached_execute_fn"></span><span id="_CPPv220memcached_execute_fn"></span><span id="memcached_execute_fn"></span><em class="property">typedef </em><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> (*<code class="sig-name descname">memcached_execute_fn</code>)<span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *ptr, <a class="reference internal" href="memcached_result_st.html#_CPPv419memcached_result_st" title="memcached_result_st">memcached_result_st</a> *result, void *context<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420memcached_execute_fn" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
@@ -271,7 +271,7 @@ Instead of returning the results to you for processing, it passes each of the
 result sets to the list of functions you provide. It passes to the function
 a <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_st</span></code></a> that can be cloned for use in the called
 function (it can not be used directly). It also passes a result set which does
-not need to be freed. Finally it passes a “context”. This is just a pointer to
+not need to be freed. Finally it passes a &quot;context&quot;. This is just a pointer to
 a memory reference you supply the calling function. Currently only one value
 is being passed to each function call. In the future there will be an option
 to allow this to be an array.</p>
@@ -294,7 +294,7 @@ functions with this behavior on will result in <a class="reference internal" hre
 </div>
 <div class="section" id="return-value">
 <h2>RETURN VALUE<a class="headerlink" href="#return-value" title="Permalink to this headline">¶</a></h2>
-<p>All objects retrieved via <a class="reference internal" href="#_CPPv413memcached_getP12memcached_stPKc6size_tP6size_tP8uint32_tP18memcached_return_t" title="memcached_get"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_get()</span></code></a> or <a class="reference internal" href="#_CPPv420memcached_get_by_keyP12memcached_stPKc6size_tPKc6size_tP6size_tP8uint32_tP18memcached_return_t" title="memcached_get_by_key"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_get_by_key()</span></code></a> must be freed with <em class="manpage"><a class="manpage reference external" href="http://man7.org/linux/man-pages/man3/free.3.html">free(3)</a></em>.</p>
+<p>All objects retrieved via <a class="reference internal" href="#_CPPv413memcached_getP12memcached_stPKc6size_tP6size_tP8uint32_tP18memcached_return_t" title="memcached_get"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_get()</span></code></a> or <a class="reference internal" href="#_CPPv420memcached_get_by_keyP12memcached_stPKc6size_tPKc6size_tP6size_tP8uint32_tP18memcached_return_t" title="memcached_get_by_key"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_get_by_key()</span></code></a> must be freed with <em class="manpage"><a class="manpage reference external" href="https://linux.die.net/man/3/free">free(3)</a></em>.</p>
 <p><a class="reference internal" href="#_CPPv413memcached_getP12memcached_stPKc6size_tP6size_tP8uint32_tP18memcached_return_t" title="memcached_get"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_get()</span></code></a> will return NULL on
 error. You must look at the value of error to determine what the actual error
 was.</p>

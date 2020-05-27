@@ -202,47 +202,47 @@
 <dt>#include &lt;libmemcached/memcached.h&gt;</dt><dd><p>Compile and link with -lmemcached</p>
 </dd>
 </dl>
-<dl class="type">
+<dl class="c type">
 <dt id="c.memcached_instance_st">
-struct <a class="reference internal" href="#c.memcached_instance_st" title="memcached_instance_st">memcached_instance_st</a> <code class="sig-name descname">memcached_instance_st</code><a class="headerlink" href="#c.memcached_instance_st" title="Permalink to this definition">¶</a></dt>
+<em class="property">typedef </em><em class="property">struct</em> <a class="reference internal" href="#c.memcached_instance_st" title="memcached_instance_st">memcached_instance_st</a> <code class="sig-name descname">memcached_instance_st</code><a class="headerlink" href="#c.memcached_instance_st" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="type">
+<dl class="c type">
 <dt id="c.memcached_server_list_st">
-struct <a class="reference internal" href="#c.memcached_server_list_st" title="memcached_server_list_st">memcached_server_list_st</a> <code class="sig-name descname">memcached_server_list_st</code><a class="headerlink" href="#c.memcached_server_list_st" title="Permalink to this definition">¶</a></dt>
+<em class="property">typedef </em><em class="property">struct</em> <a class="reference internal" href="#c.memcached_server_list_st" title="memcached_server_list_st">memcached_server_list_st</a> <code class="sig-name descname">memcached_server_list_st</code><a class="headerlink" href="#c.memcached_server_list_st" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="type">
+<dl class="c type">
 <dt id="c.memcached_server_st">
-struct <a class="reference internal" href="#c.memcached_server_st" title="memcached_server_st">memcached_server_st</a> <code class="sig-name descname">memcached_server_st</code><a class="headerlink" href="#c.memcached_server_st" title="Permalink to this definition">¶</a></dt>
+<em class="property">typedef </em><em class="property">struct</em> <a class="reference internal" href="#c.memcached_server_st" title="memcached_server_st">memcached_server_st</a> <code class="sig-name descname">memcached_server_st</code><a class="headerlink" href="#c.memcached_server_st" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv421memcached_server_listP12memcached_st">
 <span id="_CPPv321memcached_server_listP12memcached_st"></span><span id="_CPPv221memcached_server_listP12memcached_st"></span><span id="memcached_server_list__memcached_stP"></span><em class="property">const</em> memcached_instance_st *<code class="sig-name descname">memcached_server_list</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421memcached_server_listP12memcached_st" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv426memcached_server_list_free24memcached_server_list_st">
 <span id="_CPPv326memcached_server_list_free24memcached_server_list_st"></span><span id="_CPPv226memcached_server_list_free24memcached_server_list_st"></span><span id="memcached_server_list_free__memcached_server_list_st"></span>void <code class="sig-name descname">memcached_server_list_free</code><span class="sig-paren">(</span>memcached_server_list_st <em>list</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426memcached_server_list_free24memcached_server_list_st" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv428memcached_server_list_append24memcached_server_list_stPKc9in_port_tP18memcached_return_t">
 <span id="_CPPv328memcached_server_list_append24memcached_server_list_stPKc9in_port_tP18memcached_return_t"></span><span id="_CPPv228memcached_server_list_append24memcached_server_list_stPKc9in_port_tP18memcached_return_t"></span><span id="memcached_server_list_append__memcached_server_list_st.cCP.in_port_t.memcached_return_tP"></span>memcached_server_list_st <code class="sig-name descname">memcached_server_list_append</code><span class="sig-paren">(</span>memcached_server_list_st <em>list</em>, <em class="property">const</em> char *<em>hostname</em>, in_port_t <em>port</em>, <a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> *<em>error</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428memcached_server_list_append24memcached_server_list_stPKc9in_port_tP18memcached_return_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv427memcached_server_list_count24memcached_server_list_st">
 <span id="_CPPv327memcached_server_list_count24memcached_server_list_st"></span><span id="_CPPv227memcached_server_list_count24memcached_server_list_st"></span><span id="memcached_server_list_count__memcached_server_list_st"></span>uint32_t <code class="sig-name descname">memcached_server_list_count</code><span class="sig-paren">(</span>memcached_server_list_st <em>list</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427memcached_server_list_count24memcached_server_list_st" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv422memcached_server_errorPK21memcached_instance_st">
 <span id="_CPPv322memcached_server_errorPK21memcached_instance_st"></span><span id="_CPPv222memcached_server_errorPK21memcached_instance_st"></span><span id="memcached_server_error__memcached_instance_stCP"></span><em class="property">const</em> char *<code class="sig-name descname">memcached_server_error</code><span class="sig-paren">(</span><em class="property">const</em> memcached_instance_st *<em>instance</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422memcached_server_errorPK21memcached_instance_st" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv428memcached_server_error_resetPK21memcached_instance_st">
 <span id="_CPPv328memcached_server_error_resetPK21memcached_instance_st"></span><span id="_CPPv228memcached_server_error_resetPK21memcached_instance_st"></span><span id="memcached_server_error_reset__memcached_instance_stCP"></span>void <code class="sig-name descname">memcached_server_error_reset</code><span class="sig-paren">(</span><em class="property">const</em> memcached_instance_st *<em>list</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428memcached_server_error_resetPK21memcached_instance_st" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="deprecated">
@@ -250,7 +250,7 @@ struct <a class="reference internal" href="#c.memcached_server_st" title="memcac
 </div>
 </dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv423memcached_servers_parsev">
 <span id="_CPPv323memcached_servers_parsev"></span><span id="_CPPv223memcached_servers_parsev"></span><span id="memcached_servers_parse"></span>void <code class="sig-name descname">memcached_servers_parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423memcached_servers_parsev" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="deprecated">
@@ -265,7 +265,7 @@ struct <a class="reference internal" href="#c.memcached_server_st" title="memcac
 <code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_server_st</span></code> structures. You should not modify these structures
 directly. Functions are provided to modify these structures (and more can be
 added, just ask!).</p>
-<p><a class="reference internal" href="#_CPPv421memcached_server_listP12memcached_st" title="memcached_server_list"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_server_list()</span></code></a> is used to provide an array of all defined hosts. This was incorrectly documented as “requiring free” up till version 0.39.</p>
+<p><a class="reference internal" href="#_CPPv421memcached_server_listP12memcached_st" title="memcached_server_list"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_server_list()</span></code></a> is used to provide an array of all defined hosts. This was incorrectly documented as &quot;requiring free&quot; up till version 0.39.</p>
 <p><a class="reference internal" href="#_CPPv426memcached_server_list_free24memcached_server_list_st" title="memcached_server_list_free"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_server_list_free()</span></code></a> deallocates all memory associated with the array of <code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_server_st</span></code> that you passed to it.</p>
 <p><a class="reference internal" href="#_CPPv428memcached_server_list_append24memcached_server_list_stPKc9in_port_tP18memcached_return_t" title="memcached_server_list_append"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_server_list_append()</span></code></a> adds a server to the end of a
 <code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_server_st</span></code> array. On error null will be returned and the

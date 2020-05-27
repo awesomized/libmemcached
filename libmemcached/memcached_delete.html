@@ -196,12 +196,12 @@
 <dt>#include &lt;libmemcached/memcached.h&gt;</dt><dd><p>Compile and link with -lmemcached</p>
 </dd>
 </dl>
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv416memcached_deleteP12memcached_stPKc6size_t6time_t">
 <span id="_CPPv316memcached_deleteP12memcached_stPKc6size_t6time_t"></span><span id="_CPPv216memcached_deleteP12memcached_stPKc6size_t6time_t"></span><span id="memcached_delete__memcached_stP.cCP.s.time_t"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_delete</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <em class="property">const</em> char *<em>key</em>, size_t <em>key_length</em>, time_t <em>expiration</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416memcached_deleteP12memcached_stPKc6size_t6time_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv423memcached_delete_by_keyP12memcached_stPKc6size_tPKc6size_t6time_t">
 <span id="_CPPv323memcached_delete_by_keyP12memcached_stPKc6size_tPKc6size_t6time_t"></span><span id="_CPPv223memcached_delete_by_keyP12memcached_stPKc6size_tPKc6size_t6time_t"></span><span id="memcached_delete_by_key__memcached_stP.cCP.s.cCP.s.time_t"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_delete_by_key</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <em class="property">const</em> char *<em>group_key</em>, size_t <em>group_key_length</em>, <em class="property">const</em> char *<em>key</em>, size_t <em>key_length</em>, time_t <em>expiration</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423memcached_delete_by_keyP12memcached_stPKc6size_tPKc6size_t6time_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
@@ -212,8 +212,8 @@
 <p><a class="reference internal" href="#_CPPv416memcached_deleteP12memcached_stPKc6size_t6time_t" title="memcached_delete"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_delete()</span></code></a> is used to delete a particular key. <a class="reference internal" href="#_CPPv423memcached_delete_by_keyP12memcached_stPKc6size_tPKc6size_t6time_t" title="memcached_delete_by_key"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_delete_by_key()</span></code></a>
 works the same, but it takes a master key to find the given value.</p>
 <p>Expiration works by placing the item into a delete queue, which means that it
-won’t be possible to retrieve it by the “get” command. The “add” and “replace”
-commands with this key will also fail (the “set” command will succeed, however).
+won't be possible to retrieve it by the &quot;get&quot; command. The &quot;add&quot; and &quot;replace&quot;
+commands with this key will also fail (the &quot;set&quot; command will succeed, however).
 After the time passes, the item is finally deleted from server memory.</p>
 <p>Please note the the memcached server removed tests for expiration in the 1.4
 version.</p>
@@ -229,7 +229,7 @@ the message was queued for delivery.</p>
 <div class="section" id="see-also">
 <h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><em class="manpage"><a class="manpage reference external" href="http://man7.org/linux/man-pages/man1/memcached.1.html">memcached(1)</a></em></p></li>
+<li><p><em class="manpage"><a class="manpage reference external" href="https://linux.die.net/man/1/memcached">memcached(1)</a></em></p></li>
 <li><p><a class="reference internal" href="../libmemcached.html"><span class="doc">C/C++ Client Library for memcached</span></a></p></li>
 <li><p><a class="reference internal" href="memcached_strerror.html"><span class="doc">Converting Error Codes to Messages</span></a></p></li>
 </ul>

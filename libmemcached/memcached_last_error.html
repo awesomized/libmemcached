@@ -194,19 +194,19 @@
 <dt>#include &lt;libmemcached/memcached.h&gt;</dt><dd><p>Compile and link with -lmemcached</p>
 </dd>
 </dl>
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv420memcached_last_errorPK12memcached_st">
-<span id="_CPPv320memcached_last_errorPK12memcached_st"></span><span id="_CPPv220memcached_last_errorPK12memcached_st"></span><span id="memcached_last_error__memcached_stCP"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_last_error</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420memcached_last_errorPK12memcached_st" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv320memcached_last_errorPK12memcached_st"></span><span id="_CPPv220memcached_last_errorPK12memcached_st"></span><span id="memcached_last_error__memcached_stCP"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_last_error</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a>*<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420memcached_last_errorPK12memcached_st" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv428memcached_last_error_messagePK12memcached_st">
-<span id="_CPPv328memcached_last_error_messagePK12memcached_st"></span><span id="_CPPv228memcached_last_error_messagePK12memcached_st"></span><span id="memcached_last_error_message__memcached_stCP"></span><em class="property">const</em> char *<code class="sig-name descname">memcached_last_error_message</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428memcached_last_error_messagePK12memcached_st" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv328memcached_last_error_messagePK12memcached_st"></span><span id="_CPPv228memcached_last_error_messagePK12memcached_st"></span><span id="memcached_last_error_message__memcached_stCP"></span><em class="property">const</em> char *<code class="sig-name descname">memcached_last_error_message</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a>*<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428memcached_last_error_messagePK12memcached_st" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv426memcached_last_error_errnoPK12memcached_st">
-<span id="_CPPv326memcached_last_error_errnoPK12memcached_st"></span><span id="_CPPv226memcached_last_error_errnoPK12memcached_st"></span><span id="memcached_last_error_errno__memcached_stCP"></span>int <code class="sig-name descname">memcached_last_error_errno</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426memcached_last_error_errnoPK12memcached_st" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv326memcached_last_error_errnoPK12memcached_st"></span><span id="_CPPv226memcached_last_error_errnoPK12memcached_st"></span><span id="memcached_last_error_errno__memcached_stCP"></span>int <code class="sig-name descname">memcached_last_error_errno</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a>*<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426memcached_last_error_errnoPK12memcached_st" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -219,15 +219,15 @@
 <p><a class="reference internal" href="#_CPPv420memcached_last_errorPK12memcached_st" title="memcached_last_error"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_last_error()</span></code></a> returns the last error code.</p>
 <p><a class="reference internal" href="#_CPPv428memcached_last_error_messagePK12memcached_st" title="memcached_last_error_message"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_last_error_message()</span></code></a> returns the last error message. If this error
 came from a specific server, its hostname and port will be provided in the error
-message. Any error message will be returned as ‘const char *’ which does not
+message. Any error message will be returned as 'const char *' which does not
 need to be de-allocated. NULL will be returned if no error has occurred.</p>
 <p><a class="reference internal" href="#_CPPv426memcached_last_error_errnoPK12memcached_st" title="memcached_last_error_errno"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_last_error_errno()</span></code></a> returns any last local error code obtained from
-<em class="manpage"><a class="manpage reference external" href="http://man7.org/linux/man-pages/man3/errno.3.html">errno(3)</a></em>.</p>
+<em class="manpage"><a class="manpage reference external" href="https://linux.die.net/man/3/errno">errno(3)</a></em>.</p>
 </div>
 <div class="section" id="see-also">
 <h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><em class="manpage"><a class="manpage reference external" href="http://man7.org/linux/man-pages/man1/memcached.1.html">memcached(1)</a></em></p></li>
+<li><p><em class="manpage"><a class="manpage reference external" href="https://linux.die.net/man/1/memcached">memcached(1)</a></em></p></li>
 <li><p><a class="reference internal" href="../libmemcached.html"><span class="doc">C/C++ Client Library for memcached</span></a></p></li>
 <li><p><a class="reference internal" href="memcached_strerror.html"><span class="doc">Converting Error Codes to Messages</span></a></p></li>
 </ul>

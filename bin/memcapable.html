@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>memcapable - Checking a Memcached server capabilities and compatibility &mdash; libmemcached 1.0.99 documentation</title>
+  <title>memcapable &mdash; libmemcached 1.0.99 documentation</title>
   
 
   
@@ -36,8 +36,8 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="copyright" title="Copyright" href="../copyright.html" />
-    <link rel="next" title="memcat - “cat” data from a server" href="memcat.html" />
-    <link rel="prev" title="Client Applications" href="index.html" /> 
+    <link rel="next" title="memdump" href="memdump.html" />
+    <link rel="prev" title="memparse" href="memparse.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -104,27 +104,24 @@
 <p class="caption"><span class="caption-text">Client Applications</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Client Applications</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">memcapable - Checking a Memcached server capabilities and compatibility</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#synopsis">SYNOPSIS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#description">DESCRIPTION</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#limitations">LIMITATIONS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#options">OPTIONS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#see-also">SEE ALSO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#data-manipulation">Data Manipulation</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#tests-and-analysis">Tests and Analysis</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="memaslap.html">memaslap - Load testing  and benchmarking a server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memslap.html">memslap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memping.html">memping – Ping a server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memstat.html">memstat – Gather statistics from a server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memerror.html">memerror — Translate libmemcached error codes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memparse.html">memparse — Parse and validate an option string</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">memcapable — Check a server's capabilities and compatibility</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#synopsis">SYNOPSIS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#description">DESCRIPTION</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#options">OPTIONS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#see-also">SEE ALSO</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="memcat.html">memcat - “cat” data from a server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memcp.html">memcp - Copy data to a server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memdump.html">memdump - Dumping your server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memerror.html">memerror - translate an error code to a string</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memflush.html">memflush - flush all data from a server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memrm.html">memrm - Remove data from a server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memslap.html">memslap - Load testing  and benchmarking a server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memaslap.html">memaslap - Load testing  and benchmarking a server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memstat.html">memstat - Gather statistics from a server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memexist.html">memexist - Check for the existence of a key</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memparse.html">memparse - Parse an option string</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memping.html">memping - Test to see if a server is available.</a></li>
-<li class="toctree-l2"><a class="reference internal" href="memtouch.html">memtouch - Touches a key.</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#server-administration">Server Administration</a></li>
 </ul>
 </li>
 </ul>
@@ -178,7 +175,7 @@
         
           <li><a href="index.html">Client Applications</a> &raquo;</li>
         
-      <li>memcapable - Checking a Memcached server capabilities and compatibility</li>
+      <li>memcapable</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -195,57 +192,56 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="memcapable-checking-a-memcached-server-capabilities-and-compatibility">
-<h1>memcapable - Checking a Memcached server capabilities and compatibility<a class="headerlink" href="#memcapable-checking-a-memcached-server-capabilities-and-compatibility" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="memcapable">
+<h1>memcapable<a class="headerlink" href="#memcapable" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="synopsis">
 <h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
 <p>memcapable [options]</p>
+<p>Check a memcached server's capabilities and compatibility.</p>
 </div>
 <div class="section" id="description">
 <h2>DESCRIPTION<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
 <p><strong class="program">memcapable</strong> connects to the specified memcached server and tries to
-determine its capabilities by running the various commands and verifying
-the response.</p>
-</div>
-<div class="section" id="limitations">
-<h2>LIMITATIONS<a class="headerlink" href="#limitations" title="Permalink to this headline">¶</a></h2>
-<p>The current version of memcapable will only verify the binary protocol.</p>
+determine its capabilities by running various commands and verifying the response.</p>
 </div>
 <div class="section" id="options">
 <h2>OPTIONS<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-memcapable-h">
 <code class="sig-name descname">-h</code><code class="sig-prename descclassname"> hostname</code><a class="headerlink" href="#cmdoption-memcapable-h" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Specify the hostname to connect to. The default is <em>localhost</em>.</p>
+</dd></dl>
 
-<p>Specify the hostname to connect to. The default is <em>localhost</em></p>
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-memcapable-p">
 <code class="sig-name descname">-p</code><code class="sig-prename descclassname"> port</code><a class="headerlink" href="#cmdoption-memcapable-p" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Specify the port number to connect to. The default is <em>11211</em>.</p>
+</dd></dl>
 
-<p>Specify the port number to connect to. The default is <em>11211</em></p>
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-memcapable-c">
 <code class="sig-name descname">-c</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-memcapable-c" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><em class="manpage"><a class="manpage reference external" href="https://linux.die.net/man/3/abort">abort(3)</a></em> when detecting an error from the server.</p>
+</dd></dl>
 
-<p>Generate a coredump when it detects an error from the server.</p>
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-memcapable-v">
 <code class="sig-name descname">-v</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-memcapable-v" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Print out the comparison when it detects an error from the server.</p>
+</dd></dl>
 
-<p>Print out the comparison when it detects an error from the server.</p>
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-memcapable-t">
 <code class="sig-name descname">-t</code><code class="sig-prename descclassname"> n</code><a class="headerlink" href="#cmdoption-memcapable-t" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set the timeout for an IO operation to/from the server to <em>n</em> seconds.</p>
+</dd></dl>
 
-<p>Set the timeout from an IO operation to/from the server to <em>n</em> seconds.</p>
 </div>
 <div class="section" id="see-also">
 <h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../libmemcached.html"><span class="doc">C/C++ Client Library for memcached</span></a></p></li>
+</ul>
 </div>
 </div>
 
@@ -257,10 +253,10 @@ the response.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="memcat.html" class="btn btn-neutral float-right" title="memcat - “cat” data from a server" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="memdump.html" class="btn btn-neutral float-right" title="memdump" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral float-left" title="Client Applications" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="memparse.html" class="btn btn-neutral float-left" title="memparse" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

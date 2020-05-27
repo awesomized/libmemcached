@@ -199,47 +199,47 @@
 <div class="section" id="synopsis">
 <h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
 <p>#include &lt;libmemcached/memcached.h&gt;</p>
-<dl class="type">
+<dl class="cpp type">
 <dt id="_CPPv419memcached_server_fn">
 <span id="_CPPv319memcached_server_fn"></span><span id="_CPPv219memcached_server_fn"></span><span id="memcached_server_fn"></span><em class="property">type </em><code class="sig-name descname">memcached_server_fn</code><a class="headerlink" href="#_CPPv419memcached_server_fn" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv422memcached_server_countP12memcached_st">
 <span id="_CPPv322memcached_server_countP12memcached_st"></span><span id="_CPPv222memcached_server_countP12memcached_st"></span><span id="memcached_server_count__memcached_stP"></span>uint32_t <code class="sig-name descname">memcached_server_count</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422memcached_server_countP12memcached_st" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv420memcached_server_addP12memcached_stPKc9in_port_t">
 <span id="_CPPv320memcached_server_addP12memcached_stPKc9in_port_t"></span><span id="_CPPv220memcached_server_addP12memcached_stPKc9in_port_t"></span><span id="memcached_server_add__memcached_stP.cCP.in_port_t"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_server_add</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <em class="property">const</em> char *<em>hostname</em>, in_port_t <em>port</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420memcached_server_addP12memcached_stPKc9in_port_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv424memcached_server_add_udpP12memcached_stPKc9in_port_t">
 <span id="_CPPv324memcached_server_add_udpP12memcached_stPKc9in_port_t"></span><span id="_CPPv224memcached_server_add_udpP12memcached_stPKc9in_port_t"></span><span id="memcached_server_add_udp__memcached_stP.cCP.in_port_t"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_server_add_udp</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <em class="property">const</em> char *<em>hostname</em>, in_port_t <em>port</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424memcached_server_add_udpP12memcached_stPKc9in_port_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv432memcached_server_add_unix_socketP12memcached_stPKc">
 <span id="_CPPv332memcached_server_add_unix_socketP12memcached_stPKc"></span><span id="_CPPv232memcached_server_add_unix_socketP12memcached_stPKc"></span><span id="memcached_server_add_unix_socket__memcached_stP.cCP"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_server_add_unix_socket</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <em class="property">const</em> char *<em>socket</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv432memcached_server_add_unix_socketP12memcached_stPKc" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv421memcached_server_pushP12memcached_stPK19memcached_server_st">
 <span id="_CPPv321memcached_server_pushP12memcached_stPK19memcached_server_st"></span><span id="_CPPv221memcached_server_pushP12memcached_stPK19memcached_server_st"></span><span id="memcached_server_push__memcached_stP.memcached_server_stCP"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_server_push</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <em class="property">const</em> memcached_server_st *<em>list</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421memcached_server_pushP12memcached_stPK19memcached_server_st" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv423memcached_server_by_keyP12memcached_stPKc6size_tP18memcached_return_t">
 <span id="_CPPv323memcached_server_by_keyP12memcached_stPKc6size_tP18memcached_return_t"></span><span id="_CPPv223memcached_server_by_keyP12memcached_stPKc6size_tP18memcached_return_t"></span><span id="memcached_server_by_key__memcached_stP.cCP.s.memcached_return_tP"></span><em class="property">const</em> memcached_instance_st *<code class="sig-name descname">memcached_server_by_key</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <em class="property">const</em> char *<em>key</em>, size_t <em>key_length</em>, <a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> *<em>error</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423memcached_server_by_keyP12memcached_stPKc6size_tP18memcached_return_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv436memcached_server_get_last_disconnectPK12memcached_st">
 <span id="_CPPv336memcached_server_get_last_disconnectPK12memcached_st"></span><span id="_CPPv236memcached_server_get_last_disconnectPK12memcached_st"></span><span id="memcached_server_get_last_disconnect__memcached_stCP"></span><em class="property">const</em> memcached_instance_st *<code class="sig-name descname">memcached_server_get_last_disconnect</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv436memcached_server_get_last_disconnectPK12memcached_st" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="cpp function">
 <dt id="_CPPv423memcached_server_cursorPK12memcached_stPK19memcached_server_fnPv8uint32_t">
 <span id="_CPPv323memcached_server_cursorPK12memcached_stPK19memcached_server_fnPv8uint32_t"></span><span id="_CPPv223memcached_server_cursorPK12memcached_stPK19memcached_server_fnPv8uint32_t"></span><span id="memcached_server_cursor__memcached_stCP.memcached_server_fnCP.voidP.uint32_t"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_server_cursor</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv419memcached_server_fn" title="memcached_server_fn">memcached_server_fn</a> *<em>callback</em>, void *<em>context</em>, uint32_t <em>number_of_callbacks</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423memcached_server_cursorPK12memcached_stPK19memcached_server_fnPv8uint32_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
