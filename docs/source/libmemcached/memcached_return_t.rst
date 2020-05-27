@@ -15,7 +15,7 @@ SYNOPSIS
 
 .. function:: bool memcached_fatal(memcached_return_t)
 
-.. c:type:: typedef enum memcached_return_t memcached_return_t
+.. c:type:: enum memcached_return_t memcached_return_t
 
 .. enum:: memcached_return_t
 
@@ -57,7 +57,8 @@ SYNOPSIS
 
         .. deprecated:: <0.30
 
-        An error has occurred while trying to connect to a server. It is likely that either the number of file descriptors need to be increased or you are out of memory.
+        An error has occurred while trying to connect to a server.
+        It is likely that either the number of file descriptors need to be increased or you are out of memory.
 
     .. enumerator:: MEMCACHED_DATA_DOES_NOT_EXIST
 
@@ -111,7 +112,8 @@ SYNOPSIS
 
     .. enumerator:: MEMCACHED_INVALID_HOST_PROTOCOL
 
-        The server you are connecting too has an invalid protocol. Most likely you are connecting to an older server that does not speak the binary protocol.
+        The server you are connecting too has an invalid protocol.
+        Most likely you are connecting to an older server that does not speak the binary protocol.
 
     .. enumerator:: MEMCACHED_ITEM
 
@@ -154,7 +156,8 @@ SYNOPSIS
 
     .. enumerator:: MEMCACHED_PARSE_ERROR
 
-        An error has occurred while trying to parse the configuration string. You should use memparse to determine what the error was.
+        An error has occurred while trying to parse the configuration string.
+        You should use memparse to determine what the error was.
 
     .. enumerator:: MEMCACHED_PARSE_USER_ERROR
 
@@ -202,7 +205,8 @@ SYNOPSIS
 
     .. enumerator:: MEMCACHED_UNKNOWN_READ_FAILURE
 
-        An unknown read failure only occurs when either there is a bug in the server, or in rare cases where an ethernet nic is reporting dubious information.
+        An unknown read failure only occurs when either there is a bug in the server,
+        or in rare cases where an ethernet nic is reporting dubious information.
 
     .. enumerator:: MEMCACHED_UNKNOWN_STAT_KEY
 

@@ -88,7 +88,6 @@ CLIENT PROGRAMS
 
 .. only:: man
 
-    :manpage:`memcached(1)`
     :manpage:`memaslap(1)`
     :manpage:`memcapable(1)`
     :manpage:`memcat(1)`

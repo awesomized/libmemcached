@@ -1,15 +1,14 @@
-=============================
-memdump - Dumping your server
-=============================
-
-Dump a list of keys from a server.
+memdump
+=======
 
 SYNOPSIS
 --------
 
+.. program:: memdump
+
 memdump [options]
 
-.. program:: memdump
+Dump a list of keys from a server.
 
 DESCRIPTION
 -----------
@@ -21,13 +20,27 @@ provide all keys it is not possible to get a complete "dump".
 OPTIONS
 -------
 
-For a full list of operations run the tool with option:
+.. include:: options/all.rst
+.. include:: options/common.rst
+.. include:: options/hash.rst
+.. include:: options/sasl.rst
 
-.. option:: --help
+ENVIRONMENT
+-----------
+
+.. envvar:: MEMCACHED_SERVERS
+
+    Specify the list of servers.
 
 SEE ALSO
 --------
 
 .. only:: man
 
-  :manpage:`memcached(1)` :manpage:`libmemcached(3)`
+    :manpage:`memcached(1)`
+    :manpage:`libmemcached(3)`
+
+.. only:: html
+
+    * :doc:`/libmemcached`
+    * :doc:`/libmemcached/memcached_dump`

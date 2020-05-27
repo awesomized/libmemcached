@@ -1,43 +1,53 @@
-=================================
-memcat - "cat" data from a server
-=================================
+memcat
+======
 
 SYNOPSIS
 --------
 
-memcat [options] key
-
-Copy a set of keys to stdout
-
 .. program:: memcat
+
+memcat [options] key [key...]
+
+Read and output the value of one key or the values of a set of keys.
 
 DESCRIPTION
 -----------
 
-:program:`memcat` outputs to stdout the value a single or multiple set of keys
-stored in a memcached(1) server. If any key is not found an error is returned.
+:program:`memcat` reads and outputs the value of a single or a set of keys
+stored in a :manpage:`memcached(1)` server.
 
-It is similar to the standard UNIX cat(1) utility.
+If any key is not found an error is returned.
+
+It is similar to the standard UNIX :manpage:`cat(1)` utility.
 
 OPTIONS
 -------
 
-You can specify servers via the option:
+.. include:: options/all.rst
+.. include:: options/common.rst
+.. include:: options/hash.rst
 
-.. option:: --servers
+.. option:: --flag
 
-or via the environment variable:
+    Display stored flags.
 
-.. envvar:: `MEMCACHED_SERVERS`
+ENVIRONMENT
+-----------
 
-For a full list of operations run the tool with the option:
+.. envvar:: MEMCACHED_SERVERS
 
-.. option:: --help
+    Specify a list of servers.
 
 SEE ALSO
 --------
 
 .. only:: man
 
-  :manpage:`memcached(1)` :manpage:`libmemcached(3)`
+  :manpage:`memcached(1)`
+  :manpage:`libmemcached(3)`
+  :manpage:`libmemcached_configuration(3)`
 
+.. only:: html
+
+  * :doc:`/libmemcached`
+  * :doc:`/libmemcached/configuration`

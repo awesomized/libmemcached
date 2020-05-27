@@ -1,15 +1,14 @@
-=================================
-memparse - Parse an option string
-=================================
-
-Used to validate an option string
+memparse
+========
 
 SYNOPSIS
 --------
 
-memparse [options] "option string"
-
 .. program:: memparse
+
+memparse <option string>
+
+Parse and validate an option string.
 
 DESCRIPTION
 -----------
@@ -19,14 +18,19 @@ DESCRIPTION
 OPTIONS
 -------
 
-For a full list of operations run the tool with the option:
-
-.. option:: --help
+None.
 
 SEE ALSO
 --------
 
 .. only:: man
 
-  :manpage:`memcached(1)` :manpage:`libmemcached(3)`
+    :manpage:`memcached(1)`
+    :manpage:`libmemcached(3)`
+    :manpage:`libmemcached_configuration(3)`
+
+.. only:: html
+
+    * :doc:`/libmemcached`
+    * :doc:`/libmemcached/configuration`
 

@@ -1,40 +1,44 @@
-===========================================
-memexist - Check for the existence of a key
-===========================================
+memexist
+========
 
 SYNOPSIS
 --------
 
-memexist [options] [key]
-
 .. program:: memexist
+
+memexist [options] <key>
+
+Check for the existence of a key.
 
 DESCRIPTION
 -----------
 
-:program:`memexist` checks for the existance of a key within a cluster.
+:program:`memexist` checks for the existence of a key within a cluster.
 
 OPTIONS
 -------
 
-You can specify servers via the option:
+.. include:: options/all.rst
+.. include:: options/common.rst
+.. include:: options/hash.rst
+.. include:: options/sasl.rst
 
-.. option:: --servers
+ENVIRONMENT
+-----------
 
-or via the environment variable:
+.. envvar:: MEMCACHED_SERVERS
 
-.. envvar:: `MEMCACHED_SERVERS`
-
-If you do not specify either these, the final value in the command line list is the name of a server(s).
-
-For a full list of operations run the tool with the option:
-
-.. option:: --help
+    Specify the list of servers.
 
 SEE ALSO
 --------
 
 .. only:: man
 
-  :manpage:`memcached(1)` :manpage:`libmemcached(3)`
+    :manpage:`memcached(1)`
+    :manpage:`libmemcached(3)`
 
+.. only:: html
+
+    * :doc:`/libmemcached`
+    * :doc:`/libmemcached/memcached_exist`

@@ -1,40 +1,44 @@
-=================================
-memrm - Remove data from a server
-=================================
-
-memrm - Remove a key(s) from a collection of memcached servers
+memrm
+=====
 
 SYNOPSIS
 --------
 
-memrm [options] [key]
+memrm [options] <key ...>
 
 .. program:: memrm
+
+Remove key(s) from a collection of memcached servers
 
 DESCRIPTION
 -----------
 
-:program:`memrm`  removes items, specified by key, from memcached(1) servers.
+:program:`memrm` removes items, specified by key, from :manpage:`memcached(1)` servers.
 
 OPTIONS
 -------
 
-You can specify servers via the option:
+.. include:: options/all.rst
+.. include:: options/common.rst
+.. include:: options/hash.rst
+.. include:: options/sasl.rst
 
-.. option:: --servers
+ENVIRONMENT
+-----------
 
-or via the environment variable:
+.. envvar:: MEMCACHED_SERVERS
 
-.. envvar:: `MEMCACHED_SERVERS`
-
-For a full list of operations run the tool with the
-
-.. option:: --help
+    Specify the list of servers.
 
 SEE ALSO
 --------
 
 .. only:: man
 
-  :manpage:`memcached(1)` :manpage:`libmemcached(3)`
+  :manpage:`memcached(1)`
+  :manpage:`libmemcached(3)`
 
+.. only:: html
+
+* :doc:`/libmemcached`
+* :doc:`/libmemcached/memcached_delete`

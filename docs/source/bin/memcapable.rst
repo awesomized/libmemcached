@@ -1,53 +1,52 @@
-=======================================================================
-memcapable - Checking a Memcached server capabilities and compatibility
-=======================================================================
+memcapable
+==========
 
 SYNOPSIS
 --------
 
+.. program:: memcapable
+
 memcapable [options]
 
-.. program:: memcapable
+Check a memcached server's capabilities and compatibility.
 
 DESCRIPTION
 -----------
 
 :program:`memcapable` connects to the specified memcached server and tries to
-determine its capabilities by running the various commands and verifying
-the response.
-
-LIMITATIONS
------------
-
-The current version of memcapable will only verify the binary protocol.
+determine its capabilities by running various commands and verifying the response.
 
 OPTIONS
 -------
 
 .. option:: -h hostname
 
-Specify the hostname to connect to. The default is \ *localhost*\ 
+    Specify the hostname to connect to. The default is \ *localhost*\ .
 
 .. option:: -p port
 
-Specify the port number to connect to. The default is \ *11211*\ 
+    Specify the port number to connect to. The default is \ *11211*\ .
 
 .. option:: -c
 
-Generate a coredump when it detects an error from the server.
+    :manpage:`abort(3)` when detecting an error from the server.
 
 .. option:: -v
 
-Print out the comparison when it detects an error from the server.
+    Print out the comparison when it detects an error from the server.
 
 .. option:: -t n
 
-Set the timeout from an IO operation to/from the server to \ *n*\  seconds.
+    Set the timeout for an IO operation to/from the server to \ *n*\  seconds.
 
 SEE ALSO
 --------
 
 .. only:: man
 
-  :manpage:`memcached(1)` :manpage:`libmemcached(3)`
+  :manpage:`memcached(1)`
+  :manpage:`libmemcached(3)`
 
+.. only:: html
+
+  * :doc:`/libmemcached`

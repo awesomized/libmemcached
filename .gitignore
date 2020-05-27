@@ -42,6 +42,7 @@ src/bin/memslap
 src/bin/memstat
 src/bin/memtouch
 cmake-build-*/
+ccmake-*/
 example/memcached_light
 example/t/memcached_light
 tags
