@@ -8,7 +8,7 @@ SYNOPSIS
 --------
 
 #include <libmemcachedutil-|libmemcached_version|/util.h>
-  Compile and link with -lmemcachedutil
+  Compile and link with -lmemcachedutil -lmemcached
 
 DESCRIPTION
 -----------
@@ -22,7 +22,7 @@ THREADS AND PROCESSES
 Do not try to access an instance of `memcached_st` from multiple threads at the
 same time. If you want to access memcached from multiple threads you should
 either clone the `memcached_st`, or use the memcached pool implementation. See
-`memcached_pool_create`.
+`memcached_pool`.
 
 SEE ALSO
 --------
