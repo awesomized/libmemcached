@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,18 @@
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -29,10 +34,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="copyright" title="Copyright" href="../copyright.html" />
@@ -51,7 +52,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> libmemcached
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> libmemcached
           
 
           
@@ -78,6 +79,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -127,6 +129,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -165,7 +168,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="index.html">libmemcached API</a> &raquo;</li>
         
@@ -191,8 +194,11 @@
   <div class="section" id="retrieving-data-from-the-server">
 <h1>Retrieving data from the server<a class="headerlink" href="#retrieving-data-from-the-server" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="synopsis">
-<span id="index-0"></span><h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p>#include &lt;libmemcached/memcached.h&gt;</p>
+<h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<dl class="simple">
+<dt>#include &lt;libmemcached/memcached.h&gt;</dt><dd><p>Compile and link with -lmemcached</p>
+</dd>
+</dl>
 <dl class="cpp function">
 <dt id="_CPPv422memcached_fetch_resultP12memcached_stP19memcached_result_stP18memcached_return_t">
 <span id="_CPPv322memcached_fetch_resultP12memcached_stP19memcached_result_stP18memcached_return_t"></span><span id="_CPPv222memcached_fetch_resultP12memcached_stP19memcached_result_stP18memcached_return_t"></span><span id="memcached_fetch_result__memcached_stP.memcached_result_stP.memcached_return_tP"></span><a class="reference internal" href="memcached_result_st.html#_CPPv419memcached_result_st" title="memcached_result_st">memcached_result_st</a> *<code class="sig-name descname">memcached_fetch_result</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <a class="reference internal" href="memcached_result_st.html#_CPPv419memcached_result_st" title="memcached_result_st">memcached_result_st</a> *<em>result</em>, <a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> *<em>error</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422memcached_fetch_resultP12memcached_stP19memcached_result_stP18memcached_return_t" title="Permalink to this definition">¶</a><br /></dt>
@@ -238,31 +244,38 @@
 <span id="_CPPv320memcached_execute_fn"></span><span id="_CPPv220memcached_execute_fn"></span><span id="memcached_execute_fn"></span><em class="property">typedef </em><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> (*<code class="sig-name descname">memcached_execute_fn</code>)<span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *ptr, <a class="reference internal" href="memcached_result_st.html#_CPPv419memcached_result_st" title="memcached_result_st">memcached_result_st</a> *result, void *context<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420memcached_execute_fn" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<p>Compile and link with -lmemcached</p>
 </div>
 <div class="section" id="description">
 <h2>DESCRIPTION<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference internal" href="#_CPPv413memcached_getP12memcached_stPKc6size_tP6size_tP8uint32_tP18memcached_return_t" title="memcached_get"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_get()</span></code></a> is used to fetch an individual value from the server.
 You must pass in a key and its length to fetch the object. You must supply
 three pointer variables which will give you the state of the returned
-object.  A <code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">uint32_t</span></code> pointer to contain whatever flags you stored with the value, a <code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">size_t</span></code> pointer which will be filled with size of of
+object.  A <code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">uint32_t</span></code> pointer to contain whatever flags you stored
+with the value, a <code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">size_t</span></code> pointer which will be filled with size of of
 the object, and a <a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> pointer to hold any error. The
 object will be returned upon success and NULL will be returned on failure. Any
 object returned by <a class="reference internal" href="#_CPPv413memcached_getP12memcached_stPKc6size_tP6size_tP8uint32_tP18memcached_return_t" title="memcached_get"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_get()</span></code></a> must be released by the caller
 application.</p>
 <p><a class="reference internal" href="#_CPPv414memcached_mgetP12memcached_stPPCKcPK6size_t6size_t" title="memcached_mget"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_mget()</span></code></a> is used to select multiple keys at once. For
-multiple key operations it is always faster to use this function. This function always works asynchronously.</p>
-<p>To retrieve data after a successful execution of <a class="reference internal" href="#_CPPv414memcached_mgetP12memcached_stPPCKcPK6size_t6size_t" title="memcached_mget"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_mget()</span></code></a>, you will need to
-call <a class="reference internal" href="#_CPPv422memcached_fetch_resultP12memcached_stP19memcached_result_stP18memcached_return_t" title="memcached_fetch_result"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_fetch_result()</span></code></a>.  You should continue to call this function until
-it returns a NULL (i.e. no more values). If you need to quit in the middle of a
-<a class="reference internal" href="#_CPPv414memcached_mgetP12memcached_stPPCKcPK6size_t6size_t" title="memcached_mget"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_mget()</span></code></a> call, you can execute a <a class="reference internal" href="memcached_quit.html#_CPPv414memcached_quitP12memcached_st" title="memcached_quit"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_quit()</span></code></a>, those this is not required.</p>
-<p><a class="reference internal" href="#_CPPv422memcached_fetch_resultP12memcached_stP19memcached_result_stP18memcached_return_t" title="memcached_fetch_result"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_fetch_result()</span></code></a> is used to fetch an individual value from the server. <a class="reference internal" href="#_CPPv414memcached_mgetP12memcached_stPPCKcPK6size_t6size_t" title="memcached_mget"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_mget()</span></code></a> must always be called before using this method.
+multiple key operations it is always faster to use this function.
+This function always works asynchronously.</p>
+<p>To retrieve data after a successful execution of <a class="reference internal" href="#_CPPv414memcached_mgetP12memcached_stPPCKcPK6size_t6size_t" title="memcached_mget"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_mget()</span></code></a>, you
+will need to call <a class="reference internal" href="#_CPPv422memcached_fetch_resultP12memcached_stP19memcached_result_stP18memcached_return_t" title="memcached_fetch_result"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_fetch_result()</span></code></a>.  You should continue to call
+this function until it returns a NULL (i.e. no more values). If you need to quit
+in the middle of a <a class="reference internal" href="#_CPPv414memcached_mgetP12memcached_stPPCKcPK6size_t6size_t" title="memcached_mget"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_mget()</span></code></a> call, you can execute a
+<a class="reference internal" href="memcached_quit.html#_CPPv414memcached_quitP12memcached_st" title="memcached_quit"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_quit()</span></code></a>, those this is not required.</p>
+<p><a class="reference internal" href="#_CPPv422memcached_fetch_resultP12memcached_stP19memcached_result_stP18memcached_return_t" title="memcached_fetch_result"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_fetch_result()</span></code></a> is used to fetch an individual value from the
+server. <a class="reference internal" href="#_CPPv414memcached_mgetP12memcached_stPPCKcPK6size_t6size_t" title="memcached_mget"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_mget()</span></code></a> must always be called before using this method.
 You must pass in a key and its length to fetch the object. You must supply
-three pointer variables which will give you the state of the returned
-object.  A <code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">uint32_t</span></code> pointer to contain whatever flags you stored with the value, a <code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">size_t</span></code> pointer which will be filled with size of of the
-object, and a <a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> pointer to hold any error. The
-object will be returned upon success and NULL will be returned on failure. <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t13MEMCACHED_ENDE" title="MEMCACHED_END"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_END</span></code></a> is returned by the *error value when all objects that have been found are returned. The final value upon <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t13MEMCACHED_ENDE" title="MEMCACHED_END"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_END</span></code></a> is null.</p>
-<p><a class="reference internal" href="#_CPPv422memcached_fetch_resultP12memcached_stP19memcached_result_stP18memcached_return_t" title="memcached_fetch_result"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_fetch_result()</span></code></a> is used to return a <a class="reference internal" href="memcached_result_st.html#_CPPv419memcached_result_st" title="memcached_result_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_result_st</span></code></a> structure from a memcached server. The result object is forward compatible
+three pointer variables which will give you the state of the returned object.
+A <code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">uint32_t</span></code> pointer to contain whatever flags you stored with the value,
+a <code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">size_t</span></code> pointer which will be filled with size of of the object, and a
+<a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> pointer to hold any error. The object will be
+returned upon success and NULL will be returned on failure. <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t13MEMCACHED_ENDE" title="MEMCACHED_END"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_END</span></code></a> is
+returned by the *error value when all objects that have been found have been
+returned. The final value upon <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t13MEMCACHED_ENDE" title="MEMCACHED_END"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_END</span></code></a> is null.</p>
+<p><a class="reference internal" href="#_CPPv422memcached_fetch_resultP12memcached_stP19memcached_result_stP18memcached_return_t" title="memcached_fetch_result"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_fetch_result()</span></code></a> is used to return a <a class="reference internal" href="memcached_result_st.html#_CPPv419memcached_result_st" title="memcached_result_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_result_st</span></code></a>
+structure from a memcached server. The result object is forward compatible
 with changes to the server. For more information please refer to the
 <a class="reference internal" href="memcached_result_st.html#_CPPv419memcached_result_st" title="memcached_result_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_result_st</span></code></a> help. This function will dynamically allocate a
 result structure for you if you do not pass one to the function.</p>
@@ -289,24 +302,32 @@ in a similar nature as <a class="reference internal" href="#_CPPv413memcached_ge
 The difference is that they take a master key that is used for determining
 which server an object was stored if key partitioning was used for storage.</p>
 <p>All of the above functions are not tested when the
-<code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_USE_UDP</span></code> has been set. Executing any of these
-functions with this behavior on will result in <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t23MEMCACHED_NOT_SUPPORTEDE" title="MEMCACHED_NOT_SUPPORTED"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_NOT_SUPPORTED</span></code></a> being returned, or for those functions which do not return a <a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a>, the error function parameter will be set to <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t23MEMCACHED_NOT_SUPPORTEDE" title="MEMCACHED_NOT_SUPPORTED"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_NOT_SUPPORTED</span></code></a>.</p>
+<a class="reference internal" href="memcached_behavior.html#_CPPv4N20memcached_behavior_t26MEMCACHED_BEHAVIOR_USE_UDPE" title="MEMCACHED_BEHAVIOR_USE_UDP"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_USE_UDP</span></code></a> has been set. Executing any of these
+functions with this behavior on will result in <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t23MEMCACHED_NOT_SUPPORTEDE" title="MEMCACHED_NOT_SUPPORTED"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_NOT_SUPPORTED</span></code></a> being
+returned, or for those functions which do not return a
+<a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a>, the error function parameter will be set to
+<a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t23MEMCACHED_NOT_SUPPORTEDE" title="MEMCACHED_NOT_SUPPORTED"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_NOT_SUPPORTED</span></code></a>.</p>
 </div>
 <div class="section" id="return-value">
 <h2>RETURN VALUE<a class="headerlink" href="#return-value" title="Permalink to this headline">¶</a></h2>
-<p>All objects retrieved via <a class="reference internal" href="#_CPPv413memcached_getP12memcached_stPKc6size_tP6size_tP8uint32_tP18memcached_return_t" title="memcached_get"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_get()</span></code></a> or <a class="reference internal" href="#_CPPv420memcached_get_by_keyP12memcached_stPKc6size_tPKc6size_tP6size_tP8uint32_tP18memcached_return_t" title="memcached_get_by_key"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_get_by_key()</span></code></a> must be freed with <em class="manpage"><a class="manpage reference external" href="https://linux.die.net/man/3/free">free(3)</a></em>.</p>
-<p><a class="reference internal" href="#_CPPv413memcached_getP12memcached_stPKc6size_tP6size_tP8uint32_tP18memcached_return_t" title="memcached_get"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_get()</span></code></a> will return NULL on
-error. You must look at the value of error to determine what the actual error
-was.</p>
+<p>All objects retrieved via <a class="reference internal" href="#_CPPv413memcached_getP12memcached_stPKc6size_tP6size_tP8uint32_tP18memcached_return_t" title="memcached_get"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_get()</span></code></a> or <a class="reference internal" href="#_CPPv420memcached_get_by_keyP12memcached_stPKc6size_tPKc6size_tP6size_tP8uint32_tP18memcached_return_t" title="memcached_get_by_key"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_get_by_key()</span></code></a>
+must be freed with <em class="manpage"><a class="manpage reference external" href="https://linux.die.net/man/3/free">free(3)</a></em>.</p>
+<p><a class="reference internal" href="#_CPPv413memcached_getP12memcached_stPKc6size_tP6size_tP8uint32_tP18memcached_return_t" title="memcached_get"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_get()</span></code></a> will return NULL on error.
+You must look at the value of error to determine what the actual error was.</p>
 <p><a class="reference internal" href="#_CPPv423memcached_fetch_executeP12memcached_stP20memcached_execute_fnPv8uint32_t" title="memcached_fetch_execute"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_fetch_execute()</span></code></a> return <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t17MEMCACHED_SUCCESSE" title="MEMCACHED_SUCCESS"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_SUCCESS</span></code></a> if
-all keys were successful. <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t18MEMCACHED_NOTFOUNDE" title="MEMCACHED_NOTFOUND"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_NOTFOUND</span></code></a> will be return if no
+all keys were successful. <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t18MEMCACHED_NOTFOUNDE" title="MEMCACHED_NOTFOUND"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_NOTFOUND</span></code></a> will be returned if no
 keys at all were found.</p>
 <p><a class="reference internal" href="#_CPPv422memcached_fetch_resultP12memcached_stP19memcached_result_stP18memcached_return_t" title="memcached_fetch_result"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_fetch_result()</span></code></a> sets error
 to <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t13MEMCACHED_ENDE" title="MEMCACHED_END"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_END</span></code></a> upon successful conclusion.
-<a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t18MEMCACHED_NOTFOUNDE" title="MEMCACHED_NOTFOUND"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_NOTFOUND</span></code></a> will be return if no keys at all were found.</p>
+<a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t18MEMCACHED_NOTFOUNDE" title="MEMCACHED_NOTFOUND"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_NOTFOUND</span></code></a> will be returned if no keys at all were found.</p>
 </div>
 <div class="section" id="see-also">
 <h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><em class="manpage"><a class="manpage reference external" href="https://linux.die.net/man/1/memcached">memcached(1)</a></em></p></li>
+<li><p><a class="reference internal" href="../libmemcached.html"><span class="doc">C/C++ Client Library for memcached</span></a></p></li>
+<li><p><a class="reference internal" href="memcached_strerror.html"><span class="doc">Converting Error Codes to Messages</span></a></p></li>
+</ul>
 </div>
 </div>
 
@@ -330,11 +351,20 @@ to <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcache
 
   <div role="contentinfo">
     <p>
+        
+        
         &copy; <a href="../copyright.html">Copyright</a> 
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -345,7 +375,6 @@ to <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcache
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

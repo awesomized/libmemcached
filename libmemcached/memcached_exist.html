@@ -1,15 +1,18 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Determine if a keys exists. &mdash; libmemcached 1.0.99 documentation</title>
+  <title>Determine if a keys exists &mdash; libmemcached 1.0.99 documentation</title>
   
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
 
   
   
@@ -17,7 +20,9 @@
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -29,14 +34,10 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="copyright" title="Copyright" href="../copyright.html" />
-    <link rel="next" title="memcached_touch, memcached_touch_by_key" href="memcached_touch.html" />
+    <link rel="next" title="Update expiration on a key" href="memcached_touch.html" />
     <link rel="prev" title="Incrementing and Decrementing Values" href="memcached_auto.html" /> 
 </head>
 
@@ -51,7 +52,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> libmemcached
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> libmemcached
           
 
           
@@ -78,6 +79,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -92,9 +94,9 @@
 <li class="toctree-l2"><a class="reference internal" href="index_basics.html">Basics</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index_data.html">Working with Data</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="memcached_auto.html">Incrementing and Decrementing Values</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Determine if a keys exists.</a></li>
-<li class="toctree-l3"><a class="reference internal" href="memcached_touch.html">memcached_touch, memcached_touch_by_key</a></li>
-<li class="toctree-l3"><a class="reference internal" href="memcached_flush_buffers.html">Flushing client buffers</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Determine if a keys exists</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memcached_touch.html">Update expiration on a key</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memcached_flush_buffers.html">Flush and send buffered commands</a></li>
 <li class="toctree-l3"><a class="reference internal" href="memcached_result_st.html">Working with result sets</a></li>
 <li class="toctree-l3"><a class="reference internal" href="memcached_append.html">Appending or Prepending Data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="memcached_cas.html">Working with data on the server in an atomic fashion</a></li>
@@ -129,6 +131,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -167,13 +170,13 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="index.html">libmemcached API</a> &raquo;</li>
         
           <li><a href="index_data.html">Working with Data</a> &raquo;</li>
         
-      <li>Determine if a keys exists.</li>
+      <li>Determine if a keys exists</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -191,10 +194,13 @@
            <div itemprop="articleBody">
             
   <div class="section" id="determine-if-a-keys-exists">
-<h1>Determine if a keys exists.<a class="headerlink" href="#determine-if-a-keys-exists" title="Permalink to this headline">¶</a></h1>
+<h1>Determine if a keys exists<a class="headerlink" href="#determine-if-a-keys-exists" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="synopsis">
-<span id="index-0"></span><h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p>#include &lt;libmemcached/memcached.h&gt;</p>
+<h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<dl class="simple">
+<dt>#include &lt;libmemcached/memcached.h&gt;</dt><dd><p>Compile and link with -lmemcached</p>
+</dd>
+</dl>
 <dl class="cpp function">
 <dt id="_CPPv415memcached_existP12memcached_stPcP6size_t">
 <span id="_CPPv315memcached_existP12memcached_stPcP6size_t"></span><span id="_CPPv215memcached_existP12memcached_stPcP6size_t"></span><span id="memcached_exist__memcached_stP.cP.sP"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_exist</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, char *<em>key</em>, size_t *<em>key_length</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415memcached_existP12memcached_stPcP6size_t" title="Permalink to this definition">¶</a><br /></dt>
@@ -203,9 +209,22 @@
 <dl class="cpp function">
 <dt id="_CPPv422memcached_exist_by_keyP12memcached_stPcP6size_tPcP6size_t">
 <span id="_CPPv322memcached_exist_by_keyP12memcached_stPcP6size_tPcP6size_t"></span><span id="_CPPv222memcached_exist_by_keyP12memcached_stPcP6size_tPcP6size_t"></span><span id="memcached_exist_by_key__memcached_stP.cP.sP.cP.sP"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_exist_by_key</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, char *<em>group_key</em>, size_t *<em>group_key_length</em>, char *<em>key</em>, size_t *<em>key_length</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422memcached_exist_by_keyP12memcached_stPcP6size_tPcP6size_t" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ptr</strong> -- pointer to an initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</p></li>
+<li><p><strong>group_key</strong> -- the key namespace</p></li>
+<li><p><strong>group_key_length</strong> -- length of the <a class="reference internal" href="#_CPPv422memcached_exist_by_keyP12memcached_stPcP6size_tPcP6size_t" title="memcached_exist_by_key::group_key"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">group_key</span></code></a> without any terminating zero</p></li>
+<li><p><strong>key</strong> -- the key to check</p></li>
+<li><p><strong>key_length</strong> -- length of the <a class="reference internal" href="#_CPPv422memcached_exist_by_keyP12memcached_stPcP6size_tPcP6size_t" title="memcached_exist_by_key::key"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">key</span></code></a> without any terminating zero</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</p>
+</dd>
+</dl>
+</dd></dl>
 
-<p>Compile and link with -lmemcached</p>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 0.53.</span></p>
 </div>
@@ -225,6 +244,11 @@
 </div>
 <div class="section" id="see-also">
 <h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><em class="manpage"><a class="manpage reference external" href="https://linux.die.net/man/1/memcached">memcached(1)</a></em></p></li>
+<li><p><a class="reference internal" href="../libmemcached.html"><span class="doc">C/C++ Client Library for memcached</span></a></p></li>
+<li><p><a class="reference internal" href="memcached_strerror.html"><span class="doc">Converting Error Codes to Messages</span></a></p></li>
+</ul>
 </div>
 </div>
 
@@ -236,7 +260,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="memcached_touch.html" class="btn btn-neutral float-right" title="memcached_touch, memcached_touch_by_key" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="memcached_touch.html" class="btn btn-neutral float-right" title="Update expiration on a key" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="memcached_auto.html" class="btn btn-neutral float-left" title="Incrementing and Decrementing Values" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -248,11 +272,20 @@
 
   <div role="contentinfo">
     <p>
+        
+        
         &copy; <a href="../copyright.html">Copyright</a> 
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -263,7 +296,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

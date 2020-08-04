@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,18 @@
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -29,10 +34,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="copyright" title="Copyright" href="../copyright.html" />
@@ -51,7 +52,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> libmemcached
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> libmemcached
           
 
           
@@ -78,6 +79,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -133,6 +135,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -171,7 +174,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="index.html">libmemcached API</a> &raquo;</li>
         
@@ -208,37 +211,118 @@
 <dl class="cpp function">
 <dt id="_CPPv431memcached_set_memory_allocatorsP12memcached_st19memcached_malloc_fn17memcached_free_fn20memcached_realloc_fn19memcached_calloc_fnPv">
 <span id="_CPPv331memcached_set_memory_allocatorsP12memcached_st19memcached_malloc_fn17memcached_free_fn20memcached_realloc_fn19memcached_calloc_fnPv"></span><span id="_CPPv231memcached_set_memory_allocatorsP12memcached_st19memcached_malloc_fn17memcached_free_fn20memcached_realloc_fn19memcached_calloc_fnPv"></span><span id="memcached_set_memory_allocators__memcached_stP.memcached_malloc_fn.memcached_free_fn.memcached_realloc_fn.memcached_calloc_fn.voidP"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_set_memory_allocators</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <a class="reference internal" href="#_CPPv419memcached_malloc_fn" title="memcached_malloc_fn">memcached_malloc_fn</a> <em>mem_malloc</em>, <a class="reference internal" href="#_CPPv417memcached_free_fn" title="memcached_free_fn">memcached_free_fn</a> <em>mem_free</em>, <a class="reference internal" href="#_CPPv420memcached_realloc_fn" title="memcached_realloc_fn">memcached_realloc_fn</a> <em>mem_realloc</em>, <a class="reference internal" href="#_CPPv419memcached_calloc_fn" title="memcached_calloc_fn">memcached_calloc_fn</a> <em>mem_calloc</em>, void *<em>context</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431memcached_set_memory_allocatorsP12memcached_st19memcached_malloc_fn17memcached_free_fn20memcached_realloc_fn19memcached_calloc_fnPv" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ptr</strong> -- pointer to an initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</p></li>
+<li><p><strong>mem_malloc</strong> -- pointer to a <a class="reference internal" href="#_CPPv419memcached_malloc_fn" title="memcached_malloc_fn"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_malloc_fn</span></code></a> callback</p></li>
+<li><p><strong>mem_free</strong> -- pointer to a <a class="reference internal" href="#_CPPv417memcached_free_fn" title="memcached_free_fn"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_free_fn</span></code></a> callback</p></li>
+<li><p><strong>mem_realloc</strong> -- pointer to a <a class="reference internal" href="#_CPPv420memcached_realloc_fn" title="memcached_realloc_fn"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_realloc_fn</span></code></a> callback</p></li>
+<li><p><strong>mem_calloc</strong> -- pointer to a <a class="reference internal" href="#_CPPv419memcached_calloc_fn" title="memcached_calloc_fn"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_calloc_fn</span></code></a> callback</p></li>
+<li><p><strong>context</strong> -- pointer to a user supplied context</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv431memcached_get_memory_allocatorsP12memcached_stP19memcached_malloc_fnP17memcached_free_fnP20memcached_realloc_fnP19memcached_calloc_fn">
 <span id="_CPPv331memcached_get_memory_allocatorsP12memcached_stP19memcached_malloc_fnP17memcached_free_fnP20memcached_realloc_fnP19memcached_calloc_fn"></span><span id="_CPPv231memcached_get_memory_allocatorsP12memcached_stP19memcached_malloc_fnP17memcached_free_fnP20memcached_realloc_fnP19memcached_calloc_fn"></span><span id="memcached_get_memory_allocators__memcached_stP.memcached_malloc_fnP.memcached_free_fnP.memcached_realloc_fnP.memcached_calloc_fnP"></span>void <code class="sig-name descname">memcached_get_memory_allocators</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <a class="reference internal" href="#_CPPv419memcached_malloc_fn" title="memcached_malloc_fn">memcached_malloc_fn</a> *<em>mem_malloc</em>, <a class="reference internal" href="#_CPPv417memcached_free_fn" title="memcached_free_fn">memcached_free_fn</a> *<em>mem_free</em>, <a class="reference internal" href="#_CPPv420memcached_realloc_fn" title="memcached_realloc_fn">memcached_realloc_fn</a> *<em>mem_realloc</em>, <a class="reference internal" href="#_CPPv419memcached_calloc_fn" title="memcached_calloc_fn">memcached_calloc_fn</a> *<em>mem_calloc</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431memcached_get_memory_allocatorsP12memcached_stP19memcached_malloc_fnP17memcached_free_fnP20memcached_realloc_fnP19memcached_calloc_fn" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ptr</strong> -- pointer to an initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</p></li>
+<li><p><strong>mem_malloc</strong> -- pointer to store the address of the <a class="reference internal" href="#_CPPv419memcached_malloc_fn" title="memcached_malloc_fn"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_malloc_fn</span></code></a> callback</p></li>
+<li><p><strong>mem_free</strong> -- pointer to store the address of the <a class="reference internal" href="#_CPPv417memcached_free_fn" title="memcached_free_fn"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_free_fn</span></code></a> callback</p></li>
+<li><p><strong>mem_realloc</strong> -- pointer to store the address of the <a class="reference internal" href="#_CPPv420memcached_realloc_fn" title="memcached_realloc_fn"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_realloc_fn</span></code></a> callback</p></li>
+<li><p><strong>mem_calloc</strong> -- pointer to store the address of the <a class="reference internal" href="#_CPPv419memcached_calloc_fn" title="memcached_calloc_fn"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_calloc_fn</span></code></a> callback</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv439memcached_get_memory_allocators_contextPK12memcached_st">
 <span id="_CPPv339memcached_get_memory_allocators_contextPK12memcached_st"></span><span id="_CPPv239memcached_get_memory_allocators_contextPK12memcached_st"></span><span id="memcached_get_memory_allocators_context__memcached_stCP"></span>void *<code class="sig-name descname">memcached_get_memory_allocators_context</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv439memcached_get_memory_allocators_contextPK12memcached_st" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ptr</strong> -- pointer to an initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>pointer to the user supplied context</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp type">
 <dt id="_CPPv419memcached_malloc_fn">
 <span id="_CPPv319memcached_malloc_fn"></span><span id="_CPPv219memcached_malloc_fn"></span><span id="memcached_malloc_fn"></span><em class="property">typedef </em>void *(*<code class="sig-name descname">memcached_malloc_fn</code>)<span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *ptr, <em class="property">const</em> size_t size, void *context<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419memcached_malloc_fn" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ptr</strong> -- pointer to an initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</p></li>
+<li><p><strong>size</strong> -- the number of bytes to allocate</p></li>
+<li><p><strong>context</strong> -- pointer to the user supplied context</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>pointer to at least <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">size</span></code> bytes of allocated memory</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp type">
 <dt id="_CPPv420memcached_realloc_fn">
 <span id="_CPPv320memcached_realloc_fn"></span><span id="_CPPv220memcached_realloc_fn"></span><span id="memcached_realloc_fn"></span><em class="property">typedef </em>void *(*<code class="sig-name descname">memcached_realloc_fn</code>)<span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *ptr, void *mem, <em class="property">const</em> size_t size, void *context<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420memcached_realloc_fn" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ptr</strong> -- pointer to an initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</p></li>
+<li><p><strong>mem</strong> -- pointer to previously allocated memory</p></li>
+<li><p><strong>size</strong> -- the number of bytes to allocate</p></li>
+<li><p><strong>context</strong> -- pointer to the user supplied context</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>pointer to at least <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">size</span></code> bytes of allocated memory</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp type">
 <dt id="_CPPv417memcached_free_fn">
 <span id="_CPPv317memcached_free_fn"></span><span id="_CPPv217memcached_free_fn"></span><span id="memcached_free_fn"></span><em class="property">typedef </em>void (*<code class="sig-name descname">memcached_free_fn</code>)<span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *ptr, void *mem, void *context<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417memcached_free_fn" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ptr</strong> -- pointer to an initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</p></li>
+<li><p><strong>mem</strong> -- pointer to previously allocated memory</p></li>
+<li><p><strong>context</strong> -- pointer to the user supplied context</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp type">
 <dt id="_CPPv419memcached_calloc_fn">
 <span id="_CPPv319memcached_calloc_fn"></span><span id="_CPPv219memcached_calloc_fn"></span><span id="memcached_calloc_fn"></span><em class="property">typedef </em>void *(*<code class="sig-name descname">memcached_calloc_fn</code>)<span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *ptr, size_t nelem, <em class="property">const</em> size_t elsize, void *context<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419memcached_calloc_fn" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ptr</strong> -- pointer to an initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</p></li>
+<li><p><strong>nelem</strong> -- number of elements to allocate</p></li>
+<li><p><strong>elsize</strong> -- the number of bytes to allocate per element</p></li>
+<li><p><strong>context</strong> -- pointer to the user supplied context</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>pointer to at least <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">elsize</span></code> * <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">nelem</span></code>  bytes of allocated and zeroed memory</p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 <div class="section" id="description">
@@ -263,12 +347,12 @@ use of any operation which would modify it.</p>
 <div class="section" id="notes">
 <h2>NOTES<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
 <p>In version 0.38 all functions were modified to have a context void pointer
-passed to them. This was so that customer allocators could have their own space
+passed to them. This was so that custom allocators could have their own space
 for memory.</p>
 </div>
 <div class="section" id="return-value">
 <h2>RETURN VALUE<a class="headerlink" href="#return-value" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="#_CPPv431memcached_set_memory_allocatorsP12memcached_st19memcached_malloc_fn17memcached_free_fn20memcached_realloc_fn19memcached_calloc_fnPv" title="memcached_set_memory_allocators"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_set_memory_allocators()</span></code></a> return <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t17MEMCACHED_SUCCESSE" title="MEMCACHED_SUCCESS"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_SUCCESS</span></code></a> upon success,
+<p><a class="reference internal" href="#_CPPv431memcached_set_memory_allocatorsP12memcached_st19memcached_malloc_fn17memcached_free_fn20memcached_realloc_fn19memcached_calloc_fnPv" title="memcached_set_memory_allocators"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_set_memory_allocators()</span></code></a> returns <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t17MEMCACHED_SUCCESSE" title="MEMCACHED_SUCCESS"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_SUCCESS</span></code></a> upon success,
 and <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t17MEMCACHED_FAILUREE" title="MEMCACHED_FAILURE"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_FAILURE</span></code></a> if you don't pass a complete set of function pointers.</p>
 </div>
 <div class="section" id="see-also">
@@ -301,11 +385,20 @@ and <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcach
 
   <div role="contentinfo">
     <p>
+        
+        
         &copy; <a href="../copyright.html">Copyright</a> 
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -316,7 +409,6 @@ and <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcach
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

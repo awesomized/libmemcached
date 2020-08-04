@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,18 @@
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -29,10 +34,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="copyright" title="Copyright" href="../copyright.html" />
@@ -51,7 +52,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> libmemcached
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> libmemcached
           
 
           
@@ -78,6 +79,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -132,6 +134,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -170,7 +173,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="index.html">libmemcached API</a> &raquo;</li>
         
@@ -197,81 +200,117 @@
             
   <div class="section" id="generating-hash-values-directly">
 <h1>Generating hash values directly<a class="headerlink" href="#generating-hash-values-directly" title="Permalink to this headline">¶</a></h1>
-<p id="index-0">Hash a key value</p>
+<p>Hash a key value</p>
 <div class="section" id="synopsis">
 <h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p>#include &lt;libmemcached/memcached.h&gt;</p>
-<dl class="cpp type">
-<dt id="_CPPv416memcached_hash_t">
-<span id="_CPPv316memcached_hash_t"></span><span id="_CPPv216memcached_hash_t"></span><span id="memcached_hash_t"></span><em class="property">type </em><code class="sig-name descname">memcached_hash_t</code><a class="headerlink" href="#_CPPv416memcached_hash_t" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
+<dl class="simple">
+<dt>#include &lt;libmemcached/memcached.h&gt;</dt><dd><p>Compile and link with -lmemcachedutil -lmemcached</p>
+</dd>
+</dl>
 <dl class="cpp function">
 <dt id="_CPPv429memcached_generate_hash_valuePKc6size_t16memcached_hash_t">
 <span id="_CPPv329memcached_generate_hash_valuePKc6size_t16memcached_hash_t"></span><span id="_CPPv229memcached_generate_hash_valuePKc6size_t16memcached_hash_t"></span><span id="memcached_generate_hash_value__cCP.s.memcached_hash_t"></span>uint32_t <code class="sig-name descname">memcached_generate_hash_value</code><span class="sig-paren">(</span><em class="property">const</em> char *<em>key</em>, size_t <em>key_length</em>, <a class="reference internal" href="#_CPPv416memcached_hash_t" title="memcached_hash_t">memcached_hash_t</a> <em>hash_algorithm</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429memcached_generate_hash_valuePKc6size_t16memcached_hash_t" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> -- the key to generate a hash of</p></li>
+<li><p><strong>key_length</strong> -- the length of the <a class="reference internal" href="#_CPPv429memcached_generate_hash_valuePKc6size_t16memcached_hash_t" title="memcached_generate_hash_value::key"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">key</span></code></a> without any terminating zero</p></li>
+<li><p><strong>hash_algorithm</strong> -- <a class="reference internal" href="#_CPPv416memcached_hash_t" title="memcached_hash_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_hash_t</span></code></a>, the algorithm to use</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a 32 bit hash value</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv423memcached_generate_hashP12memcached_stPKc6size_t">
 <span id="_CPPv323memcached_generate_hashP12memcached_stPKc6size_t"></span><span id="_CPPv223memcached_generate_hashP12memcached_stPKc6size_t"></span><span id="memcached_generate_hash__memcached_stP.cCP.s"></span>uint32_t <code class="sig-name descname">memcached_generate_hash</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <em class="property">const</em> char *<em>key</em>, size_t <em>key_length</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423memcached_generate_hashP12memcached_stPKc6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ptr</strong> -- pointer to an initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</p></li>
+<li><p><strong>key</strong> -- the key to generate a hash of</p></li>
+<li><p><strong>key_length</strong> -- the length of the <a class="reference internal" href="#_CPPv423memcached_generate_hashP12memcached_stPKc6size_t" title="memcached_generate_hash::key"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">key</span></code></a> without any terminating zero</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a 32 bit hash value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c type">
+<dt id="c.memcached_hash_t">
+<em class="property">typedef </em><em class="property">enum</em> <a class="reference internal" href="#c.memcached_hash_t" title="memcached_hash_t">memcached_hash_t</a> <code class="sig-name descname">memcached_hash_t</code><a class="headerlink" href="#c.memcached_hash_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="cpp type">
-<dt id="_CPPv422MEMCACHED_HASH_DEFAULT">
-<span id="_CPPv322MEMCACHED_HASH_DEFAULT"></span><span id="_CPPv222MEMCACHED_HASH_DEFAULT"></span><span id="MEMCACHED_HASH_DEFAULT"></span><em class="property">type </em><code class="sig-name descname">MEMCACHED_HASH_DEFAULT</code><a class="headerlink" href="#_CPPv422MEMCACHED_HASH_DEFAULT" title="Permalink to this definition">¶</a><br /></dt>
+<dl class="cpp enum">
+<dt id="_CPPv416memcached_hash_t">
+<span id="_CPPv316memcached_hash_t"></span><span id="_CPPv216memcached_hash_t"></span><em class="property">enum </em><code class="sig-name descname">memcached_hash_t</code><a class="headerlink" href="#_CPPv416memcached_hash_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="cpp enumerator">
+<dt id="_CPPv4N16memcached_hash_t22MEMCACHED_HASH_DEFAULTE">
+<span id="_CPPv3N16memcached_hash_t22MEMCACHED_HASH_DEFAULTE"></span><span id="_CPPv2N16memcached_hash_t22MEMCACHED_HASH_DEFAULTE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_HASH_DEFAULT</code><a class="headerlink" href="#_CPPv4N16memcached_hash_t22MEMCACHED_HASH_DEFAULTE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="cpp type">
-<dt id="_CPPv418MEMCACHED_HASH_MD5">
-<span id="_CPPv318MEMCACHED_HASH_MD5"></span><span id="_CPPv218MEMCACHED_HASH_MD5"></span><span id="MEMCACHED_HASH_MD5"></span><em class="property">type </em><code class="sig-name descname">MEMCACHED_HASH_MD5</code><a class="headerlink" href="#_CPPv418MEMCACHED_HASH_MD5" title="Permalink to this definition">¶</a><br /></dt>
+<dl class="cpp enumerator">
+<dt id="_CPPv4N16memcached_hash_t18MEMCACHED_HASH_MD5E">
+<span id="_CPPv3N16memcached_hash_t18MEMCACHED_HASH_MD5E"></span><span id="_CPPv2N16memcached_hash_t18MEMCACHED_HASH_MD5E"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_HASH_MD5</code><a class="headerlink" href="#_CPPv4N16memcached_hash_t18MEMCACHED_HASH_MD5E" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="cpp type">
-<dt id="_CPPv418MEMCACHED_HASH_CRC">
-<span id="_CPPv318MEMCACHED_HASH_CRC"></span><span id="_CPPv218MEMCACHED_HASH_CRC"></span><span id="MEMCACHED_HASH_CRC"></span><em class="property">type </em><code class="sig-name descname">MEMCACHED_HASH_CRC</code><a class="headerlink" href="#_CPPv418MEMCACHED_HASH_CRC" title="Permalink to this definition">¶</a><br /></dt>
+<dl class="cpp enumerator">
+<dt id="_CPPv4N16memcached_hash_t18MEMCACHED_HASH_CRCE">
+<span id="_CPPv3N16memcached_hash_t18MEMCACHED_HASH_CRCE"></span><span id="_CPPv2N16memcached_hash_t18MEMCACHED_HASH_CRCE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_HASH_CRC</code><a class="headerlink" href="#_CPPv4N16memcached_hash_t18MEMCACHED_HASH_CRCE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="cpp type">
-<dt id="_CPPv422MEMCACHED_HASH_FNV1_64">
-<span id="_CPPv322MEMCACHED_HASH_FNV1_64"></span><span id="_CPPv222MEMCACHED_HASH_FNV1_64"></span><span id="MEMCACHED_HASH_FNV1_64"></span><em class="property">type </em><code class="sig-name descname">MEMCACHED_HASH_FNV1_64</code><a class="headerlink" href="#_CPPv422MEMCACHED_HASH_FNV1_64" title="Permalink to this definition">¶</a><br /></dt>
+<dl class="cpp enumerator">
+<dt id="_CPPv4N16memcached_hash_t22MEMCACHED_HASH_FNV1_64E">
+<span id="_CPPv3N16memcached_hash_t22MEMCACHED_HASH_FNV1_64E"></span><span id="_CPPv2N16memcached_hash_t22MEMCACHED_HASH_FNV1_64E"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_HASH_FNV1_64</code><a class="headerlink" href="#_CPPv4N16memcached_hash_t22MEMCACHED_HASH_FNV1_64E" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="cpp type">
-<dt id="_CPPv423MEMCACHED_HASH_FNV1A_64">
-<span id="_CPPv323MEMCACHED_HASH_FNV1A_64"></span><span id="_CPPv223MEMCACHED_HASH_FNV1A_64"></span><span id="MEMCACHED_HASH_FNV1A_64"></span><em class="property">type </em><code class="sig-name descname">MEMCACHED_HASH_FNV1A_64</code><a class="headerlink" href="#_CPPv423MEMCACHED_HASH_FNV1A_64" title="Permalink to this definition">¶</a><br /></dt>
+<dl class="cpp enumerator">
+<dt id="_CPPv4N16memcached_hash_t23MEMCACHED_HASH_FNV1A_64E">
+<span id="_CPPv3N16memcached_hash_t23MEMCACHED_HASH_FNV1A_64E"></span><span id="_CPPv2N16memcached_hash_t23MEMCACHED_HASH_FNV1A_64E"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_HASH_FNV1A_64</code><a class="headerlink" href="#_CPPv4N16memcached_hash_t23MEMCACHED_HASH_FNV1A_64E" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="cpp type">
-<dt id="_CPPv422MEMCACHED_HASH_FNV1_32">
-<span id="_CPPv322MEMCACHED_HASH_FNV1_32"></span><span id="_CPPv222MEMCACHED_HASH_FNV1_32"></span><span id="MEMCACHED_HASH_FNV1_32"></span><em class="property">type </em><code class="sig-name descname">MEMCACHED_HASH_FNV1_32</code><a class="headerlink" href="#_CPPv422MEMCACHED_HASH_FNV1_32" title="Permalink to this definition">¶</a><br /></dt>
+<dl class="cpp enumerator">
+<dt id="_CPPv4N16memcached_hash_t22MEMCACHED_HASH_FNV1_32E">
+<span id="_CPPv3N16memcached_hash_t22MEMCACHED_HASH_FNV1_32E"></span><span id="_CPPv2N16memcached_hash_t22MEMCACHED_HASH_FNV1_32E"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_HASH_FNV1_32</code><a class="headerlink" href="#_CPPv4N16memcached_hash_t22MEMCACHED_HASH_FNV1_32E" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="cpp type">
-<dt id="_CPPv423MEMCACHED_HASH_FNV1A_32">
-<span id="_CPPv323MEMCACHED_HASH_FNV1A_32"></span><span id="_CPPv223MEMCACHED_HASH_FNV1A_32"></span><span id="MEMCACHED_HASH_FNV1A_32"></span><em class="property">type </em><code class="sig-name descname">MEMCACHED_HASH_FNV1A_32</code><a class="headerlink" href="#_CPPv423MEMCACHED_HASH_FNV1A_32" title="Permalink to this definition">¶</a><br /></dt>
+<dl class="cpp enumerator">
+<dt id="_CPPv4N16memcached_hash_t23MEMCACHED_HASH_FNV1A_32E">
+<span id="_CPPv3N16memcached_hash_t23MEMCACHED_HASH_FNV1A_32E"></span><span id="_CPPv2N16memcached_hash_t23MEMCACHED_HASH_FNV1A_32E"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_HASH_FNV1A_32</code><a class="headerlink" href="#_CPPv4N16memcached_hash_t23MEMCACHED_HASH_FNV1A_32E" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="cpp type">
-<dt id="_CPPv422MEMCACHED_HASH_JENKINS">
-<span id="_CPPv322MEMCACHED_HASH_JENKINS"></span><span id="_CPPv222MEMCACHED_HASH_JENKINS"></span><span id="MEMCACHED_HASH_JENKINS"></span><em class="property">type </em><code class="sig-name descname">MEMCACHED_HASH_JENKINS</code><a class="headerlink" href="#_CPPv422MEMCACHED_HASH_JENKINS" title="Permalink to this definition">¶</a><br /></dt>
+<dl class="cpp enumerator">
+<dt id="_CPPv4N16memcached_hash_t20MEMCACHED_HASH_HSIEHE">
+<span id="_CPPv3N16memcached_hash_t20MEMCACHED_HASH_HSIEHE"></span><span id="_CPPv2N16memcached_hash_t20MEMCACHED_HASH_HSIEHE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_HASH_HSIEH</code><a class="headerlink" href="#_CPPv4N16memcached_hash_t20MEMCACHED_HASH_HSIEHE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="cpp type">
-<dt id="_CPPv421MEMCACHED_HASH_MURMUR">
-<span id="_CPPv321MEMCACHED_HASH_MURMUR"></span><span id="_CPPv221MEMCACHED_HASH_MURMUR"></span><span id="MEMCACHED_HASH_MURMUR"></span><em class="property">type </em><code class="sig-name descname">MEMCACHED_HASH_MURMUR</code><a class="headerlink" href="#_CPPv421MEMCACHED_HASH_MURMUR" title="Permalink to this definition">¶</a><br /></dt>
+<dl class="cpp enumerator">
+<dt id="_CPPv4N16memcached_hash_t21MEMCACHED_HASH_MURMURE">
+<span id="_CPPv3N16memcached_hash_t21MEMCACHED_HASH_MURMURE"></span><span id="_CPPv2N16memcached_hash_t21MEMCACHED_HASH_MURMURE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_HASH_MURMUR</code><a class="headerlink" href="#_CPPv4N16memcached_hash_t21MEMCACHED_HASH_MURMURE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="cpp type">
-<dt id="_CPPv420MEMCACHED_HASH_HSIEH">
-<span id="_CPPv320MEMCACHED_HASH_HSIEH"></span><span id="_CPPv220MEMCACHED_HASH_HSIEH"></span><span id="MEMCACHED_HASH_HSIEH"></span><em class="property">type </em><code class="sig-name descname">MEMCACHED_HASH_HSIEH</code><a class="headerlink" href="#_CPPv420MEMCACHED_HASH_HSIEH" title="Permalink to this definition">¶</a><br /></dt>
+<dl class="cpp enumerator">
+<dt id="_CPPv4N16memcached_hash_t22MEMCACHED_HASH_JENKINSE">
+<span id="_CPPv3N16memcached_hash_t22MEMCACHED_HASH_JENKINSE"></span><span id="_CPPv2N16memcached_hash_t22MEMCACHED_HASH_JENKINSE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_HASH_JENKINS</code><a class="headerlink" href="#_CPPv4N16memcached_hash_t22MEMCACHED_HASH_JENKINSE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="cpp type">
-<dt id="_CPPv422MEMCACHED_HASH_MURMUR3">
-<span id="_CPPv322MEMCACHED_HASH_MURMUR3"></span><span id="_CPPv222MEMCACHED_HASH_MURMUR3"></span><span id="MEMCACHED_HASH_MURMUR3"></span><em class="property">type </em><code class="sig-name descname">MEMCACHED_HASH_MURMUR3</code><a class="headerlink" href="#_CPPv422MEMCACHED_HASH_MURMUR3" title="Permalink to this definition">¶</a><br /></dt>
+<dl class="cpp enumerator">
+<dt id="_CPPv4N16memcached_hash_t22MEMCACHED_HASH_MURMUR3E">
+<span id="_CPPv3N16memcached_hash_t22MEMCACHED_HASH_MURMUR3E"></span><span id="_CPPv2N16memcached_hash_t22MEMCACHED_HASH_MURMUR3E"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_HASH_MURMUR3</code><a class="headerlink" href="#_CPPv4N16memcached_hash_t22MEMCACHED_HASH_MURMUR3E" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<p>Compile and link with -lmemcachedutil -lmemcached</p>
+<dl class="cpp enumerator">
+<dt id="_CPPv4N16memcached_hash_t21MEMCACHED_HASH_CUSTOME">
+<span id="_CPPv3N16memcached_hash_t21MEMCACHED_HASH_CUSTOME"></span><span id="_CPPv2N16memcached_hash_t21MEMCACHED_HASH_CUSTOME"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_HASH_CUSTOM</code><a class="headerlink" href="#_CPPv4N16memcached_hash_t21MEMCACHED_HASH_CUSTOME" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="description">
 <h2>DESCRIPTION<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
@@ -279,8 +318,9 @@
 the hash functions defined in the library. This method is provided for
 the convenience of higher-level language bindings and is not necessary
 for normal memcache operations.</p>
-<p>The allowed hash algorithm constants are listed in the manpage for
-<a class="reference internal" href="memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a>.</p>
+<p>Support for <a class="reference internal" href="#_CPPv4N16memcached_hash_t20MEMCACHED_HASH_HSIEHE" title="MEMCACHED_HASH_HSIEH"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_HASH_HSIEH</span></code></a> is a compile time option that is
+disabled by default. To enable tests for this hashing algorithm,
+configure and build libmemcached with the Hsieh hash enabled.</p>
 <p><a class="reference internal" href="#_CPPv423memcached_generate_hashP12memcached_stPKc6size_t" title="memcached_generate_hash"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_generate_hash()</span></code></a> takes a <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_st</span></code></a> structure
 and produces the hash value that would have been generated based on the
 defaults of <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_st</span></code></a>.</p>
@@ -318,11 +358,20 @@ returned.</p>
 
   <div role="contentinfo">
     <p>
+        
+        
         &copy; <a href="../copyright.html">Copyright</a> 
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -333,7 +382,6 @@ returned.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

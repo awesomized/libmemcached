@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,18 @@
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -29,10 +34,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="copyright" title="Copyright" href="../copyright.html" />
@@ -51,7 +52,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> libmemcached
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> libmemcached
           
 
           
@@ -78,6 +79,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -127,6 +129,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -165,7 +168,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="index.html">libmemcached API</a> &raquo;</li>
         
@@ -243,12 +246,12 @@ will always return true unless a network error occurs.</p>
 key methods. The difference is that they use their group_key parameter to map
 objects to particular servers.</p>
 <p>If you are looking for performance, <a class="reference internal" href="#_CPPv413memcached_setP12memcached_stPKc6size_tPKc6size_t6time_t8uint32_t" title="memcached_set"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_set()</span></code></a> with non-blocking IO is the fastest way to store data on the server.</p>
-<p>All of the above functions are tested with the <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_USE_UDP</span></code> behavior enabled. However, when using these operations with this behavior
+<p>All of the above functions are tested with the <a class="reference internal" href="memcached_behavior.html#_CPPv4N20memcached_behavior_t26MEMCACHED_BEHAVIOR_USE_UDPE" title="MEMCACHED_BEHAVIOR_USE_UDP"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_USE_UDP</span></code></a> behavior enabled. However, when using these operations with this behavior
 on, there are limits to the size of the payload being sent to the server.
 The reason for these limits is that the Memcached Server does not allow
 multi-datagram requests and the current server implementation sets a datagram
 size to 1400 bytes. Due to protocol overhead, the actual limit of the user supplied data is less than 1400 bytes and depends on the protocol in use as, well as the operation being
-executed. When running with the binary protocol, <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_BINARY_PROTOCOL</span></code>, the size of the key,value, flags and expiry combined may not
+executed. When running with the binary protocol, <a class="reference internal" href="memcached_behavior.html#_CPPv4N20memcached_behavior_t34MEMCACHED_BEHAVIOR_BINARY_PROTOCOLE" title="MEMCACHED_BEHAVIOR_BINARY_PROTOCOL"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_BINARY_PROTOCOL</span></code></a>, the size of the key,value, flags and expiry combined may not
 exceed 1368 bytes. When running with the ASCII protocol, the exact limit fluctuates depending on which function is being executed and whether the function is a cas operation or not. For non-cas ASCII set operations, there are at least
 1335 bytes available to split among the key, key_prefix, and value; for cas
 ASCII operations there are at least 1318 bytes available to split among the key, key_prefix and value. If the total size of the command, including overhead,
@@ -287,11 +290,20 @@ is a legitimate error in the case of a collision.</p>
 
   <div role="contentinfo">
     <p>
+        
+        
         &copy; <a href="../copyright.html">Copyright</a> 
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -302,7 +314,6 @@ is a legitimate error in the case of a collision.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

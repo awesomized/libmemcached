@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,18 @@
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -29,10 +34,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="copyright" title="Copyright" href="../copyright.html" />
@@ -51,7 +52,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> libmemcached
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> libmemcached
           
 
           
@@ -78,6 +79,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -119,6 +121,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -157,7 +160,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="index_misc.html">Misc</a> &raquo;</li>
         
@@ -189,12 +192,36 @@
 <dl class="cpp function">
 <dt id="_CPPv49memcachedPKc6size_t">
 <span id="_CPPv39memcachedPKc6size_t"></span><span id="_CPPv29memcachedPKc6size_t"></span><span id="memcached__cCP.s"></span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<code class="sig-name descname">memcached</code><span class="sig-paren">(</span><em class="property">const</em> char *<em>string</em>, size_t <em>string_length</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49memcachedPKc6size_t" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> -- configuration string</p></li>
+<li><p><strong>string_length</strong> -- length of the configuration string without any terminating zero</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>allocated and initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv432libmemcached_check_configurationPKc6size_tPc6size_t">
 <span id="_CPPv332libmemcached_check_configurationPKc6size_tPc6size_t"></span><span id="_CPPv232libmemcached_check_configurationPKc6size_tPc6size_t"></span><span id="libmemcached_check_configuration__cCP.s.cP.s"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">libmemcached_check_configuration</code><span class="sig-paren">(</span><em class="property">const</em> char *<em>option_string</em>, size_t <em>length</em>, char *<em>error_buffer</em>, size_t <em>error_buffer_size</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv432libmemcached_check_configurationPKc6size_tPc6size_t" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>option_string</strong> -- configuration string</p></li>
+<li><p><strong>length</strong> -- length of the configuration string without any terminating zero</p></li>
+<li><p><strong>error_buffer</strong> -- buffer used to store any error message</p></li>
+<li><p><strong>error_buffer_size</strong> -- available size of the <a class="reference internal" href="#_CPPv432libmemcached_check_configurationPKc6size_tPc6size_t" title="libmemcached_check_configuration::error_buffer"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">error_buffer</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 <div class="section" id="description">
@@ -230,7 +257,7 @@ being used.</p>
 <dl class="describe">
 <dt>
 <code class="sig-name descname">--REMOVE_FAILED_SERVERS</code></dt>
-<dd><p>Enable the behavior <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS</span></code>.</p>
+<dd><p>Enable the behavior <a class="reference internal" href="memcached_behavior.html#_CPPv4N20memcached_behavior_t40MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERSE" title="MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS</span></code></a>.</p>
 </dd></dl>
 
 <dl class="describe">
@@ -242,7 +269,7 @@ being used.</p>
 <dl class="describe">
 <dt>
 <code class="sig-name descname">--BUFFER-REQUESTS</code></dt>
-<dd><p>Please see <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_BUFFER_REQUESTS</span></code>.</p>
+<dd><p>Please see <a class="reference internal" href="memcached_behavior.html#_CPPv4N20memcached_behavior_t34MEMCACHED_BEHAVIOR_BUFFER_REQUESTSE" title="MEMCACHED_BEHAVIOR_BUFFER_REQUESTS"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_BUFFER_REQUESTS</span></code></a>.</p>
 </dd></dl>
 
 <dl class="describe">
@@ -256,7 +283,7 @@ on information only contained in the file.</p>
 <dl class="describe">
 <dt>
 <code class="sig-name descname">--CONNECT-TIMEOUT=</code></dt>
-<dd><p>See <a class="reference internal" href="memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> for <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT</span></code>.</p>
+<dd><p>See <a class="reference internal" href="memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> for <a class="reference internal" href="memcached_behavior.html#_CPPv4N20memcached_behavior_t34MEMCACHED_BEHAVIOR_CONNECT_TIMEOUTE" title="MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT</span></code></a>.</p>
 </dd></dl>
 
 <dl class="describe">
@@ -308,13 +335,13 @@ naming order.</p>
 <dl class="describe">
 <dt>
 <code class="sig-name descname">--SUPPORT-CAS</code></dt>
-<dd><p>See <a class="reference internal" href="memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> for <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_SUPPORT_CAS</span></code></p>
+<dd><p>See <a class="reference internal" href="memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> for <a class="reference internal" href="memcached_behavior.html#_CPPv4N20memcached_behavior_t30MEMCACHED_BEHAVIOR_SUPPORT_CASE" title="MEMCACHED_BEHAVIOR_SUPPORT_CAS"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_SUPPORT_CAS</span></code></a></p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
 <code class="sig-name descname">--USE-UDP</code></dt>
-<dd><p>See <a class="reference internal" href="memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> for <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_USE_UDP</span></code></p>
+<dd><p>See <a class="reference internal" href="memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> for <a class="reference internal" href="memcached_behavior.html#_CPPv4N20memcached_behavior_t26MEMCACHED_BEHAVIOR_USE_UDPE" title="MEMCACHED_BEHAVIOR_USE_UDP"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_USE_UDP</span></code></a></p>
 </dd></dl>
 
 <dl class="describe">
@@ -346,7 +373,7 @@ accomplished by prepending the namespace value to all keys.</p>
 <dl class="describe">
 <dt>
 <code class="sig-name descname">--TCP-NODELAY</code></dt>
-<dd><p>See <a class="reference internal" href="memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> for <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_TCP_NODELAY</span></code></p>
+<dd><p>See <a class="reference internal" href="memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> for <a class="reference internal" href="memcached_behavior.html#_CPPv4N20memcached_behavior_t30MEMCACHED_BEHAVIOR_TCP_NODELAYE" title="MEMCACHED_BEHAVIOR_TCP_NODELAY"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_TCP_NODELAY</span></code></a></p>
 </dd></dl>
 
 <dl class="describe">
@@ -358,31 +385,31 @@ accomplished by prepending the namespace value to all keys.</p>
 <dl class="describe">
 <dt>
 <code class="sig-name descname">--RETRY-TIMEOUT=</code></dt>
-<dd><p>See <a class="reference internal" href="memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> for <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_RETRY_TIMEOUT</span></code></p>
+<dd><p>See <a class="reference internal" href="memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> for <a class="reference internal" href="memcached_behavior.html#_CPPv4N20memcached_behavior_t32MEMCACHED_BEHAVIOR_RETRY_TIMEOUTE" title="MEMCACHED_BEHAVIOR_RETRY_TIMEOUT"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_RETRY_TIMEOUT</span></code></a></p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
 <code class="sig-name descname">--SERVER-FAILURE-LIMIT=</code></dt>
-<dd><p>See <a class="reference internal" href="memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> for <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT</span></code></p>
+<dd><p>See <a class="reference internal" href="memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> for <a class="reference internal" href="memcached_behavior.html#_CPPv4N20memcached_behavior_t39MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMITE" title="MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT</span></code></a></p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
 <code class="sig-name descname">--SND-TIMEOUT=</code></dt>
-<dd><p>See <a class="reference internal" href="memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> for <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_SND_TIMEOUT</span></code></p>
+<dd><p>See <a class="reference internal" href="memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> for <a class="reference internal" href="memcached_behavior.html#_CPPv4N20memcached_behavior_t30MEMCACHED_BEHAVIOR_SND_TIMEOUTE" title="MEMCACHED_BEHAVIOR_SND_TIMEOUT"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_SND_TIMEOUT</span></code></a></p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
 <code class="sig-name descname">--SOCKET-RECV-SIZE=</code></dt>
-<dd><p>See <a class="reference internal" href="memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> for <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE</span></code></p>
+<dd><p>See <a class="reference internal" href="memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> for <a class="reference internal" href="memcached_behavior.html#_CPPv4N20memcached_behavior_t35MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZEE" title="MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE</span></code></a></p>
 </dd></dl>
 
 <dl class="describe">
 <dt>
 <code class="sig-name descname">--SOCKET-SEND-SIZE=</code></dt>
-<dd><p>See <a class="reference internal" href="memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> for <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE</span></code></p>
+<dd><p>See <a class="reference internal" href="memcached_behavior.html#_CPPv422memcached_behavior_setP12memcached_st20memcached_behavior_t8uint64_t" title="memcached_behavior_set"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_behavior_set()</span></code></a> for <a class="reference internal" href="memcached_behavior.html#_CPPv4N20memcached_behavior_t35MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZEE" title="MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE</span></code></a></p>
 </dd></dl>
 
 <dl class="describe">
@@ -456,7 +483,7 @@ Unlike <code class="docutils literal notranslate"><span class="pre">--CONFIGURE-
 </div>
 <div class="section" id="return-value">
 <h2>RETURN VALUE<a class="headerlink" href="#return-value" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="#_CPPv49memcachedPKc6size_t" title="memcached"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached()</span></code></a> returns a pointer to the memcached_st that was created (or
+<p><a class="reference internal" href="#_CPPv49memcachedPKc6size_t" title="memcached"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached()</span></code></a> returns a pointer to the <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> that was created (or
 initialized).  On an allocation failure, it returns NULL.</p>
 </div>
 <div class="section" id="example">
@@ -503,11 +530,20 @@ initialized).  On an allocation failure, it returns NULL.</p>
 
   <div role="contentinfo">
     <p>
+        
+        
         &copy; <a href="../copyright.html">Copyright</a> 
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -518,7 +554,6 @@ initialized).  On an allocation failure, it returns NULL.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

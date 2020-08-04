@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,18 @@
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -29,10 +34,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="copyright" title="Copyright" href="../copyright.html" />
@@ -51,7 +52,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> libmemcached
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> libmemcached
           
 
           
@@ -78,6 +79,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -119,6 +121,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -157,7 +160,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="index.html">libhashkit API</a> &raquo;</li>
         
@@ -189,37 +192,223 @@
 <dl class="cpp type">
 <dt id="_CPPv415hashkit_hash_fn">
 <span id="_CPPv315hashkit_hash_fn"></span><span id="_CPPv215hashkit_hash_fn"></span><span id="hashkit_hash_fn"></span><em class="property">typedef </em>uint32_t (*<code class="sig-name descname">hashkit_hash_fn</code>)<span class="sig-paren">(</span><em class="property">const</em> char *key, size_t key_length, void *context<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415hashkit_hash_fn" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> -- the key to generate a hash of</p></li>
+<li><p><strong>key_length</strong> -- the length of the <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">key</span></code> without any terminating zero byte</p></li>
+<li><p><strong>context</strong> -- the custom hash function context set through <a class="reference internal" href="#_CPPv427hashkit_set_custom_functionP10hashkit_st15hashkit_hash_fnPv" title="hashkit_set_custom_function"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_set_custom_function()</span></code></a> or <a class="reference internal" href="#_CPPv440hashkit_set_custom_distribution_functionP10hashkit_st15hashkit_hash_fnPv" title="hashkit_set_custom_distribution_function"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_set_custom_distribution_function()</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the custom hash function should return a hash value for <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">key</span></code> as an unsigned 32bit integer</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c type">
+<dt id="c.hashkit_return_t">
+<em class="property">typedef </em><em class="property">enum</em> <a class="reference internal" href="#c.hashkit_return_t" title="hashkit_return_t">hashkit_return_t</a> <code class="sig-name descname">hashkit_return_t</code><a class="headerlink" href="#c.hashkit_return_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
+
+<dl class="cpp enum">
+<dt id="_CPPv416hashkit_return_t">
+<span id="_CPPv316hashkit_return_t"></span><span id="_CPPv216hashkit_return_t"></span><em class="property">enum </em><code class="sig-name descname">hashkit_return_t</code><a class="headerlink" href="#_CPPv416hashkit_return_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="cpp enumerator">
+<dt id="_CPPv4N16hashkit_return_t15HASHKIT_SUCCESSE">
+<span id="_CPPv3N16hashkit_return_t15HASHKIT_SUCCESSE"></span><span id="_CPPv2N16hashkit_return_t15HASHKIT_SUCCESSE"></span><em class="property">enumerator </em><code class="sig-name descname">HASHKIT_SUCCESS</code><a class="headerlink" href="#_CPPv4N16hashkit_return_t15HASHKIT_SUCCESSE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Operation succeeded.</p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N16hashkit_return_t15HASHKIT_FAILUREE">
+<span id="_CPPv3N16hashkit_return_t15HASHKIT_FAILUREE"></span><span id="_CPPv2N16hashkit_return_t15HASHKIT_FAILUREE"></span><em class="property">enumerator </em><code class="sig-name descname">HASHKIT_FAILURE</code><a class="headerlink" href="#_CPPv4N16hashkit_return_t15HASHKIT_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Operation failed.</p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N16hashkit_return_t33HASHKIT_MEMORY_ALLOCATION_FAILUREE">
+<span id="_CPPv3N16hashkit_return_t33HASHKIT_MEMORY_ALLOCATION_FAILUREE"></span><span id="_CPPv2N16hashkit_return_t33HASHKIT_MEMORY_ALLOCATION_FAILUREE"></span><em class="property">enumerator </em><code class="sig-name descname">HASHKIT_MEMORY_ALLOCATION_FAILURE</code><a class="headerlink" href="#_CPPv4N16hashkit_return_t33HASHKIT_MEMORY_ALLOCATION_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Memory allocation failed.</p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N16hashkit_return_t20HASHKIT_INVALID_HASHE">
+<span id="_CPPv3N16hashkit_return_t20HASHKIT_INVALID_HASHE"></span><span id="_CPPv2N16hashkit_return_t20HASHKIT_INVALID_HASHE"></span><em class="property">enumerator </em><code class="sig-name descname">HASHKIT_INVALID_HASH</code><a class="headerlink" href="#_CPPv4N16hashkit_return_t20HASHKIT_INVALID_HASHE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Invalid <a class="reference internal" href="#_CPPv424hashkit_hash_algorithm_t" title="hashkit_hash_algorithm_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_hash_algorithm_t</span></code></a> passed.</p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N16hashkit_return_t24HASHKIT_INVALID_ARGUMENTE">
+<span id="_CPPv3N16hashkit_return_t24HASHKIT_INVALID_ARGUMENTE"></span><span id="_CPPv2N16hashkit_return_t24HASHKIT_INVALID_ARGUMENTE"></span><em class="property">enumerator </em><code class="sig-name descname">HASHKIT_INVALID_ARGUMENT</code><a class="headerlink" href="#_CPPv4N16hashkit_return_t24HASHKIT_INVALID_ARGUMENTE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Invalid argument passed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="c type">
+<dt id="c.hashkit_hash_algorithm_t">
+<em class="property">typedef </em><em class="property">enum</em> <a class="reference internal" href="#c.hashkit_hash_algorithm_t" title="hashkit_hash_algorithm_t">hashkit_hash_algorithm_t</a> <code class="sig-name descname">hashkit_hash_algorithm_t</code><a class="headerlink" href="#c.hashkit_hash_algorithm_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enum">
+<dt id="_CPPv424hashkit_hash_algorithm_t">
+<span id="_CPPv324hashkit_hash_algorithm_t"></span><span id="_CPPv224hashkit_hash_algorithm_t"></span><em class="property">enum </em><code class="sig-name descname">hashkit_hash_algorithm_t</code><a class="headerlink" href="#_CPPv424hashkit_hash_algorithm_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="cpp enumerator">
+<dt id="_CPPv4N24hashkit_hash_algorithm_t20HASHKIT_HASH_DEFAULTE">
+<span id="_CPPv3N24hashkit_hash_algorithm_t20HASHKIT_HASH_DEFAULTE"></span><span id="_CPPv2N24hashkit_hash_algorithm_t20HASHKIT_HASH_DEFAULTE"></span><em class="property">enumerator </em><code class="sig-name descname">HASHKIT_HASH_DEFAULT</code><a class="headerlink" href="#_CPPv4N24hashkit_hash_algorithm_t20HASHKIT_HASH_DEFAULTE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Default hash algorithm (one_at_a_time).</p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N24hashkit_hash_algorithm_t16HASHKIT_HASH_MD5E">
+<span id="_CPPv3N24hashkit_hash_algorithm_t16HASHKIT_HASH_MD5E"></span><span id="_CPPv2N24hashkit_hash_algorithm_t16HASHKIT_HASH_MD5E"></span><em class="property">enumerator </em><code class="sig-name descname">HASHKIT_HASH_MD5</code><a class="headerlink" href="#_CPPv4N24hashkit_hash_algorithm_t16HASHKIT_HASH_MD5E" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N24hashkit_hash_algorithm_t16HASHKIT_HASH_CRCE">
+<span id="_CPPv3N24hashkit_hash_algorithm_t16HASHKIT_HASH_CRCE"></span><span id="_CPPv2N24hashkit_hash_algorithm_t16HASHKIT_HASH_CRCE"></span><em class="property">enumerator </em><code class="sig-name descname">HASHKIT_HASH_CRC</code><a class="headerlink" href="#_CPPv4N24hashkit_hash_algorithm_t16HASHKIT_HASH_CRCE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N24hashkit_hash_algorithm_t20HASHKIT_HASH_FNV1_64E">
+<span id="_CPPv3N24hashkit_hash_algorithm_t20HASHKIT_HASH_FNV1_64E"></span><span id="_CPPv2N24hashkit_hash_algorithm_t20HASHKIT_HASH_FNV1_64E"></span><em class="property">enumerator </em><code class="sig-name descname">HASHKIT_HASH_FNV1_64</code><a class="headerlink" href="#_CPPv4N24hashkit_hash_algorithm_t20HASHKIT_HASH_FNV1_64E" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N24hashkit_hash_algorithm_t21HASHKIT_HASH_FNV1A_64E">
+<span id="_CPPv3N24hashkit_hash_algorithm_t21HASHKIT_HASH_FNV1A_64E"></span><span id="_CPPv2N24hashkit_hash_algorithm_t21HASHKIT_HASH_FNV1A_64E"></span><em class="property">enumerator </em><code class="sig-name descname">HASHKIT_HASH_FNV1A_64</code><a class="headerlink" href="#_CPPv4N24hashkit_hash_algorithm_t21HASHKIT_HASH_FNV1A_64E" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N24hashkit_hash_algorithm_t20HASHKIT_HASH_FNV1_32E">
+<span id="_CPPv3N24hashkit_hash_algorithm_t20HASHKIT_HASH_FNV1_32E"></span><span id="_CPPv2N24hashkit_hash_algorithm_t20HASHKIT_HASH_FNV1_32E"></span><em class="property">enumerator </em><code class="sig-name descname">HASHKIT_HASH_FNV1_32</code><a class="headerlink" href="#_CPPv4N24hashkit_hash_algorithm_t20HASHKIT_HASH_FNV1_32E" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N24hashkit_hash_algorithm_t21HASHKIT_HASH_FNV1A_32E">
+<span id="_CPPv3N24hashkit_hash_algorithm_t21HASHKIT_HASH_FNV1A_32E"></span><span id="_CPPv2N24hashkit_hash_algorithm_t21HASHKIT_HASH_FNV1A_32E"></span><em class="property">enumerator </em><code class="sig-name descname">HASHKIT_HASH_FNV1A_32</code><a class="headerlink" href="#_CPPv4N24hashkit_hash_algorithm_t21HASHKIT_HASH_FNV1A_32E" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N24hashkit_hash_algorithm_t18HASHKIT_HASH_HSIEHE">
+<span id="_CPPv3N24hashkit_hash_algorithm_t18HASHKIT_HASH_HSIEHE"></span><span id="_CPPv2N24hashkit_hash_algorithm_t18HASHKIT_HASH_HSIEHE"></span><em class="property">enumerator </em><code class="sig-name descname">HASHKIT_HASH_HSIEH</code><a class="headerlink" href="#_CPPv4N24hashkit_hash_algorithm_t18HASHKIT_HASH_HSIEHE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Only available if <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libhashkit</span></code> hash been built with HSIEH support.</p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N24hashkit_hash_algorithm_t19HASHKIT_HASH_MURMURE">
+<span id="_CPPv3N24hashkit_hash_algorithm_t19HASHKIT_HASH_MURMURE"></span><span id="_CPPv2N24hashkit_hash_algorithm_t19HASHKIT_HASH_MURMURE"></span><em class="property">enumerator </em><code class="sig-name descname">HASHKIT_HASH_MURMUR</code><a class="headerlink" href="#_CPPv4N24hashkit_hash_algorithm_t19HASHKIT_HASH_MURMURE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Only available if <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libhashkit</span></code> has been built with MURMUR support.</p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N24hashkit_hash_algorithm_t20HASHKIT_HASH_MURMUR3E">
+<span id="_CPPv3N24hashkit_hash_algorithm_t20HASHKIT_HASH_MURMUR3E"></span><span id="_CPPv2N24hashkit_hash_algorithm_t20HASHKIT_HASH_MURMUR3E"></span><em class="property">enumerator </em><code class="sig-name descname">HASHKIT_HASH_MURMUR3</code><a class="headerlink" href="#_CPPv4N24hashkit_hash_algorithm_t20HASHKIT_HASH_MURMUR3E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Only available if <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libhashkit</span></code> has been built with MURMUR support.</p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N24hashkit_hash_algorithm_t20HASHKIT_HASH_JENKINSE">
+<span id="_CPPv3N24hashkit_hash_algorithm_t20HASHKIT_HASH_JENKINSE"></span><span id="_CPPv2N24hashkit_hash_algorithm_t20HASHKIT_HASH_JENKINSE"></span><em class="property">enumerator </em><code class="sig-name descname">HASHKIT_HASH_JENKINS</code><a class="headerlink" href="#_CPPv4N24hashkit_hash_algorithm_t20HASHKIT_HASH_JENKINSE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt id="_CPPv4N24hashkit_hash_algorithm_t19HASHKIT_HASH_CUSTOME">
+<span id="_CPPv3N24hashkit_hash_algorithm_t19HASHKIT_HASH_CUSTOME"></span><span id="_CPPv2N24hashkit_hash_algorithm_t19HASHKIT_HASH_CUSTOME"></span><em class="property">enumerator </em><code class="sig-name descname">HASHKIT_HASH_CUSTOM</code><a class="headerlink" href="#_CPPv4N24hashkit_hash_algorithm_t19HASHKIT_HASH_CUSTOME" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Use custom <a class="reference internal" href="#_CPPv415hashkit_hash_fn" title="hashkit_hash_fn"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_hash_fn</span></code></a> function set through <a class="reference internal" href="#_CPPv427hashkit_set_custom_functionP10hashkit_st15hashkit_hash_fnPv" title="hashkit_set_custom_function"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_set_custom_function()</span></code></a> or <a class="reference internal" href="#_CPPv440hashkit_set_custom_distribution_functionP10hashkit_st15hashkit_hash_fnPv" title="hashkit_set_custom_distribution_function"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_set_custom_distribution_function()</span></code></a>.</p>
+</dd></dl>
+
+</dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv420hashkit_set_functionP10hashkit_st24hashkit_hash_algorithm_t">
-<span id="_CPPv320hashkit_set_functionP10hashkit_st24hashkit_hash_algorithm_t"></span><span id="_CPPv220hashkit_set_functionP10hashkit_st24hashkit_hash_algorithm_t"></span><span id="hashkit_set_function__hashkit_stP.hashkit_hash_algorithm_t"></span>hashkit_return_t <code class="sig-name descname">hashkit_set_function</code><span class="sig-paren">(</span><a class="reference internal" href="hashkit_create.html#_CPPv410hashkit_st" title="hashkit_st">hashkit_st</a> *<em>hash</em>, hashkit_hash_algorithm_t <em>hash_algorithm</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420hashkit_set_functionP10hashkit_st24hashkit_hash_algorithm_t" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv320hashkit_set_functionP10hashkit_st24hashkit_hash_algorithm_t"></span><span id="_CPPv220hashkit_set_functionP10hashkit_st24hashkit_hash_algorithm_t"></span><span id="hashkit_set_function__hashkit_stP.hashkit_hash_algorithm_t"></span><a class="reference internal" href="#_CPPv416hashkit_return_t" title="hashkit_return_t">hashkit_return_t</a> <code class="sig-name descname">hashkit_set_function</code><span class="sig-paren">(</span><a class="reference internal" href="hashkit_create.html#_CPPv410hashkit_st" title="hashkit_st">hashkit_st</a> *<em>hash</em>, <a class="reference internal" href="#_CPPv424hashkit_hash_algorithm_t" title="hashkit_hash_algorithm_t">hashkit_hash_algorithm_t</a> <em>hash_algorithm</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420hashkit_set_functionP10hashkit_st24hashkit_hash_algorithm_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hash</strong> -- pointer to an initialized <a class="reference internal" href="hashkit_create.html#_CPPv410hashkit_st" title="hashkit_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_st</span></code></a> struct</p></li>
+<li><p><strong>hash_algorithm</strong> -- valid <a class="reference internal" href="#_CPPv424hashkit_hash_algorithm_t" title="hashkit_hash_algorithm_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_hash_algorithm_t</span></code></a> constant</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#_CPPv416hashkit_return_t" title="hashkit_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_return_t</span></code></a> indicating success or failure</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv427hashkit_set_custom_functionP10hashkit_st15hashkit_hash_fnPv">
-<span id="_CPPv327hashkit_set_custom_functionP10hashkit_st15hashkit_hash_fnPv"></span><span id="_CPPv227hashkit_set_custom_functionP10hashkit_st15hashkit_hash_fnPv"></span><span id="hashkit_set_custom_function__hashkit_stP.hashkit_hash_fn.voidP"></span>hashkit_return_t <code class="sig-name descname">hashkit_set_custom_function</code><span class="sig-paren">(</span><a class="reference internal" href="hashkit_create.html#_CPPv410hashkit_st" title="hashkit_st">hashkit_st</a> *<em>hash</em>, <a class="reference internal" href="#_CPPv415hashkit_hash_fn" title="hashkit_hash_fn">hashkit_hash_fn</a> <em>function</em>, void *<em>context</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427hashkit_set_custom_functionP10hashkit_st15hashkit_hash_fnPv" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv327hashkit_set_custom_functionP10hashkit_st15hashkit_hash_fnPv"></span><span id="_CPPv227hashkit_set_custom_functionP10hashkit_st15hashkit_hash_fnPv"></span><span id="hashkit_set_custom_function__hashkit_stP.hashkit_hash_fn.voidP"></span><a class="reference internal" href="#_CPPv416hashkit_return_t" title="hashkit_return_t">hashkit_return_t</a> <code class="sig-name descname">hashkit_set_custom_function</code><span class="sig-paren">(</span><a class="reference internal" href="hashkit_create.html#_CPPv410hashkit_st" title="hashkit_st">hashkit_st</a> *<em>hash</em>, <a class="reference internal" href="#_CPPv415hashkit_hash_fn" title="hashkit_hash_fn">hashkit_hash_fn</a> <em>function</em>, void *<em>context</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427hashkit_set_custom_functionP10hashkit_st15hashkit_hash_fnPv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hash</strong> -- pointer to initialized <a class="reference internal" href="hashkit_create.html#_CPPv410hashkit_st" title="hashkit_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_st</span></code></a> struct</p></li>
+<li><p><strong>function</strong> -- <a class="reference internal" href="#_CPPv415hashkit_hash_fn" title="hashkit_hash_fn"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_hash_fn</span></code></a> function pointer to use as hash function for <a class="reference internal" href="#_CPPv4N24hashkit_hash_algorithm_t19HASHKIT_HASH_CUSTOME" title="HASHKIT_HASH_CUSTOM"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">HASHKIT_HASH_CUSTOM</span></code></a></p></li>
+<li><p><strong>context</strong> -- pointer to an opaque user managed context for the custom hash function</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#_CPPv416hashkit_return_t" title="hashkit_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_return_t</span></code></a> indicating success or failure</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv420hashkit_get_functionPK10hashkit_st">
-<span id="_CPPv320hashkit_get_functionPK10hashkit_st"></span><span id="_CPPv220hashkit_get_functionPK10hashkit_st"></span><span id="hashkit_get_function__hashkit_stCP"></span>hashkit_hash_algorithm_t <code class="sig-name descname">hashkit_get_function</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="hashkit_create.html#_CPPv410hashkit_st" title="hashkit_st">hashkit_st</a> *<em>hash</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420hashkit_get_functionPK10hashkit_st" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv320hashkit_get_functionPK10hashkit_st"></span><span id="_CPPv220hashkit_get_functionPK10hashkit_st"></span><span id="hashkit_get_function__hashkit_stCP"></span><a class="reference internal" href="#_CPPv424hashkit_hash_algorithm_t" title="hashkit_hash_algorithm_t">hashkit_hash_algorithm_t</a> <code class="sig-name descname">hashkit_get_function</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="hashkit_create.html#_CPPv410hashkit_st" title="hashkit_st">hashkit_st</a> *<em>hash</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420hashkit_get_functionPK10hashkit_st" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>hash</strong> -- pointer to an initialized <a class="reference internal" href="hashkit_create.html#_CPPv410hashkit_st" title="hashkit_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_st</span></code></a> struct</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#_CPPv424hashkit_hash_algorithm_t" title="hashkit_hash_algorithm_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_hash_algorithm_t</span></code></a> indicating the currently set hash algorithm to use</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv433hashkit_set_distribution_functionP10hashkit_st24hashkit_hash_algorithm_t">
-<span id="_CPPv333hashkit_set_distribution_functionP10hashkit_st24hashkit_hash_algorithm_t"></span><span id="_CPPv233hashkit_set_distribution_functionP10hashkit_st24hashkit_hash_algorithm_t"></span><span id="hashkit_set_distribution_function__hashkit_stP.hashkit_hash_algorithm_t"></span>hashkit_return_t <code class="sig-name descname">hashkit_set_distribution_function</code><span class="sig-paren">(</span><a class="reference internal" href="hashkit_create.html#_CPPv410hashkit_st" title="hashkit_st">hashkit_st</a> *<em>hash</em>, hashkit_hash_algorithm_t <em>hash_algorithm</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv433hashkit_set_distribution_functionP10hashkit_st24hashkit_hash_algorithm_t" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv333hashkit_set_distribution_functionP10hashkit_st24hashkit_hash_algorithm_t"></span><span id="_CPPv233hashkit_set_distribution_functionP10hashkit_st24hashkit_hash_algorithm_t"></span><span id="hashkit_set_distribution_function__hashkit_stP.hashkit_hash_algorithm_t"></span><a class="reference internal" href="#_CPPv416hashkit_return_t" title="hashkit_return_t">hashkit_return_t</a> <code class="sig-name descname">hashkit_set_distribution_function</code><span class="sig-paren">(</span><a class="reference internal" href="hashkit_create.html#_CPPv410hashkit_st" title="hashkit_st">hashkit_st</a> *<em>hash</em>, <a class="reference internal" href="#_CPPv424hashkit_hash_algorithm_t" title="hashkit_hash_algorithm_t">hashkit_hash_algorithm_t</a> <em>hash_algorithm</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv433hashkit_set_distribution_functionP10hashkit_st24hashkit_hash_algorithm_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hash</strong> -- pointer to an initialized <a class="reference internal" href="hashkit_create.html#_CPPv410hashkit_st" title="hashkit_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_st</span></code></a> struct</p></li>
+<li><p><strong>hash_algorithm</strong> -- valid <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_hash_algrothm_t</span></code> constant</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#_CPPv416hashkit_return_t" title="hashkit_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_return_t</span></code></a> indicating success or failure</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv440hashkit_set_custom_distribution_functionP10hashkit_st15hashkit_hash_fnPv">
-<span id="_CPPv340hashkit_set_custom_distribution_functionP10hashkit_st15hashkit_hash_fnPv"></span><span id="_CPPv240hashkit_set_custom_distribution_functionP10hashkit_st15hashkit_hash_fnPv"></span><span id="hashkit_set_custom_distribution_function__hashkit_stP.hashkit_hash_fn.voidP"></span>hashkit_return_t <code class="sig-name descname">hashkit_set_custom_distribution_function</code><span class="sig-paren">(</span><a class="reference internal" href="hashkit_create.html#_CPPv410hashkit_st" title="hashkit_st">hashkit_st</a> *<em>self</em>, <a class="reference internal" href="#_CPPv415hashkit_hash_fn" title="hashkit_hash_fn">hashkit_hash_fn</a> <em>function</em>, void *<em>context</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv440hashkit_set_custom_distribution_functionP10hashkit_st15hashkit_hash_fnPv" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv340hashkit_set_custom_distribution_functionP10hashkit_st15hashkit_hash_fnPv"></span><span id="_CPPv240hashkit_set_custom_distribution_functionP10hashkit_st15hashkit_hash_fnPv"></span><span id="hashkit_set_custom_distribution_function__hashkit_stP.hashkit_hash_fn.voidP"></span><a class="reference internal" href="#_CPPv416hashkit_return_t" title="hashkit_return_t">hashkit_return_t</a> <code class="sig-name descname">hashkit_set_custom_distribution_function</code><span class="sig-paren">(</span><a class="reference internal" href="hashkit_create.html#_CPPv410hashkit_st" title="hashkit_st">hashkit_st</a> *<em>hash</em>, <a class="reference internal" href="#_CPPv415hashkit_hash_fn" title="hashkit_hash_fn">hashkit_hash_fn</a> <em>function</em>, void *<em>context</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv440hashkit_set_custom_distribution_functionP10hashkit_st15hashkit_hash_fnPv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hash</strong> -- pointer to initialized <a class="reference internal" href="hashkit_create.html#_CPPv410hashkit_st" title="hashkit_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_st</span></code></a> struct</p></li>
+<li><p><strong>function</strong> -- <a class="reference internal" href="#_CPPv415hashkit_hash_fn" title="hashkit_hash_fn"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_hash_fn</span></code></a> function pointer to use as distribution hash function for <a class="reference internal" href="#_CPPv4N24hashkit_hash_algorithm_t19HASHKIT_HASH_CUSTOME" title="HASHKIT_HASH_CUSTOM"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">HASHKIT_HASH_CUSTOM</span></code></a></p></li>
+<li><p><strong>context</strong> -- pointer to an opaque user managed context for the custom distribution hash function</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv433hashkit_get_distribution_functionPK10hashkit_st">
-<span id="_CPPv333hashkit_get_distribution_functionPK10hashkit_st"></span><span id="_CPPv233hashkit_get_distribution_functionPK10hashkit_st"></span><span id="hashkit_get_distribution_function__hashkit_stCP"></span>hashkit_hash_algorithm_t <code class="sig-name descname">hashkit_get_distribution_function</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="hashkit_create.html#_CPPv410hashkit_st" title="hashkit_st">hashkit_st</a> *<em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv433hashkit_get_distribution_functionPK10hashkit_st" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv333hashkit_get_distribution_functionPK10hashkit_st"></span><span id="_CPPv233hashkit_get_distribution_functionPK10hashkit_st"></span><span id="hashkit_get_distribution_function__hashkit_stCP"></span><a class="reference internal" href="#_CPPv424hashkit_hash_algorithm_t" title="hashkit_hash_algorithm_t">hashkit_hash_algorithm_t</a> <code class="sig-name descname">hashkit_get_distribution_function</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="hashkit_create.html#_CPPv410hashkit_st" title="hashkit_st">hashkit_st</a> *<em>hash</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv433hashkit_get_distribution_functionPK10hashkit_st" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>hash</strong> -- pointer to an initialized <a class="reference internal" href="hashkit_create.html#_CPPv410hashkit_st" title="hashkit_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_st</span></code></a> struct</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#_CPPv424hashkit_hash_algorithm_t" title="hashkit_hash_algorithm_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_hash_algorithm_t</span></code></a> indicating the currently set distribution hash algorithm to use</p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 <div class="section" id="description">
@@ -229,9 +418,9 @@
 <div class="section" id="return-value">
 <h2>RETURN VALUE<a class="headerlink" href="#return-value" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference internal" href="#_CPPv420hashkit_set_functionP10hashkit_st24hashkit_hash_algorithm_t" title="hashkit_set_function"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_set_function()</span></code></a>, <a class="reference internal" href="#_CPPv427hashkit_set_custom_functionP10hashkit_st15hashkit_hash_fnPv" title="hashkit_set_custom_function"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_set_custom_function()</span></code></a> and the distribution
-equivalents return <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_return_t</span></code> <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">HASHKIT_SUCCESS</span></code> on success.</p>
+equivalents return <a class="reference internal" href="#_CPPv4N16hashkit_return_t15HASHKIT_SUCCESSE" title="hashkit_return_t::HASHKIT_SUCCESS"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_return_t::HASHKIT_SUCCESS</span></code></a> on success.</p>
 <p><a class="reference internal" href="#_CPPv420hashkit_get_functionPK10hashkit_st" title="hashkit_get_function"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_get_function()</span></code></a> and <a class="reference internal" href="#_CPPv433hashkit_get_distribution_functionPK10hashkit_st" title="hashkit_get_distribution_function"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_get_distribution_function()</span></code></a> return
-<code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_hash_algorithm_t</span></code> indicating the hash function used.</p>
+<a class="reference internal" href="#_CPPv424hashkit_hash_algorithm_t" title="hashkit_hash_algorithm_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_hash_algorithm_t</span></code></a> indicating the hash function used.</p>
 </div>
 <div class="section" id="see-also">
 <h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
@@ -263,11 +452,20 @@ equivalents return <code class="xref cpp cpp-any docutils literal notranslate"><
 
   <div role="contentinfo">
     <p>
+        
+        
         &copy; <a href="../copyright.html">Copyright</a> 
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -278,7 +476,6 @@ equivalents return <code class="xref cpp cpp-any docutils literal notranslate"><
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

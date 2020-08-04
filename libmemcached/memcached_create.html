@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,18 @@
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -29,10 +34,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="copyright" title="Copyright" href="../copyright.html" />
@@ -51,7 +52,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> libmemcached
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> libmemcached
           
 
           
@@ -78,6 +79,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -127,6 +129,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -165,7 +168,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="index.html">libmemcached API</a> &raquo;</li>
         
@@ -204,22 +207,51 @@
 <dl class="cpp function">
 <dt id="_CPPv416memcached_createP12memcached_st">
 <span id="_CPPv316memcached_createP12memcached_st"></span><span id="_CPPv216memcached_createP12memcached_st"></span><span id="memcached_create__memcached_stP"></span><a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<code class="sig-name descname">memcached_create</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416memcached_createP12memcached_st" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ptr</strong> -- pointer to user-allocated <a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct or null pointer</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>pointer to initialized <a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv414memcached_freeP12memcached_st">
 <span id="_CPPv314memcached_freeP12memcached_st"></span><span id="_CPPv214memcached_freeP12memcached_st"></span><span id="memcached_free__memcached_stP"></span>void <code class="sig-name descname">memcached_free</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414memcached_freeP12memcached_st" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ptr</strong> -- pointer to initialized <a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct to destroy and possibly free</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv415memcached_cloneP12memcached_stP12memcached_st">
 <span id="_CPPv315memcached_cloneP12memcached_stP12memcached_st"></span><span id="_CPPv215memcached_cloneP12memcached_stP12memcached_st"></span><span id="memcached_clone__memcached_stP.memcached_stP"></span><a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<code class="sig-name descname">memcached_clone</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>destination</em>, <a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>source</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415memcached_cloneP12memcached_stP12memcached_st" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>destination</strong> -- pointer to user-allocated <a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct or null pointer</p></li>
+<li><p><strong>source</strong> -- pointer to initialized <a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct to copy from</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>pointer to newly initialized <a class="reference internal" href="#_CPPv415memcached_cloneP12memcached_stP12memcached_st" title="memcached_clone::destination"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">destination</span></code></a>, copied from <a class="reference internal" href="#_CPPv415memcached_cloneP12memcached_stP12memcached_st" title="memcached_clone::source"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">source</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
-<dt id="_CPPv423memcached_servers_reset12memcached_st">
-<span id="_CPPv323memcached_servers_reset12memcached_st"></span><span id="_CPPv223memcached_servers_reset12memcached_st"></span><span id="memcached_servers_reset__memcached_st"></span>void <code class="sig-name descname">memcached_servers_reset</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st">memcached_st</a><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423memcached_servers_reset12memcached_st" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dt id="_CPPv423memcached_servers_resetP12memcached_st">
+<span id="_CPPv323memcached_servers_resetP12memcached_st"></span><span id="_CPPv223memcached_servers_resetP12memcached_st"></span><span id="memcached_servers_reset__memcached_stP"></span>void <code class="sig-name descname">memcached_servers_reset</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423memcached_servers_resetP12memcached_st" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ptr</strong> -- pointer to initialized <a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 <div class="section" id="description">
@@ -231,11 +263,11 @@ a NULL. If a NULL passed in then a structure is allocated for you.</p>
 <p>Please note, when you write new application use <a class="reference internal" href="configuration.html#_CPPv49memcachedPKc6size_t" title="memcached"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached()</span></code></a> over
 <a class="reference internal" href="#_CPPv416memcached_createP12memcached_st" title="memcached_create"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_create()</span></code></a>.</p>
 <p><a class="reference internal" href="#_CPPv415memcached_cloneP12memcached_stP12memcached_st" title="memcached_clone"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_clone()</span></code></a> is similar to <a class="reference internal" href="#_CPPv416memcached_createP12memcached_st" title="memcached_create"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_create()</span></code></a> but it copies the defaults
-and list of servers from the source <a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a>. If you pass a null as the
-argument for the source to clone, it is the same as a call to
+and list of servers from the source <a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> pointer. If you pass a null
+as the argument for the source to clone, it is the same as a call to
 <a class="reference internal" href="#_CPPv416memcached_createP12memcached_st" title="memcached_create"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_create()</span></code></a>. If the destination argument is NULL a <a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> will be
 allocated for you.</p>
-<p><a class="reference internal" href="#_CPPv423memcached_servers_reset12memcached_st" title="memcached_servers_reset"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_servers_reset()</span></code></a> allows you to zero out the list of servers that the
+<p><a class="reference internal" href="#_CPPv423memcached_servers_resetP12memcached_st" title="memcached_servers_reset"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_servers_reset()</span></code></a> allows you to zero out the list of servers that the
 <a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> has.</p>
 <p>To clean up memory associated with a <a class="reference internal" href="#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> structure you should pass it
 to <a class="reference internal" href="#_CPPv414memcached_freeP12memcached_st" title="memcached_free"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_free()</span></code></a> when you are finished using it. <a class="reference internal" href="#_CPPv414memcached_freeP12memcached_st" title="memcached_free"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_free()</span></code></a> is the only
@@ -280,11 +312,20 @@ initialized). On an allocation failure, it returns NULL.</p>
 
   <div role="contentinfo">
     <p>
+        
+        
         &copy; <a href="../copyright.html">Copyright</a> 
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -295,7 +336,6 @@ initialized). On an allocation failure, it returns NULL.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

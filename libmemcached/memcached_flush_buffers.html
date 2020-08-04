@@ -1,15 +1,18 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Flushing client buffers &mdash; libmemcached 1.0.99 documentation</title>
+  <title>Flush and send buffered commands &mdash; libmemcached 1.0.99 documentation</title>
   
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
 
   
   
@@ -17,7 +20,9 @@
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -29,15 +34,11 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="copyright" title="Copyright" href="../copyright.html" />
     <link rel="next" title="Working with result sets" href="memcached_result_st.html" />
-    <link rel="prev" title="memcached_touch, memcached_touch_by_key" href="memcached_touch.html" /> 
+    <link rel="prev" title="Update expiration on a key" href="memcached_touch.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -51,7 +52,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> libmemcached
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> libmemcached
           
 
           
@@ -78,6 +79,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -92,9 +94,9 @@
 <li class="toctree-l2"><a class="reference internal" href="index_basics.html">Basics</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index_data.html">Working with Data</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="memcached_auto.html">Incrementing and Decrementing Values</a></li>
-<li class="toctree-l3"><a class="reference internal" href="memcached_exist.html">Determine if a keys exists.</a></li>
-<li class="toctree-l3"><a class="reference internal" href="memcached_touch.html">memcached_touch, memcached_touch_by_key</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Flushing client buffers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memcached_exist.html">Determine if a keys exists</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memcached_touch.html">Update expiration on a key</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Flush and send buffered commands</a></li>
 <li class="toctree-l3"><a class="reference internal" href="memcached_result_st.html">Working with result sets</a></li>
 <li class="toctree-l3"><a class="reference internal" href="memcached_append.html">Appending or Prepending Data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="memcached_cas.html">Working with data on the server in an atomic fashion</a></li>
@@ -129,6 +131,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -167,13 +170,13 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="index.html">libmemcached API</a> &raquo;</li>
         
           <li><a href="index_data.html">Working with Data</a> &raquo;</li>
         
-      <li>Flushing client buffers</li>
+      <li>Flush and send buffered commands</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -190,33 +193,48 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="flushing-client-buffers">
-<h1>Flushing client buffers<a class="headerlink" href="#flushing-client-buffers" title="Permalink to this headline">¶</a></h1>
-<p id="index-0">Flush and send buffered commands</p>
+  <div class="section" id="flush-and-send-buffered-commands">
+<h1>Flush and send buffered commands<a class="headerlink" href="#flush-and-send-buffered-commands" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="synopsis">
 <h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p>#include &lt;libmemcached/memcached.h&gt;</p>
+<dl class="simple">
+<dt>#include &lt;libmemcached/memcached.h&gt;</dt><dd><p>Compile and link with -lmemcached</p>
+</dd>
+</dl>
 <dl class="cpp function">
 <dt id="_CPPv423memcached_flush_buffersP12memcached_st">
 <span id="_CPPv323memcached_flush_buffersP12memcached_st"></span><span id="_CPPv223memcached_flush_buffersP12memcached_st"></span><span id="memcached_flush_buffers__memcached_stP"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_flush_buffers</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423memcached_flush_buffersP12memcached_st" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ptr</strong> -- pointer to initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</p>
+</dd>
+</dl>
+</dd></dl>
 
-<p>Compile and link with -lmemcached</p>
 </div>
 <div class="section" id="description">
 <h2>DESCRIPTION<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference internal" href="#_CPPv423memcached_flush_buffersP12memcached_st" title="memcached_flush_buffers"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_flush_buffers()</span></code></a> is used in conjunction with
-<code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_BUFFER_REQUESTS</span></code> (see memcached_behavior(3)) to flush all buffers by sending the buffered commands to the server for processing.</p>
+<a class="reference internal" href="memcached_behavior.html#_CPPv4N20memcached_behavior_t34MEMCACHED_BEHAVIOR_BUFFER_REQUESTSE" title="MEMCACHED_BEHAVIOR_BUFFER_REQUESTS"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_BUFFER_REQUESTS</span></code></a> to flush all buffers by
+sending the buffered commands to the server for processing.</p>
 </div>
 <div class="section" id="return-value">
 <h2>RETURN VALUE<a class="headerlink" href="#return-value" title="Permalink to this headline">¶</a></h2>
-<p>A value of type <a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> is returned
+<p>A value of type <a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> is returned.
 On success that value will be <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t17MEMCACHED_SUCCESSE" title="MEMCACHED_SUCCESS"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_SUCCESS</span></code></a>.
-Use <a class="reference internal" href="memcached_strerror.html#_CPPv418memcached_strerrorP12memcached_st18memcached_return_t" title="memcached_strerror"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_strerror()</span></code></a> to translate this value to a printable
-string.</p>
+Use <a class="reference internal" href="memcached_strerror.html#_CPPv418memcached_strerrorP12memcached_st18memcached_return_t" title="memcached_strerror"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_strerror()</span></code></a> to translate this value to a printable string.</p>
 </div>
 <div class="section" id="see-also">
 <h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><em class="manpage"><a class="manpage reference external" href="https://linux.die.net/man/1/memcached">memcached(1)</a></em></p></li>
+<li><p><a class="reference internal" href="../libmemcached.html"><span class="doc">C/C++ Client Library for memcached</span></a></p></li>
+<li><p><a class="reference internal" href="memcached_strerror.html"><span class="doc">Converting Error Codes to Messages</span></a></p></li>
+<li><p><a class="reference internal" href="memcached_behavior.html"><span class="doc">Behaviors of the library</span></a></p></li>
+</ul>
 </div>
 </div>
 
@@ -231,7 +249,7 @@ string.</p>
         <a href="memcached_result_st.html" class="btn btn-neutral float-right" title="Working with result sets" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="memcached_touch.html" class="btn btn-neutral float-left" title="memcached_touch, memcached_touch_by_key" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="memcached_touch.html" class="btn btn-neutral float-left" title="Update expiration on a key" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -240,11 +258,20 @@ string.</p>
 
   <div role="contentinfo">
     <p>
+        
+        
         &copy; <a href="../copyright.html">Copyright</a> 
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -255,7 +282,6 @@ string.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

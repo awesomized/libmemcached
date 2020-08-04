@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,18 @@
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -29,10 +34,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="copyright" title="Copyright" href="../copyright.html" />
@@ -51,7 +52,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> libmemcached
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> libmemcached
           
 
           
@@ -78,6 +79,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -119,6 +121,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -157,7 +160,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="index.html">libhashkit API</a> &raquo;</li>
         
@@ -194,41 +197,75 @@
 <dl class="cpp function">
 <dt id="_CPPv414hashkit_createP10hashkit_st">
 <span id="_CPPv314hashkit_createP10hashkit_st"></span><span id="_CPPv214hashkit_createP10hashkit_st"></span><span id="hashkit_create__hashkit_stP"></span><a class="reference internal" href="#_CPPv410hashkit_st" title="hashkit_st">hashkit_st</a> *<code class="sig-name descname">hashkit_create</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv410hashkit_st" title="hashkit_st">hashkit_st</a> *<em>hash</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414hashkit_createP10hashkit_st" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>hash</strong> -- memory address of a <a class="reference internal" href="#_CPPv410hashkit_st" title="hashkit_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_st</span></code></a> struct;
+if a nullptr is passed, the struct will be dynamically allocated by libhashkit</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>pointer to initialized <a class="reference internal" href="#_CPPv410hashkit_st" title="hashkit_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_st</span></code></a> structure</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv413hashkit_cloneP10hashkit_stPK10hashkit_st">
 <span id="_CPPv313hashkit_cloneP10hashkit_stPK10hashkit_st"></span><span id="_CPPv213hashkit_cloneP10hashkit_stPK10hashkit_st"></span><span id="hashkit_clone__hashkit_stP.hashkit_stCP"></span><a class="reference internal" href="#_CPPv410hashkit_st" title="hashkit_st">hashkit_st</a> *<code class="sig-name descname">hashkit_clone</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv410hashkit_st" title="hashkit_st">hashkit_st</a> *<em>destination</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv410hashkit_st" title="hashkit_st">hashkit_st</a> *<em>ptr</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413hashkit_cloneP10hashkit_stPK10hashkit_st" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>destination</strong> -- memory address of a <a class="reference internal" href="#_CPPv410hashkit_st" title="hashkit_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_st</span></code></a> struct;
+if a nullptr is passed, the struct will be dynamically allocated by libhashkit</p></li>
+<li><p><strong>ptr</strong> -- pointer of the <a class="reference internal" href="#_CPPv410hashkit_st" title="hashkit_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_st</span></code></a> struct to copy</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>pointer to a <a class="reference internal" href="#_CPPv410hashkit_st" title="hashkit_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_st</span></code></a> structure (<a class="reference internal" href="#_CPPv413hashkit_cloneP10hashkit_stPK10hashkit_st" title="hashkit_clone::destination"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">destination</span></code></a>, if not nullptr), initialized from <a class="reference internal" href="#_CPPv413hashkit_cloneP10hashkit_stPK10hashkit_st" title="hashkit_clone::ptr"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">ptr</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv412hashkit_freeP10hashkit_st">
 <span id="_CPPv312hashkit_freeP10hashkit_st"></span><span id="_CPPv212hashkit_freeP10hashkit_st"></span><span id="hashkit_free__hashkit_stP"></span>void <code class="sig-name descname">hashkit_free</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv410hashkit_st" title="hashkit_st">hashkit_st</a> *<em>hash</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412hashkit_freeP10hashkit_st" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>hash</strong> -- pointer to an initialized <a class="reference internal" href="#_CPPv410hashkit_st" title="hashkit_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_st</span></code></a> struct</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv420hashkit_is_allocatedPK10hashkit_st">
 <span id="_CPPv320hashkit_is_allocatedPK10hashkit_st"></span><span id="_CPPv220hashkit_is_allocatedPK10hashkit_st"></span><span id="hashkit_is_allocated__hashkit_stCP"></span>bool <code class="sig-name descname">hashkit_is_allocated</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="#_CPPv410hashkit_st" title="hashkit_st">hashkit_st</a> *<em>hash</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420hashkit_is_allocatedPK10hashkit_st" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>hash</strong> -- pointer to an initialized <a class="reference internal" href="#_CPPv410hashkit_st" title="hashkit_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_st</span></code></a> struct</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>bool, whether the <a class="reference internal" href="#_CPPv420hashkit_is_allocatedPK10hashkit_st" title="hashkit_is_allocated::hash"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hash</span></code></a> struct was dynamically allocated</p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 <div class="section" id="description">
 <h2>DESCRIPTION<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
 <p>The <a class="reference internal" href="#_CPPv414hashkit_createP10hashkit_st" title="hashkit_create"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_create()</span></code></a> function initializes a hashkit object for use. If you pass
-a NULL argument for hash, then the memory for the object is allocated. If you
+a nullptr argument for hash, then the memory for the object is allocated. If you
 specify a pre-allocated piece of memory, that is initialized for use.</p>
 <p>The <a class="reference internal" href="#_CPPv413hashkit_cloneP10hashkit_stPK10hashkit_st" title="hashkit_clone"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_clone()</span></code></a> function initializes a hashkit object much like
 <a class="reference internal" href="#_CPPv414hashkit_createP10hashkit_st" title="hashkit_create"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_create()</span></code></a>, but instead of using default settings it will use the settings
 of the ptr hashkit object.</p>
 <p>The <a class="reference internal" href="#_CPPv412hashkit_freeP10hashkit_st" title="hashkit_free"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_free()</span></code></a> frees any resources being consumed by the hashkit objects
 that were initialized with <a class="reference internal" href="#_CPPv414hashkit_createP10hashkit_st" title="hashkit_create"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_create()</span></code></a> or <a class="reference internal" href="#_CPPv413hashkit_cloneP10hashkit_stPK10hashkit_st" title="hashkit_clone"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_clone()</span></code></a>.</p>
-<p>The <a class="reference internal" href="#_CPPv420hashkit_is_allocatedPK10hashkit_st" title="hashkit_is_allocated"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_is_allocated()</span></code></a> reports where the memory was allocated for a hashkit
+<p>The <a class="reference internal" href="#_CPPv420hashkit_is_allocatedPK10hashkit_st" title="hashkit_is_allocated"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_is_allocated()</span></code></a> reports whether the memory was allocated for a hashkit
 object.</p>
 </div>
 <div class="section" id="return-value">
 <h2>RETURN VALUE<a class="headerlink" href="#return-value" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="#_CPPv414hashkit_createP10hashkit_st" title="hashkit_create"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_create()</span></code></a> and <a class="reference internal" href="#_CPPv413hashkit_cloneP10hashkit_stPK10hashkit_st" title="hashkit_clone"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_clone()</span></code></a> will return NULL on failure or non-NULL on
-success.</p>
+<p><a class="reference internal" href="#_CPPv414hashkit_createP10hashkit_st" title="hashkit_create"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_create()</span></code></a> and <a class="reference internal" href="#_CPPv413hashkit_cloneP10hashkit_stPK10hashkit_st" title="hashkit_clone"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_clone()</span></code></a> will return nullptr on failure or pointer
+to <a class="reference internal" href="#_CPPv410hashkit_st" title="hashkit_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_st</span></code></a> on success.</p>
 <p><a class="reference internal" href="#_CPPv420hashkit_is_allocatedPK10hashkit_st" title="hashkit_is_allocated"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_is_allocated()</span></code></a> returns true if the memory for the hashkit object was
 allocated inside of <a class="reference internal" href="#_CPPv414hashkit_createP10hashkit_st" title="hashkit_create"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_create()</span></code></a> or <a class="reference internal" href="#_CPPv413hashkit_cloneP10hashkit_stPK10hashkit_st" title="hashkit_clone"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hashkit_clone()</span></code></a>, otherwise it is false
 and was user-supplied memory.</p>
@@ -263,11 +300,20 @@ and was user-supplied memory.</p>
 
   <div role="contentinfo">
     <p>
+        
+        
         &copy; <a href="../copyright.html">Copyright</a> 
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -278,7 +324,6 @@ and was user-supplied memory.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
