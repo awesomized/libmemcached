@@ -7,11 +7,20 @@ SYNOPSIS
 #include <libmemcached/memcached.h>
   Compile and link with -lmemcached
 
-.. function:: memcached_return_t memcached_last_error(const memcached_st *)
+.. function:: memcached_return_t memcached_last_error(const memcached_st *ptr)
 
-.. function:: const char *memcached_last_error_message(const memcached_st *)
+    :param ptr: pointer to an initialized `memcached_st` struct
+    :returns: `memcached_return_t` indicating success of last operation
 
-.. function:: int memcached_last_error_errno(const memcached_st *)
+.. function:: const char *memcached_last_error_message(const memcached_st *ptr)
+
+    :param ptr: pointer to an initialized `memcached_st` struct
+    :returns: message describing the status of last operation
+
+.. function:: int memcached_last_error_errno(const memcached_st *ptr)
+
+    :param ptr: pointer to an initialized `memcached_st` struct
+    :returns: :manpage:`errno(3)` (if any) of last operation
 
 DESCRIPTION
 -----------
@@ -37,11 +46,13 @@ SEE ALSO
 .. only:: man
 
     :manpage:`memcached(1)`
+    :manpage:`errno(3)`
     :manpage:`libmemcached(3)`
     :manpage:`memcached_strerror(3)`
 
 .. only:: html
 
     * :manpage:`memcached(1)`
+    * :manpage:`errno(3)`
     * :doc:`../libmemcached`
     * :doc:`memcached_strerror`

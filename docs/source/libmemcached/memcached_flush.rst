@@ -1,23 +1,22 @@
 Wiping clean the contents of a server
 =====================================
 
-.. index:: object: memcached_st
-
-Wipe contents of memcached servers
-
 SYNOPSIS
 --------
 
 #include <libmemcached/memcached.h>
+    Compile and link with -lmemcached
 
 .. function:: memcached_return_t memcached_flush (memcached_st *ptr, time_t expiration)
 
-Compile and link with -lmemcached
+    :param ptr: pointer to an initialized `memcached_st` struct
+    :param expiration: expiration as a unix timestamp or as relative expiration time in seconds
+    :returns: `memcached_return_t` indicating success
 
 DESCRIPTION
 -----------
 
-:func::`memcached_flush` is used to wipe clean the contents of :program:`memcached` servers.
+`memcached_flush` is used to wipe clean the contents of :manpage:`memcached(1)` servers.
 It will either do this immediately or expire the content based on the
 expiration time passed to the method (a value of zero causes an immediate
 flush). The operation is not atomic to multiple servers, just atomic to a
@@ -27,13 +26,21 @@ added.
 RETURN VALUE
 ------------
 
-A value of type :type:`memcached_return_t` is returned
+A value of type :type:`memcached_return_t` is returned.
 On success that value will be `MEMCACHED_SUCCESS`.
-Use :type:`memcached_strerror` to translate this value to a printable string.
+Use `memcached_strerror` to translate this value to a printable string.
 
 SEE ALSO
 --------
 
 .. only:: man
 
-  :manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`
+    :manpage:`memcached(1)`
+    :manpage:`libmemcached(3)`
+    :manpage:`memcached_strerror(3)`
+
+.. only:: html
+
+    * :manpage:`memcached(1)`
+    * :doc:`../libmemcached`
+    * :doc:`memcached_strerror`

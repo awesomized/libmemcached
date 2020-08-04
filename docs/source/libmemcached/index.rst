@@ -33,6 +33,6 @@ libmemcached API
 
 .. toctree:
     :titlesonly:
-    :caption: Misc
+    :caption: Miscellaneous
 
     index_misc

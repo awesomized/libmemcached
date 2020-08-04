@@ -15,6 +15,17 @@ SYNOPSIS
 
 .. function:: memcached_return_t memcached_append_by_key(memcached_st *ptr, const char *group_key, size_t group_key_length, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags)
 
+    :param ptr: pointer to an initialized `memcached_st` struct
+    :param group_key: key namespace
+    :param group_key_length: length of the key namespace without any terminating zero
+    :param key: the key
+    :param key_length: length of the key without any terminating zero
+    :param value: the value to append/prepend
+    :param value_length: the length of the value without any terminating zero
+    :param expiration: expiration as a unix timestamp or as relative expiration time in seconds
+    :param flags: 16 bit flags
+    :returns: `memcached_return_t` indicating success
+
 DESCRIPTION
 -----------
 
@@ -22,9 +33,9 @@ DESCRIPTION
 server. All methods take a ``key``, and ``key_length`` to store the object. Keys
 are currently limited to 250 characters when using either a version of memcached
 which is 1.4 or below, or when using the text protocol. You must supply both a
-value and a length. Optionally you may test an expiration time for the object
-and a 16 byte value (it is meant to be used as a bitmap). ``flags`` is a 4byte
-space that is stored alongside of the main value. Many sub libraries make use of
+value and a length. Optionally you may set an expiration time for the object
+and a 16 bit value (it is meant to be used as a bitmap). ``flags`` is a 4 byte
+space that is stored along the main value. Many sub libraries make use of
 this field, so in most cases users should avoid making use of it.
 
 `memcached_prepend` places a segment of data before the last piece of data
@@ -34,7 +45,7 @@ stored. Currently expiration and key are not used in the server.
 stored. Currently expiration and key are not used in the server.
 
 `memcached_prepend_by_key` and `memcached_append_by_key` methods both behave in
-a similar method as the non key methods. The difference is that they use their
+a similar manner as the non key methods. The difference is that they use their
 group_key parameter to map objects to particular servers.
 
 If you are looking for performance, `memcached_set` with non-blocking IO is the

@@ -13,8 +13,8 @@ SYNOPSIS
 
 .. c:macro:: LIBMEMCACHED_VERSION_HEX
 
-    Hex value of the version number. "0x00048000" This can be used for comparing
-    versions based on number.
+    Hex value of the version number, e.g. "0x00048000".
+    This can be used for comparing versions based on number.
 
 
 .. c:macro:: MEMCACHED_DEFAULT_PORT

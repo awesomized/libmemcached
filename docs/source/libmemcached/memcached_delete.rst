@@ -7,10 +7,17 @@ SYNOPSIS
 #include <libmemcached/memcached.h>
   Compile and link with -lmemcached
 
-.. function:: memcached_return_t memcached_delete (memcached_st *ptr, const char *key, size_t key_length, time_t expiration)
+.. function:: memcached_return_t memcached_delete(memcached_st *ptr, const char *key, size_t key_length, time_t expiration)
 
-.. function:: memcached_return_t memcached_delete_by_key (memcached_st *ptr, const char *group_key, size_t group_key_length, const char *key, size_t key_length, time_t expiration)
+.. function:: memcached_return_t memcached_delete_by_key(memcached_st *ptr, const char *group_key, size_t group_key_length, const char *key, size_t key_length, time_t expiration)
 
+    :param ptr: pointer to initialized `memcached_st` struct
+    :param group_key: key namespace
+    :param group_key_length: length of the `group_key` without any terminating zero
+    :param key: the key to delete
+    :param key_length: the length og the `key` without any terminating zero
+    :param expiration: obsolete since :manpage:`memcached(1)` version 1.4
+    :returns: `memcached_return_t` indicating success
 
 DESCRIPTION
 -----------

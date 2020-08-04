@@ -1,12 +1,11 @@
 Retrieving data from the server
 ===============================
 
-.. index:: object: memcached_st
-
 SYNOPSIS
 --------
 
 #include <libmemcached/memcached.h>
+    Compile and link with -lmemcached
 
 .. function:: memcached_result_st * memcached_fetch_result (memcached_st *ptr, memcached_result_st *result, memcached_return_t *error)
 
@@ -26,7 +25,6 @@ SYNOPSIS
 
 .. type:: memcached_return_t (*memcached_execute_fn)(const memcached_st *ptr, memcached_result_st *result, void *context)
 
-Compile and link with -lmemcached
 
 DESCRIPTION
 -----------
@@ -34,28 +32,36 @@ DESCRIPTION
 :func:`memcached_get` is used to fetch an individual value from the server.
 You must pass in a key and its length to fetch the object. You must supply
 three pointer variables which will give you the state of the returned
-object.  A :type:`uint32_t` pointer to contain whatever flags you stored with the value, a :type:`size_t` pointer which will be filled with size of of 
+object.  A :type:`uint32_t` pointer to contain whatever flags you stored
+with the value, a :type:`size_t` pointer which will be filled with size of of
 the object, and a :type:`memcached_return_t` pointer to hold any error. The 
 object will be returned upon success and NULL will be returned on failure. Any 
 object returned by :func:`memcached_get` must be released by the caller 
 application.
 
 :func:`memcached_mget` is used to select multiple keys at once. For
-multiple key operations it is always faster to use this function. This function always works asynchronously. 
+multiple key operations it is always faster to use this function.
+This function always works asynchronously.
 
-To retrieve data after a successful execution of :func:`memcached_mget`, you will need to
-call :func:`memcached_fetch_result`.  You should continue to call this function until 
-it returns a NULL (i.e. no more values). If you need to quit in the middle of a
-:func:`memcached_mget` call, you can execute a :func:`memcached_quit`, those this is not required.
+To retrieve data after a successful execution of :func:`memcached_mget`, you
+will need to call :func:`memcached_fetch_result`.  You should continue to call
+this function until it returns a NULL (i.e. no more values). If you need to quit
+in the middle of a :func:`memcached_mget` call, you can execute a
+:func:`memcached_quit`, those this is not required.
 
-:func:`memcached_fetch_result` is used to fetch an individual value from the server. :func:`memcached_mget` must always be called before using this method.
+:func:`memcached_fetch_result` is used to fetch an individual value from the
+server. :func:`memcached_mget` must always be called before using this method.
 You must pass in a key and its length to fetch the object. You must supply
-three pointer variables which will give you the state of the returned
-object.  A :type:`uint32_t` pointer to contain whatever flags you stored with the value, a :type:`size_t` pointer which will be filled with size of of the 
-object, and a :type:`memcached_return_t` pointer to hold any error. The 
-object will be returned upon success and NULL will be returned on failure. `MEMCACHED_END` is returned by the \*error value when all objects that have been found are returned. The final value upon `MEMCACHED_END` is null. 
+three pointer variables which will give you the state of the returned object.
+A :type:`uint32_t` pointer to contain whatever flags you stored with the value,
+a :type:`size_t` pointer which will be filled with size of of the object, and a
+:type:`memcached_return_t` pointer to hold any error. The object will be
+returned upon success and NULL will be returned on failure. `MEMCACHED_END` is
+returned by the \*error value when all objects that have been found have been
+returned. The final value upon `MEMCACHED_END` is null.
 
-:func:`memcached_fetch_result` is used to return a :type:`memcached_result_st` structure from a memcached server. The result object is forward compatible
+:func:`memcached_fetch_result` is used to return a :type:`memcached_result_st`
+structure from a memcached server. The result object is forward compatible
 with changes to the server. For more information please refer to the 
 :type:`memcached_result_st` help. This function will dynamically allocate a 
 result structure for you if you do not pass one to the function.
@@ -87,28 +93,39 @@ which server an object was stored if key partitioning was used for storage.
 
 All of the above functions are not tested when the
 `MEMCACHED_BEHAVIOR_USE_UDP` has been set. Executing any of these 
-functions with this behavior on will result in `MEMCACHED_NOT_SUPPORTED` being returned, or for those functions which do not return a :type:`memcached_return_t`, the error function parameter will be set to `MEMCACHED_NOT_SUPPORTED`.
+functions with this behavior on will result in `MEMCACHED_NOT_SUPPORTED` being
+returned, or for those functions which do not return a
+:type:`memcached_return_t`, the error function parameter will be set to
+`MEMCACHED_NOT_SUPPORTED`.
 
 RETURN VALUE
 ------------
 
-All objects retrieved via :func:`memcached_get` or :func:`memcached_get_by_key` must be freed with :manpage:`free(3)`.
+All objects retrieved via :func:`memcached_get` or :func:`memcached_get_by_key`
+must be freed with :manpage:`free(3)`.
 
-:func:`memcached_get` will return NULL on
-error. You must look at the value of error to determine what the actual error 
-was.
+:func:`memcached_get` will return NULL on error.
+You must look at the value of error to determine what the actual error was.
 
 :func:`memcached_fetch_execute` return `MEMCACHED_SUCCESS` if
-all keys were successful. `MEMCACHED_NOTFOUND` will be return if no
+all keys were successful. `MEMCACHED_NOTFOUND` will be returned if no
 keys at all were found.
 
 :func:`memcached_fetch_result` sets error
 to `MEMCACHED_END` upon successful conclusion.
-`MEMCACHED_NOTFOUND` will be return if no keys at all were found.
+`MEMCACHED_NOTFOUND` will be returned if no keys at all were found.
 
 SEE ALSO
 --------
 
 .. only:: man
 
-  :manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`
+    :manpage:`memcached(1)`
+    :manpage:`libmemcached(3)`
+    :manpage:`memcached_strerror(3)`
+
+.. only:: html
+
+    * :manpage:`memcached(1)`
+    * :doc:`../libmemcached`
+    * :doc:`memcached_strerror`

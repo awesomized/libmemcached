@@ -11,11 +11,22 @@ SYNOPSIS
 
 .. function:: memcached_st* memcached_create(memcached_st *ptr)
 
+    :param ptr: pointer to user-allocated `memcached_st` struct or null pointer
+    :returns: pointer to initialized `memcached_st` struct
+
 .. function:: void memcached_free(memcached_st *ptr)
+
+    :param ptr: pointer to initialized `memcached_st` struct to destroy and possibly free
 
 .. function:: memcached_st* memcached_clone(memcached_st *destination, memcached_st *source)
 
-.. function:: void memcached_servers_reset(memcached_st)
+    :param destination: pointer to user-allocated `memcached_st` struct or null pointer
+    :param source: pointer to initialized `memcached_st` struct to copy from
+    :returns: pointer to newly initialized `destination`, copied from `source`
+
+.. function:: void memcached_servers_reset(memcached_st *ptr)
+
+    :param ptr: pointer to initialized `memcached_st` struct
 
 DESCRIPTION
 -----------
@@ -29,8 +40,8 @@ Please note, when you write new application use `memcached` over
 `memcached_create`.
 
 `memcached_clone` is similar to `memcached_create` but it copies the defaults
-and list of servers from the source `memcached_st`. If you pass a null as the
-argument for the source to clone, it is the same as a call to
+and list of servers from the source `memcached_st` pointer. If you pass a null
+as the argument for the source to clone, it is the same as a call to
 `memcached_create`. If the destination argument is NULL a `memcached_st` will be
 allocated for you.
 

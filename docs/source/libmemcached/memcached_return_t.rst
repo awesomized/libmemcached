@@ -7,13 +7,13 @@ SYNOPSIS
 #include <libmemcached/memcached.h>
   Compile and link with -lmemcached
 
-.. function:: bool memcached_success(memcached_return_t)
+.. function:: bool memcached_success(memcached_return_t rc)
 
 .. function:: bool memcached_continue(memcached_return_t rc)
 
-.. function:: bool memcached_failed(memcached_return_t)
+.. function:: bool memcached_failed(memcached_return_t rc)
 
-.. function:: bool memcached_fatal(memcached_return_t)
+.. function:: bool memcached_fatal(memcached_return_t rc)
 
 .. c:type:: enum memcached_return_t memcached_return_t
 

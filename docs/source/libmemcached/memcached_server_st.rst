@@ -9,13 +9,18 @@ SYNOPSIS
 
 .. c:type:: struct memcached_instance_st memcached_instance_st
 
-.. c:type:: struct memcached_server_list_st memcached_server_list_st
-
 .. c:type:: struct memcached_server_st memcached_server_st
+
+.. c:type:: struct memcached_server_st *memcached_server_list_st
 
 .. function:: const memcached_instance_st * memcached_server_list (memcached_st *ptr)
 
+    :param ptr: pointer to initialized `memcached_st` struct
+    :returns: list of `memcached_instance_st` objects
+
 .. function:: void memcached_server_list_free (memcached_server_list_st list)
+
+    :param list:
 
 .. function:: memcached_server_list_st memcached_server_list_append (memcached_server_list_st list, const char *hostname, in_port_t port, memcached_return_t *error)
 
@@ -36,8 +41,7 @@ DESCRIPTION
 
 libmemcached(3) operates on a list of hosts which are stored in
 :type:`memcached_server_st` structures. You should not modify these structures
-directly. Functions are provided to modify these structures (and more can be
-added, just ask!).
+directly. Functions are provided to modify these structures.
 
 :func:`memcached_server_list` is used to provide an array of all defined hosts. This was incorrectly documented as "requiring free" up till version 0.39.
 

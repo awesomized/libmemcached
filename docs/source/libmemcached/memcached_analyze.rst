@@ -11,6 +11,11 @@ SYNOPSIS
 
 .. function:: memcached_analysis_st *memcached_analyze(memcached_st *ptr, memcached_stat_st *stat, memcached_return_t *error)
 
+    :param ptr: pointer to initialized `memcached_st` struct
+    :param stat: pointer to a `memcached_stat_st` struct to fill
+    :param error: pointer to `memcached_return_t` indicating success
+    :returns: pointer to an allocated and filled out `memcached_analysis_t` struct
+
 DESCRIPTION
 -----------
 

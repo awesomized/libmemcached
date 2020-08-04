@@ -11,6 +11,17 @@ SYNOPSIS
 
 .. function:: memcached_return_t memcached_cas_by_key(memcached_st *ptr, const char *group_key, size_t group_key_length, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags, uint64_t cas)
 
+    :param ptr: pointer to an initialized `memcached_st` struct
+    :param group_key: key namespace
+    :param group_key_length: length of the `group_key` without any trailing zero
+    :param key: the key to check
+    :param key_length: the length of the `key` without any trailing zero
+    :param value: the value to set
+    :param value_length: the length of the `value` without any trailing zero
+    :param expiration: expiration time as unix timestamp or relative time in seconds
+    :param flags: 16 bit flags
+    :param cas: the ``cas`` value to compare
+    :returns: `memcached_return_t` indicating success
 
 DESCRIPTION
 -----------
@@ -18,10 +29,6 @@ DESCRIPTION
 `memcached_cas` overwrites data in the server as long as the ``cas`` value is
 still the same in the server. You can get the ``cas`` value of a result by
 calling `memcached_result_cas` on a `memcached_result_st` structure.
-
-At the point that this note was written cas is still buggy in memcached. Turning
-on tests for it in `libmemcached` is optional. Please see `memcached_set` for
-information on how to do this.
 
 `memcached_cas_by_key` method behaves in a similar way as the non key methods.
 The difference is that it uses the ``group_key`` parameter to map objects to

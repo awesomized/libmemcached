@@ -8,26 +8,44 @@ SYNOPSIS
   Compile and link with -lmemcached
 
 .. function:: memcached_return_t memcached_callback_set(memcached_st *ptr, memcached_callback_t flag, const void *data)
- 
+
+    :param ptr: pointer to initialized `memcached_st` struct
+    :param flag: `memcached_callback_t` flag to set
+    :param data: data corresponding to `flag`
+    :returns: `memcached_return_t` indicating success
+
 .. function:: void *memcached_callback_get(memcached_st *ptr, memcached_callback_t flag, memcached_return_t *error)
 
-.. type:: enum memcached_callback_t memcached_callback_t
+    :param ptr: pointer to initialized `memcached_st` struct
+    :param flag: `memcached_callback_t` flag to query
+    :param error: pointer to `memcached_return_t` indicating success
+    :returns: the `data` previously set
+
+.. c:type:: enum memcached_callback_t memcached_callback_t
  
 .. enum:: memcached_callback_t
 
     .. enumerator:: MEMCACHED_CALLBACK_CLEANUP_FUNCTION
      
-        When `memcached_delete` is called this function will be executed. At the
-        point of its execution all connections are closed.
+        When `memcached_free` or `memcached_reset` is called this function
+        will be executed. At the point of its execution all connections are closed.
+
+        Its signature is:
+
+        .. type:: memcached_return_t (*memcached_cleanup_fn)(const memcached_st *ptr)
+
 
     .. enumerator:: MEMCACHED_CALLBACK_CLONE_FUNCTION
      
-        When `memcached_delete` is called this function will be executed. At the
-        point of its execution all connections are closed.
+        When `memcached_clone` is called this function will be executed.
+
+        Its signature is:
+
+        .. type:: memcached_return_t (*memcached_clone_fn)(memcached_st *destination, const memcached_st *source)
     
     .. enumerator:: MEMCACHED_CALLBACK_PREFIX_KEY
     
-        See `MEMCACHED_CALLBACK_NAMESPACE`
+        See `MEMCACHED_CALLBACK_NAMESPACE`.
     
     .. enumerator:: MEMCACHED_CALLBACK_NAMESPACE
      

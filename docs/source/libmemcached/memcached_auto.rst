@@ -15,7 +15,7 @@ SYNOPSIS
 
 .. function:: memcached_return_t memcached_decrement_with_initial (memcached_st *ptr, const char *key, size_t key_length, uint64_t offset, uint64_t initial, time_t expiration, uint64_t *value)
 
-.. function::  memcached_return_t memcached_increment_by_key (memcached_st *ptr, const char *group_key, size_t group_key_length, const char *key, size_t key_length, uint32_t offset, uint64_t *value)
+.. function:: memcached_return_t memcached_increment_by_key (memcached_st *ptr, const char *group_key, size_t group_key_length, const char *key, size_t key_length, uint32_t offset, uint64_t *value)
 
 .. function:: memcached_return_t memcached_decrement_by_key (memcached_st *ptr, const char *group_key, size_t group_key_length, const char *key, size_t key_length, uint32_t offset, uint64_t *value)
 
@@ -23,6 +23,16 @@ SYNOPSIS
 
 .. function:: memcached_return_t memcached_decrement_with_initial_by_key (memcached_st *ptr, const char *group_key, size_t group_key_length, const char *key, size_t key_length, uint64_t offset, uint64_t initial, time_t expiration, uint64_t *value)
 
+    :param ptr: pointer to an initialized `memcached_st` struct
+    :param group_key: key namespace
+    :param group_key_length: length of the key namespace without any terminating zero
+    :param key: the key
+    :param key_length: length of the key without any terminating zero
+    :param offset: offset to increment/decrement
+    :param initial: initial value if `key` does not exist and `expiration` is not `MEMCACHED_EXPIRATION_NOT_ADD`
+    :param expiration: expiration as a unix timestamp or as relative expiration time in seconds
+    :param value: the resulting value after initialization/increment/decrement
+    :returns: `memcached_return_t` indicating success
 
 DESCRIPTION
 -----------

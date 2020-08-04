@@ -1,44 +1,57 @@
 Generating hash values directly
 ===============================
 
-.. index:: object: memcached_st
-
 Hash a key value
 
 SYNOPSIS 
 --------
 
 #include <libmemcached/memcached.h>
-
-.. type:: memcached_hash_t
+    Compile and link with -lmemcachedutil -lmemcached
 
 .. function:: uint32_t memcached_generate_hash_value (const char *key, size_t key_length, memcached_hash_t hash_algorithm)
 
+    :param key: the key to generate a hash of
+    :param key_length: the length of the `key` without any terminating zero
+    :param hash_algorithm: `memcached_hash_t`, the algorithm to use
+    :returns: a 32 bit hash value
+
 .. function:: uint32_t memcached_generate_hash (memcached_st *ptr, const char *key, size_t key_length)
 
-.. type:: MEMCACHED_HASH_DEFAULT
+    :param ptr: pointer to an initialized `memcached_st` struct
+    :param key: the key to generate a hash of
+    :param key_length: the length of the `key` without any terminating zero
+    :returns: a 32 bit hash value
 
-.. type:: MEMCACHED_HASH_MD5
+.. c:type:: enum memcached_hash_t memcached_hash_t
 
-.. type:: MEMCACHED_HASH_CRC
+.. enum:: memcached_hash_t
 
-.. type:: MEMCACHED_HASH_FNV1_64
+    .. enumerator::  MEMCACHED_HASH_DEFAULT
 
-.. type:: MEMCACHED_HASH_FNV1A_64
+    .. enumerator::  MEMCACHED_HASH_MD5
 
-.. type:: MEMCACHED_HASH_FNV1_32
+    .. enumerator::  MEMCACHED_HASH_CRC
 
-.. type:: MEMCACHED_HASH_FNV1A_32
+    .. enumerator::  MEMCACHED_HASH_FNV1_64
 
-.. type:: MEMCACHED_HASH_JENKINS
+    .. enumerator::  MEMCACHED_HASH_FNV1A_64
 
-.. type:: MEMCACHED_HASH_MURMUR
+    .. enumerator::  MEMCACHED_HASH_FNV1_32
 
-.. type:: MEMCACHED_HASH_HSIEH
+    .. enumerator::  MEMCACHED_HASH_FNV1A_32
 
-.. type:: MEMCACHED_HASH_MURMUR3
+    .. enumerator::  MEMCACHED_HASH_HSIEH
 
-Compile and link with -lmemcachedutil -lmemcached
+    .. enumerator::  MEMCACHED_HASH_MURMUR
+
+    .. enumerator::  MEMCACHED_HASH_JENKINS
+
+    .. enumerator::  MEMCACHED_HASH_MURMUR3
+
+    .. enumerator::  MEMCACHED_HASH_CUSTOM
+
+
 
 DESCRIPTION
 -----------
@@ -48,8 +61,9 @@ the hash functions defined in the library. This method is provided for
 the convenience of higher-level language bindings and is not necessary
 for normal memcache operations.
 
-The allowed hash algorithm constants are listed in the manpage for
-:func:`memcached_behavior_set`.
+Support for `MEMCACHED_HASH_HSIEH` is a compile time option that is
+disabled by default. To enable tests for this hashing algorithm,
+configure and build libmemcached with the Hsieh hash enabled.
 
 :func:`memcached_generate_hash` takes a :type:`memcached_st` structure
 and produces the hash value that would have been generated based on the 

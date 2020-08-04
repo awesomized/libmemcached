@@ -9,7 +9,17 @@ SYNOPSIS
 
 .. function:: memcached_st *memcached(const char *string, size_t string_length)
 
+    :param string: configuration string
+    :param string_length: length of the configuration string without any terminating zero
+    :returns: allocated and initialized `memcached_st` struct
+
 .. function:: memcached_return_t libmemcached_check_configuration(const char *option_string, size_t length, char *error_buffer, size_t error_buffer_size)
+
+    :param option_string: configuration string
+    :param length: length of the configuration string without any terminating zero
+    :param error_buffer: buffer used to store any error message
+    :param error_buffer_size: available size of the `error_buffer`
+    :returns: `memcached_return_t` indicating success
 
 DESCRIPTION
 -----------
@@ -191,7 +201,7 @@ ENVIRONMENT
 RETURN VALUE
 ------------
 
-`memcached` returns a pointer to the memcached_st that was created (or
+`memcached` returns a pointer to the `memcached_st` that was created (or
 initialized).  On an allocation failure, it returns NULL.
 
 EXAMPLE 

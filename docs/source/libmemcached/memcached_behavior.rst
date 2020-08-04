@@ -3,8 +3,6 @@ Behaviors of the library
 
 Manipulate the behavior of a memcached_st structure. 
 
-.. index:: object: memcached_st
-
 SYNOPSIS
 --------
 
@@ -13,13 +11,22 @@ SYNOPSIS
 
 .. function:: uint64_t memcached_behavior_get (memcached_st *ptr, memcached_behavior_t flag)
 
+    :param ptr: pointer to initialized `memcached_st` struct
+    :param flag: `memcached_behavior_t` to query
+    :returns: the vaue set for `flag`
+
 .. function:: memcached_return_t memcached_behavior_set (memcached_st *ptr, memcached_behavior_t flag, uint64_t data)
 
+    :param ptr: pointer to initialized `memcached_st` struct
+    :param flag: `memcached_behavior_t` to set
+    :param data: the value to set for `flag`
+    :returns: `memcached_return_t` indicating success
+
     .. versionchanged:: 0.17
-        The `data` argument of `memcached_behavior_set` was changed in
+        The `data` argument of `memcached_behavior_set` was changed
         from taking a pointer to data value, to taking a uin64_t.
 
-.. type:: enum memcached_behavior_t memcached_behavior_t
+.. c:type:: enum memcached_behavior_t memcached_behavior_t
 
 .. enum:: memcached_behavior_t
 
@@ -76,39 +83,23 @@ SYNOPSIS
 
     .. enumerator:: MEMCACHED_BEHAVIOR_TCP_NODELAY
 
-        Turns on the no-delay feature for connecting sockets (may be faster in
-        some environments).
+        Disables Nagle's algorithm.
+        See `RFC 896 <https://tools.ietf.org/html/rfc896>`_.
 
     .. enumerator:: MEMCACHED_BEHAVIOR_HASH
 
-        Set the hash algorithm used for keys.
-
-        The value can be set to either:
-
-        * `MEMCACHED_HASH_DEFAULT`,
-        * `MEMCACHED_HASH_MD5`,
-        * `MEMCACHED_HASH_CRC`,
-        * `MEMCACHED_HASH_FNV1_64`,
-        * `MEMCACHED_HASH_FNV1A_64`,
-        * `MEMCACHED_HASH_FNV1_32`,
-        * `MEMCACHED_HASH_FNV1A_32`,
-        * `MEMCACHED_HASH_JENKINS`,
-        * `MEMCACHED_HASH_HSIEH`, and
-        * `MEMCACHED_HASH_MURMUR`.
+        Set the `hash algorithm <memcached_hash_t>` used for keys.
 
         Each hash has its advantages and its weaknesses. If you don't know or
         don't care, just go with the default.
 
-        Support for `MEMCACHED_HASH_HSIEH` is a compile time option that is
-        disabled by default. To enable tests for this hashing algorithm,
-        configure and build libmemcached with the Hsieh hash enabled.
-
     .. enumerator:: MEMCACHED_BEHAVIOR_DISTRIBUTION
 
-        Using this you can enable different means of distributing values to
-        servers.
+        Setting a `memcached_server_distribution_t` you can enable different
+        means of distributing values to servers.
 
-        The default method is `MEMCACHED_DISTRIBUTION_MODULA`.
+        The default method is `MEMCACHED_DISTRIBUTION_MODULA` (hash of the
+        key modulo number of servers).
 
         You can enable consistent hashing by setting
         `MEMCACHED_DISTRIBUTION_CONSISTENT`. Consistent hashing delivers better
@@ -145,17 +136,7 @@ SYNOPSIS
 
     .. enumerator:: MEMCACHED_BEHAVIOR_KETAMA_HASH
 
-        Sets the hashing algorithm for host mapping on continuum.
-
-        The value can be set to either:
-
-        * `MEMCACHED_HASH_DEFAULT`,
-        * `MEMCACHED_HASH_MD5`,
-        * `MEMCACHED_HASH_CRC`,
-        * `MEMCACHED_HASH_FNV1_64`,
-        * `MEMCACHED_HASH_FNV1A_64`,
-        * `MEMCACHED_HASH_FNV1_32`, and
-        * `MEMCACHED_HASH_FNV1A_32`.
+        Sets the `hashing algorithm <memcached_hash_t>` for host mapping on continuum.
 
     .. enumerator:: MEMCACHED_BEHAVIOR_KETAMA_COMPAT
 
@@ -272,7 +253,7 @@ SYNOPSIS
     .. enumerator:: MEMCACHED_BEHAVIOR_KEEPALIVE_IDLE
 
         Specify time, in seconds, to mark a connection as idle. This is only
-        available as an option Linux.
+        available as an option on Linux.
 
     .. enumerator:: MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE
 
@@ -325,6 +306,39 @@ SYNOPSIS
         When enabled the prefix key will be added to the key when determining
         server by hash. See `MEMCACHED_CALLBACK_NAMESPACE` for additional
         information.
+
+.. c:type:: enum memcached_server_distribution_t memcached_server_distribution_t
+
+.. enum:: memcached_server_distribution_t
+
+    .. enumerator:: MEMCACHED_DISTRIBUTION_MODULA
+
+        Distribute keys by hash modulo number of servers.
+
+    .. enumerator:: MEMCACHED_DISTRIBUTION_CONSISTENT
+
+        Alias for `MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA`.
+
+    .. enumerator:: MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA
+
+        Unweighted consistent key distribution.
+
+    .. enumerator:: MEMCACHED_DISTRIBUTION_RANDOM
+
+        Distribute keys by :manpage:`rand(3)` modulo number of servers.
+
+    .. enumerator:: MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY
+
+        Unweighted consistent key distribution compatible with the SPY client.
+
+    .. enumerator:: MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED
+
+        Weighted consistent key distribution.
+
+    .. enumerator:: MEMCACHED_DISTRIBUTION_VIRTUAL_BUCKET
+
+        Consistent key distribution by virtual buckets.
+
 
 DESCRIPTION
 -----------

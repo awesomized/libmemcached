@@ -1,6 +1,5 @@
-===========================================
-memcached_touch, memcached_touch_by_key
-===========================================
+Update expiration on a key
+==========================
 
 .. index:: object: memcached_st
 
