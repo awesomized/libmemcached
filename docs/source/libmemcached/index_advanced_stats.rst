@@ -6,3 +6,4 @@ Statistics
 
     memcached_analyze
     memcached_stats
+    memcached_version

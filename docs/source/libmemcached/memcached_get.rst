@@ -11,13 +11,13 @@ SYNOPSIS
 
 .. function:: char * memcached_get (memcached_st *ptr, const char *key, size_t key_length, size_t *value_length, uint32_t *flags, memcached_return_t *error)
 
-.. function::  memcached_return_t memcached_mget (memcached_st *ptr, const char * const *keys, const size_t *key_length, size_t number_of_keys)
+.. function:: memcached_return_t memcached_mget (memcached_st *ptr, const char * const *keys, const size_t *key_length, size_t number_of_keys)
 
 .. function:: char * memcached_get_by_key (memcached_st *ptr, const char *group_key, size_t group_key_length, const char *key, size_t key_length, size_t *value_length, uint32_t *flags, memcached_return_t *error)
 
 .. function:: memcached_return_t memcached_mget_by_key (memcached_st *ptr, const char *group_key, size_t group_key_length, const char * const *keys, const size_t *key_length, size_t number_of_keys)
 
-.. function::  memcached_return_t memcached_fetch_execute (memcached_st *ptr, memcached_execute_fn *callback, void *context, uint32_t number_of_callbacks)
+.. function:: memcached_return_t memcached_fetch_execute (memcached_st *ptr, memcached_execute_fn *callback, void *context, uint32_t number_of_callbacks)
 
 .. function:: memcached_return_t memcached_mget_execute (memcached_st *ptr, const char * const *keys, const size_t *key_length, size_t number_of_keys, memcached_execute_fn *callback, void *context, uint32_t number_of_callbacks)
 

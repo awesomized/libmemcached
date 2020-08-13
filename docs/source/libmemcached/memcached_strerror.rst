@@ -9,6 +9,10 @@ SYNOPSIS
 
 .. function:: const char *memcached_strerror(memcached_st *ptr, memcached_return_t rc)
 
+    :param ptr: pointer to initialized `memcached_st` struct
+    :param rc: `memcached_return_t` value to query the string representation for
+    :returns: the string representation of `rc`
+
 DESCRIPTION
 -----------
 
@@ -35,9 +39,10 @@ SEE ALSO
 
     :manpage:`memcached(1)`
     :manpage:`libmemcached(3)`
+    :manpage:`memcached_return_t`
 
 .. only:: html
 
     * :manpage:`memcached(1)`
     * :doc:`../libmemcached`
-
+    * :doc:`memcached_return_t`

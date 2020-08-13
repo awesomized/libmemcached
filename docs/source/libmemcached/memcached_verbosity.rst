@@ -1,24 +1,23 @@
 Setting the verbosity of a server
 =================================
 
-.. index:: object: memcached_st
-
-Modify verbosity of servers
-
 SYNOPSIS
 --------
 
 #include <libmemcached/memcached.h>
+    Compile and link with -lmemcached
 
 .. function:: memcached_return_t memcached_verbosity (memcached_st *ptr, uint32_t verbosity)
 
-Compile and link with -lmemcached
+    :param ptr: pointer to initialized `memcached_st` struct
+    :param verbosity: level of verbosity
+    :returns: `memcached_return_t` indicating success
 
 DESCRIPTION
 -----------
 
 :func:`memcached_verbosity` modifies the "verbosity" of the
-memcached(1) servers referenced in the :type:`memcached_st`  parameter.
+:manpage:`memcached(1)` servers referenced in the :type:`memcached_st` parameter.
 
 RETURN VALUE
 ------------
@@ -34,5 +33,12 @@ SEE ALSO
 
 .. only:: man
 
-  :manpage:`memcached(1)` :manpage:`libmemcached(3)` :manpage:`memcached_strerror(3)`
+    :manpage:`memcached(1)`
+    :manpage:`libmemcached(3)`
+    :manpage:`memcached_strerror(3)`
 
+.. only:: html
+
+    * :manpage:`memcached(1)`
+    * :doc:`../libmemcached`
+    * :doc:`memcached_strerror`

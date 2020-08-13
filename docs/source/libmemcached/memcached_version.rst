@@ -1,23 +1,30 @@
-Getting version information about the client and server
-=======================================================
+Getting version information
+===========================
 
 SYNOPSIS
 --------
 
 #include <libmemcached/memcached.h>
+    Compile and link with -lmemcached
 
 .. function:: const char * memcached_lib_version (void)
 
+    :returns: version string of `libmemcached`
+
 .. function:: memcached_return_t memcached_version (memcached_st *ptr)
 
-Compile and link with -lmemcached
+    :param ptr: pointer to initialized `memcached_st` struct
+    :returns: `memcached_return_t` indicating success
 
 DESCRIPTION
 -----------
 
-:func:`memcached_lib_version` is used to return a simple version string representing the libmemcached version (client library version, not server version)
+:func:`memcached_lib_version` is used to return a simple version string
+representing the `libmemcached` version (client library, not server).
 
-:func:`memcached_version` is used to set the major, minor, and micro versions of each memcached server being used by the memcached_st connection structure. It returns the memcached server return code.
+:func:`memcached_version` is used to set the major, minor, and micro versions of
+each memcached server being used by the `memcached_st` connection structure.
+It returns the memcached server return code.
 
 RETURN VALUE
 ------------

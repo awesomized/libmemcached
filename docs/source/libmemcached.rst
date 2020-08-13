@@ -139,7 +139,6 @@ SEE ALSO
 .. only:: man
 
     :manpage:`memcached(1)`
-
     :manpage:`libmemcached_configuration(3)`
     :manpage:`libmemcached_examples(3)`
 

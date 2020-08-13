@@ -7,4 +7,3 @@ Affecting the memcached Daemon
     memcached_dump
     memcached_flush
     memcached_verbosity
-    memcached_version
