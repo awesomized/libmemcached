@@ -1,73 +1,53 @@
-=================================
-memcat - "cat" data from a server
-=================================
+memcat
+======
 
-
-
---------
 SYNOPSIS
 --------
 
-memcat [options] key
-
-Copy a set of keys to stdout
-
-
 .. program:: memcat
 
+memcat [options] key [key...]
 
------------
+Read and output the value of one key or the values of a set of keys.
+
 DESCRIPTION
 -----------
 
+:program:`memcat` reads and outputs the value of a single or a set of keys
+stored in a :manpage:`memcached(1)` server.
 
-:program:`memcat` outputs to stdout the value a single or multiple set of keys
-stored in a memcached(1) server. If any key is not found an error is returned.
+If any key is not found an error is returned.
 
-It is similar to the standard UNIX cat(1) utility.
+It is similar to the standard UNIX :manpage:`cat(1)` utility.
 
-
--------
 OPTIONS
 -------
 
+.. include:: options/all.rst
+.. include:: options/common.rst
+.. include:: options/hash.rst
 
-You can specify servers via the option:
+.. option:: --flag
 
-.. cmdoption:: --servers
+    Display stored flags.
 
-or via the environment variable:
+ENVIRONMENT
+-----------
 
-.. envvar:: `MEMCACHED_SERVERS`
+.. envvar:: MEMCACHED_SERVERS
 
-For a full list of operations run the tool with the option:
+    Specify a list of servers.
 
-.. cmdoption:: --help
-
-
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
-
-------
-AUTHOR
-------
-
-
-Brian Aker, <brian@tangent.org>
-
-Mark Atwood <mark@fallenpegasus.com>
-
-
---------
 SEE ALSO
 --------
 
+.. only:: man
 
-:manpage:`memcached(1)` :manpage:`libmemcached(3)`
+  :manpage:`memcached(1)`
+  :manpage:`libmemcached(3)`
+  :manpage:`libmemcached_configuration(3)`
 
+.. only:: html
+
+  * :doc:`/libmemcached`
+  * :doc:`/libmemcached/configuration`

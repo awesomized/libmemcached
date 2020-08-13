@@ -1,56 +1,36 @@
-=================================
-memparse - Parse an option string
-=================================
+memparse
+========
 
-
-Used to validate an option string
-
-
---------
 SYNOPSIS
 --------
 
-memparse [options] "option string"
-
 .. program:: memparse
 
+memparse <option string>
 
------------
+Parse and validate an option string.
+
 DESCRIPTION
 -----------
 
-
 :program:`memparse` can be used to validate an option string.
 
--------
 OPTIONS
 -------
 
-For a full list of operations run the tool with the option:
+None.
 
-.. option:: --help
-
-
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
-
-------
-AUTHOR
-------
-
-
-Brian Aker, <brian@tangent.org>
-
---------
 SEE ALSO
 --------
 
+.. only:: man
 
-:manpage:`memcached(1)` :manpage:`libmemcached(3)`
+    :manpage:`memcached(1)`
+    :manpage:`libmemcached(3)`
+    :manpage:`libmemcached_configuration(3)`
+
+.. only:: html
+
+    * :doc:`/libmemcached`
+    * :doc:`/libmemcached/configuration`
 

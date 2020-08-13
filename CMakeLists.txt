@@ -17,40 +17,47 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 include(CMakeConfig.txt)
 
-foreach(INCLUDE IN ITEMS ${CMAKE_BINARY_DIR} .)
-    include_directories(
-            ${INCLUDE}/
-            ${INCLUDE}/include
-            ${INCLUDE}/src
+if(NOT BUILD_DOCSONLY)
+    foreach(INCLUDE IN ITEMS ${CMAKE_BINARY_DIR} .)
+        include_directories(
+                ${INCLUDE}/
+                ${INCLUDE}/include
+                ${INCLUDE}/src
+                )
+    endforeach()
+
+    set(AUTOHEADER_FILE mem_config.h)
+
+    set(CLIENTS
+            memcapable
+            memcat
+            memcp
+            memdump
+            memerror
+            memexist
+            memflush
+            memparse
+            memping
+            memrm
+            memslap
+            memstat
+            memtouch
             )
-endforeach()
 
-set(AUTOHEADER_FILE mem_config.h)
+    add_subdirectory(include)
+    add_subdirectory(src)
+    add_subdirectory(support)
 
-set(CLIENTS
-        memcapable
-        memcat
-        memcp
-        memdump
-        memerror
-        memexist
-        memflush
-        memparse
-        memping
-        memrm
-        memslap
-        memstat
-        memtouch
-        )
+    if(BUILD_TESTING)
+        add_subdirectory(tests)
+    endif()
 
-add_subdirectory(include)
-add_subdirectory(src)
-add_subdirectory(docs)
-add_subdirectory(support)
-
-if(BUILD_TESTING)
-    add_subdirectory(tests)
+    # keep last
+    configure_file(src/mem_config.h.in ${AUTOHEADER_FILE} @ONLY)
 endif()
 
-# keep last
-configure_file(src/mem_config.h.in ${AUTOHEADER_FILE} @ONLY)
+if(BUILD_DOCS OR BUILD_DOCSONLY)
+    add_subdirectory(docs)
+endif()
+
+

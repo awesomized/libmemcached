@@ -1,12 +1,6 @@
-=======================================
-memflush - flush all data from a server
-=======================================
+memflush
+========
 
-
-Reset a server or list of servers
-
-
---------
 SYNOPSIS
 --------
 
@@ -14,54 +8,67 @@ memflush [options]
 
 .. program:: memflush
 
------------
+Reset a server or list of servers
+
 DESCRIPTION
 -----------
 
+:program:`memflush`  resets the contents of :manpage:`memcached(1)` servers.
 
-:program:`memflush`  resets the contents of memcached(1) servers.
-This means that all data in the specified servers will be deleted.
+.. warning::
 
+    This means that all data in the specified servers will be deleted.
 
--------
 OPTIONS
 -------
 
+.. include:: options/all.rst
+.. include:: options/common.rst
+.. include:: options/sasl.rst
+.. include:: options/expire.rst
 
-You can specify servers via the option:
+.. note::
 
-.. option:: --servers
+    Using an expiration time (period), all keys, which have not bean updated until expiration will cease to exist.
 
-or via the environment variable:
+    Quoting the `memcached protocol documentation`_, it states:
 
-.. envvar:: `MEMCACHED_SERVERS`
+        Its effect is to invalidate all
+        existing items immediately (by default) or after the expiration
+        specified.  After invalidation none of the items will be returned in
+        response to a retrieval command (unless it's stored again under the
+        same key *after* flush_all has invalidated the items).
 
-For a full list of operations run the tool with option:
+        The most precise
+        definition of what flush_all does is the following: it causes all
+        items whose update time is earlier than the time at which flush_all
+        was set to be executed to be ignored for retrieval purposes.
 
-.. option:: --help
+        The intent of flush_all with a delay, was that in a setting where you
+        have a pool of memcached servers, and you need to flush all content,
+        you have the option of not resetting all memcached servers at the
+        same time (which could e.g. cause a spike in database load with all
+        clients suddenly needing to recreate content that would otherwise
+        have been found in the memcached daemon).
 
+.. _memcached protocol documentation: https://github.com/memcached/memcached/blob/master/doc/protocol.txt
 
-----
-HOME
-----
+ENVIRONMENT
+-----------
 
+.. envvar:: MEMCACHED_SERVERS
 
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
+    Specify the list of servers.
 
-
-------
-AUTHOR
-------
-
-
-Brian Aker, <brian@tangent.org>
-
-Mark Atwood <mark@fallenpegasus.com>
-
-
---------
 SEE ALSO
 --------
 
-:manpage:`memcached(1)` :manpage:`libmemcached(3)`
+.. only:: man
+
+  :manpage:`memcached(1)`
+  :manpage:`libmemcached(3)`
+
+.. only:: html
+
+* :doc:`/libmemcached`
+* :doc:`/libmemcached/memcached_flush`

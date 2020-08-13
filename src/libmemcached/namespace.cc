@@ -61,7 +61,7 @@ memcached_return_t memcached_set_namespace(Memcached& memc, const char *key, siz
     }
     memc.flags.verify_key= orig;
 
-    if ((key_length > MEMCACHED_PREFIX_KEY_MAX_SIZE -1))
+    if ((key_length > MEMCACHED_MAX_NAMESPACE -1))
     {
       return memcached_set_error(memc, MEMCACHED_KEY_TOO_BIG, MEMCACHED_AT);
     }

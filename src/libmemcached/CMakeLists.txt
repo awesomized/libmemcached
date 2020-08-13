@@ -1,10 +1,15 @@
 
 find_package(FLEX)
-find_package(BISON)
+find_package(BISON 2.3)
+
+if(${BISON_VERSION} VERSION_GREATER_EQUAL 3.0)
+        set(BISON_WARNINGS -Wno-deprecated)
+endif()
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/csl)
 bison_target(CSL_PARSER csl/parser.yy ${CMAKE_CURRENT_BINARY_DIR}/csl/parser.cc
         DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/csl/parser.h
+        COMPILE_FLAGS ${BISON_WARNINGS}
         )
 flex_target(CSL_SCANNER csl/scanner.l ${CMAKE_CURRENT_BINARY_DIR}/csl/scanner.cc
         DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/csl/scanner.h

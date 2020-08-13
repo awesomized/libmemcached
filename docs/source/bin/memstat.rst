@@ -1,12 +1,6 @@
-=========================================
-memstat - Gather statistics from a server
-=========================================
+memstat
+=======
 
-
-memstat - Display the operating status of a single or group of memcached servers
-
-
---------
 SYNOPSIS
 --------
 
@@ -14,49 +8,52 @@ memstat [options]
 
 .. program:: memstat
 
------------
+Gather statistics from a server
+
 DESCRIPTION
 -----------
 
+:program:`memstat`  dumps the state of :manpage:`memcached(1)` servers.
+It prints all data to stdout.
 
-:program:`memstat`  dumps the state of memcached(1) servers.
-It displays all data to stdout.
-
-
--------
 OPTIONS
 -------
 
+.. include:: options/all.rst
+.. include:: options/common.rst
+.. include:: options/sasl.rst
 
-You can specify servers via the option:
+.. option:: --analyze
 
-.. option:: --servers  
+    Analyze and print differences of a server cluster. A memory and uptime comparison is performed by default.
 
-or via the environment variable:
+    Available additional modes:
 
-.. envvar:: 'MEMCACHED_SERVERS, --args'
-
-which can be used to specify the "argument" sent to the stats command (ie slab, size, items, etc..).
-
-For a full list of operations run the tool with:
-
-.. option:: --help
-
-.. option:: --analyze  
-
-----
-HOME
-----
+    --analyze=latency
+        Network latency comparison
 
 
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
 
+.. option:: --server-version
 
---------
+    Obtain and print server version(s) only.
+
+ENVIRONMENT
+-----------
+
+.. envvar:: MEMCACHED_SERVERS
+
+    Specify the list of servers.
+
 SEE ALSO
 --------
 
+.. only:: man
 
-:manpage:`memcached(1)` :manpage:`libmemcached(3)`
+  :manpage:`memcached(1)`
+  :manpage:`libmemcached(3)`
 
+.. only:: html
+
+* :doc:`/libmemcached`
+* :doc:`/libmemcached/memcached_stats`

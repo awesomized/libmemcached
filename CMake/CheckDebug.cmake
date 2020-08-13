@@ -4,7 +4,7 @@ include(CheckCXXCompilerFlag)
 function(check_debug)
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         add_compile_options(-O1)
-        add_compile_definitions(DEBUG=1)
+        add_definitions(-DDEBUG=1)
         foreach(FLAG IN ITEMS
                 -fno-inline
                 -fno-omit-frame-pointer
@@ -59,6 +59,6 @@ function(check_debug)
             endif()
         endif()
     else()
-        add_compile_definitions(DEBUG=0)
+        add_definitions(-DDEBUG=0)
     endif()
 endfunction()

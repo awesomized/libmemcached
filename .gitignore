@@ -42,10 +42,11 @@ src/bin/memslap
 src/bin/memstat
 src/bin/memtouch
 cmake-build-*/
+ccmake-*/
 example/memcached_light
 example/t/memcached_light
 tags
 venv/
 /infer-out/
-/docs/gh-pages/source/
+/docs/gh-pages/pages/
 /docs/gh-pages/build/

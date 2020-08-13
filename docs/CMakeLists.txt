@@ -34,50 +34,56 @@ else()
             "${SPHINX_BUILD_DIR}/conf.py"
             @ONLY)
 
-    add_custom_target(html
-            ${SPHINX_EXECUTABLE}
-            -q -b html
-            -c "${SPHINX_BUILD_DIR}"
-            -d "${SPHINX_CACHE_DIR}"
-            ${SPHINX_OPTIONS}
-            "${SPHINX_SOURCE_DIR}"
-            "${SPHINX_HTML_DIR}"
-            BYPRODUCTS ${SPHINX_HTML_DIR}
-            )
-    add_custom_target(man ALL
-            ${SPHINX_EXECUTABLE}
-            -q -b man
-            -c "${SPHINX_BUILD_DIR}"
-            -d "${SPHINX_CACHE_DIR}"
-            ${SPHINX_OPTIONS}
-            "${SPHINX_SOURCE_DIR}"
-            "${SPHINX_MAN_DIR}"
-            BYPRODUCTS ${SPHINX_MAN_DIR}
-            )
-
-    set(MAN_EXT "")
-    if(GZIP_MAN)
-        find_program(PIGZ pigz)
-        if(PIGZ)
-            set(GZIP ${PIGZ})
-        else()
-            find_package(UnixCommands)
-        endif()
-        if(GZIP)
-            set(MAN_EXT ".gz")
-            add_custom_target(man_gz ALL
-                    ${GZIP} -rkf ${SPHINX_MAN_DIR}
-                    DEPENDS man
-                    )
-        endif()
+    if(BUILD_DOCS_HTML)
+        add_custom_target(html
+                ${SPHINX_EXECUTABLE}
+                -q -b html
+                -c "${SPHINX_BUILD_DIR}"
+                -d "${SPHINX_CACHE_DIR}"
+                ${SPHINX_OPTIONS}
+                "${SPHINX_SOURCE_DIR}"
+                "${SPHINX_HTML_DIR}"
+                BYPRODUCTS ${SPHINX_HTML_DIR}
+                )
     endif()
 
-    install(DIRECTORY ${SPHINX_MAN_DIR}/
-            DESTINATION ${CMAKE_INSTALL_MANDIR}/man1
-            FILES_MATCHING PATTERN *.1${MAN_EXT}
-            )
-    install(DIRECTORY ${SPHINX_MAN_DIR}/
-            DESTINATION ${CMAKE_INSTALL_MANDIR}/man3
-            FILES_MATCHING PATTERN *.3${MAN_EXT}
-            )
+    if(BUILD_DOCS_MAN)
+        add_custom_target(man ALL
+                ${SPHINX_EXECUTABLE}
+                -q -b man
+                -c "${SPHINX_BUILD_DIR}"
+                -d "${SPHINX_CACHE_DIR}"
+                ${SPHINX_OPTIONS}
+                "${SPHINX_SOURCE_DIR}"
+                "${SPHINX_MAN_DIR}"
+                BYPRODUCTS ${SPHINX_MAN_DIR}
+                )
+
+        set(MAN_EXT "")
+        if(BUILD_DOCS_MANGZ)
+            find_program(PIGZ pigz)
+            if(PIGZ)
+                set(GZIP ${PIGZ})
+            else()
+                find_package(UnixCommands)
+            endif()
+            if(GZIP)
+                set(MAN_EXT ".gz")
+                add_custom_target(man_gz ALL
+                        ${GZIP} -kf ${SPHINX_MAN_DIR}/*.{1,3}
+                        DEPENDS man
+                        )
+            endif()
+        endif()
+
+        install(DIRECTORY ${SPHINX_MAN_DIR}/
+                DESTINATION ${CMAKE_INSTALL_MANDIR}/man1
+                FILES_MATCHING PATTERN *.1${MAN_EXT}
+                )
+        install(DIRECTORY ${SPHINX_MAN_DIR}/
+                DESTINATION ${CMAKE_INSTALL_MANDIR}/man3
+                FILES_MATCHING PATTERN *.3${MAN_EXT}
+                )
+    endif()
+
 endif()

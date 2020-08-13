@@ -1,9 +1,6 @@
-===============================================
-memping - Test to see if a server is available.
-===============================================
+memping
+=======
 
-
---------
 SYNOPSIS
 --------
 
@@ -11,51 +8,35 @@ memping [options] [server]
 
 .. program:: memping
 
+Test for availability of a server
 
------------
 DESCRIPTION
 -----------
 
+:program:`memping` can be used to ping a memcached server to see if it is accepting connections.
 
-:program:`memping` can be used to ping a memcached server to see if it is taking connections.
-
--------
 OPTIONS
 -------
 
+.. include:: options/all.rst
+.. include:: options/common.rst
+.. include:: options/sasl.rst
 
-You can specify servers via the option:
+ENVIRONMENT
+-----------
 
-.. option:: --servers
+.. envvar:: MEMCACHED_SERVERS
 
-or via the environment variable:
+    Specify the list of servers.
 
-.. envvar:: `MEMCACHED_SERVERS`
-
-If you do not specify either these, the final value in the command line list is the name of a server(s).
-
-For a full list of operations run the tool with the option:
-
-.. option:: --help
-
-
-----
-HOME
-----
-
-
-To find out more information please check:
-`http://libmemcached.org/ <http://libmemcached.org/>`_
-
-
-------
-AUTHOR
-------
-
-Brian Aker, <brian@tangent.org>
-
---------
 SEE ALSO
 --------
 
-:manpage:`memcached(1)` :manpage:`libmemcached(3)`
+.. only:: man
+
+  :manpage:`memcached(1)`
+  :manpage:`libmemcached(3)`
+
+.. only:: html
+
+* :doc:`/libmemcached`

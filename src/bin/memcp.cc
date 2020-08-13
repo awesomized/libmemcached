@@ -16,7 +16,6 @@
 #include <climits>
 #include <cstdio>
 #include <cstdlib>
-#include <cstdlib>
 #include <cstring>
 #include <fcntl.h>
 #include <getopt.h>
@@ -25,8 +24,6 @@
 #include <strings.h>
 #endif
 #include <sys/stat.h>
-#include <sys/types.h>
-#include <sys/types.h>
 #include <sys/types.h>
 #include <unistd.h>
 

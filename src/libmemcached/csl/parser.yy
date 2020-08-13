@@ -42,19 +42,20 @@ class Context;
 
 %}
 
-%define parse.error verbose
-%define api.pure
-%define api.prefix {config_}
-%define api.value.type {union CONFIG_STYPE}
+%require "2.3"
+
 %debug
-%defines
+%error-verbose
+%verbose
 %expect 0
+
+%pure-parser
+%name-prefix="config_"
+
 %lex-param { yyscan_t *scanner }
 %parse-param { class Context *context }
 %parse-param { yyscan_t *scanner }
-%require "2.5"
 %start begin
-%verbose
 
 %{
 
