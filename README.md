@@ -1,6 +1,6 @@
 # libmemcached
 
-[![Build Status](https://travis-ci.org/m6w6/libmemcached.svg?branch=v1.0)](https://travis-ci.org/m6w6/libmemcached)
+[![Build Status](https://travis-ci.org/m6w6/libmemcached.svg?branch=v1.0)](https://travis-ci.org/m6w6/libmemcached) [![Join the chat at https://gitter.im/m6w6/libmemcached](https://badges.gitter.im/m6w6/libmemcached.svg)](https://gitter.im/m6w6/libmemcached?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 libmemcached is an open source C/C++ client library and tools for the
 memcached server (http://memcached.org/). It has been designed to be
