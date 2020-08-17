@@ -1,14 +1,23 @@
-(This is not complete, please send email if I have missed someone.)
-Eirik A. Nygaard - IO Patch
+Thanks go to the following people, who have contributed to this project:
+
+Andre Cruz - Help with getting the CRC Hash function to match other connectors
+Brian Aker - Original work, Client Library, Tools
+Brian Pontz - Hsieh hash
 Cal Heldenbrand - Awesome feedback on performance
 Dustin Sallings - Insight into protocol
-Tobias Luetke - Performance Feedback
-Andre Cruz - Help with getting the CRC Hash function to match other connectors
-Brian Pontz - Hsieh hash
-Tim Bunce - Perl Driver work and feedback on API
+Eirik A. Nygaard - IO Patch
+Eric Lambert - UDP work
 Kevin Dalley - Bug Fixes
-Patrick Galbraith - work on C++ interface
-Ross McFarland - Idea for sorting servers.
 Marcelo Fernandez - TCP/IP timeout pieces
+Mark Atwood - Tools, Docs
+Mingqiang Zhuang - Rewrite of memslap
+Monty Taylor - Debian Packages, Cleanup work for configure, Build Releated (Pandora)
+Padraig O'Sullivan- C++ Interface (current one)
+Patrick Galbraith - work on C++ interface
+Ross McFarland - Idea for sorting servers
+Tim Bunce - Docs, Perl Driver work and feedback on API
+Tobias Luetke - Performance Feedback
+Toru Maesaka - Stats analysis
+Trond Norbye - Binary protocol, Misc
 Yin Chen - Ketama support/weighted support
-Monty Taylor - Debian Packages, Cleanup work for configure
+
