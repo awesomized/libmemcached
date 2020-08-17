@@ -38,7 +38,7 @@ before_script:
 
 script:
  - cd build
- - cmake -DCMAKE_BUILD_TYPE=${BUILD} -DENABLE_SASL=${SASL} -DMEMCACHED_BINARY=${PREFIX:-/usr}/bin/memcached ..
+ - cmake -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=${BUILD} -DENABLE_SASL=${SASL} -DMEMCACHED_BINARY=${PREFIX:-/usr}/bin/memcached ..
  - make -j2
  - make test
  - make install DESTDIR=.
