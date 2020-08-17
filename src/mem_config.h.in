@@ -39,6 +39,7 @@
 #cmakedefine HAVE_STDLIB_H 1
 #cmakedefine HAVE_STRERROR 1
 #cmakedefine HAVE_STRERROR_R 1
+#cmakedefine HAVE_STRERROR_R_CHAR_P 1
 #cmakedefine HAVE_STRINGS_H 1
 #cmakedefine HAVE_SYS_SOCKET_H 1
 #cmakedefine HAVE_SYS_TIME_H 1
