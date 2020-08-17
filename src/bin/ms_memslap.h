@@ -118,13 +118,13 @@ typedef struct global
 } ms_global_t;
 
 /* global structure */
-ms_global_t ms_global;
+extern ms_global_t ms_global;
 
 /* global stats information structure */
-ms_stats_t ms_stats;
+extern ms_stats_t ms_stats;
 
 /* global statistic structure */
-ms_statistic_t ms_statistic;
+extern ms_statistic_t ms_statistic;
 
 #ifdef __cplusplus
 }

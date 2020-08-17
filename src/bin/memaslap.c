@@ -32,6 +32,15 @@
 #include "ms_setting.h"
 #include "ms_thread.h"
 
+/* global structure */
+ms_global_t ms_global;
+
+/* global stats information structure */
+ms_stats_t ms_stats;
+
+/* global statistic structure */
+ms_statistic_t ms_statistic;
+
 #define PROGRAM_NAME    "memslap"
 #define PROGRAM_DESCRIPTION \
                         "Generates workload against memcached servers."
