@@ -8,6 +8,7 @@ add_library(libhashkit SHARED
         aes.cc
         algorithm.cc
         behavior.cc
+        common.h
         crc32.cc
         digest.cc
         encrypt.cc

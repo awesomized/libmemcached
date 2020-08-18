@@ -28,6 +28,7 @@ set(LIBMEMCACHED_SOURCES
         behavior.cc
         byteorder.cc
         callback.cc
+        common.h
         connect.cc
         delete.cc
         do.cc

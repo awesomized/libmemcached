@@ -1,6 +1,7 @@
 
 add_library(libmemcachedutil SHARED
         ../libmemcached/backtrace.cc
+        common.h
         flush.cc
         pid.cc
         ping.cc
