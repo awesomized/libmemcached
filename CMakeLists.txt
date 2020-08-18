@@ -60,4 +60,6 @@ if(BUILD_DOCS OR BUILD_DOCSONLY)
     add_subdirectory(docs)
 endif()
 
-
+if(ENV{INVALID_CONFIGURATION})
+    message(FATAL_ERROR "invalid configuration -- giving up")
+endif()
