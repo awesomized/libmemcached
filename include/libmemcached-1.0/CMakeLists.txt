@@ -1,12 +1,11 @@
 
-configure_file(configure.h.in configure.h @ONLY)
-
 add_subdirectory(struct)
 add_subdirectory(types)
 
 install_public_headers(
         libmemcached-1.0
 
+        @configure.h
         alloc.h
         allocators.h
         analyze.h

@@ -31,13 +31,12 @@ function(install_public_headers DIRECTORY)
 
     # change local includes to system includes
     foreach(HEADER IN LISTS ARGN)
-        file(READ ${HEADER} HEADER_IN)
-        string(REGEX REPLACE "include *\"([^\"]+)\"" "include <\\1>" HEADER_OUT "${HEADER_IN}")
-        file(GENERATE
-                OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${HEADER}
-                CONTENT "${HEADER_OUT}"
-                )
-        install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${HEADER}
+        if(HEADER MATCHES "^@")
+            string(SUBSTRING ${HEADER} 1 -1 HEADER)
+            configure_file(${HEADER}.in ${HEADER})
+            string(PREPEND HEADER ${CMAKE_CURRENT_BINARY_DIR}/)
+        endif()
+        install(FILES ${HEADER}
                 DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${DIRECTORY}
                 )
     endforeach()

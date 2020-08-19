@@ -16,10 +16,27 @@ flex_target(CSL_SCANNER csl/scanner.l ${CMAKE_CURRENT_BINARY_DIR}/csl/scanner.cc
         )
 add_flex_bison_dependency(CSL_SCANNER CSL_PARSER)
 
+if(HAVE_DTRACE)
+        add_custom_command(
+                OUTPUT dtrace_probes.h
+                COMMAND ${DTRACE_EXECUTABLE}
+                ARGS -h -o dtrace_probes.h -s ${CMAKE_CURRENT_SOURCE_DIR}/libmemcached_probes.d
+                MAIN_DEPENDENCY libmemcached_probes.d
+        )
+        add_custom_command(
+                OUTPUT libmemcached_probes.o
+                COMMAND ${DTRACE_EXECUTABLE}
+                ARGS -o libmemcached_probes.o -G -s ${CMAKE_CURRENT_SOURCE_DIR}/libmemcached_probes.d
+                MAIN_DEPENDENCY dtrace_probes.h
+        )
+        set(DTRACE_GENERATED_OUTPUT libmemcached_probes.o)
+endif()
+
 set(LIBMEMCACHED_SOURCES
         csl/context.cc
         ${BISON_CSL_PARSER_OUTPUTS}
         ${FLEX_CSL_SCANNER_OUTPUTS}
+        ${DTRACE_GENERATED_OUTPUT}
         allocators.cc
         analyze.cc
         array.c
@@ -91,8 +108,6 @@ install_public_headers(
         util.h
         )
 
-# FIXME: dtrace
-
 add_library(libmemcachedinternal STATIC
         ${LIBMEMCACHED_SOURCES})
 add_library(memcachedinternal ALIAS libmemcachedinternal)
@@ -100,3 +115,7 @@ set_target_properties(libmemcachedinternal PROPERTIES LIBRARY_OUTPUT_NAME memcac
 target_link_libraries(libmemcachedinternal libhashkit Threads::Threads ${LIBSASL_LIBRARIES} ${CMAKE_DL_LIBS})
 target_include_directories(libmemcachedinternal PRIVATE ${LIBSASL_INCLUDEDIR})
 target_compile_definitions(libmemcachedinternal PRIVATE -DBUILDING_LIBMEMCACHEDINTERNAL)
+
+# let libmemcached depend on libmemcachedinternal to ensure that they do not
+# compete for the same generated dependencies
+add_dependencies(libmemcached libmemcachedinternal)

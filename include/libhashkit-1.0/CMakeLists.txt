@@ -1,7 +1,6 @@
 
-configure_file(configure.h.in configure.h @ONLY)
-
 install_public_headers(libhashkit-1.0
+        @configure.h
         algorithm.h
         basic_string.h
         behavior.h

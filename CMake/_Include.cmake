@@ -32,7 +32,12 @@ endif()
 
 ## dtrace
 if(ENABLE_DTRACE)
-    set(HAVE_DTRACE 1)
+    find_package(DTrace)
+    if(DTRACE_EXECUTABLE)
+        set(HAVE_DTRACE 1)
+    else()
+        message(WARNING "The dtrace command is required to enable dtrace/systemtap support.")
+    endif()
 endif()
 
 ## uuid
@@ -91,9 +96,9 @@ check_decl(MSG_MORE sys/socket.h)
 check_decl(MSG_NOSIGNAL sys/socket.h)
 check_decl(rcvtimeo sys/socket.h)
 check_decl(sndtimeo sys/socket.h)
+check_decl(strerror string.h)
 check_decl(strerror_r string.h)
 check_compiles(HAVE_STRERROR_R_CHAR_P "char x, y = *strerror_r(0,&x,1);" string.h)
-check_decl(strerror string.h)
 check_decl(abi::__cxa_demangle cxxabi.h)
 set(HAVE_GCC_ABI_DEMANGLE ${HAVE_ABI____CXA_DEMANGLE})
 

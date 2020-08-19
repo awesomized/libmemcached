@@ -1,17 +1,27 @@
 include(CMakePushCheckState)
 include(CheckCXXCompilerFlag)
 
+function(check_flag FLAG DEFAULT)
+    unset(FLAG_CONSTANT)
+    string(MAKE_C_IDENTIFIER CXX${FLAG} FLAG_CONSTANT)
+    check_cxx_compiler_flag(${FLAG} ${FLAG_CONSTANT})
+    if(${FLAG_CONSTANT})
+        add_compile_options(${FLAG})
+    elseif(DEFAULT)
+        add_compile_options(${DEFAULT})
+    endif()
+endfunction()
+
 function(check_debug)
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        add_compile_options(-O1)
+        check_flag(-Og -O0)
+        check_flag(-ggdb -g)
         add_definitions(-DDEBUG=1)
         foreach(FLAG IN ITEMS
                 -fno-inline
                 -fno-omit-frame-pointer
                 -fno-eliminate-unused-debug-types
                 -funsafe-loop-optimizations
-
-                -g3
 
                 -Wall
                 -Wextra
@@ -27,12 +37,7 @@ function(check_debug)
                 -Wunknown-pragmas
                 -Wunsafe-loop-optimizations
                 )
-            unset(FLAG_CONSTANT)
-            string(MAKE_C_IDENTIFIER CXX${FLAG} FLAG_CONSTANT)
-            check_cxx_compiler_flag(${FLAG} ${FLAG_CONSTANT})
-            if(${FLAG_CONSTANT})
-                add_compile_options(${FLAG})
-            endif()
+            check_flag(${FLAG} IGNORE)
         endforeach()
 
         if(ENABLE_SANITIZERS)
