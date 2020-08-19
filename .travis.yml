@@ -17,14 +17,15 @@ compiler:
 
 env:
  - BUILD=Release SASL=false
- - BUILD=Debug SASL=true PREFIX=/opt PORT=11212
+ - BUILD=Debug SASL=true PREFIX=/opt PORT=11212 MC_VERSION=1.5.22
+ - BUILD=Debug SASL=false PREFIX=/opt PORT=11212 MC_VERSION=1.6.6
 
 #before_install:
 install:
  - |
-   if ${SASL};
+   if ${SASL} || test -n "$MC_VERSION";
    then
-     git clone -b 1.5.9 https://github.com/memcached/memcached &&
+     git clone -b ${MC_VERSION:-1.5.22} https://github.com/memcached/memcached &&
      cd memcached && ./autogen.sh &&
      CFLAGS="-O2 -pipe" ./configure --prefix=${PREFIX} --disable-dependency-tracking --enable-sasl --enable-sasl-pwdb --disable-coverage --disable-docs &&
      make -j2 && make install && cd ..;
