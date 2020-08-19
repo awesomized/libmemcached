@@ -858,7 +858,7 @@ static memcached_return_t _read_one_response(memcached_instance_st* instance,
     rc= textual_read_one_response(instance, buffer, buffer_length, result);
   }
 
-  if (memcached_fatal(rc))
+  if (memcached_fatal(rc) && rc != MEMCACHED_TIMEOUT)
   {
     memcached_io_reset(instance);
   }

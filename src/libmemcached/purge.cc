@@ -62,11 +62,11 @@ private:
 class PollTimeout
 {
 public:
-  PollTimeout(Memcached* arg) :
+  PollTimeout(Memcached* arg, int32_t ms = 50) :
     _timeout(arg->poll_timeout),
     _origin(arg->poll_timeout)
   {
-    _origin = 2000;
+    _origin = ms;
   }
 
   ~PollTimeout()
@@ -135,11 +135,14 @@ bool memcached_purge(memcached_instance_st* ptr)
        * Purge doesn't care for what kind of command results that is received.
        * The only kind of errors I care about if is I'm out of sync with the
        * protocol or have problems reading data from the network..
-     */
+       */
       if (rc== MEMCACHED_PROTOCOL_ERROR or rc == MEMCACHED_UNKNOWN_READ_FAILURE or rc == MEMCACHED_READ_FAILURE)
       {
         WATCHPOINT_ERROR(rc);
         is_successful= false;
+      }
+      if (rc == MEMCACHED_TIMEOUT) {
+        break;
       }
 
       if (ptr->root->callbacks != NULL)
