@@ -5060,7 +5060,7 @@ test_return_t regression_bug_(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-test_return_t kill_HUP_TEST(memcached_st *original_memc)
+test_return_t kill_TEST(memcached_st *original_memc)
 {
   memcached_st *memc= create_single_instance_memcached(original_memc, 0);
   test_true(memc);
@@ -5077,7 +5077,7 @@ test_return_t kill_HUP_TEST(memcached_st *original_memc)
                              test_literal_param(__func__), // Keys
                              test_literal_param(__func__), // Values
                              0, 0));
-  test_true_got(kill(pid, SIGHUP) == 0, strerror(errno));
+  test_true_got(kill(pid, SIGTERM) == 0, strerror(errno));
 
   memcached_return_t ret= memcached_set(memc, 
                                         test_literal_param(__func__), // Keys

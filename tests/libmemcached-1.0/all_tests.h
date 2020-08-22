@@ -128,7 +128,7 @@ test_st touch_tests[] ={
 };
 
 test_st kill_TESTS[] ={
-  {"kill(HUP)", 0, (test_callback_fn*)kill_HUP_TEST},
+  {"kill()", 0, (test_callback_fn*)kill_TEST},
   {0, 0, 0}
 };
 
