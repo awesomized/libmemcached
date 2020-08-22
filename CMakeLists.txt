@@ -49,6 +49,7 @@ if(NOT BUILD_DOCSONLY)
     add_subdirectory(support)
 
     if(BUILD_TESTING)
+        add_subdirectory(testing)
         add_subdirectory(tests)
     endif()
 
