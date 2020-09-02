@@ -1,100 +1,90 @@
 #include "Server.hpp"
-#include "WaitForExec.hpp"
-#include "WaitForConn.hpp"
+#include "Connection.hpp"
+#include "ForkAndExec.hpp"
 
-#include <netinet/in.h>
-#include <sys/poll.h>
-#include <sys/socket.h>
-#include <sys/un.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include <iostream>
-#include <tuple>
+Server::Server(string &&binary_, Server::argv_t &&args_)
+    : binary{forward<string>(binary_)}
+    , args{forward<argv_t>(args_)}
+{}
 
-using namespace std;
-
-[[nodiscard]]
-auto Server::createArgv()  {
-  auto i = 0, port = -1, socket = -1;
-  auto arr = new char *[str_args.size() + dyn_args.size()*2 + 2] {
-      strdup(binary.c_str())
-  };
-
-  for (auto &arg : str_args) {
-    arr[++i] = strdup(arg.c_str());
-    if (arg == "-p") {
-      port = i + 1;
-    } else if (arg == "-s") {
-      socket = i + 1;
-    }
+Server::~Server() {
+  stop();
+  wait();
+  if (holds_alternative<string>(socket_or_port)) {
+    unlink(get<string>(socket_or_port).c_str());
   }
-  for (auto &arg : dyn_args) {
-    arr[++i] = strdup(arg.first.c_str());
-    arr[++i] = strdup(arg.second(arg.first).c_str());
-    if (arg.first == "-p") {
-      port = i;
-    } else if (arg.first == "-s") {
-      socket = i;
-    }
+}
 
-  }
-  arr[i+1] = nullptr;
-
-  if (socket > -1) {
-    socket_or_port = arr[socket];
-  } else if (port > -1) {
-    socket_or_port = stoi(arr[port]);
+static inline string extractArg(const Server::arg_t &arg_cont, const string &func_arg) {
+  if (holds_alternative<string>(arg_cont)) {
+    return get<string>(arg_cont);
   } else {
-    socket_or_port = 11211;
+    return get<Server::arg_func_t>(arg_cont)(func_arg);
   }
+}
 
-  return arr;
+static inline void pushArg(vector<char *> &arr, const string &arg) {
+  auto len = arg.size();
+  auto str = arg.data(), end = str + len + 1;
+  auto ptr = new char[len + 1];
+  copy(str, end, ptr);
+  arr.push_back(ptr);
+}
+
+optional<string> Server::handleArg(vector<char *> &arr, const string &arg, const arg_func_t &next_arg) {
+  pushArg(arr, arg);
+  if (arg == "-p" || arg == "--port") {
+    auto port = next_arg(arg);
+    pushArg(arr, port);
+    pushArg(arr, "-U");
+    pushArg(arr, port);
+    socket_or_port = stoi(port);
+    return port;
+  } else if (arg == "-s" || arg == "--unix-socket") {
+    auto sock = next_arg(arg);
+    pushArg(arr, sock);
+    socket_or_port = sock;
+    return sock;
+  }
+  return {};
 }
 
 [[nodiscard]]
-optional<WaitForConn::conn_t> Server::createSocket() {
-  sockaddr_storage addr;
-  unsigned size = 0;
-  int sock;
+vector<char *> Server::createArgv()  {
+  vector<char *> arr;
 
-  if (holds_alternative<string>(socket_or_port)) {
-    const auto path = get<string>(socket_or_port);
-    const auto safe = path.c_str();
-    const auto zlen = path.length() + 1;
-    const auto ulen = sizeof(sockaddr_un) - sizeof(sa_family_t);
+  pushArg(arr, binary);
+  pushArg(arr, "-v");
 
-    if (zlen >= ulen) {
-      cerr << "Server::isListening socket(): path too long '" << path << "'\n";
-      return {};
+  for (auto it = args.cbegin(); it != args.cend(); ++it) {
+    if (holds_alternative<arg_t>(*it)) {
+      // a single argument
+      auto arg = extractArg(get<arg_t>(*it), binary);
+      handleArg(arr, arg, [&it](const string &arg_) {
+        return extractArg(get<arg_t>(*++it), arg_);
+      });
+    } else {
+      // an argument pair
+      auto &[one, two] = get<arg_pair_t>(*it);
+      auto arg_one = extractArg(one, binary);
+      auto arg_two = extractArg(two, arg_one);
+
+      auto next = handleArg(arr, arg_one, [&arg_two](const string &) {
+        return arg_two;
+      });
+
+      if (!next.has_value()) {
+        pushArg(arr, arg_two);
+      }
     }
-
-    if (0 > (sock = socket(AF_UNIX, SOCK_STREAM|SOCK_NONBLOCK|SOCK_CLOEXEC, 0))) {
-      perror("Server::isListening socket()");
-      return {};
-    }
-
-    auto sa = reinterpret_cast<sockaddr_un *>(&addr);
-    sa->sun_family = AF_UNIX;
-    strncpy(sa->sun_path, safe, zlen);
-
-    size = sizeof(*sa);
-  } else {
-    if (0 > (sock = socket(AF_INET, SOCK_STREAM|SOCK_NONBLOCK|SOCK_CLOEXEC, 0))) {
-      perror("Server::isListening socket()");
-      return {};
-    }
-
-    const auto port = get<int>(socket_or_port);
-    auto sa = reinterpret_cast<struct sockaddr_in *>(&addr);
-    sa->sin_family = AF_INET;
-    sa->sin_port = htons(static_cast<unsigned short>(port)),
-    sa->sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-
-    size = sizeof(*sa);
   }
 
-  return optional<WaitForConn::conn_t>{make_tuple(sock, addr, size)};
+  arr.push_back(nullptr);
+
+  return arr;
 }
 
 optional<pid_t> Server::start() {
@@ -102,36 +92,27 @@ optional<pid_t> Server::start() {
     return pid;
   }
 
-  WaitForExec wait_for_exec;
+  auto argv = createArgv();
+  auto child = ForkAndExec{binary.c_str(), argv.data()}();
 
-  switch (pid = fork()) {
-    case 0:
-      execvp(binary.c_str(), createArgv());
-      [[fallthrough]];
-    case -1:
-      perror("Server::start fork() & exec()");
-      return {};
-
-    default:
-      if (!wait_for_exec()) {
-        cerr << "Server::start exec(): incomplete\n";
-      }
-      return pid;
+  for (auto argp : argv) {
+    delete [] argp;
   }
+
+  if (child.has_value()) {
+    pid = child.value();
+  }
+
+  return child;
 }
 
-bool Server::isListening(int max_timeout) {
-  auto conn = createSocket();
+bool Server::isListening() {
+  Connection conn(socket_or_port);
 
-  if (!conn) {
+  if (!conn.open()) {
     return false;
   }
-
-  WaitForConn wait_for_conn{
-    {conn.value()},
-    Poll{POLLOUT, 2, max_timeout}
-  };
-  return wait_for_conn();
+  return conn.isOpen();
 }
 
 bool Server::stop() {
@@ -168,3 +149,33 @@ bool Server::wait(int flags) {
 bool Server::tryWait() {
   return wait(WNOHANG);
 }
+
+Server::Server(const Server &s) {
+  binary = s.binary;
+  args = s.args;
+  socket_or_port = s.socket_or_port;
+}
+
+Server &Server::operator=(const Server &s) {
+  binary = s.binary;
+  args = s.args;
+  socket_or_port = s.socket_or_port;
+  return *this;
+}
+
+pid_t Server::getPid() const {
+  return pid;
+}
+
+const string &Server::getBinary() const {
+  return binary;
+}
+
+const Server::argv_t &Server::getArgs() const {
+  return args;
+}
+
+const socket_or_port_t &Server::getSocketOrPort() const {
+  return socket_or_port;
+}
+

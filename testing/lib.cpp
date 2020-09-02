@@ -1,15 +1,19 @@
-#include "lib/catch.hpp"
+#include "lib/common.hpp"
 #include "lib/Cluster.hpp"
+#include "lib/Retry.hpp"
+#include "lib/Server.hpp"
 
-#include "lib/random_.hpp"
-
-TEST_CASE("Server") {
+TEST_CASE("lib/Server") {
   Server server{"memcached"};
 
   SECTION("starts and listens") {
 
     REQUIRE(server.start().has_value());
-    REQUIRE(server.isListening());
+
+    Retry server_is_listening{[&server] {
+      return server.isListening();
+    }};
+    REQUIRE(server_is_listening());
 
     SECTION("stops") {
 
@@ -20,14 +24,15 @@ TEST_CASE("Server") {
         REQUIRE(server.wait());
 
         SECTION("stopped") {
-          REQUIRE(server.is)
+
+          REQUIRE_FALSE(server.check());
         }
       }
     }
   }
 }
 
-TEST_CASE("Cluster") {
+TEST_CASE("lib/Cluster") {
   Cluster cluster{Server{"memcached", {
     random_socket_or_port_arg(),
   }}};
@@ -35,7 +40,11 @@ TEST_CASE("Cluster") {
   SECTION("starts and listens") {
 
     REQUIRE(cluster.start());
-    REQUIRE(cluster.isListening());
+
+    Retry cluster_is_listening{[&cluster] {
+      return cluster.isListening();
+    }};
+    REQUIRE(cluster_is_listening());
 
     SECTION("stops") {
 

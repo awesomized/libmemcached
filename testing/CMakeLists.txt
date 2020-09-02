@@ -2,16 +2,26 @@
 add_executable(catch_main
         main.cpp
 
-        lib/random_.cpp
+        lib/common.cpp
 
         lib/Cluster.cpp
-        lib/Poll.cpp
+        lib/Connection.cpp
+        lib/ForkAndExec.cpp
+        lib/MemcachedCluster.cpp
         lib/Server.cpp
-        lib/WaitForConn.cpp
-        lib/WaitForExec.cpp
+        lib/Retry.cpp
 
-        server.cpp
+        lib.cpp
+        hashkit/basic.cpp
+        memcached/basic.cpp
+        memcached/callbacks.cpp
+        memcached/servers.cpp
+        memcached/dump.cpp
+        memcached/encoding_key.cpp
+        memcached/exist.cpp
         )
 
 set_target_properties(catch_main PROPERTIES
         CXX_STANDARD 17)
+
+target_link_libraries(catch_main libhashkit libmemcached)

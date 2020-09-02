@@ -1,34 +1,33 @@
 #pragma once
 
+#include "common.hpp"
 #include "Server.hpp"
 
-#include <map>
-#include <thread>
-
 class Cluster {
-private:
-  uint16_t count;
-  Server proto;
-  vector<Server> cluster;
-
-  map<pid_t, Server *> pids;
-
 public:
   explicit
-  Cluster(Server &&serv, uint16_t cnt = 0)
-  : count{cnt}
-  , proto{serv}
-  {
-    if (!cnt) {
-      count = thread::hardware_concurrency() ?: 4;
-    }
-    reset();
-  }
+  Cluster(Server &&serv, uint16_t cnt = 0);
+
+  ~Cluster();
+
+  Cluster(const Cluster &c) = delete;
+  Cluster &operator = (const Cluster &c) = delete;
+
+  Cluster(Cluster &&c) = default;
+  Cluster &operator = (Cluster &&c) = default;
+
+  const vector<Server> &getServers() const;
 
   bool start();
   void stop();
   void reset();
   bool isStopped();
-  bool isListening(int max_timeout = 1000);
+  bool isListening();
   void wait();
+
+private:
+  uint16_t count;
+  Server proto;
+  vector<Server> cluster;
+  map<pid_t, Server *> pids;
 };

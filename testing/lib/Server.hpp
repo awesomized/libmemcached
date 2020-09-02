@@ -1,86 +1,57 @@
 #pragma once
 
-#include "WaitForConn.hpp"
+#include "common.hpp"
 
 #include <csignal>
 
-#include <functional>
-#include <iostream>
-#include <string>
-#include <variant>
-#include <vector>
-
-using namespace std;
-
 class Server {
+public:
+
   friend class Cluster;
 
-public:
-  using str_args_t = vector<string>;
-  using dyn_args_t = unordered_map<string, function<string(string)>>;
-  using socket_or_port_t = variant<string, int>;
+  using arg_func_t = function<string(string)>;
+  using arg_t = variant<string, arg_func_t>;
+  using arg_pair_t = pair<arg_t, arg_t>;
+  using argv_t = vector<variant<arg_t, arg_pair_t>>;
 
-private:
-  string binary;
-  str_args_t str_args;
-  dyn_args_t dyn_args;
-  pid_t pid = 0;
-
-  int status = 0;
-  unordered_map<int, unsigned> signalled;
-  socket_or_port_t socket_or_port{11211};
-
-public:
   explicit
-  Server(string &&binary_, str_args_t &&str_args_ = {}, dyn_args_t &&dyn_args_ = {})
-      : binary{binary_}
-      , str_args{str_args_}
-      , dyn_args{dyn_args_}
-  {}
+  Server(string &&binary_, argv_t && args_ = {});
 
-  Server(string &&binary_, dyn_args_t &&dyn_args_)
-      : binary{binary_}
-      , str_args{}
-      , dyn_args{dyn_args_}
-  {}
+  ~Server();
 
-  ~Server() {
-    stop();
-    wait();
-  }
-
-  Server &operator = (const Server &s) = default;
-  Server(const Server &s) = default;
+  Server(const Server &s);
+  Server &operator = (const Server &s);
 
   Server &operator = (Server &&s) = default;
   Server(Server &&s) = default;
 
-  pid_t getPid() const {
-    return pid;
-  }
+  pid_t getPid() const;
 
-  const string &getBinary() const {
-    return binary;
-  }
+  const string &getBinary() const;
 
-  const socket_or_port_t &getSocketOrPort() const {
-    return socket_or_port;
-  }
+  const argv_t &getArgs() const;
+
+  const socket_or_port_t &getSocketOrPort() const;
 
   optional<pid_t> start();
   bool stop();
 
   bool signal(int signo = SIGTERM);
   bool check();
-  bool isListening(int max_timeout = 1000);
+  bool isListening();
 
   bool wait(int flags = 0);
   bool tryWait();
 
 private:
-  [[nodiscard]]
-  auto createArgv();
+  string binary;
+  argv_t args;
+  pid_t pid = 0;
+  int status = 0;
+  unordered_map<int, unsigned> signalled;
+  socket_or_port_t socket_or_port = 11211;
 
   [[nodiscard]]
-  optional<WaitForConn::conn_t> createSocket();
+  vector<char *> createArgv();
+  optional<string> handleArg(vector<char *> &arr, const string &arg, const arg_func_t &next_arg);
 };
