@@ -15,15 +15,25 @@ public:
   using argv_t = vector<variant<arg_t, arg_pair_t>>;
 
   explicit
-  Server(string &&binary_, argv_t && args_ = {});
+  Server(string &&binary_ = "false", argv_t && args_ = {});
 
   ~Server();
 
   Server(const Server &s);
   Server &operator = (const Server &s);
 
-  Server &operator = (Server &&s) = default;
-  Server(Server &&s) = default;
+  Server(Server &&s) {
+    *this = move(s);
+  };
+  Server &operator = (Server &&s) {
+    binary = exchange(s.binary, "false");
+    args = exchange(s.args, {});
+    pid = exchange(s.pid, 0);
+    status = exchange(s.status, 0);
+    signalled = exchange(s.signalled, {});
+    socket_or_port = exchange(s.socket_or_port, {});
+    return *this;
+  };
 
   pid_t getPid() const;
 

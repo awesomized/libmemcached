@@ -2,61 +2,47 @@
 #include "../lib/MemcachedCluster.hpp"
 
 TEST_CASE("memcached exist") {
-  MemcachedCluster tests[]{
-      MemcachedCluster::mixed(),
-      MemcachedCluster::net(),
-      MemcachedCluster::socket()
+  pair<string, MemcachedCluster> tests[]{
+    {"bin_mixed", MemcachedCluster::mixed()},
+    {"network", MemcachedCluster::network()},
+    {"socket", MemcachedCluster::socket()}
   };
 
-  tests[0].enableBinary();
+  tests[0].second.enableBinaryProto();
 
   LOOPED_SECTION(tests) {
     auto memc = &test.memc;
+    auto &returns = test.returns;
 
     SECTION("initial not found") {
-      REQUIRE(
-          MEMCACHED_NOTFOUND == memcached_exist(memc, LITERAL("frog")));
+      REQUIRE_RC(MEMCACHED_NOTFOUND,memcached_exist(memc, S("frog")));
     }
 
     SECTION("set found") {
-      REQUIRE(MEMCACHED_SUCCESS ==
-              memcached_set(memc, LITERAL("frog"), LITERAL("frog"), 0,
-                            0));
-      REQUIRE(
-          MEMCACHED_SUCCESS == memcached_exist(memc, LITERAL("frog")));
+        REQUIRE_SUCCESS(memcached_set(memc, S("frog"), S("frog"), 0, 0));
+        REQUIRE_SUCCESS(memcached_exist(memc, S("frog")));
 
-      SECTION("deleted not found") {
-        REQUIRE(MEMCACHED_SUCCESS ==
-                memcached_delete(memc, LITERAL("frog"), 0));
-        REQUIRE(MEMCACHED_NOTFOUND ==
-                memcached_exist(memc, LITERAL("frog")));
-      }
+        SECTION("deleted not found") {
+          REQUIRE_SUCCESS(memcached_delete(memc, S("frog"), 0));
+          REQUIRE_RC(MEMCACHED_NOTFOUND, memcached_exist(memc, S("frog")));
+        }
     }
 
     SECTION("by key") {
       SECTION("initial not found") {
-        REQUIRE(MEMCACHED_NOTFOUND ==
-                memcached_exist_by_key(memc, LITERAL("master"),
-                                       LITERAL("frog")));
+        REQUIRE_RC(MEMCACHED_NOTFOUND, memcached_exist_by_key(memc, S("master"), S("frog")));
       }
 
       SECTION("set found") {
-        REQUIRE(MEMCACHED_SUCCESS ==
-                memcached_set_by_key(memc, LITERAL("master"),
-                                     LITERAL("frog"), LITERAL("frog"), 0, 0));
-        REQUIRE(MEMCACHED_SUCCESS ==
-                memcached_exist_by_key(memc, LITERAL("master"),
-                                       LITERAL("frog")));
+        REQUIRE_SUCCESS(memcached_set_by_key(memc, S("master"), S("frog"), S("frog"), 0, 0));
+        REQUIRE_SUCCESS(memcached_exist_by_key(memc, S("master"), S("frog")));
 
         SECTION("deleted not found") {
-          REQUIRE(MEMCACHED_SUCCESS ==
-                  memcached_delete_by_key(memc, LITERAL("master"),
-                                          LITERAL("frog"), 0));
-          REQUIRE(MEMCACHED_NOTFOUND ==
-                  memcached_exist_by_key(memc, LITERAL("master"),
-                                         LITERAL("frog")));
+          REQUIRE_SUCCESS(memcached_delete_by_key(memc, S("master"), S("frog"), 0));
+          REQUIRE_RC(MEMCACHED_NOTFOUND, memcached_exist_by_key(memc, S("master"), S("frog")));
         }
       }
     }
   }
+
 }

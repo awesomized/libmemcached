@@ -35,6 +35,6 @@ TEST_CASE("memcached servers") {
   SECTION("no configured servers") {
     MemcachedPtr memc;
 
-    REQUIRE(MEMCACHED_NO_SERVERS == memcached_increment(*memc, LITERAL("key"), 1, nullptr));
+    REQUIRE(MEMCACHED_NO_SERVERS == memcached_increment(*memc, S("key"), 1, nullptr));
   }
 }

@@ -1,6 +1,8 @@
 #include "MemcachedCluster.hpp"
 #include "Retry.hpp"
 
+const memcached_st MemcachedCluster::empty_memc{};
+
 void MemcachedCluster::init() {
   REQUIRE(cluster.start());
 
@@ -21,7 +23,9 @@ void MemcachedCluster::init() {
 }
 
 MemcachedCluster::~MemcachedCluster() {
-  memcached_free(&memc);
+  if (memcmp(&memc, &empty_memc, sizeof(memc))) {
+    memcached_free(&memc);
+  }
 }
 
 void MemcachedCluster::flush() {
@@ -29,7 +33,10 @@ void MemcachedCluster::flush() {
 }
 
 MemcachedCluster::MemcachedCluster()
-: cluster{Server{getenv_else("MEMCACHED_BINARY", "memcached"), {random_socket_or_port_arg()}}}
+: cluster{Server{
+  getenv_else("MEMCACHED_BINARY", "memcached"),
+  {random_socket_or_port_arg()}
+}}
 {
   init();
 }
@@ -44,14 +51,21 @@ MemcachedCluster MemcachedCluster::mixed() {
   return MemcachedCluster{};
 }
 
-MemcachedCluster MemcachedCluster::net() {
-  return MemcachedCluster{Cluster{Server{getenv_else("MEMCACHED_BINARY", "memcached"), {"-p", random_socket_or_port_string}}}};
+MemcachedCluster MemcachedCluster::network() {
+  return MemcachedCluster{Cluster{Server{
+    getenv_else("MEMCACHED_BINARY", "memcached"),
+    {"-p", random_socket_or_port_string}
+  }}};
 }
 
 MemcachedCluster MemcachedCluster::socket() {
-  return MemcachedCluster{Cluster{Server{getenv_else("MEMCACHED_BINARY", "memcached"), {"-s", random_socket_or_port_string}}}};
+  return MemcachedCluster{Cluster{Server{
+    getenv_else("MEMCACHED_BINARY", "memcached"),
+    {"-s", random_socket_or_port_string}
+  }}};
 }
 
-void MemcachedCluster::enableBinary(bool enable) {
-  REQUIRE(MEMCACHED_SUCCESS == memcached_behavior_set(&memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, enable));
+void MemcachedCluster::enableBinaryProto(bool enable) {
+  REQUIRE(MEMCACHED_SUCCESS == memcached_behavior_set(&memc,
+      MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, enable));
 }

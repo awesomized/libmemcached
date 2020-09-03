@@ -168,8 +168,8 @@ TEST_CASE("hashkit") {
   }
 
   SECTION("can digest default") {
-    REQUIRE(2297466611U == stack.digest(LITERAL("apple")));
-    REQUIRE(2297466611U == hashkit_digest(&st, LITERAL("apple")));
+    REQUIRE(2297466611U == stack.digest(S("apple")));
+    REQUIRE(2297466611U == hashkit_digest(&st, S("apple")));
   }
 
   SECTION("can set hash function") {
@@ -191,9 +191,9 @@ TEST_CASE("hashkit") {
         auto n = 0;
 
         for (auto i : input) {
-          CHECK(output[f][n] == stack.digest(LITERAL(i)));
-          CHECK(output[f][n] == hashkit_digest(&st, LITERAL(i)));
-          CHECK(output[f][n] == libhashkit_digest(LITERAL(i), h));
+          CHECK(output[f][n] == stack.digest(S(i)));
+          CHECK(output[f][n] == hashkit_digest(&st, S(i)));
+          CHECK(output[f][n] == libhashkit_digest(S(i), h));
           ++n;
         }
       }

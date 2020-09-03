@@ -13,8 +13,18 @@ public:
   Cluster(const Cluster &c) = delete;
   Cluster &operator = (const Cluster &c) = delete;
 
-  Cluster(Cluster &&c) = default;
-  Cluster &operator = (Cluster &&c) = default;
+  Cluster(Cluster &&c)
+  : proto{}
+  {
+    *this = move(c);
+  };
+  Cluster &operator = (Cluster &&c) {
+    count = exchange(c.count, 0);
+    proto = exchange(c.proto, Server{});
+    cluster = exchange(c.cluster, {});
+    pids = exchange(c.pids, {});
+    return *this;
+  }
 
   const vector<Server> &getServers() const;
 

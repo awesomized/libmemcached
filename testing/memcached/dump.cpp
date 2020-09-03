@@ -2,16 +2,16 @@
 #include "../lib/MemcachedCluster.hpp"
 
 memcached_return_t dump_cb(const memcached_st *, const char *, size_t, void *ctx) {
-  size_t *c = reinterpret_cast<size_t *>(ctx);
+  auto *c = reinterpret_cast<size_t *>(ctx);
   ++(*c);
   return MEMCACHED_SUCCESS;
 }
 
 TEST_CASE("memcached dump") {
-  MemcachedCluster tests[]{
-      MemcachedCluster::mixed(),
-      MemcachedCluster::net(),
-      MemcachedCluster::socket()
+  pair<string, MemcachedCluster> tests[]{
+    {"mixed", MemcachedCluster::mixed()},
+    {"network", MemcachedCluster::network()},
+    {"socket", MemcachedCluster::socket()}
   };
 
   LOOPED_SECTION(tests) {
@@ -23,9 +23,7 @@ TEST_CASE("memcached dump") {
         int len = snprintf(key, sizeof(key) - 1, "k_%d", i);
 
         CHECKED_IF(len) {
-          auto rc = memcached_set(memc, key, len, key, len, 0, 0);
-          INFO("last error: " << memcached_last_error(memc));
-          REQUIRE(MEMCACHED_SUCCESS == rc);
+          REQUIRE_SUCCESS(memcached_set(memc, key, len, key, len, 0, 0));
         }
       }
 
@@ -39,7 +37,7 @@ TEST_CASE("memcached dump") {
         size_t counter = 0;
         memcached_dump_fn fn[] = {dump_cb};
 
-        REQUIRE(MEMCACHED_SUCCESS == memcached_dump(memc, fn, &counter, 1));
+        REQUIRE_SUCCESS(memcached_dump(memc, fn, &counter, 1));
         REQUIRE(counter == 64);
       }
     }

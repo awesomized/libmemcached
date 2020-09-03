@@ -1,9 +1,9 @@
 #include "../lib/common.hpp"
 #include "../lib/MemcachedCluster.hpp"
 
-#define TEST_KEY LITERAL("test")
-#define INITIAL_VAL LITERAL("initial")
-#define REPLACED_VAL LITERAL("replaced")
+#define TEST_KEY S("test")
+#define INITIAL_VAL S("initial")
+#define REPLACED_VAL S("replaced")
 
 static inline void check(memcached_st *enc, memcached_st *raw, const char *val, size_t len) {
   memcached_return_t enc_rc, raw_rc;
@@ -20,10 +20,9 @@ static inline void check(memcached_st *enc, memcached_st *raw, const char *val, 
 }
 
 TEST_CASE("memcached encoding_key") {
-  MemcachedCluster tests[]{
-      MemcachedCluster::mixed(),
-      MemcachedCluster::net(),
-      MemcachedCluster::socket()
+  pair<string, MemcachedCluster> tests[]{
+    {"network", MemcachedCluster::network()},
+    {"socket", MemcachedCluster::socket()}
   };
 
   LOOPED_SECTION(tests) {
@@ -32,12 +31,10 @@ TEST_CASE("memcached encoding_key") {
     SECTION("accepts encoding key") {
       MemcachedPtr copy(memc);
 
-      REQUIRE(MEMCACHED_SUCCESS ==
-              memcached_set_encoding_key(memc, LITERAL(__func__)));
+      REQUIRE_SUCCESS(memcached_set_encoding_key(memc, S(__func__)));
 
       SECTION("sets encoded value") {
-        REQUIRE(MEMCACHED_SUCCESS ==
-                memcached_set(memc, TEST_KEY, INITIAL_VAL, 0, 0));
+        REQUIRE_SUCCESS(memcached_set(memc, TEST_KEY, INITIAL_VAL, 0, 0));
 
         SECTION("gets encoded value") {
           check(memc, &copy.memc, INITIAL_VAL);
@@ -52,17 +49,14 @@ TEST_CASE("memcached encoding_key") {
 
       SECTION("adds encoded value") {
 
-        REQUIRE(MEMCACHED_SUCCESS ==
-                memcached_set(memc, TEST_KEY, INITIAL_VAL, 0, 0));
-        REQUIRE(MEMCACHED_NOTSTORED ==
-                memcached_add(memc, TEST_KEY, REPLACED_VAL, 0, 0));
+        REQUIRE_SUCCESS(memcached_set(memc, TEST_KEY, INITIAL_VAL, 0, 0));
+        REQUIRE_RC(MEMCACHED_NOTSTORED, memcached_add(memc, TEST_KEY, REPLACED_VAL, 0, 0));
 
         check(memc, &copy.memc, INITIAL_VAL);
 
         test.flush();
 
-        REQUIRE(MEMCACHED_SUCCESS ==
-                memcached_add(memc, TEST_KEY, REPLACED_VAL, 0, 0));
+        REQUIRE_SUCCESS(memcached_add(memc, TEST_KEY, REPLACED_VAL, 0, 0));
 
         SECTION("gets encoded value") {
           check(memc, &copy.memc, REPLACED_VAL);
@@ -70,13 +64,11 @@ TEST_CASE("memcached encoding_key") {
       }
 
       SECTION("replaces encoded value") {
-        REQUIRE(MEMCACHED_SUCCESS ==
-                memcached_set(memc, TEST_KEY, INITIAL_VAL, 0, 0));
+        REQUIRE_SUCCESS(memcached_set(memc, TEST_KEY, INITIAL_VAL, 0, 0));
 
         check(memc, &copy.memc, INITIAL_VAL);
 
-        REQUIRE(MEMCACHED_SUCCESS ==
-                memcached_replace(memc, TEST_KEY, REPLACED_VAL, 0, 0));
+        REQUIRE_SUCCESS(memcached_replace(memc, TEST_KEY, REPLACED_VAL, 0, 0));
 
         SECTION("gets encoded value") {
           check(memc, &copy.memc, REPLACED_VAL);
@@ -84,20 +76,12 @@ TEST_CASE("memcached encoding_key") {
       }
 
       SECTION("unsupported") {
-        REQUIRE(MEMCACHED_NOT_SUPPORTED ==
-                memcached_increment(memc, TEST_KEY, 0, nullptr));
-        REQUIRE(MEMCACHED_NOT_SUPPORTED ==
-                memcached_decrement(memc, TEST_KEY, 0, nullptr));
-        REQUIRE(MEMCACHED_NOT_SUPPORTED ==
-                memcached_increment_with_initial(memc, TEST_KEY, 0, 0,
-                                                 0, nullptr));
-        REQUIRE(MEMCACHED_NOT_SUPPORTED ==
-                memcached_decrement_with_initial(memc, TEST_KEY, 0, 0,
-                                                 0, nullptr));
-        REQUIRE(MEMCACHED_NOT_SUPPORTED ==
-                memcached_append(memc, TEST_KEY, REPLACED_VAL, 0, 0));
-        REQUIRE(MEMCACHED_NOT_SUPPORTED ==
-                memcached_prepend(memc, TEST_KEY, REPLACED_VAL, 0, 0));
+        REQUIRE_RC(MEMCACHED_NOT_SUPPORTED, memcached_increment(memc, TEST_KEY, 0, nullptr));
+        REQUIRE_RC(MEMCACHED_NOT_SUPPORTED, memcached_decrement(memc, TEST_KEY, 0, nullptr));
+        REQUIRE_RC(MEMCACHED_NOT_SUPPORTED, memcached_increment_with_initial(memc, TEST_KEY, 0, 0, 0, nullptr));
+        REQUIRE_RC(MEMCACHED_NOT_SUPPORTED, memcached_decrement_with_initial(memc, TEST_KEY, 0, 0, 0, nullptr));
+        REQUIRE_RC(MEMCACHED_NOT_SUPPORTED, memcached_append(memc, TEST_KEY, REPLACED_VAL, 0, 0));
+        REQUIRE_RC(MEMCACHED_NOT_SUPPORTED, memcached_prepend(memc, TEST_KEY, REPLACED_VAL, 0, 0));
       }
     }
   }
