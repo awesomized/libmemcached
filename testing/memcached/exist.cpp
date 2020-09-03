@@ -12,7 +12,6 @@ TEST_CASE("memcached exist") {
 
   LOOPED_SECTION(tests) {
     auto memc = &test.memc;
-    auto &returns = test.returns;
 
     SECTION("initial not found") {
       REQUIRE_RC(MEMCACHED_NOTFOUND,memcached_exist(memc, S("frog")));

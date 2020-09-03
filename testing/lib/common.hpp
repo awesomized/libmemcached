@@ -39,6 +39,25 @@ inline auto random_socket_or_port_arg() {
   return make_pair(&random_socket_or_port_flag, &random_socket_or_port_string);
 }
 
+inline memcached_return_t fetch_all_results(memcached_st *memc, unsigned int &keys_returned, memcached_return_t &rc) {
+  keys_returned = 0;
+
+  memcached_result_st *result = nullptr;
+  while ((result = memcached_fetch_result(memc, result, &rc)))
+  {
+    REQUIRE(MEMCACHED_SUCCESS == rc);
+    keys_returned += 1;
+  }
+  memcached_result_free(result);
+  return MEMCACHED_SUCCESS;
+}
+
+inline memcached_return_t fetch_all_results(memcached_st *memc, unsigned int &keys_returned) {
+  memcached_return_t rc;
+  fetch_all_results(memc, keys_returned, rc);
+  return rc;
+}
+
 class MemcachedPtr {
 public:
   memcached_st memc;

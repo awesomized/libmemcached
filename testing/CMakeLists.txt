@@ -19,6 +19,7 @@ add_executable(catch_main
         memcached/dump.cpp
         memcached/encoding_key.cpp
         memcached/exist.cpp
+        memcached/haldenbrand.cpp
         )
 
 set_target_properties(catch_main PROPERTIES
