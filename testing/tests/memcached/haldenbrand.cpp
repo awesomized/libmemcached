@@ -1,5 +1,5 @@
-#include "../lib/common.hpp"
-#include "../lib/MemcachedCluster.hpp"
+#include "testing/lib/common.hpp"
+#include "testing/lib/MemcachedCluster.hpp"
 
 /* Test case provided by Cal Haldenbrand */
 

@@ -1,5 +1,5 @@
-#include "../lib/common.hpp"
-#include "../lib/MemcachedCluster.hpp"
+#include "testing/lib/common.hpp"
+#include "testing/lib/MemcachedCluster.hpp"
 
 memcached_return_t dump_cb(const memcached_st *, const char *, size_t, void *ctx) {
   auto *c = reinterpret_cast<size_t *>(ctx);

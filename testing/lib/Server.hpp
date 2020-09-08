@@ -15,7 +15,7 @@ public:
   using argv_t = vector<variant<arg_t, arg_pair_t>>;
 
   explicit
-  Server(string &&binary_ = "false", argv_t && args_ = {});
+  Server(string binary_ = "false", argv_t args_ = {});
 
   ~Server();
 
@@ -65,3 +65,17 @@ private:
   vector<char *> createArgv();
   optional<string> handleArg(vector<char *> &arr, const string &arg, const arg_func_t &next_arg);
 };
+
+inline ostream &operator << (ostream &out, const socket_or_port_t sop) {
+  if (holds_alternative<string>(sop)) {
+    out << get<string>(sop);
+  } else {
+    out << get<int>(sop);
+  }
+  return out;
+}
+
+inline ostream &operator << (ostream &out, const Server &server) {
+  out << "Server{binary=" << server.getBinary() << ",pid=" << server.getPid() << ",conn=" << server.getSocketOrPort() << "}";
+  return out;
+}

@@ -6,7 +6,7 @@
 class Cluster {
 public:
   explicit
-  Cluster(Server &&serv, uint16_t cnt = 0);
+  Cluster(Server serv, uint16_t cnt = 0);
 
   ~Cluster();
 
@@ -40,4 +40,6 @@ private:
   Server proto;
   vector<Server> cluster;
   map<pid_t, Server *> pids;
+
+  bool startServer(Server &server);
 };

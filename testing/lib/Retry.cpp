@@ -1,9 +1,9 @@
 #include "Retry.hpp"
 
-Retry::Retry(predicate &&pred_, unsigned int max_, chrono::milliseconds sleep_for_)
+Retry::Retry(predicate pred_, unsigned int max_, chrono::milliseconds sleep_for_)
 : max{max_}
 , sleep_for{sleep_for_}
-, pred{forward<predicate>(pred_)}
+, pred{move(pred_)}
 {}
 
 bool Retry::operator()() {

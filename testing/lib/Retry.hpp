@@ -7,7 +7,7 @@ public:
 
   using predicate = function<bool()>;
 
-  explicit Retry(predicate &&pred_, unsigned max_ = 10, chrono::milliseconds sleep_for_ = 20ms);
+  explicit Retry(predicate pred_, unsigned max_ = 10, chrono::milliseconds sleep_for_ = 100ms);
 
   bool operator () ();
 

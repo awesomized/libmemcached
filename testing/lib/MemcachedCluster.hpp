@@ -13,39 +13,26 @@ public:
   ReturnMatcher(const ReturnMatcher &) = default;
   ReturnMatcher &operator = (const ReturnMatcher &) = default;
 
-  ReturnMatcher(ReturnMatcher &&rm) {
-    *this = move(rm);
-  }
-  ReturnMatcher &operator = (ReturnMatcher &&rm) {
-    memc = exchange(rm.memc, nullptr);
-    expected = rm.expected;
-    return *this;
-  }
+  ReturnMatcher(ReturnMatcher &&rm);
+  ReturnMatcher &operator = (ReturnMatcher &&rm);
 
-  bool match(const memcached_return_t &arg) const override {
-    return arg == expected;
-  }
-
-  ReturnMatcher success() {
-    return ReturnMatcher{memc};
-  }
-
-  ReturnMatcher operator () (memcached_return_t expected_) {
-    return ReturnMatcher{memc, expected_};
-  }
+  bool match(const memcached_return_t &arg) const override;
+  ReturnMatcher success();
+  ReturnMatcher operator () (memcached_return_t expected_);
 
 protected:
-  string describe() const override {
-    return string{"is "}
-           + to_string(expected)
-           + " (" + memcached_strerror(memc, expected) + ") "
-           + "\n\tlast error: "
-      + memcached_last_error_message(memc);
-  }
+  string describe() const override;
 
 private:
   const memcached_st *memc;
-  memcached_return_t expected;
+  memcached_return_t expected{MEMCACHED_SUCCESS};
+};
+
+class LoneReturnMatcher {
+public:
+  ReturnMatcher returns;
+  explicit LoneReturnMatcher(const memcached_st *memc) : returns{memc}
+  {}
 };
 
 class MemcachedCluster {
@@ -62,18 +49,8 @@ public:
   MemcachedCluster(const MemcachedCluster &) = delete;
   MemcachedCluster &operator=(const MemcachedCluster &) = delete;
 
-  MemcachedCluster(MemcachedCluster &&mc)
-  : cluster{Server{}}
-  {
-    *this = move(mc);
-  };
-  MemcachedCluster &operator=(MemcachedCluster &&mc)
-  {
-    cluster = move(mc.cluster);
-    memcached_clone(&memc, &mc.memc);
-    returns = ReturnMatcher{&memc};
-    return *this;
-  }
+  MemcachedCluster(MemcachedCluster &&mc);;
+  MemcachedCluster &operator=(MemcachedCluster &&mc);
 
   void enableBinaryProto(bool enable = true);
   void flush();

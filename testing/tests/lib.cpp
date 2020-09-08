@@ -1,7 +1,7 @@
-#include "lib/common.hpp"
-#include "lib/Cluster.hpp"
-#include "lib/Retry.hpp"
-#include "lib/Server.hpp"
+#include "testing/lib/common.hpp"
+#include "testing/lib/Cluster.hpp"
+#include "testing/lib/Retry.hpp"
+#include "testing/lib/Server.hpp"
 
 TEST_CASE("lib/Server") {
   Server server{"memcached"};

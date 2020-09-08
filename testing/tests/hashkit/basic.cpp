@@ -1,4 +1,4 @@
-#include "../lib/common.hpp"
+#include "testing/lib/common.hpp"
 
 #include "libhashkit-1.0/hashkit.hpp"
 

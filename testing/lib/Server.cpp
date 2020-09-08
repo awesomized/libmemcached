@@ -5,9 +5,9 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-Server::Server(string &&binary_, Server::argv_t &&args_)
-    : binary{forward<string>(binary_)}
-    , args{forward<argv_t>(args_)}
+Server::Server(string binary_, Server::argv_t args_)
+    : binary{move(binary_)}
+    , args{move(args_)}
 {}
 
 Server::~Server() {

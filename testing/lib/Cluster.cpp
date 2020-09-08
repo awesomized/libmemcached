@@ -1,10 +1,11 @@
 #include "Cluster.hpp"
+#include "Retry.hpp"
 
 #include <sys/wait.h>
 
-Cluster::Cluster(Server &&serv, uint16_t cnt)
+Cluster::Cluster(Server serv, uint16_t cnt)
 : count{cnt}
-, proto{forward<Server>(serv)}
+, proto{move(serv)}
 {
   if (!cnt) {
     count = thread::hardware_concurrency()/2 ?: 4;
@@ -33,10 +34,7 @@ bool Cluster::start() {
   bool started = true;
 
   for (auto &server : cluster) {
-    auto pid = server.start();
-    if (pid.has_value()) {
-      pids[*pid] = &server;
-    } else {
+    if (!startServer(server)) {
       started = false;
     }
   }
@@ -62,21 +60,37 @@ bool Cluster::isStopped() {
 
 bool Cluster::isListening() {
   for (auto &server : cluster) {
-    if (!server.isListening()) {
-      // zombie?
-      auto old_pid = server.getPid();
-      if (server.tryWait()) {
-        pids.erase(old_pid);
-        auto pid = server.start();
-        if (pid.has_value()) {
-          pids[*pid] = &server;
+    Retry server_is_listening{[&] {
+      if (!server.isListening()) {
+        // zombie?
+        auto old_pid = server.getPid();
+        if (server.tryWait()) {
+          cerr << "zombie collected (old pid=" << old_pid << "): " << server << "\n";
+          pids.erase(old_pid);
+          // restart
+          startServer(server);
+        }
+        if (!server.isListening()) {
+          return false;
         }
       }
-      return server.isListening();
+      return true;
+    }};
+    if (!server_is_listening()) {
+      return false;
     }
   }
 
   return true;
+}
+
+bool Cluster::startServer(Server &server) {
+  auto pid = server.start();
+  if (pid.has_value()) {
+    pids[*pid] = &server;
+    return true;
+  }
+  return false;
 }
 
 void Cluster::wait() {
@@ -94,4 +108,3 @@ void Cluster::wait() {
     }
   }
 }
-
