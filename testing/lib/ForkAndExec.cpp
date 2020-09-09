@@ -11,7 +11,7 @@ ForkAndExec::ForkAndExec(const char *binary_, char **argv_)
 : binary{binary_}
 , argv{argv_}
 {
-  if (pipe2(pipes, O_CLOEXEC|O_NONBLOCK)) {
+  if (pipe2(ready, O_CLOEXEC | O_NONBLOCK)) {
     int error = errno;
     perror("Server::start pipe2()");
     throw system_error(error, system_category());
@@ -19,21 +19,21 @@ ForkAndExec::ForkAndExec(const char *binary_, char **argv_)
 }
 
 ForkAndExec::~ForkAndExec() {
-  if (pipes[0] != -1) {
-    close(pipes[0]);
+  if (ready[0] != -1) {
+    close(ready[0]);
   }
-  if (pipes[1] != -1) {
-    close(pipes[1]);
+  if (ready[1] != -1) {
+    close(ready[1]);
   }
 }
 
 optional<pid_t> ForkAndExec::operator()()  {
-  if (pipes[0] == -1) {
+  if (ready[0] == -1) {
     return {};
   }
-  if (pipes[1] != -1) {
-    close(pipes[1]);
-    pipes[1] = -1;
+  if (ready[1] != -1) {
+    close(ready[1]);
+    ready[1] = -1;
   }
 
   switch (pid_t pid = fork()) {
@@ -45,7 +45,7 @@ optional<pid_t> ForkAndExec::operator()()  {
       return {};
 
     default:
-      pollfd fd{pipes[0], 0, 0};
+      pollfd fd{ready[0], 0, 0};
       if (1 > poll(&fd, 1, 5000)) {
         cerr << "exec() timed out" << endl;
       }

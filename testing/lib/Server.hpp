@@ -70,7 +70,7 @@ inline ostream &operator << (ostream &out, const socket_or_port_t sop) {
   if (holds_alternative<string>(sop)) {
     out << get<string>(sop);
   } else {
-    out << get<int>(sop);
+    out << ":" << get<int>(sop);
   }
   return out;
 }

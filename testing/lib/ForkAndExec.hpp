@@ -4,6 +4,8 @@
 
 class ForkAndExec {
 public:
+  enum { READ, WRITE } pipe;
+
   ForkAndExec(const char *binary, char **argv);
   ~ForkAndExec();
 
@@ -15,7 +17,7 @@ public:
   optional<pid_t> operator () ();
 
 private:
-  int pipes[2];
+  int ready[2], pipes[2];
   const char *binary;
   char **argv;
 };
