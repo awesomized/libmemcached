@@ -9,10 +9,10 @@ TEST_CASE("memcached inc_dec") {
   LOOPED_SECTION(tests) {
     auto memc = &test.memc;
     uint64_t binary = GENERATE(0, 1);
-    void *prefix = GENERATE(as<void *>{}, nullptr, "namespace:");
+    char *prefix = GENERATE(as<char *>{}, "", "namespace:");
 
     REQUIRE_SUCCESS(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, binary));
-    if (prefix) {
+    if (*prefix) {
       REQUIRE_SUCCESS(memcached_callback_set(memc, MEMCACHED_CALLBACK_NAMESPACE, prefix));
     }
 

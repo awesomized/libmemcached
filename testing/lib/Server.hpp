@@ -29,21 +29,30 @@ public:
     binary = exchange(s.binary, "false");
     args = exchange(s.args, {});
     pid = exchange(s.pid, 0);
+    pipe = exchange(s.pipe, -1);
     status = exchange(s.status, 0);
     signalled = exchange(s.signalled, {});
     socket_or_port = exchange(s.socket_or_port, {});
+    output = exchange(s.output, {});
     return *this;
   };
 
   pid_t getPid() const;
-
+  int getPipe() const;
   const string &getBinary() const;
-
   const argv_t &getArgs() const;
-
   const socket_or_port_t &getSocketOrPort() const;
 
-  optional<pid_t> start();
+  struct ChildProc {
+    pid_t pid;
+    int pipe;
+    ChildProc(pid_t pid_, int pipe_)
+    : pid{pid_}
+    , pipe{pipe_}
+    {
+    }
+  };
+  optional<ChildProc> start();
   bool stop();
 
   bool signal(int signo = SIGTERM);
@@ -52,14 +61,18 @@ public:
 
   bool wait(int flags = 0);
   bool tryWait();
+  string &drain();
+
 
 private:
   string binary;
   argv_t args;
   pid_t pid = 0;
+  int pipe = -1;
   int status = 0;
   unordered_map<int, unsigned> signalled;
   socket_or_port_t socket_or_port = 11211;
+  string output;
 
   [[nodiscard]]
   vector<char *> createArgv();

@@ -81,7 +81,7 @@ Connection::Connection(Connection &&conn) noexcept {
 }
 
 Connection &Connection::operator=(Connection &&conn) noexcept {
-  Connection copy(forward<Connection>(conn));
+  Connection copy(move(conn));
   copy.swap(*this);
   return *this;
 }

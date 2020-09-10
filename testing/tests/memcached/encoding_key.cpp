@@ -29,7 +29,7 @@ TEST_CASE("memcached encoding_key") {
     auto memc = &test.memc;
 
     SECTION("accepts encoding key") {
-      MemcachedPtr copy(memc);
+      MemcachedPtr copy(memcached_clone(nullptr, memc));
 
       REQUIRE_SUCCESS(memcached_set_encoding_key(memc, S(__func__)));
 
@@ -37,13 +37,13 @@ TEST_CASE("memcached encoding_key") {
         REQUIRE_SUCCESS(memcached_set(memc, TEST_KEY, INITIAL_VAL, 0, 0));
 
         SECTION("gets encoded value") {
-          check(memc, &copy.memc, INITIAL_VAL);
+          check(memc, copy.memc, INITIAL_VAL);
         }
 
         SECTION("cloned gets encoded value") {
-          MemcachedPtr dupe(memc);
+          MemcachedPtr dupe(memcached_clone(nullptr, memc));
 
-          check(&dupe.memc, &copy.memc, INITIAL_VAL);
+          check(dupe.memc, copy.memc, INITIAL_VAL);
         }
       }
 
@@ -52,26 +52,26 @@ TEST_CASE("memcached encoding_key") {
         REQUIRE_SUCCESS(memcached_set(memc, TEST_KEY, INITIAL_VAL, 0, 0));
         REQUIRE_RC(MEMCACHED_NOTSTORED, memcached_add(memc, TEST_KEY, REPLACED_VAL, 0, 0));
 
-        check(memc, &copy.memc, INITIAL_VAL);
+        check(memc, copy.memc, INITIAL_VAL);
 
         test.flush();
 
         REQUIRE_SUCCESS(memcached_add(memc, TEST_KEY, REPLACED_VAL, 0, 0));
 
         SECTION("gets encoded value") {
-          check(memc, &copy.memc, REPLACED_VAL);
+          check(memc, copy.memc, REPLACED_VAL);
         }
       }
 
       SECTION("replaces encoded value") {
         REQUIRE_SUCCESS(memcached_set(memc, TEST_KEY, INITIAL_VAL, 0, 0));
 
-        check(memc, &copy.memc, INITIAL_VAL);
+        check(memc, copy.memc, INITIAL_VAL);
 
         REQUIRE_SUCCESS(memcached_replace(memc, TEST_KEY, REPLACED_VAL, 0, 0));
 
         SECTION("gets encoded value") {
-          check(memc, &copy.memc, REPLACED_VAL);
+          check(memc, copy.memc, REPLACED_VAL);
         }
       }
 

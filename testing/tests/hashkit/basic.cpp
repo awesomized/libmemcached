@@ -7,6 +7,7 @@ TEST_CASE("hashkit") {
   hashkit_st st, *hp = hashkit_create(nullptr);
   Hashkit stack;
   Hashkit *heap = new Hashkit;
+  auto newed = unique_ptr<Hashkit>(heap);
 
   REQUIRE(hashkit_create(&st));
   REQUIRE(hp);
@@ -57,15 +58,12 @@ TEST_CASE("hashkit") {
       REQUIRE(HASHKIT_SUCCESS == stack.set_function(h));
       REQUIRE(HASHKIT_SUCCESS == hashkit_set_function(&st, h));
 
-      DYNAMIC_SECTION("can digest hash function: " << libhashkit_string_hash(h)) {
-        auto n = 0;
-
-        for (auto i : input) {
-          CHECK(output[f][n] == stack.digest(S(i)));
-          CHECK(output[f][n] == hashkit_digest(&st, S(i)));
-          CHECK(output[f][n] == libhashkit_digest(S(i), h));
-          ++n;
-        }
+      auto n = 0;
+      for (auto i : input) {
+        CHECK(output[f][n] == stack.digest(S(i)));
+        CHECK(output[f][n] == hashkit_digest(&st, S(i)));
+        CHECK(output[f][n] == libhashkit_digest(S(i), h));
+        ++n;
       }
     }
   }
@@ -81,7 +79,6 @@ TEST_CASE("hashkit") {
     REQUIRE_FALSE(hashkit_compare(&st, hp));
   }
 
-  delete heap;
   hashkit_free(&st);
   hashkit_free(hp);
 }

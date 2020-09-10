@@ -42,7 +42,7 @@ MemcachedCluster::MemcachedCluster()
 }
 
 MemcachedCluster::MemcachedCluster(Cluster &&cluster_)
-: cluster{forward<Cluster>(cluster_)}
+: cluster{move(cluster_)}
 {
   init();
 }

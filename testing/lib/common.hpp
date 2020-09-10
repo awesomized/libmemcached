@@ -57,21 +57,20 @@ inline memcached_return_t fetch_all_results(memcached_st *memc, unsigned int &ke
 
 class MemcachedPtr {
 public:
-  memcached_st memc;
+  memcached_st *memc;
 
   explicit
   MemcachedPtr(memcached_st *memc_) {
-    memset(&memc, 0, sizeof(memc));
-    REQUIRE(memcached_clone(&memc, memc_));
+    memc = memc_;
   }
   MemcachedPtr()
-  : MemcachedPtr(nullptr)
+  : MemcachedPtr(memcached_create(nullptr))
   {}
   ~MemcachedPtr() {
-    memcached_free(&memc);
+    memcached_free(memc);
   }
   memcached_st *operator * () {
-    return &memc;
+    return memc;
   }
 };
 

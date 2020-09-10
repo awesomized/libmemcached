@@ -44,6 +44,7 @@ bool Cluster::start() {
 
 void Cluster::stop() {
   for (auto &server : cluster) {
+    server.drain();
     // no cookies for memcached; TERM is just too slow
     server.signal(SIGKILL);
   }
@@ -65,7 +66,7 @@ bool Cluster::isListening() {
         // zombie?
         auto old_pid = server.getPid();
         if (server.tryWait()) {
-          cerr << "zombie collected (old pid=" << old_pid << "): " << server << "\n";
+          cerr << "Collected zombie " << server << "(old pid=" << old_pid << ")\n";
           pids.erase(old_pid);
           // restart
           startServer(server);
@@ -85,9 +86,8 @@ bool Cluster::isListening() {
 }
 
 bool Cluster::startServer(Server &server) {
-  auto pid = server.start();
-  if (pid.has_value()) {
-    pids[*pid] = &server;
+  if (server.start().has_value()) {
+    pids[server.getPid()] = &server;
     return true;
   }
   return false;

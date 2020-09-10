@@ -13,6 +13,9 @@ Server::Server(string binary_, Server::argv_t args_)
 Server::~Server() {
   stop();
   wait();
+  if (pipe != -1) {
+    close(pipe);
+  }
   if (holds_alternative<string>(socket_or_port)) {
     unlink(get<string>(socket_or_port).c_str());
   }
@@ -57,7 +60,7 @@ vector<char *> Server::createArgv()  {
   vector<char *> arr;
 
   pushArg(arr, binary);
-  pushArg(arr, "-v");
+  //pushArg(arr, "-v");
 
   for (auto it = args.cbegin(); it != args.cend(); ++it) {
     if (holds_alternative<arg_t>(*it)) {
@@ -87,23 +90,23 @@ vector<char *> Server::createArgv()  {
   return arr;
 }
 
-optional<pid_t> Server::start() {
-  if (pid) {
-    return pid;
+optional<Server::ChildProc> Server::start() {
+  if (!pid) {
+    auto argv = createArgv();
+    ForkAndExec fork_and_exec{binary.c_str(), argv.data()};
+
+    pipe = fork_and_exec.createPipe();
+    pid = fork_and_exec();
+
+    for (auto argp : argv) {
+      delete [] argp;
+    }
+
+    if (!pid) {
+      return {};
+    }
   }
-
-  auto argv = createArgv();
-  auto child = ForkAndExec{binary.c_str(), argv.data()}();
-
-  for (auto argp : argv) {
-    delete [] argp;
-  }
-
-  if (child.has_value()) {
-    pid = child.value();
-  }
-
-  return child;
+  return ChildProc{pid, pipe};
 }
 
 bool Server::isListening() {
@@ -140,7 +143,15 @@ bool Server::check() {
 
 bool Server::wait(int flags) {
   if (pid && pid == waitpid(pid, &status, flags)) {
+    if (drain().length()) {
+      cerr << "Ouput of " << *this << ":\n" << output << endl;
+      output.clear();
+    }
     pid = 0;
+    if (pipe != -1) {
+      close(pipe);
+      pipe = -1;
+    }
     return true;
   }
   return false;
@@ -179,3 +190,34 @@ const socket_or_port_t &Server::getSocketOrPort() const {
   return socket_or_port;
 }
 
+int Server::getPipe() const {
+  return pipe;
+}
+
+string &Server::drain() {
+  if (pipe != -1) {
+    again:
+    char read_buf[1<<12];
+    auto read_len = read(pipe, read_buf, sizeof(read_buf));
+
+    if (read_len > 0) {
+      output.append(read_buf, read_len);
+      goto again;
+    }
+    if (read_len == -1) {
+      switch (errno) {
+      case EINTR:
+        goto again;
+      default:
+        perror("Server::drain read()");
+        [[fallthrough]];
+      case EAGAIN:
+#if EWOULDBLOCK != EAGAIN
+      case EWOULDBLOCK:
+#endif
+        break;
+      }
+    }
+  }
+  return output;
+}
