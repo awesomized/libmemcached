@@ -1,0 +1,3 @@
+#pragma once
+
+#cmakedefine TESTING_ROOT "@TESTING_ROOT@"

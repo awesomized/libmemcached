@@ -33,6 +33,10 @@ unsigned random_port() {
   goto retry;
 }
 
+string random_port_string(const string &) {
+  return to_string(random_port());
+}
+
 string random_socket(const string &prefix) {
   return prefix + to_string(random_num(1U, UINT32_MAX)) + "@" + to_string(getpid()) + ".sock";
 }
@@ -74,4 +78,3 @@ pair<string, string> random_ascii_pair(size_t minlen, size_t maxlen) {
       random_ascii_string(random_num(minlen, maxlen))
   };
 }
-

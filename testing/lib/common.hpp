@@ -11,6 +11,7 @@
 #include <variant>
 #include <vector>
 
+#include "testing/conf.h"
 #include "testing/lib/catch.hpp"
 #include "testing/lib/random.hpp"
 
@@ -54,6 +55,33 @@ inline memcached_return_t fetch_all_results(memcached_st *memc, unsigned int &ke
   fetch_all_results(memc, keys_returned, rc);
   return rc;
 }
+
+#include <cstdlib>
+#include <unistd.h>
+
+class Tempfile {
+public:
+  explicit Tempfile(const char templ_[] = "memc.test.XXXXXX") {
+    *copy(S(templ_)+templ_, fn) = '\0';
+    fd = mkstemp(fn);
+  }
+  ~Tempfile() {
+    close(fd);
+    unlink(fn);
+  }
+  int getFd() const {
+    return fd;
+  }
+  const char *getFn() const {
+    return fn;
+  }
+  bool put(const char *buf, size_t len) const {
+    return static_cast<ssize_t >(len) == write(fd, buf, len);
+  }
+private:
+  char fn[80];
+  int fd;
+};
 
 class MemcachedPtr {
 public:

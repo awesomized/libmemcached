@@ -13,6 +13,7 @@ template<typename T>
 enable_if_t<is_integral_v<T>, T> random_num(T min, T max);
 
 unsigned random_port();
+string random_port_string(const string &);
 
 char random_ascii(char min = '!', char max = '~');
 string random_ascii_string(size_t len, char min = '!', char max = '~');

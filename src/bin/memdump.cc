@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
     {
       opt_servers= strdup(temp);
     }
-    else if (argc >= 1 and argv[--argc])
+    else if (argc > 1 and argv[--argc])
     {
       opt_servers= strdup(argv[argc]);
     }
