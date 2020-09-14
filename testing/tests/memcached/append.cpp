@@ -3,7 +3,7 @@
 
 DECLARE_STREQUAL;
 
-TEST_CASE("memcached append") {
+TEST_CASE("memcached_append") {
   pair<string, MemcachedCluster> tests[] = {
       {"bin_mixed", MemcachedCluster::mixed()},
       {"mixed", MemcachedCluster::mixed()}

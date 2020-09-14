@@ -1,7 +1,7 @@
 #include "testing/lib/common.hpp"
 #include "testing/lib/MemcachedCluster.hpp"
 
-TEST_CASE("memcached exist") {
+TEST_CASE("memcached_exist") {
   pair<string, MemcachedCluster> tests[]{
     {"bin_mixed", MemcachedCluster::mixed()},
     {"network", MemcachedCluster::network()},

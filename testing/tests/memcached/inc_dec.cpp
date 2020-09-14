@@ -1,7 +1,7 @@
 #include "testing/lib/common.hpp"
 #include "testing/lib/MemcachedCluster.hpp"
 
-TEST_CASE("memcached inc_dec") {
+TEST_CASE("memcached_inc_dec") {
   pair<string, MemcachedCluster> tests[] = {
       {"mixed", MemcachedCluster::mixed()},
   };

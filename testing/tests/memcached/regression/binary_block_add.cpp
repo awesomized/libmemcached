@@ -1,7 +1,7 @@
 #include "testing/lib/common.hpp"
 #include "testing/lib/MemcachedCluster.hpp"
 
-TEST_CASE("memcached regression binary_block_add") {
+TEST_CASE("memcached_regression_binary_block_add") {
   auto test = MemcachedCluster::network();
   auto memc = &test.memc;
   auto blob = random_ascii_string(1024);

@@ -19,7 +19,7 @@ static inline void check(memcached_st *enc, memcached_st *raw, const char *val, 
   REQUIRE_FALSE(memcmp(val, *enc_value, enc_length));
 }
 
-TEST_CASE("memcached encoding_key") {
+TEST_CASE("memcached_encoding_key") {
   pair<string, MemcachedCluster> tests[]{
     {"network", MemcachedCluster::network()},
     {"socket", MemcachedCluster::socket()}

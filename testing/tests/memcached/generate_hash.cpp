@@ -5,7 +5,7 @@ static constexpr const uint32_t md5_hosts[] = {4U, 1U, 0U, 1U, 4U, 2U, 0U, 3U, 0
 static constexpr const uint32_t crc_hosts[] = {2U, 4U, 1U, 0U, 2U, 4U, 4U, 4U, 1U, 2U, 3U, 4U, 3U, 4U, 1U, 3U, 3U, 2U, 0U, 0U, 0U, 1U, 2U, 4U, 0U};
 static constexpr const uint32_t *hosts[] = {nullptr, md5_hosts, crc_hosts};
 
-TEST_CASE("memcached generate_hash") {
+TEST_CASE("memcached_generate_hash") {
   MemcachedPtr memc(memcached(S("--server=localhost:1 --server=localhost:2 --server=localhost:3 --server=localhost:4 --server=localhost5 --DISTRIBUTION=modula")));
 
   REQUIRE(*memc);

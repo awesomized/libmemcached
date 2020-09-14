@@ -8,7 +8,7 @@
 
 #include <cstdlib>
 
-TEST_CASE("memcached haldenbrand nblock_tcp_ndelay") {
+TEST_CASE("memcached_haldenbrand_nblock_tcp_ndelay") {
   pair<string, MemcachedCluster> tests[] = {
       {"network", MemcachedCluster::network()},
   };

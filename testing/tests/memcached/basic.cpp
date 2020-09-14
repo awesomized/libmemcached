@@ -2,7 +2,7 @@
 
 #include "libmemcached/is.h"
 
-TEST_CASE("memcached basic") {
+TEST_CASE("memcached_basic") {
   SECTION("library") {
     REQUIRE(string(LIBMEMCACHED_VERSION_STRING) == memcached_lib_version());
   }

@@ -1,7 +1,7 @@
 #include "testing/lib/common.hpp"
 #include "testing/lib/MemcachedCluster.hpp"
 
-TEST_CASE("memcached cas") {
+TEST_CASE("memcached_cas") {
   pair<string, MemcachedCluster> tests[] = {
       {"network", MemcachedCluster::network()},
       {"socket", MemcachedCluster::socket()}

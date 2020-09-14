@@ -44,6 +44,8 @@ TEST_CASE("memdump") {
       REQUIRE_SUCCESS(memcached_set(*memc, S("key1"), S("val1"), 0, 0));
       REQUIRE_SUCCESS(memcached_set(*memc, S("key2"), S("val2"), 0, 0));
 
+      this_thread::sleep_for(500ms);
+
       string output;
       REQUIRE(sh.run(comm, output));
       REQUIRE_THAT(output, Contains("key1") && Contains("key2"));

@@ -14,7 +14,7 @@ static memcached_return_t server_display_function(const memcached_st *,
   return MEMCACHED_SUCCESS;
 }
 
-TEST_CASE("memcached servers") {
+TEST_CASE("memcached_servers") {
   SECTION("memcached_servers_parse") {
     SECTION("does not leak memory") {
       memcached_server_st *s = memcached_servers_parse("1.2.3.4:1234");

@@ -12,7 +12,7 @@ static memcached_return_t ping_callback(const memcached_st *, const memcached_in
   return MEMCACHED_SUCCESS;
 }
 
-TEST_CASE("memcached util") {
+TEST_CASE("memcached_util") {
   SECTION("version_check") {
     auto test = MemcachedCluster::mixed();
     auto memc = &test.memc;
@@ -62,5 +62,15 @@ TEST_CASE("memcached util") {
     memcached_server_fn fptr[] = {&ping_callback};
 
     REQUIRE_SUCCESS(memcached_server_cursor(memc, fptr, nullptr, 1));
+  }
+
+  SECTION("flush") {
+    auto test = MemcachedCluster::network();
+
+    for (auto &server : test.cluster.getServers()) {
+      memcached_return_t rc;
+      REQUIRE(libmemcached_util_flush("localhost", get<int>(server.getSocketOrPort()), &rc));
+      REQUIRE_SUCCESS(rc);
+    }
   }
 }

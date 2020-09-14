@@ -8,7 +8,7 @@
 
 DECLARE_STREQUAL;
 
-TEST_CASE("memcached ketama_compat") {
+TEST_CASE("memcached_ketama_compat") {
   auto test = MemcachedCluster::network();
   auto memc = &test.memc;
 

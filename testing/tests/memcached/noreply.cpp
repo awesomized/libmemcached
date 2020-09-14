@@ -8,7 +8,7 @@ inline action_t operator ++ (action_t &a) {
 
 constexpr static const int keys = 5000;
 
-TEST_CASE("memcached noreply") {
+TEST_CASE("memcached_noreply") {
   auto test{MemcachedCluster::mixed()};
   auto memc = &test.memc;
 

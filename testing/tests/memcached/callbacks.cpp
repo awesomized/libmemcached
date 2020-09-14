@@ -17,7 +17,7 @@ static memcached_return_t cleanup_callback(memcached_st *) {
   return MEMCACHED_SUCCESS;
 }
 
-TEST_CASE("memcached callbacks") {
+TEST_CASE("memcached_callbacks") {
   auto test{MemcachedCluster::mixed()};
   auto memc = &test.memc;
   memcached_return_t rc;

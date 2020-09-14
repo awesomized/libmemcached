@@ -7,7 +7,7 @@ memcached_return_t dump_cb(const memcached_st *, const char *, size_t, void *ctx
   return MEMCACHED_SUCCESS;
 }
 
-TEST_CASE("memcached dump") {
+TEST_CASE("memcached_dump") {
   pair<string, MemcachedCluster> tests[]{
     {"mixed", MemcachedCluster::mixed()},
     {"network", MemcachedCluster::network()},
