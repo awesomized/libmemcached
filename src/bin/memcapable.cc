@@ -63,6 +63,9 @@ static bool verbose= false;
 /* The number of seconds to wait for an IO-operation */
 static int timeout= 2;
 
+/* v1.6.x is more permissible */
+static bool v16x_or_greater = false;
+
 /*
  * Instead of having to cast between the different datatypes we create
  * a union of all of the different types of pacages we want to send.
@@ -1279,20 +1282,33 @@ static enum test_return test_ascii_quit(void)
 
 static enum test_return test_ascii_version(void)
 {
-  /* Verify that version command handles unknown options */
-  execute(send_string("version foo bar\r\n"));
-  execute(receive_error_response());
-
-  /* version doesn't support noreply */
-  execute(send_string("version noreply\r\n"));
-  execute(receive_error_response());
-
-  /* Verify that verify works */
+  /* Verify that version works */
   execute(send_string("version\r\n"));
   char buffer[256];
   execute(receive_line(buffer, sizeof(buffer)));
   verify(strncmp(buffer, "VERSION ", 8) == 0);
 
+  char *version = &buffer[sizeof("VERSION") + 2];
+  if (version[0] >= '1' || (version[0] == '1' && version[2] >= '6')) {
+    v16x_or_greater = true;
+  }
+
+  /* Verify that version command handles unknown options */
+  execute(send_string("version foo bar\r\n"));
+  if (v16x_or_greater) {
+    execute(receive_line(buffer, sizeof(buffer)));
+    verify(strncmp(buffer, "VERSION ", 8) == 0);
+  } else {
+    execute(receive_error_response());
+  }
+  /* version doesn't support noreply */
+  execute(send_string("version noreply\r\n"));
+  if (v16x_or_greater) {
+    execute(receive_line(buffer, sizeof(buffer)));
+    verify(strncmp(buffer, "VERSION ", 8) == 0);
+  } else {
+    execute(receive_error_response());
+  }
   return TEST_PASS;
 }
 
