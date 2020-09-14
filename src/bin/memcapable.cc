@@ -1262,14 +1262,16 @@ static enum test_return receive_error_response(void)
 
 static enum test_return test_ascii_quit(void)
 {
-  /* Verify that quit handles unknown options */
-  execute(send_string("quit foo bar\r\n"));
-  execute(receive_error_response());
+  if (!v16x_or_greater) {
+    /* Verify that quit handles unknown options */
+    execute(send_string("quit foo bar\r\n"));
+    execute(receive_error_response());
 
-  /* quit doesn't support noreply */
-  execute(send_string("quit noreply\r\n"));
-  execute(receive_error_response());
-
+    /* quit doesn't support noreply */
+    execute(send_string("quit noreply\r\n"));
+    execute(receive_error_response());
+  }
+  
   /* Verify that quit works */
   execute(send_string("quit\r\n"));
 
@@ -2024,8 +2026,8 @@ struct testcase
 };
 
 struct testcase testcases[]= {
-  { "ascii quit", test_ascii_quit },
   { "ascii version", test_ascii_version },
+  { "ascii quit", test_ascii_quit },
   { "ascii verbosity", test_ascii_verbosity },
   { "ascii set", test_ascii_set },
   { "ascii set noreply", test_ascii_set_noreply },
