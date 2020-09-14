@@ -9,7 +9,11 @@ add_library(libmemcachedutil SHARED
         version.cc
         )
 add_library(memcachedutil ALIAS libmemcachedutil)
-set_target_properties(libmemcachedutil PROPERTIES LIBRARY_OUTPUT_NAME memcachedutil)
+set_target_properties(libmemcachedutil PROPERTIES
+        LIBRARY_OUTPUT_NAME memcachedutil
+        INSTALL_RPATH $ORIGIN
+        SOVERSION ${LIBMEMCACHEDUTIL_SO_VERSION}
+        VERSION v${LIBMEMCACHEDUTIL_VERSION})
 target_compile_definitions(libmemcachedutil PRIVATE -DBUILDING_LIBMEMCACHED)
 target_link_libraries(libmemcachedutil PUBLIC libmemcached Threads::Threads)
 target_include_directories(libmemcachedutil PRIVATE
@@ -21,7 +25,6 @@ target_include_directories(libmemcachedutil PUBLIC
         $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
         $<INSTALL_INTERFACE:include>)
 
-set_target_properties(libmemcachedutil PROPERTIES SOVERSION ${LIBMEMCACHEDUTIL_SO_VERSION})
 install(TARGETS libmemcachedutil EXPORT libmemcachedutil
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 export(EXPORT libmemcachedutil)

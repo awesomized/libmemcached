@@ -89,7 +89,11 @@ set(LIBMEMCACHED_SOURCES
 add_library(libmemcached SHARED
         ${LIBMEMCACHED_SOURCES})
 add_library(memcached ALIAS libmemcached)
-set_target_properties(libmemcached PROPERTIES LIBRARY_OUTPUT_NAME memcached)
+set_target_properties(libmemcached PROPERTIES
+        LIBRARY_OUTPUT_NAME memcached
+        INSTALL_RPATH $ORIGIN
+        SOVERSION ${LIBMEMCACHED_SO_VERSION}
+        VERSION v${LIBMEMCACHED_VERSION})
 target_compile_definitions(libmemcached PRIVATE -DBUILDING_LIBMEMCACHED)
 target_link_libraries(libmemcached PUBLIC libhashkit Threads::Threads ${LIBSASL_LIBRARIES} ${CMAKE_DL_LIBS})
 target_include_directories(libmemcached PRIVATE ${LIBSASL_INCLUDEDIR})
@@ -102,7 +106,6 @@ target_include_directories(libmemcached PUBLIC
         $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
         $<INSTALL_INTERFACE:include>)
 
-set_target_properties(libmemcached PROPERTIES SOVERSION ${LIBMEMCACHED_SO_VERSION})
 install(TARGETS libmemcached EXPORT libmemcached
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 export(EXPORT libmemcached)

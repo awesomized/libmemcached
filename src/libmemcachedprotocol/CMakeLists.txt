@@ -8,7 +8,11 @@ add_library(libmemcachedprotocol SHARED
         pedantic.c
         )
 add_library(memcachedprotocol ALIAS libmemcachedprotocol)
-set_target_properties(libmemcachedprotocol PROPERTIES LIBRARY_OUTPUT_NAME memcachedprotocol)
+set_target_properties(libmemcachedprotocol PROPERTIES
+        LIBRARY_OUTPUT_NAME memcachedprotocol
+        INSTALL_RPATH $ORIGIN
+        SOVERSION ${LIBMEMCACHEDPROTOCOL_SO_VERSION}
+        VERSION v${LIBMEMCACHEDPROTOCOL_VERSION})
 target_compile_definitions(libmemcachedprotocol PRIVATE -DBUILDING_LIBMEMCACHED)
 target_link_libraries(libmemcachedprotocol PUBLIC libmemcached Threads::Threads)
 target_include_directories(libmemcachedprotocol PRIVATE
@@ -20,7 +24,6 @@ target_include_directories(libmemcachedprotocol PUBLIC
         $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
         $<INSTALL_INTERFACE:include>)
 
-set_target_properties(libmemcachedprotocol PROPERTIES SOVERSION ${LIBMEMCACHEDPROTOCOL_SO_VERSION})
 install(TARGETS libmemcachedprotocol EXPORT libmemcachedprotocol
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 export(EXPORT libmemcachedprotocol)
