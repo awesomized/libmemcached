@@ -10,7 +10,15 @@ add_library(libmemcachedprotocol SHARED
 add_library(memcachedprotocol ALIAS libmemcachedprotocol)
 set_target_properties(libmemcachedprotocol PROPERTIES LIBRARY_OUTPUT_NAME memcachedprotocol)
 target_compile_definitions(libmemcachedprotocol PRIVATE -DBUILDING_LIBMEMCACHED)
-target_link_libraries(libmemcachedprotocol libmemcached Threads::Threads)
+target_link_libraries(libmemcachedprotocol PUBLIC libmemcached Threads::Threads)
+target_include_directories(libmemcachedprotocol PRIVATE
+        ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_BINARY_DIR}/src
+        ${CMAKE_BINARY_DIR})
+target_include_directories(libmemcachedprotocol PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
+        $<INSTALL_INTERFACE:include>)
 
 set_target_properties(libmemcachedprotocol PROPERTIES SOVERSION ${LIBMEMCACHEDPROTOCOL_SO_VERSION})
 install(TARGETS libmemcachedprotocol EXPORT libmemcachedprotocol

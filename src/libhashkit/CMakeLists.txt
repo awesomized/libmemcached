@@ -33,7 +33,14 @@ add_library(libhashkit SHARED
 add_library(hashkit ALIAS libhashkit)
 set_target_properties(libhashkit PROPERTIES LIBRARY_OUTPUT_NAME hashkit)
 target_compile_options(libhashkit PRIVATE -DBUILDING_HASHKIT)
-
+target_include_directories(libhashkit PRIVATE
+        ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_BINARY_DIR}/src
+        ${CMAKE_BINARY_DIR})
+target_include_directories(libhashkit PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
+        $<INSTALL_INTERFACE:include>)
 configure_file(hashkitcon.h.in hashkitcon.h @ONLY)
 
 set_target_properties(libhashkit PROPERTIES SOVERSION ${LIBHASHKIT_SO_VERSION})

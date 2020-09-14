@@ -1,7 +1,14 @@
 
 add_library(libclient_utilities STATIC utilities.cc generator.cc execute.cc)
 add_library(client_utilities ALIAS libclient_utilities)
-target_link_libraries(libclient_utilities libmemcachedinternal)
+target_link_libraries(libclient_utilities PRIVATE libmemcachedinternal)
+target_include_directories(libclient_utilities PUBLIC
+        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_BINARY_DIR}/include
+        ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_BINARY_DIR}/src
+        ${CMAKE_BINARY_DIR})
+
 
 foreach(CLIENT IN LISTS CLIENTS)
     add_executable(${CLIENT} ${CLIENT}.cc)

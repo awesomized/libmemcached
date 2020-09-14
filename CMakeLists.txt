@@ -18,13 +18,6 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 include(CMakeConfig.txt)
 
 if(NOT BUILD_DOCSONLY)
-    foreach(INCLUDE IN ITEMS ${CMAKE_BINARY_DIR} .)
-        include_directories(
-                ${INCLUDE}/
-                ${INCLUDE}/include
-                ${INCLUDE}/src
-                )
-    endforeach()
 
     set(AUTOHEADER_FILE mem_config.h)
 
