@@ -28,7 +28,7 @@ TEST_CASE("memcat") {
   }
 
   SECTION("with server") {
-    Server server{"memcached"};
+    Server server{"memcached", {"-p", random_port_string}};
     MemcachedPtr memc;
     LoneReturnMatcher test{*memc};
 

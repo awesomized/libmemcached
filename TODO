@@ -1,3 +1,9 @@
+- Clients (src/bin):
+    - consolidate CLI
+    - convert to proper C++ where applicable
+
+## Legacy:
+
 - Write a shell application (?)
 - Fix version in command line tools
 - Write (more) test cases for all command line tools (!!!)

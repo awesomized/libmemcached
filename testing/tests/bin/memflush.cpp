@@ -6,19 +6,19 @@
 
 using Catch::Matchers::Contains;
 
-TEST_CASE("memcp") {
+TEST_CASE("memflush") {
   Shell sh{string{TESTING_ROOT "/../src/bin"}};
 
   SECTION("no servers provided") {
     string output;
-    REQUIRE_FALSE(sh.run("memcp nonexistent", output));
+    REQUIRE_FALSE(sh.run("memflush", output));
     REQUIRE(output == "No Servers provided\n");
   }
 
   SECTION("--help") {
     string output;
-    REQUIRE(sh.run("memcp --help", output));
-    REQUIRE_THAT(output, Contains("memcp"));
+    REQUIRE(sh.run("memflush --help", output));
+    REQUIRE_THAT(output, Contains("memflush"));
     REQUIRE_THAT(output, Contains("v1"));
     REQUIRE_THAT(output, Contains("help"));
     REQUIRE_THAT(output, Contains("version"));
@@ -35,42 +35,35 @@ TEST_CASE("memcp") {
     server.start();
     Retry{[&server] { return server.isListening(); }}();
     auto port = get<int>(server.getSocketOrPort());
-    auto comm = "memcp --servers=localhost:" + to_string(port) + " ";
+    auto comm = "memflush --servers=localhost:" + to_string(port) + " ";
 
     REQUIRE_SUCCESS(memcached_server_add(*memc, "localhost", port));
 
     SECTION("okay") {
-      Tempfile temp;
-      temp.put(S("123"));
+
+      REQUIRE_SUCCESS(memcached_set(*memc, S("key1"), S("val1"), 0, 0));
+      REQUIRE_SUCCESS(memcached_set(*memc, S("key2"), S("val2"), 0, 0));
+
+      this_thread::sleep_for(500ms);
 
       string output;
-      REQUIRE(sh.run(comm + temp.getFn(), output));
-      REQUIRE(output == "");
+      REQUIRE(sh.run(comm, output));
+      REQUIRE(output.empty());
 
-      size_t len;
       memcached_return_t rc;
-      Malloced val(memcached_get(*memc, S(temp.getFn()), &len, nullptr, &rc));
-
-      REQUIRE(*val);
-      REQUIRE_SUCCESS(rc);
-      REQUIRE(string(*val, len) == "123");
+      REQUIRE(nullptr == memcached_get(*memc, S("key1"), nullptr, nullptr, &rc));
+      REQUIRE_RC(MEMCACHED_NOTFOUND, rc);
+      REQUIRE(nullptr == memcached_get(*memc, S("key2"), nullptr, nullptr, &rc));
+      REQUIRE_RC(MEMCACHED_NOTFOUND, rc);
     }
 
     SECTION("connection failure") {
       server.signal(SIGKILL);
       server.tryWait();
 
-      Tempfile temp;
-
       string output;
-      REQUIRE_FALSE(sh.run(comm + temp.getFn(), output));
-      REQUIRE_THAT(output, Contains("CONNECTION FAILURE"));
-    }
-
-    SECTION("file not found") {
-      string output;
-      REQUIRE_FALSE(sh.run(comm + "nonexistent", output));
-      REQUIRE_THAT(output, Contains("No such file or directory"));
+      REQUIRE_FALSE(sh.run(comm, output));
+      REQUIRE_THAT(output, Contains("CONNECTION FAILURE") || Contains("SERVER HAS FAILED"));
     }
   }
 }

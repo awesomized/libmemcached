@@ -28,7 +28,7 @@ TEST_CASE("memdump") {
   }
 
   SECTION("with server") {
-    Server server{"memcached"};
+    Server server{"memcached", {"-p", random_port_string}};
     MemcachedPtr memc;
     LoneReturnMatcher test{*memc};
 
@@ -53,6 +53,7 @@ TEST_CASE("memdump") {
 
     SECTION("connection failure") {
       server.signal(SIGKILL);
+      server.tryWait();
 
       string output;
       REQUIRE_FALSE(sh.run(comm + "-v", output));
