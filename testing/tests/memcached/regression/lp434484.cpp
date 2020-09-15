@@ -7,7 +7,7 @@ TEST_CASE("memcached_regression_lp434484") {
 
   test.enableBinaryProto();
 
-  REQUIRE_RC(MEMCACHED_NOTFOUND, memcached_append(memc, S(__func__), S(__func__), 0, 0));
+  REQUIRE_RC(MEMCACHED_NOTFOUND, memcached_exist(memc, S(__func__)));
 
   vector<char> blob;
   blob.resize(2048 * 1024);
