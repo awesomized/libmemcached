@@ -23,6 +23,8 @@ public:
   MemcachedCluster &operator=(MemcachedCluster &&mc);
 
   void enableBinaryProto(bool enable = true);
+  void enableBuffering(bool enable = true);
+  void enableReplication();
   void flush();
 
   static MemcachedCluster mixed();

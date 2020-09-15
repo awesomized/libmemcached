@@ -47,6 +47,19 @@ MemcachedCluster::MemcachedCluster(Cluster &&cluster_)
   init();
 }
 
+MemcachedCluster::MemcachedCluster(MemcachedCluster &&mc)
+    : cluster{Server{}}
+{
+  *this = move(mc);
+}
+
+MemcachedCluster &MemcachedCluster::operator=(MemcachedCluster &&mc) {
+  cluster = move(mc.cluster);
+  memcached_clone(&memc, &mc.memc);
+  returns = ReturnMatcher{&memc};
+  return *this;
+}
+
 MemcachedCluster MemcachedCluster::mixed() {
   return MemcachedCluster{};
 }
@@ -70,15 +83,13 @@ void MemcachedCluster::enableBinaryProto(bool enable) {
       MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, enable));
 }
 
-MemcachedCluster::MemcachedCluster(MemcachedCluster &&mc)
-    : cluster{Server{}}
-{
-  *this = move(mc);
+void MemcachedCluster::enableBuffering(bool enable) {
+  REQUIRE(MEMCACHED_SUCCESS == memcached_behavior_set(&memc,
+      MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, enable));
 }
 
-MemcachedCluster &MemcachedCluster::operator=(MemcachedCluster &&mc) {
-  cluster = move(mc.cluster);
-  memcached_clone(&memc, &mc.memc);
-  returns = ReturnMatcher{&memc};
-  return *this;
+void MemcachedCluster::enableReplication() {
+  REQUIRE(MEMCACHED_SUCCESS == memcached_behavior_set(&memc,
+      MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, memcached_server_count(&memc)));
 }
+
