@@ -35,7 +35,8 @@ install:
 
 before_script:
  - echo stats settings | nc -q 0 localhost ${PORT:-11211} | column -t
- - killall memcached
+ - sudo systemctl stop memcached
+ - killall memcached || true
  - mkdir build
 
 script:
