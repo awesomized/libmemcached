@@ -110,12 +110,24 @@ optional<Server::ChildProc> Server::start() {
 }
 
 bool Server::isListening() {
-  Connection conn(socket_or_port);
+  MemcachedPtr memc;
 
-  if (!conn.open()) {
+  if (holds_alternative<string>(socket_or_port)) {
+    if (memcached_server_add_unix_socket(*memc, get<string>(socket_or_port).c_str())) {
+      return false;
+    }
+  } else {
+    if (memcached_server_add(*memc, "localhost", get<int>(socket_or_port))) {
+      return false;
+    }
+  }
+
+  Malloced stat(memcached_stat(*memc, nullptr, nullptr));
+  if (!*stat || !stat->pid || stat->pid != pid) {
     return false;
   }
-  return conn.isOpen();
+
+  return true;
 }
 
 bool Server::stop() {
