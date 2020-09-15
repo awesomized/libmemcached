@@ -28,9 +28,10 @@ TEST_CASE("memcached_regression_lp434843") {
   array<size_t, NUM_KEYS> len;
   
   for (auto i = 0; i < NUM_KEYS; ++i) {
-    str[i] = random_ascii_string(random_num<size_t>(24, 32));
+    str[i] = random_ascii_string(36);
     chr[i] = str[i].data();
     len[i] = str[i].length();
+    cerr << str[i] << endl;
   }
 
   REQUIRE_SUCCESS(memcached_mget(memc, chr.data(), len.data(), NUM_KEYS));
