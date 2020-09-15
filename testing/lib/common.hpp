@@ -106,6 +106,7 @@ template<class T>
 class Malloced {
   T *ptr;
 public:
+  explicit
   Malloced(T *ptr_)
   : ptr{ptr_}
   {}
@@ -114,6 +115,9 @@ public:
       free(ptr);
   }
   auto operator *() {
+    return ptr;
+  }
+  auto operator ->() {
     return ptr;
   }
 };
