@@ -10,7 +10,7 @@ add_library(libmemcachedprotocol SHARED
 add_library(memcachedprotocol ALIAS libmemcachedprotocol)
 set_target_properties(libmemcachedprotocol PROPERTIES
         LIBRARY_OUTPUT_NAME memcachedprotocol
-        INSTALL_RPATH $ORIGIN
+        LIBRARY_OUTPUT_NAME_DEBUG memcachedprotocol-dbg
         SOVERSION ${LIBMEMCACHEDPROTOCOL_SO_VERSION}
         VERSION v${LIBMEMCACHEDPROTOCOL_VERSION})
 target_compile_definitions(libmemcachedprotocol PRIVATE -DBUILDING_LIBMEMCACHED)
@@ -24,7 +24,7 @@ target_include_directories(libmemcachedprotocol PUBLIC
         $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
         $<INSTALL_INTERFACE:include>)
 
-install(TARGETS libmemcachedprotocol EXPORT libmemcachedprotocol
+install(TARGETS libmemcachedprotocol EXPORT libmemcachedprotocol-targets
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
-export(EXPORT libmemcachedprotocol)
-install(EXPORT libmemcachedprotocol DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake)
+export(EXPORT libmemcachedprotocol-targets NAMESPACE libmemcached::)
+install(EXPORT libmemcachedprotocol-targets NAMESPACE libmemcached:: DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake)

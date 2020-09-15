@@ -11,9 +11,11 @@ bison_target(CSL_PARSER csl/parser.yy ${CMAKE_CURRENT_BINARY_DIR}/csl/parser.cc
         DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/csl/parser.h
         COMPILE_FLAGS ${BISON_WARNINGS}
         )
+set_source_files_properties(${BISON_CSL_PARSER_OUTPUTS} PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
 flex_target(CSL_SCANNER csl/scanner.l ${CMAKE_CURRENT_BINARY_DIR}/csl/scanner.cc
         DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/csl/scanner.h
         )
+set_source_files_properties(${FLEX_CSL_SCANNER_OUTPUTS} PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
 add_flex_bison_dependency(CSL_SCANNER CSL_PARSER)
 
 if(HAVE_DTRACE)
@@ -91,7 +93,7 @@ add_library(libmemcached SHARED
 add_library(memcached ALIAS libmemcached)
 set_target_properties(libmemcached PROPERTIES
         LIBRARY_OUTPUT_NAME memcached
-        INSTALL_RPATH $ORIGIN
+        LIBRARY_OUTPUT_NAME_DEBUG memcached-dbg
         SOVERSION ${LIBMEMCACHED_SO_VERSION}
         VERSION v${LIBMEMCACHED_VERSION})
 target_compile_definitions(libmemcached PRIVATE -DBUILDING_LIBMEMCACHED)
@@ -106,10 +108,10 @@ target_include_directories(libmemcached PUBLIC
         $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
         $<INSTALL_INTERFACE:include>)
 
-install(TARGETS libmemcached EXPORT libmemcached
+install(TARGETS libmemcached EXPORT libmemcached-targets
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
-export(EXPORT libmemcached)
-install(EXPORT libmemcached DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake)
+export(EXPORT libmemcached-targets NAMESPACE libmemcached::)
+install(EXPORT libmemcached-targets NAMESPACE libmemcached:: DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake)
 
 install_public_headers(
         libmemcached

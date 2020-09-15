@@ -3,6 +3,15 @@ set(CMAKE_BUILD_TYPE Release
 set(CMAKE_INSTALL_PREFIX /usr/local
     CACHE PATH "install prefix")
 
+if(APPLE)
+    set(CMAKE_INSTALL_RPATH @loader_path
+        CACHE STRING "set relative rpath")
+elseif(UNIX)
+    # FIXME
+    set(CMAKE_INSTALL_RPATH $ORIGIN
+        CACHE STRING "set relative rpath")
+endif()
+
 option(BUILD_TESTING        "whether to enable build of the test suite"
         OFF)
 option(BUILD_DOCSONLY       "build *only* documentation"

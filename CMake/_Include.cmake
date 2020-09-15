@@ -3,8 +3,10 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 # globals
 include(CTest)
 include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
 
 find_package(PkgConfig)
+set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 # locals

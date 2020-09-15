@@ -14,7 +14,10 @@ foreach(CLIENT IN LISTS CLIENTS)
     add_executable(${CLIENT} ${CLIENT}.cc)
     target_include_directories(${CLIENT} PRIVATE ..)
     target_link_libraries(${CLIENT} PRIVATE libclient_utilities)
-    set_target_properties(${CLIENT} PROPERTIES INSTALL_RPATH $ORIGIN/../${CMAKE_INSTALL_LIBDIR})
+    if(CMAKE_INSTALL_RPATH)
+        set_target_properties(${CLIENT} PROPERTIES
+                INSTALL_RPATH ${CMAKE_INSTALL_RPATH}/../${CMAKE_INSTALL_LIBDIR})
+    endif()
     install(TARGETS ${CLIENT}
             RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 endforeach()
@@ -37,6 +40,10 @@ if(ENABLE_MEMASLAP)
                 ms_conn.c ms_setting.c ms_sigsegv.c ms_stats.c ms_task.c ms_thread.c)
         target_include_directories(memaslap PRIVATE ${LIBEVENT_INCLUDEDIR})
         target_link_libraries(memaslap PRIVATE libclient_utilities ${LIBEVENT_LIBRARIES} Threads::Threads)
+        if(CMAKE_INSTALL_RPATH)
+            set_target_properties(${CLIENT} PROPERTIES
+                    INSTALL_RPATH ${CMAKE_INSTALL_RPATH}/../${CMAKE_INSTALL_LIBDIR})
+        endif()
         install(TARGETS memaslap
                 RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
     endif()
