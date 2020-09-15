@@ -1,6 +1,8 @@
-if(NOT BUILD_TESTING)
+if(NOT BUILD_TESTING OR NOT CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     return()
 endif()
+
+include(CMake/Catch.cmake)
 
 file(GLOB_RECURSE TESTING_SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
 set(TESTING_ROOT ${CMAKE_CURRENT_BINARY_DIR})
@@ -16,36 +18,11 @@ target_include_directories(runtests PRIVATE
 target_link_libraries(runtests PRIVATE libhashkit libmemcached libmemcachedutil)
 add_dependencies(runtests ${CLIENTS})
 
-macro(add_test TEST_CASE)
-    _add_test(${TEST_CASE} runtests ${TEST_CASE})
-endmacro()
-
-add_test("lib/Server")
-add_test("lib/Cluster")
-
-add_test("hashkit")
-
-add_test("memcached_append")
-add_test("memcached_basic")
-add_test("memcached_callbacks")
-add_test("memcached_cas")
-add_test("memcached_dump")
-add_test("memcached_encoding_key")
-add_test("memcached_exist")
-add_test("memcached_generate_hash")
-add_test("memcached_haldenbrand_nblock_tcp_ndelay")
-add_test("memcached_inc_dec")
-add_test("memcached_ketama_compat")
-add_test("memcached_noreply")
-add_test("memcached_prepend")
-add_test("memcached_regression_binary_block_add")
-add_test("memcached_servers")
-add_test("memcached_simple")
-add_test("memcached_util")
-
-add_test("memcat")
-add_test("memcp")
-add_test("memdump")
-add_test("memerror")
-add_test("memexist")
-add_test("memflush")
+catch_discover_tests(runtests
+        TEST_SPEC "lib*")
+catch_discover_tests(runtests
+        TEST_SPEC "hashkit*")
+catch_discover_tests(runtests
+        TEST_SPEC "memcached*")
+catch_discover_tests(runtests
+        TEST_SPEC "bin/*")

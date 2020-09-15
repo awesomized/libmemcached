@@ -4,7 +4,7 @@
 #include "testing/lib/Server.hpp"
 
 TEST_CASE("lib/Server") {
-  Server server{"memcached"};
+  Server server{MEMCACHED_BINARY};
 
   SECTION("starts and listens") {
 
@@ -33,7 +33,7 @@ TEST_CASE("lib/Server") {
 }
 
 TEST_CASE("lib/Cluster") {
-  Cluster cluster{Server{"memcached", {
+  Cluster cluster{Server{MEMCACHED_BINARY, {
     random_socket_or_port_arg(),
   }}};
 

@@ -34,7 +34,7 @@ void MemcachedCluster::flush() {
 
 MemcachedCluster::MemcachedCluster()
 : cluster{Server{
-  getenv_else("MEMCACHED_BINARY", "memcached"),
+  MEMCACHED_BINARY,
   {random_socket_or_port_arg()}
 }}
 {
@@ -53,14 +53,14 @@ MemcachedCluster MemcachedCluster::mixed() {
 
 MemcachedCluster MemcachedCluster::network() {
   return MemcachedCluster{Cluster{Server{
-    getenv_else("MEMCACHED_BINARY", "memcached"),
+    MEMCACHED_BINARY,
     {"-p", random_socket_or_port_string}
   }}};
 }
 
 MemcachedCluster MemcachedCluster::socket() {
   return MemcachedCluster{Cluster{Server{
-    getenv_else("MEMCACHED_BINARY", "memcached"),
+    MEMCACHED_BINARY,
     {"-s", random_socket_or_port_string}
   }}};
 }

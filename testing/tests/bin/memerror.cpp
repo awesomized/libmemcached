@@ -6,7 +6,7 @@
 
 using Catch::Matchers::Contains;
 
-TEST_CASE("memerror") {
+TEST_CASE("bin/memerror") {
   Shell sh{string{TESTING_ROOT "/../src/bin"}};
 
   SECTION("--help") {

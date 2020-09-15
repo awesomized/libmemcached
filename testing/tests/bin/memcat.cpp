@@ -6,7 +6,7 @@
 
 using Catch::Matchers::Contains;
 
-TEST_CASE("memcat") {
+TEST_CASE("bin/memcat") {
   Shell sh{string{TESTING_ROOT "/../src/bin"}};
 
   SECTION("no servers provided") {
@@ -28,7 +28,7 @@ TEST_CASE("memcat") {
   }
 
   SECTION("with server") {
-    Server server{"memcached", {"-p", random_port_string}};
+    Server server{MEMCACHED_BINARY, {"-p", random_port_string}};
     MemcachedPtr memc;
     LoneReturnMatcher test{*memc};
 

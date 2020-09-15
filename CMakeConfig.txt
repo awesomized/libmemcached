@@ -44,6 +44,8 @@ set(ENABLE_SANITIZERS ""
 if(BUILD_TESTING)
     set(MEMCACHED_BINARY "/usr/bin/memcached"
         CACHE FILEPATH "memcached binary")
+    set(CMAKE_CTEST_ARGUMENTS "--output-on-failure;-j2;--repeat;until-pass:2"
+        ) # available since CMake 3.17
 endif()
 
 if(BUILD_DOCS)

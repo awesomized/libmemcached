@@ -1,7 +1,8 @@
-set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 # globals
-include(CTest)
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    include(CTest)
+endif()
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 

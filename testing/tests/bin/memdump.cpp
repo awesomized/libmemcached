@@ -6,7 +6,7 @@
 
 using Catch::Matchers::Contains;
 
-TEST_CASE("memdump") {
+TEST_CASE("bin/memdump") {
   Shell sh{string{TESTING_ROOT "/../src/bin"}};
 
   SECTION("no servers provided") {
@@ -28,7 +28,7 @@ TEST_CASE("memdump") {
   }
 
   SECTION("with server") {
-    Server server{"memcached", {"-p", random_port_string}};
+    Server server{MEMCACHED_BINARY, {"-p", random_port_string}};
     MemcachedPtr memc;
     LoneReturnMatcher test{*memc};
 
@@ -53,7 +53,7 @@ TEST_CASE("memdump") {
 
     SECTION("connection failure") {
       server.signal(SIGKILL);
-      server.tryWait();
+      server.wait();
 
       string output;
       REQUIRE_FALSE(sh.run(comm + "-v", output));
