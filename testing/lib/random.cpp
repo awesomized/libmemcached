@@ -1,23 +1,7 @@
 #include "testing/lib/random.hpp"
 #include "testing/lib/Connection.hpp"
 
-#include <chrono>
-#include <random>
-
 #include <unistd.h> // getpid()
-
-
-template<typename T>
-enable_if_t<is_integral_v<T>, T> random_num(T min, T max) {
-  using namespace chrono;
-  using rnd = mt19937;
-  using dst = uniform_int_distribution<T>;
-
-  auto time = duration_cast<nanoseconds>(system_clock::now().time_since_epoch());
-  auto seed = static_cast<rnd::result_type>(time.count() % numeric_limits<T>::max());
-  auto rgen = rnd{seed};
-  return dst(min, max)(rgen);
-}
 
 unsigned random_port() {
   retry:
