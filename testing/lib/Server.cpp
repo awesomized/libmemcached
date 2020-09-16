@@ -42,8 +42,8 @@ optional<string> Server::handleArg(vector<char *> &arr, const string &arg, const
   if (arg == "-p" || arg == "--port") {
     auto port = next_arg(arg);
     pushArg(arr, port);
-    pushArg(arr, "-U");
-    pushArg(arr, port);
+//    pushArg(arr, "-U");
+//    pushArg(arr, port);
     socket_or_port = stoi(port);
     return port;
   } else if (arg == "-s" || arg == "--unix-socket") {
@@ -51,6 +51,8 @@ optional<string> Server::handleArg(vector<char *> &arr, const string &arg, const
     pushArg(arr, sock);
     socket_or_port = sock;
     return sock;
+  } else if (arg == "-S" || arg == "--enable-sasl") {
+    sasl = true;
   }
   return {};
 }
@@ -120,6 +122,11 @@ bool Server::isListening() {
     if (memcached_server_add(*memc, "localhost", get<int>(socket_or_port))) {
       return false;
     }
+  }
+
+  if (sasl) {
+    memcached_behavior_set(*memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
+    memcached_set_sasl_auth_data(*memc, "memcached", "memcached");
   }
 
   Malloced stat(memcached_stat(*memc, nullptr, nullptr));

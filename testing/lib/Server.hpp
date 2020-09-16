@@ -67,6 +67,7 @@ public:
 private:
   string binary;
   argv_t args;
+  bool sasl = false;
   pid_t pid = 0;
   int pipe = -1;
   int status = 0;

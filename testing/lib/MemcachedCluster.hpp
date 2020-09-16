@@ -31,6 +31,10 @@ public:
   static MemcachedCluster network();
   static MemcachedCluster socket();
 
+#if LIBMEMCACHED_WITH_SASL_SUPPORT
+  static MemcachedCluster sasl();
+#endif
+
 private:
   static const memcached_st empty_memc;
 

@@ -6,6 +6,11 @@ const memcached_st MemcachedCluster::empty_memc{};
 void MemcachedCluster::init() {
   REQUIRE(cluster.start());
 
+  Retry cluster_is_listening([this]() {
+    return cluster.isListening();
+  });
+  REQUIRE(cluster_is_listening());
+
   REQUIRE(memcached_create(&memc));
   for (const auto &server : cluster.getServers()) {
     auto target = server.getSocketOrPort();
@@ -16,10 +21,6 @@ void MemcachedCluster::init() {
     }
   }
 
-  Retry cluster_is_listening([this]() {
-    return cluster.isListening();
-  });
-  REQUIRE(cluster_is_listening());
 }
 
 MemcachedCluster::~MemcachedCluster() {
@@ -77,6 +78,22 @@ MemcachedCluster MemcachedCluster::socket() {
     {"-s", random_socket_or_port_string}
   }}};
 }
+
+#if LIBMEMCACHED_WITH_SASL_SUPPORT
+MemcachedCluster MemcachedCluster::sasl() {
+  auto mc = MemcachedCluster{Cluster{Server{
+      MEMCACHED_BINARY,
+      {
+        Server::arg_pair_t{"-p", random_socket_or_port_string},
+        Server::arg_t{"-S"}
+      }
+  }}};
+  mc.enableBinaryProto();
+  REQUIRE(MEMCACHED_SUCCESS == memcached_set_sasl_auth_data(&mc.memc,
+      "memcached", "memcached"));
+  return mc;
+}
+#endif
 
 void MemcachedCluster::enableBinaryProto(bool enable) {
   REQUIRE(MEMCACHED_SUCCESS == memcached_behavior_set(&memc,
