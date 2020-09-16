@@ -23,7 +23,7 @@ TEST_CASE("memcached_regression_lp447342") {
   array<size_t, NUM_KEYS> len;
   
   for (auto i = 0U; i < NUM_KEYS; ++i) {
-    str[i] = random_ascii_string(random_num<size_t>(24, 32));
+    str[i] = random_ascii_string(random_num(24, 32));
     chr[i] = str[i].data();
     len[i] = str[i].length();
     REQUIRE_SUCCESS(memcached_set(memc, chr[i], len[i], chr[i], len[i], 0, 0));
