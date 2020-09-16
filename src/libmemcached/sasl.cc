@@ -173,8 +173,8 @@ memcached_return_t memcached_sasl_authenticate_connection(memcached_instance_st*
 
   memcached_server_response_increment(server);
 
-  char mech[MEMCACHED_MAX_BUFFER];
-  memcached_return_t rc= memcached_response(server, mech, sizeof(mech), NULL);
+  char mech[MEMCACHED_MAX_BUFFER] = {0};
+  memcached_return_t rc= memcached_response(server, mech, sizeof(mech) - 1, NULL);
   if (memcached_failed(rc))
   {
     if (rc == MEMCACHED_PROTOCOL_ERROR)
