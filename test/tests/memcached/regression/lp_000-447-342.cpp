@@ -30,7 +30,7 @@ TEST_CASE("memcached_regression_lp447342") {
   }
 
  /*
- ** We are using the qiet command to store the replicas, so we need
+ ** We are using the quit command to store the replicas, so we need
  ** to ensure that all of them are processed before we can continue.
  ** In the test we go directly from storing the object to trying to
  ** receive the object from all of the different servers, so we
