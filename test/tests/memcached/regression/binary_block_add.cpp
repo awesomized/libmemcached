@@ -5,8 +5,10 @@ TEST_CASE("memcached_regression_binary_block_add") {
   auto test = MemcachedCluster::network();
   auto memc = &test.memc;
   auto blob = random_ascii_string(1024);
+  auto binary = GENERATE(0, 1);
 
-  test.enableBinaryProto();
+  test.enableBinaryProto(binary);
+  INFO("binary: " << binary);
 
   for (auto i = 0; i < 20480; ++i) {
     auto rkey = random_ascii_string(12);
