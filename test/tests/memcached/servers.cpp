@@ -91,4 +91,45 @@ TEST_CASE("memcached_servers") {
     }
   }
 
+  SECTION("add null/empty") {
+    MemcachedPtr memc;
+
+    REQUIRE(MEMCACHED_SUCCESS == memcached_server_add(*memc, nullptr, 0));
+    REQUIRE(1 == memcached_server_count(*memc));
+
+    REQUIRE(MEMCACHED_SUCCESS == memcached_server_add(*memc, "", 0));
+    REQUIRE(2 == memcached_server_count(*memc));
+  }
+
+  SECTION("add many") {
+    MemcachedPtr memc;
+
+    for (auto i = 0; i < 100; ++i) {
+      REQUIRE(MEMCACHED_SUCCESS == memcached_server_add(*memc, "memc", 11211 + i));
+    }
+    REQUIRE(100 == memcached_server_count(*memc));
+  }
+
+  SECTION("add many weighted") {
+    MemcachedPtr memc;
+
+    for (auto i = 0; i < 100; ++i) {
+      REQUIRE(MEMCACHED_SUCCESS == memcached_server_add_with_weight(*memc, "memc", 11211 +i, i % 10));
+    }
+    REQUIRE(100 == memcached_server_count(*memc));
+  }
+
+  SECTION("reset") {
+    MemcachedPtr memc;
+
+    REQUIRE_FALSE(memcached_server_count(*memc));
+    REQUIRE(MEMCACHED_SUCCESS == memcached_server_add(*memc, "local", 12345));
+    REQUIRE(1 == memcached_server_count(*memc));
+    memcached_servers_reset(*memc);
+    REQUIRE_FALSE(memcached_server_count(*memc));
+    REQUIRE(MEMCACHED_SUCCESS == memcached_server_add(*memc, "local", 12345));
+    REQUIRE(1 == memcached_server_count(*memc));
+    memcached_servers_reset(*memc);
+    REQUIRE_FALSE(memcached_server_count(*memc));
+  }
 }
