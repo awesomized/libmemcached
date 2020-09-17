@@ -1,7 +1,7 @@
 #include "test/lib/common.hpp"
 #include "test/lib/MemcachedCluster.hpp"
 
-#include "ketama_test_cases.h"
+#include "testing/fixtures/ketama.hpp"
 
 #include "libmemcached/continuum.hpp"
 #include "libmemcached/instance.hpp"
