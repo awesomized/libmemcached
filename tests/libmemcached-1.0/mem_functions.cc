@@ -224,25 +224,6 @@ test_return_t mget_end(memcached_st *memc)
   return TEST_SUCCESS;
 }
 
-/* Do not copy the style of this code, I just access hosts to testthis function */
-test_return_t stats_servername_test(memcached_st *memc)
-{
-  memcached_stat_st memc_stat;
-  const memcached_instance_st * instance=
-    memcached_server_instance_by_position(memc, 0);
-
-  if (LIBMEMCACHED_WITH_SASL_SUPPORT and memcached_get_sasl_callbacks(memc))
-  {
-    return TEST_SKIPPED;
-  }
-
-  test_compare(MEMCACHED_SUCCESS, memcached_stat_servername(&memc_stat, NULL,
-                                                            memcached_server_name(instance),
-                                                            memcached_server_port(instance)));
-
-  return TEST_SUCCESS;
-}
-
 test_return_t mget_result_test(memcached_st *memc)
 {
   const char *keys[]= {"fudge", "son", "food"};
@@ -519,47 +500,6 @@ test_return_t MEMCACHED_BEHAVIOR_IO_KEY_PREFETCH_TEST(memcached_st *original_mem
   }
 
   memcached_free(memc);
-
-  return TEST_SUCCESS;
-}
-
-
-test_return_t get_stats_keys(memcached_st *memc)
-{
- char **stat_list;
- char **ptr;
- memcached_stat_st memc_stat;
- memcached_return_t rc;
-
- stat_list= memcached_stat_get_keys(memc, &memc_stat, &rc);
- test_compare(MEMCACHED_SUCCESS, rc);
- for (ptr= stat_list; *ptr; ptr++)
-   test_true(*ptr);
-
- free(stat_list);
-
- return TEST_SUCCESS;
-}
-
-
-test_return_t get_stats(memcached_st *memc)
-{
- memcached_return_t rc;
-
- memcached_stat_st *memc_stat= memcached_stat(memc, NULL, &rc);
- test_compare(MEMCACHED_SUCCESS, rc);
- test_true(memc_stat);
-
- for (uint32_t x= 0; x < memcached_server_count(memc); x++)
- {
-   char **stat_list= memcached_stat_get_keys(memc, memc_stat+x, &rc);
-   test_compare(MEMCACHED_SUCCESS, rc);
-   for (char **ptr= stat_list; *ptr; ptr++) {};
-
-   free(stat_list);
- }
-
- memcached_stat_free(NULL, memc_stat);
 
   return TEST_SUCCESS;
 }
@@ -1420,35 +1360,6 @@ test_return_t result_alloc(memcached_st *memc)
 }
 
 
-test_return_t add_host_test1(memcached_st *memc)
-{
-  memcached_return_t rc;
-  char servername[]= "0.example.com";
-
-  memcached_server_st *servers= memcached_server_list_append_with_weight(NULL, servername, 400, 0, &rc);
-  test_true(servers);
-  test_compare(1U, memcached_server_list_count(servers));
-
-  for (uint32_t x= 2; x < 20; x++)
-  {
-    char buffer[SMALL_STRING_LEN];
-
-    snprintf(buffer, SMALL_STRING_LEN, "%lu.example.com", (unsigned long)(400 +x));
-    servers= memcached_server_list_append_with_weight(servers, buffer, 401, 0,
-                                                      &rc);
-    test_compare(MEMCACHED_SUCCESS, rc);
-    test_compare(x, memcached_server_list_count(servers));
-  }
-
-  test_compare(MEMCACHED_SUCCESS, memcached_server_push(memc, servers));
-  test_compare(MEMCACHED_SUCCESS, memcached_server_push(memc, servers));
-
-  memcached_server_list_free(servers);
-
-  return TEST_SUCCESS;
-}
-
-
 static void my_free(const memcached_st *ptr, void *mem, void *context)
 {
   (void)context;
@@ -1592,74 +1503,6 @@ test_return_t set_memory_alloc(memcached_st *memc)
   test_true(mem_free == my_free);
 
   return TEST_SUCCESS;
-}
-
-test_return_t enable_consistent_crc(memcached_st *memc)
-{
-  test_compare(MEMCACHED_SUCCESS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, MEMCACHED_DISTRIBUTION_CONSISTENT));
-  test_compare(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION),  uint64_t(MEMCACHED_DISTRIBUTION_CONSISTENT));
-
-  test_return_t rc;
-  if ((rc= pre_crc(memc)) != TEST_SUCCESS)
-  {
-    return rc;
-  }
-
-  test_compare(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION),  uint64_t(MEMCACHED_DISTRIBUTION_CONSISTENT));
-
-  if (memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_HASH) != MEMCACHED_HASH_CRC)
-  {
-    return TEST_SKIPPED;
-  }
-
-  return TEST_SUCCESS;
-}
-
-test_return_t enable_consistent_hsieh(memcached_st *memc)
-{
-  test_return_t rc;
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION, MEMCACHED_DISTRIBUTION_CONSISTENT);
-  if ((rc= pre_hsieh(memc)) != TEST_SUCCESS)
-  {
-    return rc;
-  }
-
-  test_compare(memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_DISTRIBUTION), uint64_t(MEMCACHED_DISTRIBUTION_CONSISTENT));
-
-  if (memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_HASH) != MEMCACHED_HASH_HSIEH)
-  {
-    return TEST_SKIPPED;
-  }
-
-  return TEST_SUCCESS;
-}
-
-test_return_t enable_cas(memcached_st *memc)
-{
-  if (libmemcached_util_version_check(memc, 1, 2, 4))
-  {
-    memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS, true);
-
-    return TEST_SUCCESS;
-  }
-
-  return TEST_SKIPPED;
-}
-
-test_return_t check_for_1_2_3(memcached_st *memc)
-{
-  memcached_version(memc);
-
-  const memcached_instance_st * instance=
-    memcached_server_instance_by_position(memc, 0);
-
-  if ((instance->major_version >= 1 && (instance->minor_version == 2 && instance->micro_version >= 4))
-      or instance->minor_version > 2)
-  {
-    return TEST_SUCCESS;
-  }
-
-  return TEST_SKIPPED;
 }
 
 test_return_t MEMCACHED_BEHAVIOR_POLL_TIMEOUT_test(memcached_st *memc)

@@ -83,7 +83,8 @@
 }
 
 #define YY_FATAL_ERROR(msg) \
-{ \
+{\
+    fprintf(stderr, "%s\n", msg); \
 }
 
 #define YYSTYPE CONFIG_STYPE

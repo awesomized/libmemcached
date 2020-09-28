@@ -100,6 +100,9 @@ public:
   memcached_st *operator * () {
     return memc;
   }
+  auto operator ->() {
+    return memc;
+  }
 };
 
 template<class T>

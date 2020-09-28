@@ -19,7 +19,7 @@ target_include_directories(runtests PRIVATE
         ${CMAKE_BINARY_DIR}
         ${CMAKE_SOURCE_DIR}/src
         ${CMAKE_BINARY_DIR}/src)
-target_link_libraries(runtests PRIVATE libhashkit libmemcached libmemcachedutil)
+target_link_libraries(runtests PRIVATE libhashkit libmemcachedinternal libmemcachedutil)
 add_dependencies(runtests ${CLIENTS})
 
 catch_discover_tests(runtests

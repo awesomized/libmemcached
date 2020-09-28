@@ -8,7 +8,10 @@ Cluster::Cluster(Server serv, uint16_t cnt)
 , proto{move(serv)}
 {
   if (!cnt) {
-    count = thread::hardware_concurrency()/2 ?: 4;
+    count = thread::hardware_concurrency()/2;
+    if (count < 4) {
+      count = 4;
+    }
   }
   reset();
 }

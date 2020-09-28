@@ -37,6 +37,7 @@
 
 #pragma once
 
+#define YYDEBUG 1
 
 #ifndef YY_EXTRA_TYPE
 # define YY_EXTRA_TYPE Context*
