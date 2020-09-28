@@ -40,7 +40,7 @@ if(NOT BUILD_DOCSONLY)
     add_subdirectory(include)
     add_subdirectory(src)
     add_subdirectory(support)
-    add_subdirectory(testing)
+    add_subdirectory(test)
 
     # keep last
     configure_file(src/mem_config.h.in ${AUTOHEADER_FILE} @ONLY)
