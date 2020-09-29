@@ -130,7 +130,7 @@ bool Server::isListening() {
   }
 
   Malloced stat(memcached_stat(*memc, nullptr, nullptr));
-  if (!*stat || !stat->pid) {
+  if (!*stat || !stat->pid || stat->pid == -1) {
     return false;
   }
   if (stat->pid != pid) {
