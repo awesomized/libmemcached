@@ -130,7 +130,12 @@ bool Server::isListening() {
   }
 
   Malloced stat(memcached_stat(*memc, nullptr, nullptr));
-  if (!*stat || !stat->pid || stat->pid != pid) {
+  if (!*stat || !stat->pid) {
+    return false;
+  }
+  if (stat->pid != pid) {
+    cerr << "Another server is listening on " << socket_or_port
+         << " (expected pid " << pid << " found pid " << stat->pid << ")\n";
     return false;
   }
 
