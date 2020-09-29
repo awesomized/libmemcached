@@ -94,7 +94,7 @@ In which case, the hash table should have hashsize(10) elements.
 */
 
 #if HAVE_ASAN
-__attribute__((no_sanitize("address")))
+__attribute__((no_sanitize_address,no_sanitize("address")))
 #endif
 uint32_t hashkit_jenkins(const char *key, size_t length, void *)
 {
