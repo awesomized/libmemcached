@@ -15,7 +15,7 @@ set_target_properties(libmemcachedutil PROPERTIES
         SOVERSION ${LIBMEMCACHEDUTIL_SO_VERSION}
         VERSION v${LIBMEMCACHEDUTIL_VERSION})
 target_compile_definitions(libmemcachedutil PRIVATE -DBUILDING_LIBMEMCACHED)
-target_link_libraries(libmemcachedutil PUBLIC libmemcached Threads::Threads)
+target_link_libraries(libmemcachedutil PUBLIC Threads::Threads)
 target_include_directories(libmemcachedutil PRIVATE
         ${CMAKE_SOURCE_DIR}/src
         ${CMAKE_BINARY_DIR}/src

@@ -122,7 +122,7 @@ static void sasl_shutdown_function()
 }
 
 static std::atomic<int> sasl_startup_state(SASL_OK);
-pthread_mutex_t sasl_startup_state_LOCK= PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t sasl_startup_state_LOCK= PTHREAD_MUTEX_INITIALIZER;
 static pthread_once_t sasl_startup_once= PTHREAD_ONCE_INIT;
 static void sasl_startup_function(void)
 {
