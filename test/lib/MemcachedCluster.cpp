@@ -9,7 +9,11 @@ void MemcachedCluster::init() {
   Retry cluster_is_listening([this]() {
     return cluster.isListening();
   });
-  REQUIRE(cluster_is_listening());
+  while (!cluster_is_listening()) {
+    cluster.stop();
+    cluster.wait();
+    cluster.start();
+  }
 
   REQUIRE(memcached_create(&memc));
   for (const auto &server : cluster.getServers()) {
