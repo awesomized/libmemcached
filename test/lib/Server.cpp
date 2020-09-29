@@ -1,5 +1,5 @@
 #include "Server.hpp"
-#include "Connection.hpp"
+#include "Retry.hpp"
 #include "ForkAndExec.hpp"
 
 #include <sys/wait.h>
@@ -140,6 +140,19 @@ bool Server::isListening() {
   }
 
   return true;
+}
+
+bool Server::ensureListening() {
+  return Retry{[this] {
+    again:
+    start();
+    if (!isListening()) {
+      if (tryWait()){
+        goto again;
+      }
+    }
+    return isListening();
+  }}();
 }
 
 bool Server::stop() {

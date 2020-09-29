@@ -32,8 +32,7 @@ TEST_CASE("bin/memcp") {
     MemcachedPtr memc;
     LoneReturnMatcher test{*memc};
 
-    server.start();
-    Retry{[&server] { return server.isListening(); }}();
+    REQUIRE(server.ensureListening());
     auto port = get<int>(server.getSocketOrPort());
     auto comm = "memcp --servers=localhost:" + to_string(port) + " ";
 
