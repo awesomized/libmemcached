@@ -13,7 +13,7 @@ static memcached_return_t callback_counter(const memcached_st *, memcached_resul
 #define NUM_KEYS 100U
 
 TEST_CASE("memcached_regression_lp447342") {
-  auto test = MemcachedCluster::mixed();
+  auto test = MemcachedCluster::network();
   auto memc = &test.memc;
   
   REQUIRE_SUCCESS(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, 2));
