@@ -15,6 +15,19 @@ void MemcachedCluster::init() {
     cluster.start();
   }
 
+  if (auto br = getenv_else("MEMCACHED_BREAK", "0")) {
+    if (*br && *br != '0') {
+      string in;
+
+      cout << "Started servers:\n";
+      for (const auto &server : cluster.getServers()) {
+        cout << server.getPid() << " ";
+      }
+      cout << "\nPress ENTER to continue... " << ::flush;
+      cin.get();
+    }
+  }
+
   REQUIRE(memcached_create(&memc));
   for (const auto &server : cluster.getServers()) {
     auto target = server.getSocketOrPort();
@@ -83,6 +96,16 @@ MemcachedCluster MemcachedCluster::socket() {
   }}};
 }
 
+MemcachedCluster MemcachedCluster::udp() {
+  return MemcachedCluster{Cluster{Server{
+    MEMCACHED_BINARY,
+    {
+      Server::arg_pair_t{"-U", random_socket_or_port_string},
+      Server::arg_t{"-v"}
+    }
+  }}};
+}
+
 #if LIBMEMCACHED_WITH_SASL_SUPPORT
 MemcachedCluster MemcachedCluster::sasl() {
   auto mc = MemcachedCluster{Cluster{Server{
@@ -114,3 +137,7 @@ void MemcachedCluster::enableReplication() {
       MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, memcached_server_count(&memc)));
 }
 
+void MemcachedCluster::enableUdp(bool enable) {
+  REQUIRE(MEMCACHED_SUCCESS == memcached_behavior_set(&memc,
+      MEMCACHED_BEHAVIOR_USE_UDP, enable));
+}

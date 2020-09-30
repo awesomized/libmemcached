@@ -39,11 +39,16 @@ static inline void pushArg(vector<char *> &arr, const string &arg) {
 
 optional<string> Server::handleArg(vector<char *> &arr, const string &arg, const arg_func_t &next_arg) {
   pushArg(arr, arg);
-  if (arg == "-p" || arg == "--port") {
+  if (arg == "-U" || arg == "--udp-port") {
     auto port = next_arg(arg);
     pushArg(arr, port);
-//    pushArg(arr, "-U");
-//    pushArg(arr, port);
+    pushArg(arr, "-p");
+    pushArg(arr, port);
+    socket_or_port = stoi(port);
+    return port;
+  } else if (arg == "-p" || arg == "--port") {
+    auto port = next_arg(arg);
+    pushArg(arr, port);
     socket_or_port = stoi(port);
     return port;
   } else if (arg == "-s" || arg == "--unix-socket") {
@@ -180,8 +185,19 @@ bool Server::check() {
 
 bool Server::wait(int flags) {
   if (pid && pid == waitpid(pid, &status, flags)) {
-    if (drain().length()) {
-      cerr << "Ouput of " << *this << ":\n" << output << endl;
+    if (drain().length() && output != "Signal handled: Terminated.\n") {
+      cerr << "Output of " << *this << ":\n";
+
+      istringstream iss{output};
+      string line;
+
+      while (getline(iss, line)) {
+        cerr << "  " << line << "\n";
+      }
+
+      if (output.back() != '\n') {
+        cerr << endl;
+      }
       output.clear();
     }
     pid = 0;

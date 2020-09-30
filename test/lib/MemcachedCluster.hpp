@@ -25,11 +25,13 @@ public:
   void enableBinaryProto(bool enable = true);
   void enableBuffering(bool enable = true);
   void enableReplication();
+  void enableUdp(bool enable = true);
   void flush();
 
   static MemcachedCluster mixed();
   static MemcachedCluster network();
   static MemcachedCluster socket();
+  static MemcachedCluster udp();
 
 #if LIBMEMCACHED_WITH_SASL_SUPPORT
   static MemcachedCluster sasl();

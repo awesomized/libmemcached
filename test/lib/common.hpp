@@ -97,15 +97,15 @@ public:
   ~MemcachedPtr() {
     memcached_free(memc);
   }
-  memcached_st *operator * () {
+  memcached_st *operator * () const {
     return memc;
   }
-  auto operator ->() {
+  auto operator ->() const{
     return memc;
   }
 };
 
-template<class T>
+template<class T, void (*F)(void*) = free>
 class Malloced {
   T *ptr;
 public:
@@ -115,7 +115,7 @@ public:
   {}
   ~Malloced() {
     if(ptr)
-      free(ptr);
+      F(ptr);
   }
   auto operator *() {
     return ptr;

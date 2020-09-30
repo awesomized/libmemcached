@@ -8,7 +8,10 @@ Cluster::Cluster(Server serv, uint16_t cnt)
 , proto{move(serv)}
 {
   if (count < 4) {
-      count = 4;
+      count = stoi(getenv_else("MEMCACHED_CLUSTER", "4"));
+  }
+  if (!count) {
+    count = 1;
   }
   reset();
 }
