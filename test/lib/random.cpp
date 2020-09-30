@@ -5,7 +5,7 @@
 
 unsigned random_port() {
   retry:
-  auto port = random_num(2<<9, 2<<15);
+  auto port = random_num(5000, 32000);
   Connection conn(port);
 
   if (!conn.open()) {
