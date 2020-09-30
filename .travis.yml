@@ -19,7 +19,7 @@ env:
  - BUILD=Release SASL=false
  - BUILD=Debug SASL=true PREFIX=/opt PORT=11212 MC_VERSION=1.5.22
  - BUILD=Debug SASL=false PREFIX=/opt PORT=11212 MC_VERSION=1.6.6
- - BUILD=Debug SASL=true PREFIX=/opt PORT=11212 SANITIZERS=address;undefined
+ - BUILD=Debug SASL=true PREFIX=/opt PORT=11212 SANITIZERS="address;undefined"
 
 #before_install:
 install:
