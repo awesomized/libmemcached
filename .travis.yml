@@ -43,7 +43,7 @@ before_script:
 script:
  - cd build
  - cmake -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=${BUILD} -DENABLE_SASL=${SASL} -DENABLE_SANITIZERS=${SANITIZERS} -DMEMCACHED_BINARY=${PREFIX:-/usr}/bin/memcached ..
- - make -j2
+ - make -j2 VERBOSE=1
  - make test VERBOSE=1
  - make install DESTDIR=.
 
