@@ -653,7 +653,7 @@ memcached_stat_st *memcached_stat(memcached_st *shell, char *args, memcached_ret
     return NULL;
   }
 
-  memcached_return_t rc;
+  memcached_return_t rc = MEMCACHED_SUCCESS;
   size_t args_length= 0;
   if (args)
   {
