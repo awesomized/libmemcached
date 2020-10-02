@@ -33,7 +33,7 @@ public:
     pipe = exchange(s.pipe, -1);
     status = exchange(s.status, 0);
     signalled = exchange(s.signalled, {});
-    socket_or_port = exchange(s.socket_or_port, {});
+    socket_or_port = exchange(s.socket_or_port, 11211);
     output = exchange(s.output, {});
     return *this;
   };
