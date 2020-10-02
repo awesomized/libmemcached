@@ -1,5 +1,11 @@
-set(CMAKE_BUILD_TYPE Release
-    CACHE STRING "build type (Release, Debug, ...)")
+ 
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    if(NOT DEFINED ENV{CMAKE_BUILD_TYPE})
+        set(ENV{CMAKE_BUILD_TYPE} Release)
+    endif()
+    set(CMAKE_BUILD_TYPE $ENV{CMAKE_BUILD_TYPE}
+        CACHE STRING "build type (Release, Debug, ...)" FORCE)
+endif()
 set(CMAKE_INSTALL_PREFIX /usr/local
     CACHE PATH "install prefix")
 

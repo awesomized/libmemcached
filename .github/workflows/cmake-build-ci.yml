@@ -14,7 +14,7 @@ on:
 env:
   # defaults
   INSTALL_MEMCACHED:  memcached
-  CMAKE_CONFIG_TYPE:  Debug
+  CMAKE_BUILD_TYPE:   Debug
   BUILD_TESTING:      "ON"
   ENABLE_SASL:        "OFF"
   ENABLE_HASH_HSIEH:  "ON"
@@ -37,7 +37,7 @@ jobs:
     runs-on: ${{ matrix.os_ver }}
     continue-on-error: ${{ matrix.cc_vnd == 'clang' }}
     env:
-      CMAKE_CONFIG_TYPE: Release
+      CMAKE_BUILD_TYPE: Release
       OS_VND: Linux
       OS_VER: ${{ matrix.os_ver }}
       CC_VND: ${{ matrix.cc_vnd }}
@@ -176,6 +176,8 @@ jobs:
         if: ${{ failure() }}
         run: cat build/Testing/Temporary/LastTest.log
       - uses: codecov/codecov-action@v1.0.13
+        with:
+          directory: build/src
 
   # memcached new
   ci-new:
