@@ -176,7 +176,7 @@ jobs:
     env:
       MEMCACHED_BINARY: /usr/local/bin/memcached
     steps:
-      - uses actions/checkout@v2
+      - uses: actions/checkout@v2
       - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
