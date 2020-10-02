@@ -163,10 +163,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       CMAKE_CONFIG_TYPE: Release
+      OS_VND: Linux
+      OS_VER: ${{ matrix.os }}
       CC_VND: ${{ matrix.compiler_vendor }}
       CC_VER: ${{ matrix.compiler_version }}
-      OS_VND: ${{ runner.os }}
-      OS_VER: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
 <?php steps(true); ?>
