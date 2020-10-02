@@ -214,8 +214,6 @@ jobs:
       - uses: actions/checkout@v2
 <?php steps(); ?>
       - uses: codecov/codecov-action@v1.0.13
-        with:
-          directory: build/src
 
   # memcached new
   ci-new:
