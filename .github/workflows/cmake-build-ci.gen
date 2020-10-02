@@ -208,8 +208,8 @@ jobs:
   ci-cov:
     runs-on: <?=DEF[DEF["os"]]?> #
     env:
-      CFLAGS: --coverage
-      CXXFLAGS: --coverage
+      CFLAGS: -O0 --coverage
+      CXXFLAGS: -O0 --coverage
     steps: 
       - uses: actions/checkout@v2
 <?php steps(); ?>
