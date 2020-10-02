@@ -16,9 +16,9 @@ env:
   INSTALL_MEMCACHED:  memcached
   CMAKE_CONFIG_TYPE:  Debug
   BUILD_TESTING:      "ON"
-  ENABLE_SASL:        "ON"
+  ENABLE_SASL:        "OFF"
   ENABLE_HASH_HSIEH:  "ON"
-  ENABLE_DTRACE:      "ON"
+  ENABLE_DTRACE:      "OFF"
   VERBOSE:            "ON"
   OS_VND:   Linux #
   OS_VER:   ubuntu-20.04 #
@@ -29,6 +29,7 @@ jobs:
   # release builds
   ci-rel:
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-20.04, ubuntu-18.04]
         compiler_vendor: [gnu, clang]
@@ -99,12 +100,17 @@ jobs:
         run: |
           echo CC=clang-8 >> ${GITHUB_ENV}
           echo CXX=clang++-8 >> ${GITHUB_ENV}
+      - name: Prepare environment (for old clang on ubuntu-18.04)
+        if: (env.OS_VER=='ubuntu-18.04') && (env.CC_VND=='clang') && (env.CC_VER=='old')
+        run: |
+          echo CC=clang-6.0 >> ${GITHUB_ENV}
+          echo CXX=clang++-6.0 >> ${GITHUB_ENV}
       - name: Install dependencies
         if: runner.os == 'Linux'
         run: sudo apt-get install libevent-dev libsasl2-dev ${INSTALL_MEMCACHED} ${INSTALL_CC} ${INSTALL_CXX}
-      - name: Generate build tree (${CMAKE_CONFIG_TYPE})
+      - name: Generate build tree (${{ env.CMAKE_CONFIG_TYPE }})
         run: cmake -S . -B build
-      - name: Build all with ${CXX} ${CXXFLAGS}
+      - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
         run: make -C build -j2 all
       - name: Test
         run: make -C build -j2 test
@@ -129,9 +135,9 @@ jobs:
       - name: Install dependencies
         if: runner.os == 'Linux'
         run: sudo apt-get install libevent-dev libsasl2-dev ${INSTALL_MEMCACHED} ${INSTALL_CC} ${INSTALL_CXX}
-      - name: Generate build tree (${CMAKE_CONFIG_TYPE})
+      - name: Generate build tree (${{ env.CMAKE_CONFIG_TYPE }})
         run: cmake -S . -B build
-      - name: Build all with ${CXX} ${CXXFLAGS}
+      - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
         run: make -C build -j2 all
       - name: Test
         run: make -C build -j2 test
@@ -157,9 +163,9 @@ jobs:
       - name: Install dependencies
         if: runner.os == 'Linux'
         run: sudo apt-get install libevent-dev libsasl2-dev ${INSTALL_MEMCACHED} ${INSTALL_CC} ${INSTALL_CXX}
-      - name: Generate build tree (${CMAKE_CONFIG_TYPE})
+      - name: Generate build tree (${{ env.CMAKE_CONFIG_TYPE }})
         run: cmake -S . -B build
-      - name: Build all with ${CXX} ${CXXFLAGS}
+      - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
         run: make -C build -j2 all
       - name: Test
         run: make -C build -j2 test
@@ -189,14 +195,6 @@ jobs:
           repository: memcached/memcached
           path: memcached
           ref: 1.6.7
-      - name: Build memcached
-        run: |
-          cd memcached
-          ./autogen.sh
-          ./configure CFLAGS="-O2 -pipe" --prefix=${MEMCACHED_PREFIX}
-          make -j2
-          make install
-          cd ..
       - name: Prepare environment (for cur gnu on ubuntu-20.04)
         if: (env.OS_VER=='ubuntu-20.04') && (env.CC_VND=='gnu') && (env.CC_VER=='cur')
         run: |
@@ -205,9 +203,17 @@ jobs:
       - name: Install dependencies
         if: runner.os == 'Linux'
         run: sudo apt-get install libevent-dev libsasl2-dev ${INSTALL_MEMCACHED} ${INSTALL_CC} ${INSTALL_CXX}
-      - name: Generate build tree (${CMAKE_CONFIG_TYPE})
+      - name: Build memcached
+        run: |
+          cd memcached
+          ./autogen.sh
+          ./configure CFLAGS="-O2 -pipe" --prefix=${MEMCACHED_PREFIX}
+          make -j2
+          make install
+          cd ..
+      - name: Generate build tree (${{ env.CMAKE_CONFIG_TYPE }})
         run: cmake -S . -B build
-      - name: Build all with ${CXX} ${CXXFLAGS}
+      - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
         run: make -C build -j2 all
       - name: Test
         run: make -C build -j2 test

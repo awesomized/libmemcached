@@ -64,7 +64,7 @@ const MAP = [
           'env.CC_VER' => [
             "new"  => "-9",
             "cur"  => "-8",
-            // old => "-6.0" ### skip
+            "old"  => "-6.0"
           ]
         ]
       ]
@@ -75,7 +75,7 @@ const MAP = [
 /**
  * @var bool $splat_map false = no splat map, null = default splat map, true = full splat map
  */
-function steps($splat_map = null) {
+function steps_setenv($splat_map = null) {
   if ($splat_map !== false) {
     foreach (MAP as $os_is => $os_vers) {
       foreach ($os_vers as $os_ver => $cc_vnds_) {
@@ -107,13 +107,21 @@ function steps($splat_map = null) {
       }
     }
   }
+}
+
+function steps_getdeps() {
 ?>
 <?=PRE?> - name: Install dependencies
 <?=PRE?>   if: runner.os == 'Linux'
 <?=PRE?>   run: sudo apt-get install libevent-dev libsasl2-dev ${INSTALL_MEMCACHED} ${INSTALL_CC} ${INSTALL_CXX}
-<?=PRE?> - name: Generate build tree (${CMAKE_CONFIG_TYPE})
+<?php
+}
+
+function steps_build() {
+?>
+<?=PRE?> - name: Generate build tree (${{ env.CMAKE_CONFIG_TYPE }})
 <?=PRE?>   run: cmake -S . -B build
-<?=PRE?> - name: Build all with ${CXX} ${CXXFLAGS}
+<?=PRE?> - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
 <?=PRE?>   run: make -C build -j2 all
 <?=PRE?> - name: Test
 <?=PRE?>   run: make -C build -j2 test
@@ -123,6 +131,12 @@ function steps($splat_map = null) {
 <?=PRE?>   if: ${{ failure() }}
 <?=PRE?>   run: cat Testing/Temporary/LastTest.log
 <?php
+}
+
+function steps($splat_map = null) {
+  steps_setenv($splat_map);
+  steps_getdeps();
+  steps_build();
 }
 
 ?>
@@ -143,9 +157,9 @@ env:
   INSTALL_MEMCACHED:  memcached
   CMAKE_CONFIG_TYPE:  Debug
   BUILD_TESTING:      "ON"
-  ENABLE_SASL:        "ON"
+  ENABLE_SASL:        "OFF"
   ENABLE_HASH_HSIEH:  "ON"
-  ENABLE_DTRACE:      "ON"
+  ENABLE_DTRACE:      "OFF"
   VERBOSE:            "ON"
   OS_VND:   <?=DEF["os"]?> #
   OS_VER:   <?=DEF[DEF["os"]]?> #
@@ -156,6 +170,7 @@ jobs:
   # release builds
   ci-rel:
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-20.04, ubuntu-18.04]
         compiler_vendor: [gnu, clang]
@@ -210,6 +225,8 @@ jobs:
           repository: memcached/memcached
           path: memcached
           ref: 1.6.7
+<?php steps_setenv(); ?>
+<?php steps_getdeps(); ?>
       - name: Build memcached
         run: |
           cd memcached
@@ -218,5 +235,5 @@ jobs:
           make -j2
           make install
           cd ..
-<?php steps(); ?>
+<?php steps_build(); ?>
 
