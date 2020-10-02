@@ -13,9 +13,9 @@ elseif(UNIX)
 endif()
 
 option(BUILD_TESTING        "whether to enable build of the test suite"
-        OFF)
+        $ENV{BUILD_TESTING})
 option(BUILD_DOCSONLY       "build *only* documentation"
-        OFF)
+        $ENV{BUILD_DOCSONLY})
 option(BUILD_DOCS           "build documentation"
         ${BUILD_DOCSONLY})
 option(BUILD_DOCS_HTML      "build HTML docs"
@@ -26,19 +26,19 @@ option(BUILD_DOCS_MANGZ     "gzip manpages"
         ${BUILD_DOCS_MAN})
 
 option(ENABLE_DTRACE        "enable dtrace support"
-        OFF)
+        $ENV{ENABLE_DTRACE})
 option(ENABLE_HASH_FNV64    "enable fnv64 hash support"
         ON)
 option(ENABLE_HASH_MURMUR   "enable murmur hash support"
         ON)
 option(ENABLE_HASH_HSIEH    "enable hsieh hash support"
-        OFF)
+        $ENV{ENABLE_HASH_HSIEH})
 option(ENABLE_MEMASLAP      "enable memaslap client"
         ON)
 option(ENABLE_SASL          "enable SASL support"
-        OFF)
+        $ENV{ENABLE_SASL})
 
-set(ENABLE_SANITIZERS ""
+set(ENABLE_SANITIZERS $ENV{ENABLE_SANITIZERS}
     CACHE STRING "sanitizers to enable (e.g. address undefined ...)")
 
 if(BUILD_TESTING)

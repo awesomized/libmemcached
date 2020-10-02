@@ -1,0 +1,212 @@
+# Generated file; do not edit!
+name: cmake-build-ci
+on: 
+  push:
+    paths-ignore: 
+      - "docs/**"
+    branches-ignore: 
+      - gh-pages
+      - v1.x
+  pull_request:
+    branches: 
+      - master
+      - v1.x
+env:
+  # defaults
+  INSTALL_MEMCACHED:  memcached
+  CMAKE_CONFIG_TYPE:  Debug
+  BUILD_TESTING:      "ON"
+  ENABLE_SASL:        "ON"
+  ENABLE_HASH_HSIEH:  "ON"
+  ENABLE_DTRACE:      "ON"
+  VERBOSE:            "ON"
+  OS_VND:   Linux #
+  OS_VER:   ubuntu-20.04 #
+  CC_VND:   gnu #
+  CC_VER:   cur #
+
+jobs:
+  # release builds
+  ci-rel:
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, ubuntu-18.04]
+        compiler_vendor: [gnu, clang]
+        compiler_version: [new, cur, old]
+    runs-on: ${{ matrix.os }}
+    env:
+      CMAKE_CONFIG_TYPE: Release
+      CC_VND: ${{ matrix.compiler_vendor }}
+      CC_VER: ${{ matrix.compiler_version }}
+      OS_VND: ${{ runner.os }}
+      OS_VER: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Prepare environment (for new gnu on ubuntu-20.04)
+        if: (env.OS_VER=='ubuntu-20.04') && (env.CC_VND=='gnu') && (env.CC_VER=='new')
+        run: echo CC=gcc-10 >> ${GITHUB_ENV}
+        run: echo CXX=g++-10 >> ${GITHUB_ENV}
+        run: echo INSTALL_CC='gcc-10' >> ${GITHUB_ENV}
+        run: echo INSTALL_CXX='g++-10' >> ${GITHUB_ENV}
+      - name: Prepare environment (for cur gnu on ubuntu-20.04)
+        if: (env.OS_VER=='ubuntu-20.04') && (env.CC_VND=='gnu') && (env.CC_VER=='cur')
+        run: echo CC=gcc-9 >> ${GITHUB_ENV}
+        run: echo CXX=g++-9 >> ${GITHUB_ENV}
+      - name: Prepare environment (for old gnu on ubuntu-20.04)
+        if: (env.OS_VER=='ubuntu-20.04') && (env.CC_VND=='gnu') && (env.CC_VER=='old')
+        run: echo CC=gcc-8 >> ${GITHUB_ENV}
+        run: echo CXX=g++-8 >> ${GITHUB_ENV}
+      - name: Prepare environment (for new clang on ubuntu-20.04)
+        if: (env.OS_VER=='ubuntu-20.04') && (env.CC_VND=='clang') && (env.CC_VER=='new')
+        run: echo CC=clang-10 >> ${GITHUB_ENV}
+        run: echo CXX=clang++-10 >> ${GITHUB_ENV}
+      - name: Prepare environment (for cur clang on ubuntu-20.04)
+        if: (env.OS_VER=='ubuntu-20.04') && (env.CC_VND=='clang') && (env.CC_VER=='cur')
+        run: echo CC=clang-9 >> ${GITHUB_ENV}
+        run: echo CXX=clang++-9 >> ${GITHUB_ENV}
+      - name: Prepare environment (for old clang on ubuntu-20.04)
+        if: (env.OS_VER=='ubuntu-20.04') && (env.CC_VND=='clang') && (env.CC_VER=='old')
+        run: echo CC=clang-8 >> ${GITHUB_ENV}
+        run: echo CXX=clang++-8 >> ${GITHUB_ENV}
+      - name: Prepare environment (for new gnu on ubuntu-18.04)
+        if: (env.OS_VER=='ubuntu-18.04') && (env.CC_VND=='gnu') && (env.CC_VER=='new')
+        run: echo CC=gcc-9 >> ${GITHUB_ENV}
+        run: echo CXX=g++-9 >> ${GITHUB_ENV}
+      - name: Prepare environment (for cur gnu on ubuntu-18.04)
+        if: (env.OS_VER=='ubuntu-18.04') && (env.CC_VND=='gnu') && (env.CC_VER=='cur')
+        run: echo CC=gcc-8 >> ${GITHUB_ENV}
+        run: echo CXX=g++-8 >> ${GITHUB_ENV}
+      - name: Prepare environment (for old gnu on ubuntu-18.04)
+        if: (env.OS_VER=='ubuntu-18.04') && (env.CC_VND=='gnu') && (env.CC_VER=='old')
+        run: echo CC=gcc-7 >> ${GITHUB_ENV}
+        run: echo CXX=g++-7 >> ${GITHUB_ENV}
+      - name: Prepare environment (for new clang on ubuntu-18.04)
+        if: (env.OS_VER=='ubuntu-18.04') && (env.CC_VND=='clang') && (env.CC_VER=='new')
+        run: echo CC=clang-9 >> ${GITHUB_ENV}
+        run: echo CXX=clang++-9 >> ${GITHUB_ENV}
+      - name: Prepare environment (for cur clang on ubuntu-18.04)
+        if: (env.OS_VER=='ubuntu-18.04') && (env.CC_VND=='clang') && (env.CC_VER=='cur')
+        run: echo CC=clang-8 >> ${GITHUB_ENV}
+        run: echo CXX=clang++-8 >> ${GITHUB_ENV}
+      - name: Prepare environment (for old clang on ubuntu-18.04)
+        if: (env.OS_VER=='ubuntu-18.04') && (env.CC_VND=='clang') && (env.CC_VER=='old')
+        run: echo CC=clang-6.0 >> ${GITHUB_ENV}
+        run: echo CXX=clang++-6.0 >> ${GITHUB_ENV}
+      - name: Install dependencies
+        if: runner.os == 'Linux'
+        run: sudo apt-get install libevent-dev libsasl-dev ${INSTALL_MEMCACHED} ${INSTALL_CC} ${INSTALL_CXX}
+      - name: Generate build tree (${CMAKE_CONFIG_TYPE})
+        run: mkdir build
+        run: cmake -S . -B build
+      - name: Build all with ${CXX} ${CXXFLAGS}
+        run: make -C build -j2 all
+      - name: Test
+        run: make -C build -j2 test
+      - name: Install
+        run: make -C build -j2 install DESTDIR=.
+      - name: Failed tests log
+        if: ${{ failure() }}
+        run: cat Testing/Temporary/LastTest.log
+
+  # sanitizer build
+  ci-san:
+    runs-on: ubuntu-20.04 #
+    env:
+      ENABLE_SANITIZERS: "address;undefined"
+    steps: 
+      - uses: actions/checkout@v2
+      - name: Prepare environment (for cur gnu on ubuntu-20.04)
+        if: (env.OS_VER=='ubuntu-20.04') && (env.CC_VND=='gnu') && (env.CC_VER=='cur')
+        run: echo CC=gcc-9 >> ${GITHUB_ENV}
+        run: echo CXX=g++-9 >> ${GITHUB_ENV}
+      - name: Install dependencies
+        if: runner.os == 'Linux'
+        run: sudo apt-get install libevent-dev libsasl-dev ${INSTALL_MEMCACHED} ${INSTALL_CC} ${INSTALL_CXX}
+      - name: Generate build tree (${CMAKE_CONFIG_TYPE})
+        run: mkdir build
+        run: cmake -S . -B build
+      - name: Build all with ${CXX} ${CXXFLAGS}
+        run: make -C build -j2 all
+      - name: Test
+        run: make -C build -j2 test
+      - name: Install
+        run: make -C build -j2 install DESTDIR=.
+      - name: Failed tests log
+        if: ${{ failure() }}
+        run: cat Testing/Temporary/LastTest.log
+
+  # coverage build
+  ci-cov:
+    runs-on: ubuntu-20.04 #
+    env:
+      CFLAGS: --coverage
+      CXXFLAGS: --coverage
+    steps: 
+      - uses: actions/checkout@v2
+      - name: Prepare environment (for cur gnu on ubuntu-20.04)
+        if: (env.OS_VER=='ubuntu-20.04') && (env.CC_VND=='gnu') && (env.CC_VER=='cur')
+        run: echo CC=gcc-9 >> ${GITHUB_ENV}
+        run: echo CXX=g++-9 >> ${GITHUB_ENV}
+      - name: Install dependencies
+        if: runner.os == 'Linux'
+        run: sudo apt-get install libevent-dev libsasl-dev ${INSTALL_MEMCACHED} ${INSTALL_CC} ${INSTALL_CXX}
+      - name: Generate build tree (${CMAKE_CONFIG_TYPE})
+        run: mkdir build
+        run: cmake -S . -B build
+      - name: Build all with ${CXX} ${CXXFLAGS}
+        run: make -C build -j2 all
+      - name: Test
+        run: make -C build -j2 test
+      - name: Install
+        run: make -C build -j2 install DESTDIR=.
+      - name: Failed tests log
+        if: ${{ failure() }}
+        run: cat Testing/Temporary/LastTest.log
+      - uses: codecov/codecov-action@v1.0.13
+
+  # memcached new
+  ci-new:
+    runs-on: ubuntu-20.04 #
+    env:
+      INSTALL_MEMCACHED:
+      MEMCACHED_PREFIX: /tmp
+      MEMCACHED_BINARY: /tmp/bin/memcached
+      enable_sasl: yes
+      enable_sasl_pwdb: yes
+      enable_docs: no
+      enable_coverage: no
+      enable_dependency_tracking: no
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+        with:
+          repository: memcached/memcached
+          ref: 1.6.7
+      - name: Build memcached
+        run: |
+          cd memcached
+          ./autogen.sh
+          ./configure CFLAGS="-O2 -pipe" --prefix=${MEMCACHED_PREFIX}
+          make -j2
+          make install
+          cd ..
+            - name: Prepare environment (for cur gnu on ubuntu-20.04)
+        if: (env.OS_VER=='ubuntu-20.04') && (env.CC_VND=='gnu') && (env.CC_VER=='cur')
+        run: echo CC=gcc-9 >> ${GITHUB_ENV}
+        run: echo CXX=g++-9 >> ${GITHUB_ENV}
+      - name: Install dependencies
+        if: runner.os == 'Linux'
+        run: sudo apt-get install libevent-dev libsasl-dev ${INSTALL_MEMCACHED} ${INSTALL_CC} ${INSTALL_CXX}
+      - name: Generate build tree (${CMAKE_CONFIG_TYPE})
+        run: mkdir build
+        run: cmake -S . -B build
+      - name: Build all with ${CXX} ${CXXFLAGS}
+        run: make -C build -j2 all
+      - name: Test
+        run: make -C build -j2 test
+      - name: Install
+        run: make -C build -j2 install DESTDIR=.
+      - name: Failed tests log
+        if: ${{ failure() }}
+        run: cat Testing/Temporary/LastTest.log
+

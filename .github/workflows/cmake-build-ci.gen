@@ -1,0 +1,221 @@
+#!/usr/bin/env php
+<?php
+
+echo "# Generated file; do not edit!\n";
+
+const PRE = "     ";
+const DEF = [
+  "os" => "Linux",
+  "Linux" => "ubuntu-20.04",
+  "macOS" => "macos-10.15",
+  "ubuntu-20.04" => "gnu",
+  "macos-10.15" => "clang",
+  "gnu" => [
+    "ver" => "cur",
+    "CC"  => "gcc",
+    "CXX"  => "g++",
+  ],
+  "clang" => [
+    "ver" => "",
+    "CC"  => "clang",
+    "CXX"  => "clang++",
+  ],
+];
+const APT = [
+  "ubuntu-20.04" => [
+    "gnu" => [
+      "new" => [
+        "CC" => "gcc-10",
+        "CXX" => "g++-10",
+      ]
+    ]
+  ]
+];
+const MAP = [
+  'env.OS_VER' => [
+    "ubuntu-20.04" => [
+      'env.CC_VND' => [
+        "gnu" => [
+          'env.CC_VER' => [
+            "new"  => "-10",
+            "cur"  => "-9",
+            "old"  => "-8"
+          ]
+        ],
+        "clang" => [
+          'env.CC_VER' => [
+            "new"  => "-10",
+            "cur"  => "-9",
+            "old"  => "-8"
+          ]
+        ]
+      ]
+    ],
+    "ubuntu-18.04" => [
+      'env.CC_VND' => [
+        "gnu" => [
+          'env.CC_VER' => [
+            "new"  => "-9",
+            "cur"  => "-8",
+            "old"  => "-7"
+          ]
+        ],
+        "clang" => [
+          'env.CC_VER' => [
+            "new"  => "-9",
+            "cur"  => "-8",
+            "old"  => "-6.0"
+          ]
+        ]
+      ]
+    ]
+  ]
+];
+
+/**
+ * @var bool $splat_map false = no splat map, null = default splat map, true = full splat map
+ */
+function steps($splat_map = null) {
+  if ($splat_map !== false) {
+    foreach (MAP as $os_is => $os_vers) {
+      foreach ($os_vers as $os_ver => $cc_vnds_) {
+        if (!$splat_map && DEF[DEF["os"]] != $os_ver) continue;
+        foreach ($cc_vnds_ as $cc_vnd_is => $cc_vnds) {
+          foreach ($cc_vnds as $cc_vnd => $cc_vers_) {
+            if (!$splat_map && DEF[DEF[DEF["os"]]] != $cc_vnd) continue;
+            foreach ($cc_vers_ as $cc_ver_is => $cc_vers) {
+              foreach ($cc_vers as $cc_ver => $ver) {
+                if (!$splat_map && DEF[DEF[DEF[DEF["os"]]]]["ver"] != $cc_ver) continue;
+?>
+<?=PRE?> - name: Prepare environment (<?= "for $cc_ver $cc_vnd on $os_ver" ?>)
+<?=PRE?>   if: (<?="$os_is=='$os_ver') && ($cc_vnd_is=='$cc_vnd') && ($cc_ver_is=='$cc_ver'"?>)
+<?=PRE?>   run: echo CC=<?=DEF[$cc_vnd]["CC"] . $ver?> >> ${GITHUB_ENV}
+<?=PRE?>   run: echo CXX=<?=DEF[$cc_vnd]["CXX"] . $ver?> >> ${GITHUB_ENV}
+<?php
+                if (isset(APT[$os_ver][$cc_vnd][$cc_ver])) {
+                  $dep = APT[$os_ver][$cc_vnd][$cc_ver];
+?>
+<?=PRE?>   run: echo INSTALL_CC='<?=$dep["CC"]?>' >> ${GITHUB_ENV}
+<?=PRE?>   run: echo INSTALL_CXX='<?=$dep["CXX"]?>' >> ${GITHUB_ENV}
+<?php
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+?>
+<?=PRE?> - name: Install dependencies
+<?=PRE?>   if: runner.os == 'Linux'
+<?=PRE?>   run: sudo apt-get install libevent-dev libsasl-dev ${INSTALL_MEMCACHED} ${INSTALL_CC} ${INSTALL_CXX}
+<?=PRE?> - name: Generate build tree (${CMAKE_CONFIG_TYPE})
+<?=PRE?>   run: mkdir build
+<?=PRE?>   run: cmake -S . -B build
+<?=PRE?> - name: Build all with ${CXX} ${CXXFLAGS}
+<?=PRE?>   run: make -C build -j2 all
+<?=PRE?> - name: Test
+<?=PRE?>   run: make -C build -j2 test
+<?=PRE?> - name: Install
+<?=PRE?>   run: make -C build -j2 install DESTDIR=.
+<?=PRE?> - name: Failed tests log
+<?=PRE?>   if: ${{ failure() }}
+<?=PRE?>   run: cat Testing/Temporary/LastTest.log
+<?php
+}
+
+?>
+name: cmake-build-ci
+on: 
+  push:
+    paths-ignore: 
+      - "docs/**"
+    branches-ignore: 
+      - gh-pages
+      - v1.x
+  pull_request:
+    branches: 
+      - master
+      - v1.x
+env:
+  # defaults
+  INSTALL_MEMCACHED:  memcached
+  CMAKE_CONFIG_TYPE:  Debug
+  BUILD_TESTING:      "ON"
+  ENABLE_SASL:        "ON"
+  ENABLE_HASH_HSIEH:  "ON"
+  ENABLE_DTRACE:      "ON"
+  VERBOSE:            "ON"
+  OS_VND:   <?=DEF["os"]?> #
+  OS_VER:   <?=DEF[DEF["os"]]?> #
+  CC_VND:   <?=DEF[DEF[DEF["os"]]]?> #
+  CC_VER:   <?=DEF[DEF[DEF[DEF["os"]]]]["ver"]?> #
+
+jobs:
+  # release builds
+  ci-rel:
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, ubuntu-18.04]
+        compiler_vendor: [gnu, clang]
+        compiler_version: [new, cur, old]
+    runs-on: ${{ matrix.os }}
+    env:
+      CMAKE_CONFIG_TYPE: Release
+      CC_VND: ${{ matrix.compiler_vendor }}
+      CC_VER: ${{ matrix.compiler_version }}
+      OS_VND: ${{ runner.os }}
+      OS_VER: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+<?php steps(true); ?>
+
+  # sanitizer build
+  ci-san:
+    runs-on: <?=DEF[DEF["os"]]?> #
+    env:
+      ENABLE_SANITIZERS: "address;undefined"
+    steps: 
+      - uses: actions/checkout@v2
+<?php steps(); ?>
+
+  # coverage build
+  ci-cov:
+    runs-on: <?=DEF[DEF["os"]]?> #
+    env:
+      CFLAGS: --coverage
+      CXXFLAGS: --coverage
+    steps: 
+      - uses: actions/checkout@v2
+<?php steps(); ?>
+      - uses: codecov/codecov-action@v1.0.13
+
+  # memcached new
+  ci-new:
+    runs-on: <?=DEF[DEF["os"]]?> #
+    env:
+      INSTALL_MEMCACHED:
+      MEMCACHED_PREFIX: /tmp
+      MEMCACHED_BINARY: /tmp/bin/memcached
+      enable_sasl: yes
+      enable_sasl_pwdb: yes
+      enable_docs: no
+      enable_coverage: no
+      enable_dependency_tracking: no
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+        with:
+          repository: memcached/memcached
+          ref: 1.6.7
+      - name: Build memcached
+        run: |
+          cd memcached
+          ./autogen.sh
+          ./configure CFLAGS="-O2 -pipe" --prefix=${MEMCACHED_PREFIX}
+          make -j2
+          make install
+          cd ..
+      <?php steps(); ?>
+
