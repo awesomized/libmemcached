@@ -223,11 +223,6 @@ jobs:
       MEMCACHED_PREFIX: /tmp
       MEMCACHED_BINARY: /tmp/bin/memcached
       ENABLE_SASL:      "ON"
-      enable_sasl: yes
-      enable_sasl_pwdb: yes
-      enable_docs: no
-      enable_coverage: no
-      enable_dependency_tracking: no
     steps:
       - uses: actions/checkout@v2
       - uses: actions/checkout@v2
@@ -241,7 +236,13 @@ jobs:
         run: |
           cd memcached
           ./autogen.sh
-          ./configure CFLAGS="-O2 -pipe" --prefix=${MEMCACHED_PREFIX}
+          ./configure CFLAGS="-O2 -pipe" \
+            --prefix=${MEMCACHED_PREFIX} \
+            --enable-sasl \
+            --enable-sasl-pwdb \
+            --disable-docs \
+            --disable-coverage \
+            --disable-dependency-tracking
           make -j2
           make install
           cd ..
