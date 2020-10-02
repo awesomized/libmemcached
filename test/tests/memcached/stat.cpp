@@ -22,7 +22,7 @@ TEST_CASE("memcached_stat") {
 
   SECTION("execute") {
     for (auto i = 0; i < 64; ++i) {
-      auto key = random_ascii_string(32);
+      auto key = random_ascii_string(12) + to_string(i);
       REQUIRE_SUCCESS(memcached_set(memc, key.c_str(), key.length(), nullptr, 0, 0, 0));
     }
 

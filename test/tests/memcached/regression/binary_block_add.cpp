@@ -11,7 +11,7 @@ TEST_CASE("memcached_regression_binary_block_add") {
   INFO("binary: " << binary);
 
   for (auto i = 0; i < 20480; ++i) {
-    auto rkey = random_ascii_string(12);
+    auto rkey = random_ascii_string(12) + to_string(i);
     memcached_return_t rc = memcached_add_by_key(memc, S("key"), rkey.c_str(), rkey.length(), blob.c_str(), blob.length(), 0, 0);
 
     if (rc == MEMCACHED_MEMORY_ALLOCATION_FAILURE) {
