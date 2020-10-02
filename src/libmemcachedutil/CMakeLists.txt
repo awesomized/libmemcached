@@ -15,6 +15,11 @@ set_target_properties(libmemcachedutil PROPERTIES
         SOVERSION ${LIBMEMCACHEDUTIL_SO_VERSION}
         VERSION v${LIBMEMCACHEDUTIL_VERSION})
 target_compile_definitions(libmemcachedutil PRIVATE -DBUILDING_LIBMEMCACHED)
+if(CMAKE_CXX_COMPILER_ID STREQUAL AppleClang)
+	set_target_properties(libmemcachedutil PROPERTIES
+		LINK_FLAGS "-Wl,-undefined,dynamic_lookup"
+		)
+endif()
 target_link_libraries(libmemcachedutil PUBLIC Threads::Threads)
 target_include_directories(libmemcachedutil PRIVATE
         ${CMAKE_SOURCE_DIR}/src
