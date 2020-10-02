@@ -106,7 +106,7 @@ jobs:
           echo CXX=clang++-6.0 >> ${GITHUB_ENV}
       - name: Install dependencies
         if: runner.os == 'Linux'
-        run: sudo apt-get install libevent-dev libsasl-dev ${INSTALL_MEMCACHED} ${INSTALL_CC} ${INSTALL_CXX}
+        run: sudo apt-get install libevent-dev libsasl2-dev ${INSTALL_MEMCACHED} ${INSTALL_CC} ${INSTALL_CXX}
       - name: Generate build tree (${CMAKE_CONFIG_TYPE})
         run: cmake -S . -B build
       - name: Build all with ${CXX} ${CXXFLAGS}
@@ -133,7 +133,7 @@ jobs:
           echo CXX=g++-9 >> ${GITHUB_ENV}
       - name: Install dependencies
         if: runner.os == 'Linux'
-        run: sudo apt-get install libevent-dev libsasl-dev ${INSTALL_MEMCACHED} ${INSTALL_CC} ${INSTALL_CXX}
+        run: sudo apt-get install libevent-dev libsasl2-dev ${INSTALL_MEMCACHED} ${INSTALL_CC} ${INSTALL_CXX}
       - name: Generate build tree (${CMAKE_CONFIG_TYPE})
         run: cmake -S . -B build
       - name: Build all with ${CXX} ${CXXFLAGS}
@@ -161,7 +161,7 @@ jobs:
           echo CXX=g++-9 >> ${GITHUB_ENV}
       - name: Install dependencies
         if: runner.os == 'Linux'
-        run: sudo apt-get install libevent-dev libsasl-dev ${INSTALL_MEMCACHED} ${INSTALL_CC} ${INSTALL_CXX}
+        run: sudo apt-get install libevent-dev libsasl2-dev ${INSTALL_MEMCACHED} ${INSTALL_CC} ${INSTALL_CXX}
       - name: Generate build tree (${CMAKE_CONFIG_TYPE})
         run: cmake -S . -B build
       - name: Build all with ${CXX} ${CXXFLAGS}
@@ -208,7 +208,7 @@ jobs:
           echo CXX=g++-9 >> ${GITHUB_ENV}
       - name: Install dependencies
         if: runner.os == 'Linux'
-        run: sudo apt-get install libevent-dev libsasl-dev ${INSTALL_MEMCACHED} ${INSTALL_CC} ${INSTALL_CXX}
+        run: sudo apt-get install libevent-dev libsasl2-dev ${INSTALL_MEMCACHED} ${INSTALL_CC} ${INSTALL_CXX}
       - name: Generate build tree (${CMAKE_CONFIG_TYPE})
         run: cmake -S . -B build
       - name: Build all with ${CXX} ${CXXFLAGS}

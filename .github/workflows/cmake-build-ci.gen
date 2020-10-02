@@ -110,7 +110,7 @@ function steps($splat_map = null) {
 ?>
 <?=PRE?> - name: Install dependencies
 <?=PRE?>   if: runner.os == 'Linux'
-<?=PRE?>   run: sudo apt-get install libevent-dev libsasl-dev ${INSTALL_MEMCACHED} ${INSTALL_CC} ${INSTALL_CXX}
+<?=PRE?>   run: sudo apt-get install libevent-dev libsasl2-dev ${INSTALL_MEMCACHED} ${INSTALL_CC} ${INSTALL_CXX}
 <?=PRE?> - name: Generate build tree (${CMAKE_CONFIG_TYPE})
 <?=PRE?>   run: cmake -S . -B build
 <?=PRE?> - name: Build all with ${CXX} ${CXXFLAGS}
