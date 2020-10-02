@@ -222,6 +222,7 @@ jobs:
       INSTALL_MEMCACHED:
       MEMCACHED_PREFIX: /tmp
       MEMCACHED_BINARY: /tmp/bin/memcached
+      ENABLE_SASL:      "ON"
       enable_sasl: yes
       enable_sasl_pwdb: yes
       enable_docs: no
