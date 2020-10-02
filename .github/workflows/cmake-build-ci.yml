@@ -34,7 +34,7 @@ jobs:
         compiler_vendor: [gnu, clang]
         compiler_version: [new, cur, old]
     runs-on: ${{ matrix.os }}
-    if: ${{ ! ( matrix.os == 'ubuntu-18.04' && matrix.compiler_vendor == 'clang' && matrix.compiler_version == 'old' ) }}# skip clang-6
+    if: ${{ matrix.os }}  != 'ubuntu-18.04' || ${{ matrix.compiler_vendor }} != 'clang' || ${{ matrix.compiler_version }} != 'old'
     env:
       CMAKE_CONFIG_TYPE: Release
       OS_VND: Linux
