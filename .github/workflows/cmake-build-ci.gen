@@ -64,7 +64,7 @@ const MAP = [
           'env.CC_VER' => [
             "new"  => "-9",
             "cur"  => "-8",
-            "old"  => "-6.0"
+            // old => "-6.0" ### skip
           ]
         ]
       ]
@@ -161,6 +161,7 @@ jobs:
         compiler_vendor: [gnu, clang]
         compiler_version: [new, cur, old]
     runs-on: ${{ matrix.os }}
+    if: !(matrix.os == 'ubuntu-18.04' && matrix.compiler_vendor == 'clang' && matrix.compiler_version == 'old') # skip clang-6
     env:
       CMAKE_CONFIG_TYPE: Release
       OS_VND: Linux
@@ -208,6 +209,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           repository: memcached/memcached
+          path: memcached
           ref: 1.6.7
       - name: Build memcached
         run: |
