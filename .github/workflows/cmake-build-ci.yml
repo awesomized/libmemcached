@@ -1,14 +1,14 @@
 # Generated file; do not edit!
 name: cmake-build-ci
-on: 
+on:
   push:
-    paths-ignore: 
+    paths-ignore:
       - "docs/**"
-    branches-ignore: 
+    branches-ignore:
       - gh-pages
       - v1.x
   pull_request:
-    branches: 
+    branches:
       - master
       - v1.x
 env:
@@ -128,7 +128,7 @@ jobs:
     runs-on: ubuntu-20.04 #
     env:
       ENABLE_SANITIZERS: "address;undefined"
-    steps: 
+    steps:
       - uses: actions/checkout@v2
       - name: Prepare environment (for cur gnu on ubuntu-20.04)
         if: (env.OS_VER=='ubuntu-20.04') && (env.CC_VND=='gnu') && (env.CC_VER=='cur')
@@ -156,7 +156,7 @@ jobs:
     env:
       CFLAGS: -O0 --coverage
       CXXFLAGS: -O0 --coverage
-    steps: 
+    steps:
       - uses: actions/checkout@v2
       - name: Prepare environment (for cur gnu on ubuntu-20.04)
         if: (env.OS_VER=='ubuntu-20.04') && (env.CC_VND=='gnu') && (env.CC_VER=='cur')
@@ -225,4 +225,3 @@ jobs:
       - name: Failed tests log
         if: ${{ failure() }}
         run: cat build/Testing/Temporary/LastTest.log
-

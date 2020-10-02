@@ -149,15 +149,15 @@ function steps($splat_map = null) {
 
 ?>
 name: cmake-build-ci
-on: 
+on:
   push:
-    paths-ignore: 
+    paths-ignore:
       - "docs/**"
-    branches-ignore: 
+    branches-ignore:
       - gh-pages
       - v1.x
   pull_request:
-    branches: 
+    branches:
       - master
       - v1.x
 env:
@@ -200,7 +200,7 @@ jobs:
     runs-on: <?=DEF[DEF["os"]]?> #
     env:
       ENABLE_SANITIZERS: "address;undefined"
-    steps: 
+    steps:
       - uses: actions/checkout@v2
 <?php steps(); ?>
 
@@ -210,7 +210,7 @@ jobs:
     env:
       CFLAGS: -O0 --coverage
       CXXFLAGS: -O0 --coverage
-    steps: 
+    steps:
       - uses: actions/checkout@v2
 <?php steps(); ?>
       - uses: codecov/codecov-action@v1.0.13
@@ -245,4 +245,3 @@ jobs:
           make install
           cd ..
 <?php steps_build(); ?>
-
