@@ -29,6 +29,14 @@ const APT = [
         "CXX" => "g++-10",
       ]
     ]
+  ],
+  "ubuntu-18.04" => [
+    "clang" => [
+      "old" => [
+        "CC" => "clang-7",
+        "CXX" => "clang-7"
+      ]
+    ]
   ]
 ];
 const MAP = [
@@ -64,7 +72,7 @@ const MAP = [
           'env.CC_VER' => [
             "new"  => "-9",
             "cur"  => "-8",
-            "old"  => "-6.0"
+            "old"  => "-7"
           ]
         ]
       ]
