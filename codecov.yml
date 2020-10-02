@@ -1,9 +1,13 @@
-codecov:
 
 ignore:
   - "/usr"
 
 coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
   range: 60..90
   round: nearest
   precision: 0
