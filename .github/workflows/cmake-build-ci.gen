@@ -129,7 +129,7 @@ function steps_build() {
 <?=PRE?>   run: make -C build -j2 install DESTDIR=.
 <?=PRE?> - name: Failed tests log
 <?=PRE?>   if: ${{ failure() }}
-<?=PRE?>   run: cat Testing/Temporary/LastTest.log
+<?=PRE?>   run: cat build/Testing/Temporary/LastTest.log
 <?php
 }
 
@@ -172,16 +172,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, ubuntu-18.04]
-        compiler_vendor: [gnu, clang]
-        compiler_version: [new, cur, old]
-    runs-on: ${{ matrix.os }}
+        os_ver: [ubuntu-20.04, ubuntu-18.04]
+        cc_vnd: [gnu, clang]
+        cc_ver: [new, cur, old]
+    runs-on: ${{ matrix.os_ver }}
+    continue-on-error: ${{ matrix.cc_vnd == 'clang' }}
     env:
       CMAKE_CONFIG_TYPE: Release
       OS_VND: Linux
-      OS_VER: ${{ matrix.os }}
-      CC_VND: ${{ matrix.compiler_vendor }}
-      CC_VER: ${{ matrix.compiler_version }}
+      OS_VER: ${{ matrix.os_ver }}
+      CC_VND: ${{ matrix.cc_vnd }}
+      CC_VER: ${{ matrix.cc_ver }}
     steps:
       - uses: actions/checkout@v2
 <?php steps(true); ?>

@@ -31,16 +31,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, ubuntu-18.04]
-        compiler_vendor: [gnu, clang]
-        compiler_version: [new, cur, old]
-    runs-on: ${{ matrix.os }}
+        os_ver: [ubuntu-20.04, ubuntu-18.04]
+        cc_vnd: [gnu, clang]
+        cc_ver: [new, cur, old]
+    runs-on: ${{ matrix.os_ver }}
+    continue-on-error: ${{ matrix.cc_vnd == 'clang' }}
     env:
       CMAKE_CONFIG_TYPE: Release
       OS_VND: Linux
-      OS_VER: ${{ matrix.os }}
-      CC_VND: ${{ matrix.compiler_vendor }}
-      CC_VER: ${{ matrix.compiler_version }}
+      OS_VER: ${{ matrix.os_ver }}
+      CC_VND: ${{ matrix.cc_vnd }}
+      CC_VER: ${{ matrix.cc_ver }}
     steps:
       - uses: actions/checkout@v2
       - name: Prepare environment (for new gnu on ubuntu-20.04)
@@ -118,7 +119,7 @@ jobs:
         run: make -C build -j2 install DESTDIR=.
       - name: Failed tests log
         if: ${{ failure() }}
-        run: cat Testing/Temporary/LastTest.log
+        run: cat build/Testing/Temporary/LastTest.log
 
   # sanitizer build
   ci-san:
@@ -145,7 +146,7 @@ jobs:
         run: make -C build -j2 install DESTDIR=.
       - name: Failed tests log
         if: ${{ failure() }}
-        run: cat Testing/Temporary/LastTest.log
+        run: cat build/Testing/Temporary/LastTest.log
 
   # coverage build
   ci-cov:
@@ -173,7 +174,7 @@ jobs:
         run: make -C build -j2 install DESTDIR=.
       - name: Failed tests log
         if: ${{ failure() }}
-        run: cat Testing/Temporary/LastTest.log
+        run: cat build/Testing/Temporary/LastTest.log
       - uses: codecov/codecov-action@v1.0.13
 
   # memcached new
@@ -221,5 +222,5 @@ jobs:
         run: make -C build -j2 install DESTDIR=.
       - name: Failed tests log
         if: ${{ failure() }}
-        run: cat Testing/Temporary/LastTest.log
+        run: cat build/Testing/Temporary/LastTest.log
 
