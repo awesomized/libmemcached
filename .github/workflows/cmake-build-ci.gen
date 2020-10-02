@@ -147,6 +147,12 @@ function steps($splat_map = null) {
   steps_build();
 }
 
+function defaults() {
+  $os_ver = DEF[DEF["os"]];
+  $cc_vnd = DEF[$os_ver];
+  $cc_ver = DEF[$cc_vnd]["ver"];
+  return "$os_ver, $cc_vnd, $cc_ver";
+}
 ?>
 name: cmake-build-ci
 on:
@@ -178,7 +184,7 @@ jobs:
 
   # new memcached
   ci-new:
-    name: ci-dbg (<?=DEF[DEF["os"]]?> ${{ env.CC_VND }} ${{ env.CC_VER }} memcached-1.6)
+    name: ci-dbg (<?=defaults()?>, memcached-1.6)
     runs-on: <?=DEF[DEF["os"]]?> #
     env:
       INSTALL_MEMCACHED:
@@ -212,7 +218,7 @@ jobs:
 
   # sanitizer build
   ci-san:
-    name: ci-dbg (<?=DEF[DEF["os"]]?> ${{ env.CC_VND }} ${{ env.CC_VER }} sanitizers)
+    name: ci-dbg (<?=defaults()?>, sanitizers)
     runs-on: <?=DEF[DEF["os"]]?> #
     env:
       ENABLE_SANITIZERS: "address;undefined"
@@ -222,7 +228,7 @@ jobs:
 
   # coverage build
   ci-cov:
-    name: ci-dbg (<?=DEF[DEF["os"]]?> ${{ env.CC_VND }} ${{ env.CC_VER }} coverage)
+    name: ci-dbg (<?=defaults()?>, coverage)
     runs-on: <?=DEF[DEF["os"]]?> #
     env:
       CFLAGS: -O0 --coverage

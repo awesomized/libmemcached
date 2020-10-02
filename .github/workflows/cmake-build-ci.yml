@@ -29,7 +29,7 @@ jobs:
 
   # new memcached
   ci-new:
-    name: ci-dbg (ubuntu-20.04 ${{ env.CC_VND }} ${{ env.CC_VER }} memcached-1.6)
+    name: ci-dbg (ubuntu-20.04, gnu, cur, memcached-1.6)
     runs-on: ubuntu-20.04 #
     env:
       INSTALL_MEMCACHED:
@@ -79,7 +79,7 @@ jobs:
 
   # sanitizer build
   ci-san:
-    name: ci-dbg (ubuntu-20.04 ${{ env.CC_VND }} ${{ env.CC_VER }} sanitizers)
+    name: ci-dbg (ubuntu-20.04, gnu, cur, sanitizers)
     runs-on: ubuntu-20.04 #
     env:
       ENABLE_SANITIZERS: "address;undefined"
@@ -107,7 +107,7 @@ jobs:
 
   # coverage build
   ci-cov:
-    name: ci-dbg (ubuntu-20.04 ${{ env.CC_VND }} ${{ env.CC_VER }} coverage)
+    name: ci-dbg (ubuntu-20.04, gnu, cur, coverage)
     runs-on: ubuntu-20.04 #
     env:
       CFLAGS: -O0 --coverage
