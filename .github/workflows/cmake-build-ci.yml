@@ -48,9 +48,20 @@ jobs:
         run: |
           echo CC=gcc-9 >> ${GITHUB_ENV}
           echo CXX=g++-9 >> ${GITHUB_ENV}
-      - name: Install dependencies
+      - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
-        run: sudo apt-get install libevent-dev libsasl2-dev ${INSTALL_MEMCACHED} ${INSTALL_CC} ${INSTALL_CXX}
+        run: |
+          sudo apt-get install \
+            libevent-dev \
+            libsasl2-dev \
+            ${INSTALL_MEMCACHED} \
+            ${INSTALL_CC} ${INSTALL_CXX}
+          sudo systemctl stop memcached || true
+      - name: Install dependencies (Mac)
+        if: runner.os == 'macOS'
+        run: |
+          brew install bison flex ${INSTALL_MEMCACHED}
+          brew services stop memcached || true
       - name: Build memcached
         run: |
           cd memcached
@@ -90,9 +101,20 @@ jobs:
         run: |
           echo CC=gcc-9 >> ${GITHUB_ENV}
           echo CXX=g++-9 >> ${GITHUB_ENV}
-      - name: Install dependencies
+      - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
-        run: sudo apt-get install libevent-dev libsasl2-dev ${INSTALL_MEMCACHED} ${INSTALL_CC} ${INSTALL_CXX}
+        run: |
+          sudo apt-get install \
+            libevent-dev \
+            libsasl2-dev \
+            ${INSTALL_MEMCACHED} \
+            ${INSTALL_CC} ${INSTALL_CXX}
+          sudo systemctl stop memcached || true
+      - name: Install dependencies (Mac)
+        if: runner.os == 'macOS'
+        run: |
+          brew install bison flex ${INSTALL_MEMCACHED}
+          brew services stop memcached || true
       - name: Generate build tree (${{ env.CMAKE_CONFIG_TYPE }})
         run: cmake -S . -B build
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
@@ -119,9 +141,20 @@ jobs:
         run: |
           echo CC=gcc-9 >> ${GITHUB_ENV}
           echo CXX=g++-9 >> ${GITHUB_ENV}
-      - name: Install dependencies
+      - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
-        run: sudo apt-get install libevent-dev libsasl2-dev ${INSTALL_MEMCACHED} ${INSTALL_CC} ${INSTALL_CXX}
+        run: |
+          sudo apt-get install \
+            libevent-dev \
+            libsasl2-dev \
+            ${INSTALL_MEMCACHED} \
+            ${INSTALL_CC} ${INSTALL_CXX}
+          sudo systemctl stop memcached || true
+      - name: Install dependencies (Mac)
+        if: runner.os == 'macOS'
+        run: |
+          brew install bison flex ${INSTALL_MEMCACHED}
+          brew services stop memcached || true
       - name: Generate build tree (${{ env.CMAKE_CONFIG_TYPE }})
         run: cmake -S . -B build
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
@@ -134,6 +167,41 @@ jobs:
         if: ${{ failure() }}
         run: cat build/Testing/Temporary/LastTest.log || true
       - uses: codecov/codecov-action@v1.0.13
+
+  # mac build
+  ci-mac:
+    name: ci-dbg (macos-10.15, clang, apple)
+    runs-on: macos-10.15 #
+    continue-on-error: true
+    env:
+      MEMCACHED_BINARY: /usr/local/bin/memcached
+    steps:
+      - uses actions/checkout@v2
+      - name: Install dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install \
+            libevent-dev \
+            libsasl2-dev \
+            ${INSTALL_MEMCACHED} \
+            ${INSTALL_CC} ${INSTALL_CXX}
+          sudo systemctl stop memcached || true
+      - name: Install dependencies (Mac)
+        if: runner.os == 'macOS'
+        run: |
+          brew install bison flex ${INSTALL_MEMCACHED}
+          brew services stop memcached || true
+      - name: Generate build tree (${{ env.CMAKE_CONFIG_TYPE }})
+        run: cmake -S . -B build
+      - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
+        run: make -C build -j2 all
+      - name: Test
+        run: make -C build -j2 test
+      - name: Install
+        run: make -C build -j2 install DESTDIR=.
+      - name: Failed tests log
+        if: ${{ failure() }}
+        run: cat build/Testing/Temporary/LastTest.log || true
 
   # release builds
   ci-rel:
@@ -217,9 +285,20 @@ jobs:
           echo CXX=clang++-7 >> ${GITHUB_ENV}
           echo INSTALL_CC='clang-7' >> ${GITHUB_ENV}
           echo INSTALL_CXX='clang-7' >> ${GITHUB_ENV}
-      - name: Install dependencies
+      - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
-        run: sudo apt-get install libevent-dev libsasl2-dev ${INSTALL_MEMCACHED} ${INSTALL_CC} ${INSTALL_CXX}
+        run: |
+          sudo apt-get install \
+            libevent-dev \
+            libsasl2-dev \
+            ${INSTALL_MEMCACHED} \
+            ${INSTALL_CC} ${INSTALL_CXX}
+          sudo systemctl stop memcached || true
+      - name: Install dependencies (Mac)
+        if: runner.os == 'macOS'
+        run: |
+          brew install bison flex ${INSTALL_MEMCACHED}
+          brew services stop memcached || true
       - name: Generate build tree (${{ env.CMAKE_CONFIG_TYPE }})
         run: cmake -S . -B build
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}

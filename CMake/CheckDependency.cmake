@@ -3,6 +3,7 @@ find_package(PkgConfig)
 include(SafeString)
 include(CheckHeader)
 
+
 function(check_dependency NAME LIB HEADER)
     if(PKG_CONFIG_FOUND)
         pkg_check_modules(${NAME} lib${LIB}${ARGN})
