@@ -34,7 +34,6 @@ jobs:
     env:
       INSTALL_MEMCACHED:
       MEMCACHED_PREFIX: /tmp
-      MEMCACHED_BINARY: /tmp/bin/memcached
       ENABLE_SASL:      "ON"
     steps:
       - uses: actions/checkout@v2
@@ -46,8 +45,8 @@ jobs:
       - name: Prepare environment (for cur gnu on ubuntu-20.04)
         if: (env.OS_VER=='ubuntu-20.04') && (env.CC_VND=='gnu') && (env.CC_VER=='cur')
         run: |
-          echo CC=gcc-9 >> ${GITHUB_ENV}
-          echo CXX=g++-9 >> ${GITHUB_ENV}
+          echo "CC='gcc-9'" >> ${GITHUB_ENV}
+          echo "CXX='g++-9'" >> ${GITHUB_ENV}
       - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
@@ -62,21 +61,29 @@ jobs:
         run: |
           brew install bison flex ${INSTALL_MEMCACHED}
           brew services stop memcached || true
+          echo "MEMCACHED_BINARY='/usr/local/bin/memcached'" >> ${GITHUB_ENV}
       - name: Build memcached
         run: |
-          cd memcached
-          ./autogen.sh
-          ./configure CFLAGS="-O2 -pipe" \
-            --prefix=${MEMCACHED_PREFIX} \
-            --enable-sasl \
-            --enable-sasl-pwdb \
-            --disable-docs \
-            --disable-coverage \
-            --disable-dependency-tracking
-          make -j2
-          make install
-          cd ..
-      - name: Generate build tree (${{ env.CMAKE_CONFIG_TYPE }})
+          if test -d memcached
+          then
+            cd memcached
+            ./autogen.sh
+            ./configure CFLAGS="-O2 -pipe" \
+              --prefix=${MEMCACHED_PREFIX} \
+              --enable-sasl \
+              --enable-sasl-pwdb \
+              --disable-coverage \
+              --disable-dependency-tracking \
+              --disable-docs \
+              --disable-extstore \
+              --disable-option-checking \
+              ;
+            make -j2
+            make install
+            cd ..
+            echo "MEMCACHED_BINARY='${MEMCACHED_PREFIX}/bin/memcached'" >> ${GITHUB_ENV}
+          fi
+      - name: Generate build tree (${{ env.CMAKE_BUILD_TYPE }})
         run: cmake -S . -B build
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
         run: make -C build -j2 all
@@ -99,8 +106,8 @@ jobs:
       - name: Prepare environment (for cur gnu on ubuntu-20.04)
         if: (env.OS_VER=='ubuntu-20.04') && (env.CC_VND=='gnu') && (env.CC_VER=='cur')
         run: |
-          echo CC=gcc-9 >> ${GITHUB_ENV}
-          echo CXX=g++-9 >> ${GITHUB_ENV}
+          echo "CC='gcc-9'" >> ${GITHUB_ENV}
+          echo "CXX='g++-9'" >> ${GITHUB_ENV}
       - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
@@ -115,7 +122,29 @@ jobs:
         run: |
           brew install bison flex ${INSTALL_MEMCACHED}
           brew services stop memcached || true
-      - name: Generate build tree (${{ env.CMAKE_CONFIG_TYPE }})
+          echo "MEMCACHED_BINARY='/usr/local/bin/memcached'" >> ${GITHUB_ENV}
+      - name: Build memcached
+        run: |
+          if test -d memcached
+          then
+            cd memcached
+            ./autogen.sh
+            ./configure CFLAGS="-O2 -pipe" \
+              --prefix=${MEMCACHED_PREFIX} \
+              --enable-sasl \
+              --enable-sasl-pwdb \
+              --disable-coverage \
+              --disable-dependency-tracking \
+              --disable-docs \
+              --disable-extstore \
+              --disable-option-checking \
+              ;
+            make -j2
+            make install
+            cd ..
+            echo "MEMCACHED_BINARY='${MEMCACHED_PREFIX}/bin/memcached'" >> ${GITHUB_ENV}
+          fi
+      - name: Generate build tree (${{ env.CMAKE_BUILD_TYPE }})
         run: cmake -S . -B build
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
         run: make -C build -j2 all
@@ -139,8 +168,8 @@ jobs:
       - name: Prepare environment (for cur gnu on ubuntu-20.04)
         if: (env.OS_VER=='ubuntu-20.04') && (env.CC_VND=='gnu') && (env.CC_VER=='cur')
         run: |
-          echo CC=gcc-9 >> ${GITHUB_ENV}
-          echo CXX=g++-9 >> ${GITHUB_ENV}
+          echo "CC='gcc-9'" >> ${GITHUB_ENV}
+          echo "CXX='g++-9'" >> ${GITHUB_ENV}
       - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
@@ -155,7 +184,29 @@ jobs:
         run: |
           brew install bison flex ${INSTALL_MEMCACHED}
           brew services stop memcached || true
-      - name: Generate build tree (${{ env.CMAKE_CONFIG_TYPE }})
+          echo "MEMCACHED_BINARY='/usr/local/bin/memcached'" >> ${GITHUB_ENV}
+      - name: Build memcached
+        run: |
+          if test -d memcached
+          then
+            cd memcached
+            ./autogen.sh
+            ./configure CFLAGS="-O2 -pipe" \
+              --prefix=${MEMCACHED_PREFIX} \
+              --enable-sasl \
+              --enable-sasl-pwdb \
+              --disable-coverage \
+              --disable-dependency-tracking \
+              --disable-docs \
+              --disable-extstore \
+              --disable-option-checking \
+              ;
+            make -j2
+            make install
+            cd ..
+            echo "MEMCACHED_BINARY='${MEMCACHED_PREFIX}/bin/memcached'" >> ${GITHUB_ENV}
+          fi
+      - name: Generate build tree (${{ env.CMAKE_BUILD_TYPE }})
         run: cmake -S . -B build
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
         run: make -C build -j2 all
@@ -173,8 +224,6 @@ jobs:
     name: ci-dbg (macos-10.15, clang, apple)
     runs-on: macos-10.15 #
     continue-on-error: true
-    env:
-      MEMCACHED_BINARY: /usr/local/bin/memcached
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies (Linux)
@@ -191,7 +240,29 @@ jobs:
         run: |
           brew install bison flex ${INSTALL_MEMCACHED}
           brew services stop memcached || true
-      - name: Generate build tree (${{ env.CMAKE_CONFIG_TYPE }})
+          echo "MEMCACHED_BINARY='/usr/local/bin/memcached'" >> ${GITHUB_ENV}
+      - name: Build memcached
+        run: |
+          if test -d memcached
+          then
+            cd memcached
+            ./autogen.sh
+            ./configure CFLAGS="-O2 -pipe" \
+              --prefix=${MEMCACHED_PREFIX} \
+              --enable-sasl \
+              --enable-sasl-pwdb \
+              --disable-coverage \
+              --disable-dependency-tracking \
+              --disable-docs \
+              --disable-extstore \
+              --disable-option-checking \
+              ;
+            make -j2
+            make install
+            cd ..
+            echo "MEMCACHED_BINARY='${MEMCACHED_PREFIX}/bin/memcached'" >> ${GITHUB_ENV}
+          fi
+      - name: Generate build tree (${{ env.CMAKE_BUILD_TYPE }})
         run: cmake -S . -B build
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
         run: make -C build -j2 all
@@ -224,67 +295,66 @@ jobs:
       - name: Prepare environment (for new gnu on ubuntu-20.04)
         if: (env.OS_VER=='ubuntu-20.04') && (env.CC_VND=='gnu') && (env.CC_VER=='new')
         run: |
-          echo CC=gcc-10 >> ${GITHUB_ENV}
-          echo CXX=g++-10 >> ${GITHUB_ENV}
-          echo INSTALL_CC='gcc-10' >> ${GITHUB_ENV}
-          echo INSTALL_CXX='g++-10' >> ${GITHUB_ENV}
+          echo "CC='gcc-10'" >> ${GITHUB_ENV}
+          echo "CXX='g++-10'" >> ${GITHUB_ENV}
+          echo "INSTALL_CC='gcc-10'" >> ${GITHUB_ENV}}
+          echo "INSTALL_CXX='g++-10'" >> ${GITHUB_ENV}}
       - name: Prepare environment (for cur gnu on ubuntu-20.04)
         if: (env.OS_VER=='ubuntu-20.04') && (env.CC_VND=='gnu') && (env.CC_VER=='cur')
         run: |
-          echo CC=gcc-9 >> ${GITHUB_ENV}
-          echo CXX=g++-9 >> ${GITHUB_ENV}
+          echo "CC='gcc-9'" >> ${GITHUB_ENV}
+          echo "CXX='g++-9'" >> ${GITHUB_ENV}
       - name: Prepare environment (for old gnu on ubuntu-20.04)
         if: (env.OS_VER=='ubuntu-20.04') && (env.CC_VND=='gnu') && (env.CC_VER=='old')
         run: |
-          echo CC=gcc-8 >> ${GITHUB_ENV}
-          echo CXX=g++-8 >> ${GITHUB_ENV}
+          echo "CC='gcc-8'" >> ${GITHUB_ENV}
+          echo "CXX='g++-8'" >> ${GITHUB_ENV}
       - name: Prepare environment (for new clang on ubuntu-20.04)
         if: (env.OS_VER=='ubuntu-20.04') && (env.CC_VND=='clang') && (env.CC_VER=='new')
         run: |
-          echo CC=clang-10 >> ${GITHUB_ENV}
-          echo CXX=clang++-10 >> ${GITHUB_ENV}
+          echo "CC='clang-10'" >> ${GITHUB_ENV}
+          echo "CXX='clang++-10'" >> ${GITHUB_ENV}
       - name: Prepare environment (for cur clang on ubuntu-20.04)
         if: (env.OS_VER=='ubuntu-20.04') && (env.CC_VND=='clang') && (env.CC_VER=='cur')
         run: |
-          echo CC=clang-9 >> ${GITHUB_ENV}
-          echo CXX=clang++-9 >> ${GITHUB_ENV}
+          echo "CC='clang-9'" >> ${GITHUB_ENV}
+          echo "CXX='clang++-9'" >> ${GITHUB_ENV}
       - name: Prepare environment (for old clang on ubuntu-20.04)
         if: (env.OS_VER=='ubuntu-20.04') && (env.CC_VND=='clang') && (env.CC_VER=='old')
         run: |
-          echo CC=clang-8 >> ${GITHUB_ENV}
-          echo CXX=clang++-8 >> ${GITHUB_ENV}
+          echo "CC='clang-8'" >> ${GITHUB_ENV}
+          echo "CXX='clang++-8'" >> ${GITHUB_ENV}
       - name: Prepare environment (for new gnu on ubuntu-18.04)
         if: (env.OS_VER=='ubuntu-18.04') && (env.CC_VND=='gnu') && (env.CC_VER=='new')
         run: |
-          echo CC=gcc-9 >> ${GITHUB_ENV}
-          echo CXX=g++-9 >> ${GITHUB_ENV}
+          echo "CC='gcc-9'" >> ${GITHUB_ENV}
+          echo "CXX='g++-9'" >> ${GITHUB_ENV}
       - name: Prepare environment (for cur gnu on ubuntu-18.04)
         if: (env.OS_VER=='ubuntu-18.04') && (env.CC_VND=='gnu') && (env.CC_VER=='cur')
         run: |
-          echo CC=gcc-8 >> ${GITHUB_ENV}
-          echo CXX=g++-8 >> ${GITHUB_ENV}
+          echo "CC='gcc-8'" >> ${GITHUB_ENV}
+          echo "CXX='g++-8'" >> ${GITHUB_ENV}
       - name: Prepare environment (for old gnu on ubuntu-18.04)
         if: (env.OS_VER=='ubuntu-18.04') && (env.CC_VND=='gnu') && (env.CC_VER=='old')
         run: |
-          echo CC=gcc-7 >> ${GITHUB_ENV}
-          echo CXX=g++-7 >> ${GITHUB_ENV}
+          echo "CC='gcc-7'" >> ${GITHUB_ENV}
+          echo "CXX='g++-7'" >> ${GITHUB_ENV}
       - name: Prepare environment (for new clang on ubuntu-18.04)
         if: (env.OS_VER=='ubuntu-18.04') && (env.CC_VND=='clang') && (env.CC_VER=='new')
         run: |
-          echo CC=clang-9 >> ${GITHUB_ENV}
-          echo CXX=clang++-9 >> ${GITHUB_ENV}
+          echo "CC='clang-9'" >> ${GITHUB_ENV}
+          echo "CXX='clang++-9'" >> ${GITHUB_ENV}
       - name: Prepare environment (for cur clang on ubuntu-18.04)
         if: (env.OS_VER=='ubuntu-18.04') && (env.CC_VND=='clang') && (env.CC_VER=='cur')
         run: |
-          echo CC=clang-8 >> ${GITHUB_ENV}
-          echo CXX=clang++-8 >> ${GITHUB_ENV}
+          echo "CC='clang-8'" >> ${GITHUB_ENV}
+          echo "CXX='clang++-8'" >> ${GITHUB_ENV}
       - name: Prepare environment (for old clang on ubuntu-18.04)
         if: (env.OS_VER=='ubuntu-18.04') && (env.CC_VND=='clang') && (env.CC_VER=='old')
         run: |
-          echo CC=clang-7 >> ${GITHUB_ENV}
-          echo CXX=clang++-7 >> ${GITHUB_ENV}
-          echo INSTALL_CC='clang-7' >> ${GITHUB_ENV}
-          echo INSTALL_CXX='clang-7' >> ${GITHUB_ENV}
+          echo "CC='clang-6.0'" >> ${GITHUB_ENV}
+          echo "CXX='clang++-6.0'" >> ${GITHUB_ENV}
+          echo "CXXFLAGS='-stdlib=libc++'" >> ${GITHUB_ENV}}
       - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
@@ -299,7 +369,29 @@ jobs:
         run: |
           brew install bison flex ${INSTALL_MEMCACHED}
           brew services stop memcached || true
-      - name: Generate build tree (${{ env.CMAKE_CONFIG_TYPE }})
+          echo "MEMCACHED_BINARY='/usr/local/bin/memcached'" >> ${GITHUB_ENV}
+      - name: Build memcached
+        run: |
+          if test -d memcached
+          then
+            cd memcached
+            ./autogen.sh
+            ./configure CFLAGS="-O2 -pipe" \
+              --prefix=${MEMCACHED_PREFIX} \
+              --enable-sasl \
+              --enable-sasl-pwdb \
+              --disable-coverage \
+              --disable-dependency-tracking \
+              --disable-docs \
+              --disable-extstore \
+              --disable-option-checking \
+              ;
+            make -j2
+            make install
+            cd ..
+            echo "MEMCACHED_BINARY='${MEMCACHED_PREFIX}/bin/memcached'" >> ${GITHUB_ENV}
+          fi
+      - name: Generate build tree (${{ env.CMAKE_BUILD_TYPE }})
         run: cmake -S . -B build
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
         run: make -C build -j2 all

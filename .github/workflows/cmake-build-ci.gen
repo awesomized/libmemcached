@@ -3,7 +3,6 @@
 
 echo "# Generated file; do not edit!\n";
 
-const PRE = "     ";
 const DEF = [
   "os" => "Linux",
   "Linux" => "ubuntu-20.04",
@@ -21,20 +20,19 @@ const DEF = [
     "CXX"  => "clang++",
   ],
 ];
-const APT = [
+const ENV = [
   "ubuntu-20.04" => [
     "gnu" => [
       "new" => [
-        "CC" => "gcc-10",
-        "CXX" => "g++-10",
+        "INSTALL_CC" => "gcc-10",
+        "INSTALL_CXX" => "g++-10",
       ]
     ]
   ],
   "ubuntu-18.04" => [
     "clang" => [
       "old" => [
-        "CC" => "clang-7",
-        "CXX" => "clang-7"
+        "CXXFLAGS" => "-stdlib=libc++"
       ]
     ]
   ]
@@ -72,7 +70,7 @@ const MAP = [
           'env.CC_VER' => [
             "new"  => "-9",
             "cur"  => "-8",
-            "old"  => "-7"
+            "old"  => "-6.0"
           ]
         ]
       ]
@@ -95,18 +93,18 @@ function steps_setenv($splat_map = null) {
               foreach ($cc_vers as $cc_ver => $ver) {
                 if (!$splat_map && DEF[DEF[DEF[DEF["os"]]]]["ver"] != $cc_ver) continue;
 ?>
-<?=PRE?> - name: Prepare environment (<?= "for $cc_ver $cc_vnd on $os_ver" ?>)
-<?=PRE?>   if: (<?="$os_is=='$os_ver') && ($cc_vnd_is=='$cc_vnd') && ($cc_ver_is=='$cc_ver'"?>)
-<?=PRE?>   run: |
-<?=PRE?>     echo CC=<?=DEF[$cc_vnd]["CC"] . $ver?> >> ${GITHUB_ENV}
-<?=PRE?>     echo CXX=<?=DEF[$cc_vnd]["CXX"] . $ver?> >> ${GITHUB_ENV}
+      - name: Prepare environment (<?= "for $cc_ver $cc_vnd on $os_ver" ?>)
+        if: (<?="$os_is=='$os_ver') && ($cc_vnd_is=='$cc_vnd') && ($cc_ver_is=='$cc_ver'"?>)
+        run: |
+          echo "CC='<?=DEF[$cc_vnd]["CC"] . $ver?>'" >> ${GITHUB_ENV}
+          echo "CXX='<?=DEF[$cc_vnd]["CXX"] . $ver?>'" >> ${GITHUB_ENV}
 <?php
-                if (isset(APT[$os_ver][$cc_vnd][$cc_ver])) {
-                  $dep = APT[$os_ver][$cc_vnd][$cc_ver];
+                if (isset(ENV[$os_ver][$cc_vnd][$cc_ver])) {
+                  foreach (ENV[$os_ver][$cc_vnd][$cc_ver] as $env => $val) {
 ?>
-<?=PRE?>     echo INSTALL_CC='<?=$dep["CC"]?>' >> ${GITHUB_ENV}
-<?=PRE?>     echo INSTALL_CXX='<?=$dep["CXX"]?>' >> ${GITHUB_ENV}
+          echo "<?=$env?>='<?=$val?>'" >> ${GITHUB_ENV}}
 <?php
+                  }
                 }
               }
             }
@@ -119,36 +117,58 @@ function steps_setenv($splat_map = null) {
 
 function steps_getdeps() {
 ?>
-<?=PRE?> - name: Install dependencies (Linux)
-<?=PRE?>   if: runner.os == 'Linux'
-<?=PRE?>   run: |
-<?=PRE?>     sudo apt-get install \
-<?=PRE?>       libevent-dev \
-<?=PRE?>       libsasl2-dev \
-<?=PRE?>       ${INSTALL_MEMCACHED} \
-<?=PRE?>       ${INSTALL_CC} ${INSTALL_CXX}
-<?=PRE?>     sudo systemctl stop memcached || true
-<?=PRE?> - name: Install dependencies (Mac)
-<?=PRE?>   if: runner.os == 'macOS'
-<?=PRE?>   run: |
-<?=PRE?>     brew install bison flex ${INSTALL_MEMCACHED}
-<?=PRE?>     brew services stop memcached || true
+      - name: Install dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install \
+            libevent-dev \
+            libsasl2-dev \
+            ${INSTALL_MEMCACHED} \
+            ${INSTALL_CC} ${INSTALL_CXX}
+          sudo systemctl stop memcached || true
+      - name: Install dependencies (Mac)
+        if: runner.os == 'macOS'
+        run: |
+          brew install bison flex ${INSTALL_MEMCACHED}
+          brew services stop memcached || true
+          echo "MEMCACHED_BINARY='/usr/local/bin/memcached'" >> ${GITHUB_ENV}
+      - name: Build memcached
+        run: |
+          if test -d memcached
+          then
+            cd memcached
+            ./autogen.sh
+            ./configure CFLAGS="-O2 -pipe" \
+              --prefix=${MEMCACHED_PREFIX} \
+              --enable-sasl \
+              --enable-sasl-pwdb \
+              --disable-coverage \
+              --disable-dependency-tracking \
+              --disable-docs \
+              --disable-extstore \
+              --disable-option-checking \
+              ;
+            make -j2
+            make install
+            cd ..
+            echo "MEMCACHED_BINARY='${MEMCACHED_PREFIX}/bin/memcached'" >> ${GITHUB_ENV}
+          fi
 <?php
 }
 
 function steps_build() {
 ?>
-<?=PRE?> - name: Generate build tree (${{ env.CMAKE_CONFIG_TYPE }})
-<?=PRE?>   run: cmake -S . -B build
-<?=PRE?> - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
-<?=PRE?>   run: make -C build -j2 all
-<?=PRE?> - name: Test
-<?=PRE?>   run: make -C build -j2 test
-<?=PRE?> - name: Install
-<?=PRE?>   run: make -C build -j2 install DESTDIR=.
-<?=PRE?> - name: Failed tests log
-<?=PRE?>   if: ${{ failure() }}
-<?=PRE?>   run: cat build/Testing/Temporary/LastTest.log || true
+      - name: Generate build tree (${{ env.CMAKE_BUILD_TYPE }})
+        run: cmake -S . -B build
+      - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
+        run: make -C build -j2 all
+      - name: Test
+        run: make -C build -j2 test
+      - name: Install
+        run: make -C build -j2 install DESTDIR=.
+      - name: Failed tests log
+        if: ${{ failure() }}
+        run: cat build/Testing/Temporary/LastTest.log || true
 <?php
 }
 
@@ -200,7 +220,6 @@ jobs:
     env:
       INSTALL_MEMCACHED:
       MEMCACHED_PREFIX: /tmp
-      MEMCACHED_BINARY: /tmp/bin/memcached
       ENABLE_SASL:      "ON"
     steps:
       - uses: actions/checkout@v2
@@ -209,23 +228,7 @@ jobs:
           repository: memcached/memcached
           path: memcached
           ref: 1.6.7
-<?php steps_setenv(); ?>
-<?php steps_getdeps(); ?>
-      - name: Build memcached
-        run: |
-          cd memcached
-          ./autogen.sh
-          ./configure CFLAGS="-O2 -pipe" \
-            --prefix=${MEMCACHED_PREFIX} \
-            --enable-sasl \
-            --enable-sasl-pwdb \
-            --disable-docs \
-            --disable-coverage \
-            --disable-dependency-tracking
-          make -j2
-          make install
-          cd ..
-<?php steps_build(); ?>
+<?php steps(); ?>
 
   # sanitizer build
   ci-san:
@@ -254,8 +257,6 @@ jobs:
     name: ci-dbg (<?=DEF["macOS"]?>, <?=DEF[DEF["macOS"]]?>, <?=DEF[DEF[DEF["macOS"]]]["ver"]?>)
     runs-on: <?=DEF["macOS"]?> #
     continue-on-error: true
-    env:
-      MEMCACHED_BINARY: /usr/local/bin/memcached
     steps:
       - uses: actions/checkout@v2
 <?php steps(false); ?>
