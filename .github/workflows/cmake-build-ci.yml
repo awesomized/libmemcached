@@ -297,8 +297,8 @@ jobs:
         run: |
           echo CC="gcc-10" >> ${GITHUB_ENV}
           echo CXX="g++-10" >> ${GITHUB_ENV}
-          echo INSTALL_CC="gcc-10" >> ${GITHUB_ENV}}
-          echo INSTALL_CXX="g++-10" >> ${GITHUB_ENV}}
+          echo INSTALL_CC="gcc-10" >> ${GITHUB_ENV}
+          echo INSTALL_CXX="g++-10" >> ${GITHUB_ENV}
       - name: Prepare environment (for cur gnu on ubuntu-20.04)
         if: (env.OS_VER=='ubuntu-20.04') && (env.CC_VND=='gnu') && (env.CC_VER=='cur')
         run: |
@@ -354,7 +354,7 @@ jobs:
         run: |
           echo CC="clang-6.0" >> ${GITHUB_ENV}
           echo CXX="clang++-6.0" >> ${GITHUB_ENV}
-          echo CXXFLAGS="-stdlib=libc++" >> ${GITHUB_ENV}}
+          echo CXXFLAGS="-stdlib=libc++" >> ${GITHUB_ENV}
       - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
         run: |

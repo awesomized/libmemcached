@@ -102,7 +102,7 @@ function steps_setenv($splat_map = null) {
                 if (isset(ENV[$os_ver][$cc_vnd][$cc_ver])) {
                   foreach (ENV[$os_ver][$cc_vnd][$cc_ver] as $env => $val) {
 ?>
-          echo <?=$env?>="<?=$val?>" >> ${GITHUB_ENV}}
+          echo <?=$env?>="<?=$val?>" >> ${GITHUB_ENV}
 <?php
                   }
                 }
