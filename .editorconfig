@@ -1,0 +1,29 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{C,c{,c,pp,xx},h{,h,pp,xx}}]
+indent_style = space
+indent_size = 2
+
+[*.yml]
+indent_style = space
+indent_size = 2
+
+[*.{rst,m{,{,ark}d{,own}}}}]
+trim_trailing_whitespace = false
+indent_style = space
+indent_size = 4
+
+[{CMake{Lists,Config}.txt,*.cmake}]
+indent_style = space
+indent_size = 4
+
+[{Makefile,*.mk}]
+indent_style = tab
+
+
