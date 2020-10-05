@@ -37,6 +37,8 @@ public:
   static MemcachedCluster sasl();
 #endif
 
+  void killOneServer();
+
 private:
   static const memcached_st empty_memc;
 

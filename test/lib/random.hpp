@@ -26,6 +26,8 @@ enable_if_t<is_integral_v<T>, T> random_num(T min, T max) {
 unsigned random_port();
 string random_port_string(const string &);
 
+char random_binary();
+string random_binary_string(size_t len);
 char random_ascii(char min = '!', char max = '~');
 string random_ascii_string(size_t len, char min = '!', char max = '~');
 kv_pair random_ascii_pair(size_t minlen = 1<<2, size_t maxlen = 1<<10);

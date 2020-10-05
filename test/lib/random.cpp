@@ -62,3 +62,21 @@ pair<string, string> random_ascii_pair(size_t minlen, size_t maxlen) {
       random_ascii_string(random_num(minlen, maxlen))
   };
 }
+
+#include <climits>
+
+char random_binary() {
+  return random_num(CHAR_MIN, CHAR_MAX);
+}
+
+string random_binary_string(size_t len) {
+  string s;
+  s.reserve(len + 1);
+
+  for (size_t rem = 0; rem < len; ++rem) {
+    s += random_binary();
+  }
+  s[len] = 0;
+
+  return s;
+}

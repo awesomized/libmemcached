@@ -134,10 +134,16 @@ void MemcachedCluster::enableBuffering(bool enable) {
 
 void MemcachedCluster::enableReplication() {
   REQUIRE(MEMCACHED_SUCCESS == memcached_behavior_set(&memc,
-      MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, memcached_server_count(&memc)));
+      MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, memcached_server_count(&memc) - 1));
 }
 
 void MemcachedCluster::enableUdp(bool enable) {
   REQUIRE(MEMCACHED_SUCCESS == memcached_behavior_set(&memc,
       MEMCACHED_BEHAVIOR_USE_UDP, enable));
+}
+
+void MemcachedCluster::killOneServer() {
+  const auto &servers = cluster.getServers();
+  const auto &victim = servers[random_num(0UL, servers.size() - 1)];
+  ::kill(victim.getPid(), SIGKILL);
 }

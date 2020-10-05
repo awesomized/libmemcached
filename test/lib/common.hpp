@@ -105,7 +105,7 @@ public:
   }
 };
 
-template<class T, void (*F)(void*) = free>
+template<class T>
 class Malloced {
   T *ptr;
 public:
@@ -115,7 +115,7 @@ public:
   {}
   ~Malloced() {
     if(ptr)
-      F(ptr);
+      free(ptr);
   }
   auto operator *() {
     return ptr;
