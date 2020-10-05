@@ -33,7 +33,12 @@ public:
     pipe = exchange(s.pipe, -1);
     status = exchange(s.status, 0);
     signalled = exchange(s.signalled, {});
+#if __clang__ && __clang_major__ <= 7
+    socket_or_port = s.socket_or_port;
+    s.socket_or_port = 11211;
+#else
     socket_or_port = exchange(s.socket_or_port, 11211);
+#endif
     output = exchange(s.output, {});
     return *this;
   };
