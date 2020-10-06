@@ -28,8 +28,8 @@ env:
 jobs:
 
   # new memcached
-  ci-new:
-    name: ci-dbg (ubuntu-20.04, gnu, cur, memcached-1.6)
+  dbg-new:
+    name: dbg-new (ubuntu-20.04, gnu, cur)
     runs-on: ubuntu-20.04 #
     env:
       INSTALL_MEMCACHED:
@@ -96,8 +96,8 @@ jobs:
         run: cat build/Testing/Temporary/LastTest.log || true
 
   # sanitizer build
-  ci-san:
-    name: ci-dbg (ubuntu-20.04, gnu, cur, sanitizers)
+  dbg-san:
+    name: dbg-san (ubuntu-20.04, gnu, cur)
     runs-on: ubuntu-20.04 #
     env:
       ENABLE_SANITIZERS: "address;undefined"
@@ -157,8 +157,8 @@ jobs:
         run: cat build/Testing/Temporary/LastTest.log || true
 
   # coverage build
-  ci-cov:
-    name: ci-dbg (ubuntu-20.04, gnu, cur, coverage)
+  dbg-cov:
+    name: dbg-cov (ubuntu-20.04, gnu, cur)
     runs-on: ubuntu-20.04 #
     env:
       CFLAGS: -O0 --coverage
@@ -220,8 +220,8 @@ jobs:
       - uses: codecov/codecov-action@v1.0.13
 
   # mac build
-  ci-mac:
-    name: ci-dbg (macos-10.15, clang, apple)
+  dbg-mac:
+    name: dbg-mac (macos-10.15, clang, apple)
     runs-on: macos-10.15 #
     continue-on-error: true
     steps:
@@ -275,7 +275,7 @@ jobs:
         run: cat build/Testing/Temporary/LastTest.log || true
 
   # release builds
-  ci-rel:
+  release:
     strategy:
       fail-fast: false
       matrix:

@@ -149,6 +149,21 @@ TEST_CASE("memcached_util") {
           REQUIRE_SUCCESS(rc);
           REQUIRE(h);
           REQUIRE(9999 == memcached_behavior_get(h, MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK));
+          REQUIRE_FALSE(9999 == memcached_behavior_get(h, MEMCACHED_BEHAVIOR_IO_BYTES_WATERMARK));
+          REQUIRE_SUCCESS(memcached_pool_release(pool, h));
+        }
+
+        REQUIRE_SUCCESS(memcached_pool_behavior_get(pool, MEMCACHED_BEHAVIOR_IO_BYTES_WATERMARK, &val));
+        REQUIRE_FALSE(val == 9999);
+        REQUIRE_SUCCESS(memcached_pool_behavior_set(pool, MEMCACHED_BEHAVIOR_IO_BYTES_WATERMARK, 9999));
+        REQUIRE_SUCCESS(memcached_pool_behavior_get(pool, MEMCACHED_BEHAVIOR_IO_BYTES_WATERMARK, &val));
+        REQUIRE(val == 9999);
+
+        for (auto &h : hold) {
+          h = memcached_pool_fetch(pool, nullptr, &rc);
+          REQUIRE_SUCCESS(rc);
+          REQUIRE(h);
+          REQUIRE(9999 == memcached_behavior_get(h, MEMCACHED_BEHAVIOR_IO_BYTES_WATERMARK));
         }
       }
 

@@ -84,7 +84,7 @@ TEST_CASE("memcached_util_pool_thread") {
     if (memcached_success(rc)) {
       break;
     }
-cerr << "rc == " << memcached_strerror(nullptr, rc);
+
     if (memcached_failed(rc)) {
       REQUIRE_FALSE(pop_memc);
       REQUIRE(rc != MEMCACHED_TIMEOUT); // As long as relative_time is zero, MEMCACHED_TIMEOUT is invalid
@@ -98,7 +98,7 @@ cerr << "rc == " << memcached_strerror(nullptr, rc);
   REQUIRE(MEMCACHED_SUCCESS == memcached_pool_release(pool, pop_memc));
   REQUIRE(memcached_pool_destroy(pool) == *memc);
 
-#endif __APPLE__
+#endif // __APPLE__
 }
 
 #endif // HAVE_SEMAPHORE_H

@@ -33,7 +33,8 @@ struct worker_ctx {
   }
 
   stringstream &err() {
-    return errors[errors.size()];
+    errors.resize(errors.size()+1);
+    return errors[errors.size()-1];
   }
 };
 
@@ -42,25 +43,32 @@ static void *worker(void *arg) {
 
   while (is_running()) {
     memcached_return_t rc;
-    timespec block{5, 0};
+    timespec block{0, 1000};
     auto *mc = memcached_pool_fetch(ctx->pool, &block, &rc);
 
+    if (!mc && rc == MEMCACHED_TIMEOUT) {
+      continue;
+    }
     if (!mc || memcached_failed(rc)) {
-      ctx->err() << "failed to fetch connection from pool: "
-                 << memcached_strerror(nullptr, rc);
-      this_thread::sleep_for(100ms);
+      cerr << "failed to fetch connection from pool: "
+           << memcached_strerror(nullptr, rc)
+           << endl;
+      this_thread::sleep_for(10ms);
+      continue;
     }
 
     auto rs = random_ascii_string(12);
     rc = memcached_set(mc, rs.c_str(), rs.length(), rs.c_str(), rs.length(), 0, 0);
     if (memcached_failed(rc)) {
-      ctx->err() << "failed to memcached_set() "
-                 << memcached_last_error_message(mc);
+      cerr << "failed to memcached_set() "
+           << memcached_last_error_message(mc)
+           << endl;
     }
     rc = memcached_pool_release(ctx->pool, mc);
     if (memcached_failed(rc)) {
-      ctx->err() << "failed to release connection to pool: "
-                 << memcached_strerror(nullptr, rc);
+      cerr << "failed to release connection to pool: "
+           << memcached_strerror(nullptr, rc)
+           << endl;
     }
   }
 

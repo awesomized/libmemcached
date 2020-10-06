@@ -214,8 +214,8 @@ env:
 jobs:
 
   # new memcached
-  ci-new:
-    name: ci-dbg (<?=defaults()?>, memcached-1.6)
+  dbg-new:
+    name: dbg-new (<?=defaults()?>)
     runs-on: <?=DEF[DEF["os"]]?> #
     env:
       INSTALL_MEMCACHED:
@@ -231,8 +231,8 @@ jobs:
 <?php steps(); ?>
 
   # sanitizer build
-  ci-san:
-    name: ci-dbg (<?=defaults()?>, sanitizers)
+  dbg-san:
+    name: dbg-san (<?=defaults()?>)
     runs-on: <?=DEF[DEF["os"]]?> #
     env:
       ENABLE_SANITIZERS: "address;undefined"
@@ -241,8 +241,8 @@ jobs:
 <?php steps(); ?>
 
   # coverage build
-  ci-cov:
-    name: ci-dbg (<?=defaults()?>, coverage)
+  dbg-cov:
+    name: dbg-cov (<?=defaults()?>)
     runs-on: <?=DEF[DEF["os"]]?> #
     env:
       CFLAGS: -O0 --coverage
@@ -253,8 +253,8 @@ jobs:
       - uses: codecov/codecov-action@v1.0.13
 
   # mac build
-  ci-mac:
-    name: ci-dbg (<?=DEF["macOS"]?>, <?=DEF[DEF["macOS"]]?>, <?=DEF[DEF[DEF["macOS"]]]["ver"]?>)
+  dbg-mac:
+    name: dbg-mac (<?=DEF["macOS"]?>, <?=DEF[DEF["macOS"]]?>, <?=DEF[DEF[DEF["macOS"]]]["ver"]?>)
     runs-on: <?=DEF["macOS"]?> #
     continue-on-error: true
     steps:
@@ -262,7 +262,7 @@ jobs:
 <?php steps(false); ?>
 
   # release builds
-  ci-rel:
+  release:
     strategy:
       fail-fast: false
       matrix:
