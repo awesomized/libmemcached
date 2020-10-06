@@ -85,7 +85,7 @@ TEST_CASE("memcached_replication") {
 
 #if 0
 # warning I think the old test is bogus and the functionality does not exist as advertised
-    
+
     SECTION("deleted from primary") {
       for (auto i = 0; i < NUM_KEYS; ++i) {
         memcached_return_t rc;
