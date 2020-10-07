@@ -29,6 +29,11 @@ void MemcachedCluster::init() {
   }
 
   REQUIRE(memcached_create(&memc));
+
+  for (const auto &[behavior, value] : to_set) {
+    REQUIRE(MEMCACHED_SUCCESS == memcached_behavior_set(&memc, behavior, value));
+  }
+
   for (const auto &server : cluster.getServers()) {
     auto target = server.getSocketOrPort();
     if (holds_alternative<string>(target)) {
@@ -59,8 +64,9 @@ MemcachedCluster::MemcachedCluster()
   init();
 }
 
-MemcachedCluster::MemcachedCluster(Cluster &&cluster_)
+MemcachedCluster::MemcachedCluster(Cluster &&cluster_, behaviors_t to_set_)
 : cluster{move(cluster_)}
+, to_set{move(to_set_)}
 {
   init();
 }
@@ -103,7 +109,9 @@ MemcachedCluster MemcachedCluster::udp() {
       Server::arg_pair_t{"-U", random_socket_or_port_string},
       Server::arg_t{"-v"}
     }
-  }}};
+  }}, {
+      {MEMCACHED_BEHAVIOR_USE_UDP, 1}
+  }};
 }
 
 #if LIBMEMCACHED_WITH_SASL_SUPPORT
@@ -114,8 +122,9 @@ MemcachedCluster MemcachedCluster::sasl() {
         Server::arg_pair_t{"-p", random_socket_or_port_string},
         Server::arg_t{"-S"}
       }
-  }}};
-  mc.enableBinaryProto();
+  }}, {
+      {MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1},
+  }};
   REQUIRE(MEMCACHED_SUCCESS == memcached_set_sasl_auth_data(&mc.memc,
       "memcached", "memcached"));
   return mc;
@@ -135,11 +144,6 @@ void MemcachedCluster::enableBuffering(bool enable) {
 void MemcachedCluster::enableReplication() {
   REQUIRE(MEMCACHED_SUCCESS == memcached_behavior_set(&memc,
       MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, memcached_server_count(&memc) - 1));
-}
-
-void MemcachedCluster::enableUdp(bool enable) {
-  REQUIRE(MEMCACHED_SUCCESS == memcached_behavior_set(&memc,
-      MEMCACHED_BEHAVIOR_USE_UDP, enable));
 }
 
 void MemcachedCluster::killOneServer() {

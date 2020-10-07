@@ -9,23 +9,6 @@ TEST_CASE("memcached_udp") {
   auto test = MemcachedCluster::udp();
   auto memc = &test.memc;
 
-  SECTION("sets reply flag") {
-    // FIXME: bad internals test
-    REQUIRE(memc->flags.reply);
-    REQUIRE_FALSE(memc->flags.use_udp);
-    REQUIRE_FALSE(memc->flags.use_udp == memc->flags.reply);
-    test.enableUdp();
-    REQUIRE_FALSE(memc->flags.reply);
-    REQUIRE(memc->flags.use_udp);
-    REQUIRE_FALSE(memc->flags.use_udp == memc->flags.reply);
-    test.enableUdp(false);
-    REQUIRE(memc->flags.reply);
-    REQUIRE_FALSE(memc->flags.use_udp);
-    REQUIRE_FALSE(memc->flags.use_udp == memc->flags.reply);
-  }
-
-  test.enableUdp();
-
   SECTION("compat") {
     memcached_return_t rc;
     REQUIRE_RC(MEMCACHED_INVALID_ARGUMENTS, memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, true));
