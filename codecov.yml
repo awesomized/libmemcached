@@ -10,7 +10,7 @@ coverage:
       default:
         target: auto
         threshold: 1%
-  range: 60..90
+  range: 50..80
   round: nearest
   precision: 0
   notify:

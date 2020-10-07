@@ -1,36 +1,18 @@
 #include "test/lib/common.hpp"
 
-#if HAVE_SEMAPHORE_H
-
 #include "libmemcachedutil-1.0/pool.h"
 #include <cassert>
-#include "semaphore.h"
 
 struct test_pool_context_st {
   volatile memcached_return_t rc;
   memcached_pool_st *pool;
   memcached_st *memc;
-  sem_t _lock;
 
-  test_pool_context_st(memcached_pool_st *pool_arg, memcached_st *memc_arg) :
-      rc(MEMCACHED_FAILURE),
-      pool(pool_arg),
-      memc(memc_arg) {
-    if (sem_init(&_lock, 0, 0)) {
-      perror("sem_init()");
-    }
-  }
-
-  void wait() {
-    sem_wait(&_lock);
-  }
-
-  void release() {
-    sem_post(&_lock);
-  }
-
-  ~test_pool_context_st() {
-    sem_destroy(&_lock);
+  test_pool_context_st(memcached_pool_st *pool_arg, memcached_st *memc_arg)
+  : rc(MEMCACHED_FAILURE)
+  , pool(pool_arg)
+  , memc(memc_arg)
+  {
   }
 };
 
@@ -40,7 +22,6 @@ static void *connection_release(void *arg) {
   this_thread::sleep_for(200ms);
   auto res = static_cast<test_pool_context_st *>(arg);
   res->rc = memcached_pool_release(res->pool, res->memc);
-  res->release();
 
   pthread_exit(arg);
 }
@@ -67,7 +48,6 @@ TEST_CASE("memcached_util_pool_thread") {
   test_pool_context_st item(pool, pool_memc);
 
   REQUIRE(0 == pthread_create(&tid, nullptr, connection_release, &item));
-  item.wait();
 
   memcached_st *pop_memc;
   do {
@@ -92,5 +72,3 @@ TEST_CASE("memcached_util_pool_thread") {
   REQUIRE(memcached_pool_destroy(pool) == *memc);
 
 }
-
-#endif // HAVE_SEMAPHORE_H

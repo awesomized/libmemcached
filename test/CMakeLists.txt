@@ -4,8 +4,6 @@ endif()
 
 include(CMake/Catch.cmake)
 
-check_header(semaphore.h)
-
 check_decl(pipe2 unistd.h)
 check_decl(SOCK_NONBLOCK sys/socket.h)
 check_decl(SOCK_CLOEXEC sys/socket.h)

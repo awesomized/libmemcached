@@ -192,6 +192,7 @@ on:
       - "docs/**"
     branches-ignore:
       - gh-pages
+      - catch
       - v1.x
   pull_request:
     branches:
