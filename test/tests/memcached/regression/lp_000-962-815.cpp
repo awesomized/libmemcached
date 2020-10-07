@@ -17,24 +17,14 @@ static inline bool is_running() {
 
 struct worker_ctx {
   memcached_pool_st *pool;
-  vector<stringstream> errors;
 
   explicit worker_ctx(memcached_st *memc)
   : pool{memcached_pool_create(memc, 5, 10)}
-  , errors{}
   {
   }
 
   ~worker_ctx() {
     memcached_pool_destroy(pool);
-    for (const auto &err : errors) {
-      cerr << err.str() << endl;
-    }
-  }
-
-  stringstream &err() {
-    errors.resize(errors.size()+1);
-    return errors[errors.size()-1];
   }
 };
 
@@ -53,7 +43,6 @@ static void *worker(void *arg) {
       cerr << "failed to fetch connection from pool: "
            << memcached_strerror(nullptr, rc)
            << endl;
-      this_thread::sleep_for(10ms);
       continue;
     }
 
@@ -89,7 +78,7 @@ TEST_CASE("memcached_regression_lp962815") {
     REQUIRE(0 == pthread_create(&t, nullptr, worker, &ctx));
   }
 
-  this_thread::sleep_for(5s);
+  this_thread::sleep_for(1s);
   set_running(false);
 
   for (auto t : tid) {

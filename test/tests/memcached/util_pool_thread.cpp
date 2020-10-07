@@ -1,14 +1,11 @@
 #include "test/lib/common.hpp"
 
-#include "libmemcachedutil-1.0/pool.h"
-
-#include <cassert>
-
 #if HAVE_SEMAPHORE_H
 
+#include "libmemcachedutil-1.0/pool.h"
+#include <cassert>
 #include "semaphore.h"
 
-#ifndef __APPLE__
 struct test_pool_context_st {
   volatile memcached_return_t rc;
   memcached_pool_st *pool;
@@ -19,7 +16,9 @@ struct test_pool_context_st {
       rc(MEMCACHED_FAILURE),
       pool(pool_arg),
       memc(memc_arg) {
-    sem_init(&_lock, 0, 0);
+    if (sem_init(&_lock, 0, 0)) {
+      perror("sem_init()");
+    }
   }
 
   void wait() {
@@ -38,19 +37,15 @@ struct test_pool_context_st {
 static void *connection_release(void *arg) {
   assert(arg != nullptr);
 
-  this_thread::sleep_for(2s);
+  this_thread::sleep_for(200ms);
   auto res = static_cast<test_pool_context_st *>(arg);
   res->rc = memcached_pool_release(res->pool, res->memc);
   res->release();
 
   pthread_exit(arg);
 }
-#endif
 
 TEST_CASE("memcached_util_pool_thread") {
-#ifdef __APPLE__
-  SUCCEED("skip: pthreads");
-#else
   MemcachedPtr memc;
   auto pool = memcached_pool_create(*memc, 1, 1);
   REQUIRE(pool);
@@ -75,8 +70,6 @@ TEST_CASE("memcached_util_pool_thread") {
   item.wait();
 
   memcached_st *pop_memc;
-  // We do a hard loop, and try N times
-  int counter = 5;
   do {
     struct timespec relative_time = {0, 0};
     pop_memc = memcached_pool_fetch(pool, &relative_time, &rc);
@@ -89,7 +82,7 @@ TEST_CASE("memcached_util_pool_thread") {
       REQUIRE_FALSE(pop_memc);
       REQUIRE(rc != MEMCACHED_TIMEOUT); // As long as relative_time is zero, MEMCACHED_TIMEOUT is invalid
     }
-  } while (--counter);
+  } while (rc == MEMCACHED_NOTFOUND);
 
   // Cleanup thread since we will exit once we test.
   REQUIRE(0 == pthread_join(tid, nullptr));
@@ -98,7 +91,6 @@ TEST_CASE("memcached_util_pool_thread") {
   REQUIRE(MEMCACHED_SUCCESS == memcached_pool_release(pool, pop_memc));
   REQUIRE(memcached_pool_destroy(pool) == *memc);
 
-#endif // __APPLE__
 }
 
 #endif // HAVE_SEMAPHORE_H
