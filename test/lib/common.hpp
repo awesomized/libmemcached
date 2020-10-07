@@ -113,6 +113,12 @@ public:
   Malloced(T *ptr_)
   : ptr{ptr_}
   {}
+  Malloced &operator=(T *ptr_) {
+    if (ptr)
+      free(ptr);
+    ptr = ptr_;
+    return *this;
+  }
   ~Malloced() {
     if(ptr)
       free(ptr);
