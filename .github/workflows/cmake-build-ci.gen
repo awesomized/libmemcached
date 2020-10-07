@@ -190,6 +190,7 @@ on:
   push:
     paths-ignore:
       - "docs/**"
+      - ".travis.yml"
     branches-ignore:
       - gh-pages
       - catch
