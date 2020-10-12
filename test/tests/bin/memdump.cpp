@@ -56,7 +56,11 @@ TEST_CASE("bin/memdump") {
 
       string output;
       REQUIRE_FALSE(sh.run(comm + "-v", output));
-      REQUIRE_THAT(output, Contains("CONNECTION FAILURE") || Contains("SERVER HAS FAILED"));
+      REQUIRE_THAT(output,
+              Contains("CONNECTION FAILURE")
+          ||  Contains("SERVER HAS FAILED")
+          ||  Contains("SYSTEM ERROR")
+          ||  Contains("TIMEOUT OCCURRED"));
     }
 
     SECTION("empty") {

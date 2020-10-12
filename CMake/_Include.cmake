@@ -6,6 +6,12 @@ endif()
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
+if(CMAKE_HOST_SYSTEM_NAME STREQUAL "FreeBSD")
+    find_program(PKGCONF pkgconf)
+    if(PKGCONF)
+        set(PKG_CONFIG_EXECUTABLE ${PKGCONF})
+    endif()
+endif()
 find_package(PkgConfig)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
@@ -34,6 +40,7 @@ if(ENABLE_MEMASLAP)
 endif()
 
 ## dtrace
+include(EnableDtrace)
 if(ENABLE_DTRACE)
     find_package(DTrace)
     if(DTRACE_EXECUTABLE)
@@ -69,10 +76,10 @@ endif()
 
 # system checks
 
+check_header(alloca.h)
 check_header(arpa/inet.h)
 check_header(dlfcn.h)
 check_header(errno.h)
-check_header(execinfo.h)
 check_header(fcntl.h)
 check_header(io.h)
 check_header(limits.h)
@@ -103,8 +110,13 @@ check_decl(setenv stdlib.h)
 check_decl(strerror string.h)
 check_decl(strerror_r string.h)
 check_compiles(HAVE_STRERROR_R_CHAR_P "char x, y = *strerror_r(0,&x,1);" string.h)
+
 check_decl(abi::__cxa_demangle cxxabi.h)
-set(HAVE_GCC_ABI_DEMANGLE ${HAVE_ABI____CXA_DEMANGLE})
+
+find_package(Backtrace)
+if(Backtrace_FOUND)
+    set(HAVE_BACKTRACE 1)
+endif()
 
 check_type(in_port_t netinet/in.h)
 

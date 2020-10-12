@@ -1,5 +1,5 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
- * 
+ *
  *  libmcachedd client library.
  *
  *  Copyright (C) 2011-2013 Data Differential, http://datadifferential.com/
@@ -50,7 +50,7 @@
 
 # ifdef _WIN32
 #  include <malloc.h>
-# else
+# elif HAVE_ALLOCA_H
 #  include <alloca.h>
 # endif
 

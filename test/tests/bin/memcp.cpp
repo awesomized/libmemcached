@@ -63,7 +63,11 @@ TEST_CASE("bin/memcp") {
 
       string output;
       REQUIRE_FALSE(sh.run(comm + temp.getFn(), output));
-      REQUIRE_THAT(output, Contains("CONNECTION FAILURE"));
+      REQUIRE_THAT(output,
+              Contains("CONNECTION FAILURE")
+          ||  Contains("SERVER HAS FAILED")
+          ||  Contains("SYSTEM ERROR")
+          ||  Contains("TIMEOUT OCCURRED"));
     }
 
     SECTION("file not found") {

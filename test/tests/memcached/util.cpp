@@ -53,7 +53,7 @@ TEST_CASE("memcached_util") {
     }
 
     REQUIRE(-1 == libmemcached_util_getpid("localhost", 1, &rc));
-    REQUIRE_RC(MEMCACHED_CONNECTION_FAILURE, rc);
+    REQUIRE(memcached_fatal(rc));
   }
 
   SECTION("ping") {

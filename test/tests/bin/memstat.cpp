@@ -64,7 +64,11 @@ TEST_CASE("bin/memstat") {
 
       string output;
       REQUIRE_FALSE(sh.run(comm + "--analyze", output));
-      REQUIRE_THAT(output, Contains("CONNECTION FAILURE") || Contains("SERVER HAS FAILED"));
+      REQUIRE_THAT(output,
+              Contains("CONNECTION FAILURE")
+          ||  Contains("SERVER HAS FAILED")
+          ||  Contains("SYSTEM ERROR")
+          ||  Contains("TIMEOUT OCCURRED"));
     }
   }
 }

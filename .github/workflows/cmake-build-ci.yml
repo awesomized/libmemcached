@@ -5,6 +5,7 @@ on:
     paths-ignore:
       - "docs/**"
       - ".travis.yml"
+      - ".cirrus.yml"
     branches-ignore:
       - gh-pages
       - catch

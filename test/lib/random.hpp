@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <chrono>
+#include <iostream>
 #include <random>
 #include <string>
 #include <type_traits>
@@ -17,9 +18,10 @@ enable_if_t<is_integral_v<T>, T> random_num(T min, T max) {
   using rnd = mt19937;
   using dst = uniform_int_distribution<T>;
 
-  auto time = duration_cast<nanoseconds>(system_clock::now().time_since_epoch());
-  auto seed = static_cast<rnd::result_type>(time.count() % numeric_limits<T>::max());
-  auto rgen = rnd{seed};
+  static auto time = duration_cast<nanoseconds>(system_clock::now().time_since_epoch());
+  static auto seed = static_cast<rnd::result_type>(time.count() % numeric_limits<T>::max());
+  static auto rgen = rnd{seed};
+
   return dst(min, max)(rgen);
 }
 

@@ -25,6 +25,7 @@ target_include_directories(libmemcachedutil PRIVATE
         ${CMAKE_SOURCE_DIR}/src
         ${CMAKE_BINARY_DIR}/src
         ${CMAKE_BINARY_DIR})
+target_include_directories(libmemcachedutil PUBLIC ${LIBSASL_INCLUDEDIR})
 target_include_directories(libmemcachedutil PUBLIC
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>

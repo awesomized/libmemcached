@@ -69,7 +69,11 @@ TEST_CASE("bin/memrm") {
 
       string output;
       REQUIRE_FALSE(sh.run(comm + " -v key2", output));
-      REQUIRE_THAT(output, Contains("CONNECTION FAILURE") || Contains("SERVER HAS FAILED"));
+      REQUIRE_THAT(output,
+              Contains("CONNECTION FAILURE")
+          ||  Contains("SERVER HAS FAILED")
+          ||  Contains("SYSTEM ERROR")
+          ||  Contains("TIMEOUT OCCURRED"));
     }
   }
 }

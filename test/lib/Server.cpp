@@ -67,7 +67,8 @@ vector<char *> Server::createArgv()  {
   vector<char *> arr;
 
   pushArg(arr, binary);
-  //pushArg(arr, "-v");
+  pushArg(arr, "-u");
+  pushArg(arr, "nobody");
 
   for (auto it = args.cbegin(); it != args.cend(); ++it) {
     if (holds_alternative<arg_t>(*it)) {

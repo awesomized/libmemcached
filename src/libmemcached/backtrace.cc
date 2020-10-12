@@ -1,5 +1,5 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
- * 
+ *
  *  Libmemcached client library.
  *
  *  Copyright (C) 2012 Data Differential, http://datadifferential.com/
@@ -43,13 +43,11 @@
 #include <cstdlib>
 #include <cstring>
 
-#if defined(HAVE_SHARED_ENABLED) && HAVE_SHARED_ENABLED
+#if HAVE_BACKTRACE
 
-#ifdef HAVE_EXECINFO_H
-#include <execinfo.h>
-#endif
+#include BACKTRACE_HEADER
 
-#ifdef HAVE_GCC_ABI_DEMANGLE
+#if HAVE_ABI____CXA_DEMANGLE
 # include <cxxabi.h>
 # define USE_DEMANGLE 1
 #else
@@ -58,13 +56,12 @@
 
 #ifdef HAVE_DLFCN_H
 # include <dlfcn.h>
-#endif   
+#endif
 
 const int MAX_DEPTH= 50;
 
 void custom_backtrace(void)
 {
-#ifdef HAVE_EXECINFO_H
   void *backtrace_buffer[MAX_DEPTH +1];
 
   int stack_frames= backtrace(backtrace_buffer, MAX_DEPTH);
@@ -73,7 +70,7 @@ void custom_backtrace(void)
     char **symbollist= backtrace_symbols(backtrace_buffer, stack_frames);
     if (symbollist)
     {
-      for (int x= 0; x < stack_frames; x++) 
+      for (int x= 0; x < stack_frames; x++)
       {
         bool was_demangled= false;
 
@@ -119,13 +116,12 @@ void custom_backtrace(void)
       ::free(symbollist);
     }
   }
-#endif // HAVE_EXECINFO_H
 }
 
-#else // HAVE_SHARED_ENABLED
+#else // HAVE_BACKTRACE
 
 void custom_backtrace(void)
 {
   fprintf(stderr, "Backtrace null function called\n");
 }
-#endif // AX_ENABLE_BACKTRACE
+#endif // HAVE_BACKTRACE

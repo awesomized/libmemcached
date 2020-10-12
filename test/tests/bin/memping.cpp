@@ -49,7 +49,11 @@ TEST_CASE("bin/memping") {
 
       string output;
       REQUIRE_FALSE(sh.run(comm, output));
-      REQUIRE_THAT(output, Contains("CONNECTION FAILURE") || Contains("SERVER HAS FAILED"));
+      REQUIRE_THAT(output,
+              Contains("CONNECTION FAILURE")
+          ||  Contains("SERVER HAS FAILED")
+          ||  Contains("SYSTEM ERROR")
+          ||  Contains("TIMEOUT OCCURRED"));
     }
   }
 }
