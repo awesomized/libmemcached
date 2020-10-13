@@ -1,3 +1,5 @@
+#pragma once
+
 #include "mem_config.h"
 
 #include <cstdlib>
