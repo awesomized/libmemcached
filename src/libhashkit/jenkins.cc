@@ -1,5 +1,5 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
- * 
+ *
  *  HashKit library
  *
  *  Copyright (C) 2011-2012 Data Differential, http://datadifferential.com/
@@ -99,7 +99,7 @@ __attribute__((no_sanitize_address,no_sanitize("address")))
 uint32_t hashkit_jenkins(const char *key, size_t length, void *)
 {
   uint32_t a,b,c;                                          /* internal state */
-#ifndef WORDS_BIGENDIAN
+#if !WORDS_BIGENDIAN
   union { const void *ptr; size_t i; } u;
   u.ptr = key;
 #endif
@@ -107,7 +107,7 @@ uint32_t hashkit_jenkins(const char *key, size_t length, void *)
   /* Set up the internal state */
   a = b = c = 0xdeadbeef + ((uint32_t)length) + JENKINS_INITVAL;
 
-#ifndef WORDS_BIGENDIAN
+#if !WORDS_BIGENDIAN
   if ((u.i & 0x3) == 0)
   {
     const uint32_t *k = (const uint32_t *)key;         /* read 32-bit chunks */
@@ -262,7 +262,7 @@ uint32_t hashkit_jenkins(const char *key, size_t length, void *)
     case 0 : return c;
     default : return c;
     }
-#ifndef WORDS_BIGENDIAN
+#if !WORDS_BIGENDIAN
   }
 #endif
 

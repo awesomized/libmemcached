@@ -1,5 +1,5 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
- * 
+ *
  *  Libmemcached library
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
@@ -45,7 +45,7 @@
 #ifndef swap64
 static inline uint64_t swap64(uint64_t in)
 {
-#ifndef WORDS_BIGENDIAN
+#if !WORDS_BIGENDIAN
   /* Little endian, flip the bytes around until someone makes a faster/better
    * way to do this. */
   uint64_t rv= 0;

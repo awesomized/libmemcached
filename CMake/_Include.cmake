@@ -76,6 +76,9 @@ endif()
 
 # system checks
 
+include(TestBigEndian)
+test_big_endian(WORDS_BIGENDIAN)
+
 check_header(alloca.h)
 check_header(arpa/inet.h)
 check_header(dlfcn.h)
