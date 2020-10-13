@@ -8,7 +8,6 @@ on:
       - ".cirrus.yml"
     branches-ignore:
       - gh-pages
-      - v1.x
   pull_request:
     branches:
       - master

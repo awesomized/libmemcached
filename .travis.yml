@@ -41,3 +41,11 @@ script:
 
 after_failure:
  - cat Testing/Temporary/LastTest.log || true
+
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/796c8423962228333c54
+    on_success: change
+    on_failure: change
+    on_start: never

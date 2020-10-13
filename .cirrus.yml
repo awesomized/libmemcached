@@ -10,6 +10,7 @@ env:
 task:
   name: Freebsd
   env:
+    gitter: ENCRYPTED[92e34815ac1a27681bf868c8299bfa37f3cb98c7d88156884c85dfb33e786bd3124c5d624721fb13735d23f7c57ead4b]
     ports: RELEASE_12_1_0
   freebsd_instance:
     image_family: freebsd-12-1
@@ -46,6 +47,16 @@ task:
     sudo -E -u nobody make -C build -j2 test/fast
   install_script: |
     sudo -E -u nobody make -C build install DESTDIR=/tmp
+  on_success:
+    gitter_script: |
+      curl -sS "${gitter}" \
+        --data-urlencode "level=info" \
+        --data-urlencode "message=Cirrus-CI build for ${CIRRUS_BRANCH} on ${OS} [succeeded](https://cirrus-ci.org/tasg/${CIRRUS_TASK_ID})"
   on_failure:
-    failed_script: |
-      cat build/Testing/Temporary/LastTest.log || true
+    gitter_script: |
+      curl -sS "${gitter}" \
+        --data-urlencode "level=error" \
+        --data-urlencode "message=Cirrus-CI build for ${CIRRUS_BRANCH} on ${OS} [failed](https://cirrus-ci.org/tasg/${CIRRUS_TASK_ID})"
+    testlog_artifacts:
+      path: build/Testing/Temporary/LastTest.log
+      type: text/plain
