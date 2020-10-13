@@ -1,17 +1,11 @@
 #include "mem_config.h"
+#include "test/lib/env.hpp"
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
 #include <csignal>
 #include <iostream>
 #include <string>
-#include <unistd.h>
-
-#if HAVE_SETENV
-# define SET_ENV(n, k, v) setenv(k, v, 0)
-#else // !HAVE_SETENV
-# define SET_ENV(n, k, v) static char n ## _env[] = k "=" v; putenv(n ## _env)
-#endif
 
 static void sigchld(int, siginfo_t *si, void *) {
   switch (si->si_code) {
@@ -64,19 +58,19 @@ static inline void setup_asan(char **argv) {
   const auto set = getenv("ASAN_OPTIONS");
 
   if (!set || !*set) {
-    SET_ENV(asan, "ASAN_OPTIONS", ASAN_OPTIONS);
+    SET_ENV_EX(asan, "ASAN_OPTIONS", ASAN_OPTIONS, 0);
     execvp(argv[0], argv);
     perror("exec()");
   }
 }
 #else
-# define setup_asan(a)
+# define setup_asan(a) (void) a
 #endif
 
 #if LIBMEMCACHED_WITH_SASL_SUPPORT
 static inline void setup_sasl() {
-  SET_ENV(sasl_pwdb, "MEMCACHED_SASL_PWDB", LIBMEMCACHED_WITH_SASL_PWDB);
-  SET_ENV(sasl_conf, "SASL_CONF_PATH", LIBMEMCACHED_WITH_SASL_CONF);
+  SET_ENV_EX(sasl_pwdb, "MEMCACHED_SASL_PWDB", LIBMEMCACHED_WITH_SASL_PWDB, 0);
+  SET_ENV_EX(sasl_conf, "SASL_CONF_PATH", LIBMEMCACHED_WITH_SASL_CONF, 0);
 }
 #else
 # define setup_sasl()
