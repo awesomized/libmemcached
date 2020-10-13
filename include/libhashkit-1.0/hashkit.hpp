@@ -85,7 +85,7 @@ public:
 
   hashkit_return_t set_distribution_function(hashkit_hash_algorithm_t hash_algorithm)
   {
-    return hashkit_set_function(&self, hash_algorithm);
+    return hashkit_set_distribution_function(&self, hash_algorithm);
   }
 
   ~Hashkit()

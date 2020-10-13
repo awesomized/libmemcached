@@ -63,6 +63,9 @@ static bool verbose= false;
 /* The number of seconds to wait for an IO-operation */
 static int timeout= 2;
 
+/* v1.6.x is more permissible */
+static bool v16x_or_greater = false;
+
 /*
  * Instead of having to cast between the different datatypes we create
  * a union of all of the different types of pacages we want to send.
@@ -209,7 +212,7 @@ static ssize_t timeout_io_op(memcached_socket_t fd, short direction, void *buf, 
     ret= recv(fd, buf, len, 0);
   }
 
-  if (ret == SOCKET_ERROR && get_socket_errno() == EWOULDBLOCK) 
+  if (ret == SOCKET_ERROR && get_socket_errno() == EWOULDBLOCK)
   {
     struct pollfd fds;
     memset(&fds, 0, sizeof(struct pollfd));
@@ -1259,13 +1262,15 @@ static enum test_return receive_error_response(void)
 
 static enum test_return test_ascii_quit(void)
 {
-  /* Verify that quit handles unknown options */
-  execute(send_string("quit foo bar\r\n"));
-  execute(receive_error_response());
+  if (!v16x_or_greater) {
+    /* Verify that quit handles unknown options */
+    execute(send_string("quit foo bar\r\n"));
+    execute(receive_error_response());
 
-  /* quit doesn't support noreply */
-  execute(send_string("quit noreply\r\n"));
-  execute(receive_error_response());
+    /* quit doesn't support noreply */
+    execute(send_string("quit noreply\r\n"));
+    execute(receive_error_response());
+  }
 
   /* Verify that quit works */
   execute(send_string("quit\r\n"));
@@ -1279,20 +1284,33 @@ static enum test_return test_ascii_quit(void)
 
 static enum test_return test_ascii_version(void)
 {
-  /* Verify that version command handles unknown options */
-  execute(send_string("version foo bar\r\n"));
-  execute(receive_error_response());
-
-  /* version doesn't support noreply */
-  execute(send_string("version noreply\r\n"));
-  execute(receive_error_response());
-
-  /* Verify that verify works */
+  /* Verify that version works */
   execute(send_string("version\r\n"));
   char buffer[256];
   execute(receive_line(buffer, sizeof(buffer)));
   verify(strncmp(buffer, "VERSION ", 8) == 0);
 
+  char *version = &buffer[sizeof("VERSION")];
+  if (version[0] > '1' || (version[0] == '1' && version[2] >= '6')) {
+    v16x_or_greater = true;
+  }
+
+  /* Verify that version command handles unknown options */
+  execute(send_string("version foo bar\r\n"));
+  if (v16x_or_greater) {
+    execute(receive_line(buffer, sizeof(buffer)));
+    verify(strncmp(buffer, "VERSION ", 8) == 0);
+  } else {
+    execute(receive_error_response());
+  }
+  /* version doesn't support noreply */
+  execute(send_string("version noreply\r\n"));
+  if (v16x_or_greater) {
+    execute(receive_line(buffer, sizeof(buffer)));
+    verify(strncmp(buffer, "VERSION ", 8) == 0);
+  } else {
+    execute(receive_error_response());
+  }
   return TEST_PASS;
 }
 
@@ -2008,8 +2026,8 @@ struct testcase
 };
 
 struct testcase testcases[]= {
-  { "ascii quit", test_ascii_quit },
   { "ascii version", test_ascii_version },
+  { "ascii quit", test_ascii_quit },
   { "ascii verbosity", test_ascii_verbosity },
   { "ascii set", test_ascii_set },
   { "ascii set noreply", test_ascii_set_noreply },

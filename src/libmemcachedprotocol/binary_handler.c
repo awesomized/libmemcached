@@ -59,7 +59,7 @@
  * @param response the packet to send
  * @return The status of the operation
  */
-static protocol_binary_response_status raw_response_handler(const void *cookie,
+static protocol_binary_response_status binary_raw_response_handler(const void *cookie,
                                                             protocol_binary_request_header *request,
                                                             protocol_binary_response_header *response)
 {
@@ -1055,14 +1055,14 @@ static protocol_binary_response_status execute_command(memcached_protocol_client
   case 0:
     if (client->root->callback->interface.v0.comcode[cc] != NULL)
     {
-      rval= client->root->callback->interface.v0.comcode[cc](client, header, raw_response_handler);
+      rval= client->root->callback->interface.v0.comcode[cc](client, header, binary_raw_response_handler);
     }
     break;
 
   case 1:
     if (comcode_v0_v1_remap[cc] != NULL)
     {
-      rval= comcode_v0_v1_remap[cc](client, header, raw_response_handler);
+      rval= comcode_v0_v1_remap[cc](client, header, binary_raw_response_handler);
     }
     break;
 
@@ -1078,7 +1078,7 @@ static protocol_binary_response_status execute_command(memcached_protocol_client
   if (rval == PROTOCOL_BINARY_RESPONSE_UNKNOWN_COMMAND &&
       client->root->callback->unknown != NULL)
   {
-    rval= client->root->callback->unknown(client, header, raw_response_handler);
+    rval= client->root->callback->unknown(client, header, binary_raw_response_handler);
   }
 
   if (rval != PROTOCOL_BINARY_RESPONSE_SUCCESS &&
@@ -1095,7 +1095,7 @@ static protocol_binary_response_status execute_command(memcached_protocol_client
         },
       }
     };
-    rval= raw_response_handler(client, header, (void*)&response);
+    rval= binary_raw_response_handler(client, header, (void *) &response);
   }
 
   if (client->root->callback->post_execute != NULL)
@@ -1183,7 +1183,7 @@ void memcached_binary_protocol_set_callbacks(memcached_protocol_st *instance, me
 memcached_binary_protocol_raw_response_handler memcached_binary_protocol_get_raw_response_handler(const void *cookie)
 {
   (void)cookie;
-  return raw_response_handler;
+  return binary_raw_response_handler;
 }
 
 void memcached_binary_protocol_set_pedantic(memcached_protocol_st *instance, bool enable)

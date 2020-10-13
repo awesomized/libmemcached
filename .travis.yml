@@ -1,58 +1,43 @@
-services:
- - memcached
+os: linux
+dist: focal
+arch: arm64
+language: cpp
 
 addons:
  apt:
   packages:
-   - python-sphinx
-   - valgrind
    - libevent-dev
    - libsasl2-dev
 
-dist: bionic
-language: cpp
-compiler:
- - gcc
- - clang
-
 env:
- - BUILD=Release SASL=false
- - BUILD=Debug SASL=true PREFIX=/opt PORT=11212 MC_VERSION=1.5.22 CFLAGS="-O0 --coverage" CXXFLAGS="-O0 --coverage"
- - BUILD=Debug SASL=false PREFIX=/opt PORT=11212 MC_VERSION=1.6.6
+ - CMAKE_BUILD_TYPE=Debug BUILD_TESTING=true ENABLE_SASL=true
 
-#before_install:
 install:
  - |
-   if ${SASL} || test -n "$MC_VERSION";
-   then
-     git clone -b ${MC_VERSION:-1.5.22} https://github.com/memcached/memcached &&
-     cd memcached && ./autogen.sh &&
-     CFLAGS="-O2 -pipe" ./configure --prefix=${PREFIX} --disable-dependency-tracking --enable-sasl --enable-sasl-pwdb --disable-coverage --disable-docs &&
-     make -j2 && make install && cd ..;
-     ${PREFIX}/bin/memcached -l 127.0.0.1 -p ${PORT} -U ${PORT} -m 128 &
-   fi;
-
+   git clone --depth 1 -b 1.6.7 https://github.com/memcached/memcached
+   cd memcached
+   ./autogen.sh
+   CFLAGS="-O2 -pipe" ./configure \
+     --prefix=/opt \
+     --disable-coverage \
+     --disable-docs \
+     --disable-dependency-tracking \
+     --enable-sasl \
+     --enable-sasl-pwdb \
+     ;
+   make -j2
+   make install
+   cd ..
 
 before_script:
- - echo stats settings | nc -q 0 localhost ${PORT:-11211} | column -t
  - mkdir build
 
 script:
  - cd build
- - cmake -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=${BUILD} -DENABLE_SASL=${SASL} -DMEMCACHED_BINARY=${PREFIX:-/usr}/bin/memcached ..
- - make -j2
- - make test
+ - cmake -DMEMCACHED_BINARY=/opt/bin/memcached ..
+ - make -j2 VERBOSE=1
+ - make test VERBOSE=1
  - make install DESTDIR=.
 
-#before_cache:
-after_success:
- - |
-   if test "$CFLAGS" = "-O0 --coverage";
-   then
-     bash <(curl -s https://codecov.io/bash)
-   fi
-
 after_failure:
- - cat Testing/Temporary/LastTest.log
-
-#after_script:
+ - cat Testing/Temporary/LastTest.log || true

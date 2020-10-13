@@ -167,7 +167,7 @@ int main(int argc, char *argv[])
   {
     if (memcached_failed(memcached_version(memc)))
     {
-      std::cerr << "Unable to obtain server version";
+      std::cerr << "Unable to obtain server version" << std::endl;
       exit(EXIT_FAILURE);
     }
 
@@ -179,8 +179,9 @@ int main(int argc, char *argv[])
   {
     memcached_stat_st *memc_stat= memcached_stat(memc, NULL, &rc);
 
-    if (memc_stat == NULL)
+    if (memc_stat == NULL || rc != MEMCACHED_SUCCESS)
     {
+      std::cerr << memcached_last_error_message(memc) << std::endl;
       exit(EXIT_FAILURE);
     }
 

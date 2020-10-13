@@ -162,7 +162,7 @@ static uint16_t parse_ascii_key(char **start)
  * @param text the text to spool
  * @return status of the spool operation
  */
-static protocol_binary_response_status raw_response_handler(memcached_protocol_client_st *client, const char *text)
+static protocol_binary_response_status ascii_raw_response_handler(memcached_protocol_client_st *client, const char *text)
 {
   if (client->is_verbose)
   {
@@ -238,7 +238,7 @@ static void send_command_usage(memcached_protocol_client_st *client)
   };
 
   client->mute = false;
-  raw_response_handler(client, errmsg[client->ascii_command]);
+  ascii_raw_response_handler(client, errmsg[client->ascii_command]);
 }
 
 /**
@@ -252,9 +252,9 @@ static protocol_binary_response_status ascii_version_response_handler(const void
                                                                       uint32_t textlen)
 {
   memcached_protocol_client_st *client= (memcached_protocol_client_st*)cookie;
-  raw_response_handler(client, "VERSION ");
+  ascii_raw_response_handler(client, "VERSION ");
   client->root->spool(client, text, textlen);
-  raw_response_handler(client, "\r\n");
+  ascii_raw_response_handler(client, "\r\n");
   return PROTOCOL_BINARY_RESPONSE_SUCCESS;
 }
 
@@ -336,15 +336,15 @@ static protocol_binary_response_status ascii_stat_response_handler(const void *c
 
   if (key != NULL)
   {
-    raw_response_handler(client, "STAT ");
+    ascii_raw_response_handler(client, "STAT ");
     client->root->spool(client, key, keylen);
-    raw_response_handler(client, " ");
+    ascii_raw_response_handler(client, " ");
     client->root->spool(client, body, bodylen);
-    raw_response_handler(client, "\r\n");
+    ascii_raw_response_handler(client, "\r\n");
   }
   else
   {
-    raw_response_handler(client, "END\r\n");
+    ascii_raw_response_handler(client, "END\r\n");
   }
 
   return PROTOCOL_BINARY_RESPONSE_SUCCESS;
@@ -525,7 +525,7 @@ static void process_delete(memcached_protocol_client_st *client,
 
   if (client->root->callback->interface.v1.delete_object == NULL)
   {
-    raw_response_handler(client, "SERVER_ERROR: callback not implemented\r\n");
+    ascii_raw_response_handler(client, "SERVER_ERROR: callback not implemented\r\n");
     return;
   }
 
@@ -533,17 +533,17 @@ static void process_delete(memcached_protocol_client_st *client,
 
   if (rval == PROTOCOL_BINARY_RESPONSE_SUCCESS)
   {
-    raw_response_handler(client, "DELETED\r\n");
+    ascii_raw_response_handler(client, "DELETED\r\n");
   }
   else if (rval == PROTOCOL_BINARY_RESPONSE_KEY_ENOENT)
   {
-    raw_response_handler(client, "NOT_FOUND\r\n");
+    ascii_raw_response_handler(client, "NOT_FOUND\r\n");
   }
   else
   {
     char msg[80];
     snprintf(msg, sizeof(msg), "SERVER_ERROR: delete_object failed %u\r\n",(uint32_t)rval);
-    raw_response_handler(client, msg);
+    ascii_raw_response_handler(client, msg);
   }
 }
 
@@ -573,7 +573,7 @@ static void process_arithmetic(memcached_protocol_client_st *client,
   {
     if (client->root->callback->interface.v1.increment == NULL)
     {
-      raw_response_handler(client, "SERVER_ERROR: callback not implemented\r\n");
+      ascii_raw_response_handler(client, "SERVER_ERROR: callback not implemented\r\n");
       return;
     }
     rval= client->root->callback->interface.v1.increment(client,
@@ -587,7 +587,7 @@ static void process_arithmetic(memcached_protocol_client_st *client,
   {
     if (client->root->callback->interface.v1.decrement == NULL)
     {
-      raw_response_handler(client, "SERVER_ERROR: callback not implemented\r\n");
+      ascii_raw_response_handler(client, "SERVER_ERROR: callback not implemented\r\n");
       return;
     }
     rval= client->root->callback->interface.v1.decrement(client,
@@ -602,11 +602,11 @@ static void process_arithmetic(memcached_protocol_client_st *client,
   {
     char buffer[80];
     snprintf(buffer, sizeof(buffer), "%"PRIu64"\r\n", result);
-    raw_response_handler(client, buffer);
+    ascii_raw_response_handler(client, buffer);
   }
   else
   {
-    raw_response_handler(client, "NOT_FOUND\r\n");
+    ascii_raw_response_handler(client, "NOT_FOUND\r\n");
   }
 }
 
@@ -620,7 +620,7 @@ static void process_stats(memcached_protocol_client_st *client,
 {
   if (client->root->callback->interface.v1.stat == NULL)
   {
-    raw_response_handler(client, "SERVER_ERROR: callback not implemented\r\n");
+    ascii_raw_response_handler(client, "SERVER_ERROR: callback not implemented\r\n");
     return;
   }
 
@@ -646,7 +646,7 @@ static void process_version(memcached_protocol_client_st *client,
 
   if (client->root->callback->interface.v1.version == NULL)
   {
-    raw_response_handler(client, "SERVER_ERROR: callback not implemented\r\n");
+    ascii_raw_response_handler(client, "SERVER_ERROR: callback not implemented\r\n");
     return;
   }
 
@@ -665,7 +665,7 @@ static void process_flush(memcached_protocol_client_st *client,
 
   if (client->root->callback->interface.v1.flush_object == NULL)
   {
-    raw_response_handler(client, "SERVER_ERROR: callback not implemented\r\n");
+    ascii_raw_response_handler(client, "SERVER_ERROR: callback not implemented\r\n");
     return;
   }
 
@@ -683,9 +683,9 @@ static void process_flush(memcached_protocol_client_st *client,
   protocol_binary_response_status rval;
   rval= client->root->callback->interface.v1.flush_object(client, timeout);
   if (rval == PROTOCOL_BINARY_RESPONSE_SUCCESS)
-    raw_response_handler(client, "OK\r\n");
+    ascii_raw_response_handler(client, "OK\r\n");
   else
-    raw_response_handler(client, "SERVER_ERROR: internal error\r\n");
+    ascii_raw_response_handler(client, "SERVER_ERROR: internal error\r\n");
 }
 
 /**
@@ -712,7 +712,7 @@ static inline int process_storage_command(memcached_protocol_client_st *client,
   if (nkey == 0)
   {
     /* return error */
-    raw_response_handler(client, "CLIENT_ERROR: bad key\r\n");
+    ascii_raw_response_handler(client, "CLIENT_ERROR: bad key\r\n");
     return -1;
   }
 
@@ -721,7 +721,7 @@ static inline int process_storage_command(memcached_protocol_client_st *client,
   if (errno != 0)
   {
     /* return error */
-    raw_response_handler(client, "CLIENT_ERROR: bad key\r\n");
+    ascii_raw_response_handler(client, "CLIENT_ERROR: bad key\r\n");
     return -1;
   }
 
@@ -729,7 +729,7 @@ static inline int process_storage_command(memcached_protocol_client_st *client,
   if (errno != 0)
   {
     /* return error */
-    raw_response_handler(client, "CLIENT_ERROR: bad key\r\n");
+    ascii_raw_response_handler(client, "CLIENT_ERROR: bad key\r\n");
     return -1;
   }
 
@@ -737,7 +737,7 @@ static inline int process_storage_command(memcached_protocol_client_st *client,
   if (errno != 0)
   {
     /* return error */
-    raw_response_handler(client, "CLIENT_ERROR: bad key\r\n");
+    ascii_raw_response_handler(client, "CLIENT_ERROR: bad key\r\n");
     return -1;
   }
 
@@ -779,7 +779,7 @@ static inline int process_storage_command(memcached_protocol_client_st *client,
     if (errno != 0)
     {
       /* return error */
-      raw_response_handler(client, "CLIENT_ERROR: bad key\r\n");
+      ascii_raw_response_handler(client, "CLIENT_ERROR: bad key\r\n");
       return -1;
     }
     /* FALLTHROUGH */
@@ -827,7 +827,7 @@ static inline int process_storage_command(memcached_protocol_client_st *client,
 
   if (rval == PROTOCOL_BINARY_RESPONSE_SUCCESS)
   {
-    raw_response_handler(client, "STORED\r\n");
+    ascii_raw_response_handler(client, "STORED\r\n");
   }
   else
   {
@@ -835,20 +835,20 @@ static inline int process_storage_command(memcached_protocol_client_st *client,
     {
       if (rval == PROTOCOL_BINARY_RESPONSE_KEY_EEXISTS)
       {
-        raw_response_handler(client, "EXISTS\r\n");
+        ascii_raw_response_handler(client, "EXISTS\r\n");
       }
       else if (rval == PROTOCOL_BINARY_RESPONSE_KEY_ENOENT)
       {
-        raw_response_handler(client, "NOT_FOUND\r\n");
+        ascii_raw_response_handler(client, "NOT_FOUND\r\n");
       }
       else
       {
-        raw_response_handler(client, "NOT_STORED\r\n");
+        ascii_raw_response_handler(client, "NOT_STORED\r\n");
       }
     }
     else
     {
-      raw_response_handler(client, "NOT_STORED\r\n");
+      ascii_raw_response_handler(client, "NOT_STORED\r\n");
     }
   }
 
@@ -869,7 +869,7 @@ static int process_cas_command(memcached_protocol_client_st *client,
 
   if (client->root->callback->interface.v1.replace == NULL)
   {
-    raw_response_handler(client, "SERVER_ERROR: callback not implemented\r\n");
+    ascii_raw_response_handler(client, "SERVER_ERROR: callback not implemented\r\n");
     return false;
   }
 
@@ -888,7 +888,7 @@ static int process_set_command(memcached_protocol_client_st *client,
 
   if (client->root->callback->interface.v1.set == NULL)
   {
-    raw_response_handler(client, "SERVER_ERROR: callback not implemented\r\n");
+    ascii_raw_response_handler(client, "SERVER_ERROR: callback not implemented\r\n");
     return false;
   }
 
@@ -907,7 +907,7 @@ static int process_add_command(memcached_protocol_client_st *client,
 
   if (client->root->callback->interface.v1.add == NULL)
   {
-    raw_response_handler(client, "SERVER_ERROR: callback not implemented\r\n");
+    ascii_raw_response_handler(client, "SERVER_ERROR: callback not implemented\r\n");
     return false;
   }
 
@@ -926,7 +926,7 @@ static int process_replace_command(memcached_protocol_client_st *client,
 
   if (client->root->callback->interface.v1.replace == NULL)
   {
-    raw_response_handler(client, "SERVER_ERROR: callback not implemented\r\n");
+    ascii_raw_response_handler(client, "SERVER_ERROR: callback not implemented\r\n");
     return false;
   }
 
@@ -945,7 +945,7 @@ static int process_append_command(memcached_protocol_client_st *client,
 
   if (client->root->callback->interface.v1.append == NULL)
   {
-    raw_response_handler(client, "SERVER_ERROR: callback not implemented\r\n");
+    ascii_raw_response_handler(client, "SERVER_ERROR: callback not implemented\r\n");
     return false;
   }
 
@@ -964,7 +964,7 @@ static int process_prepend_command(memcached_protocol_client_st *client,
 
   if (client->root->callback->interface.v1.prepend == NULL)
   {
-    raw_response_handler(client, "SERVER_ERROR: callback not implemented\r\n");
+    ascii_raw_response_handler(client, "SERVER_ERROR: callback not implemented\r\n");
     return false;
   }
 
@@ -1012,7 +1012,7 @@ memcached_protocol_event_t memcached_ascii_protocol_process_data(memcached_proto
       }
       else
       {
-        raw_response_handler(client, "SERVER_ERROR: Command not implemented\n");
+        ascii_raw_response_handler(client, "SERVER_ERROR: Command not implemented\n");
       }
     }
     else
@@ -1120,7 +1120,7 @@ memcached_protocol_event_t memcached_ascii_protocol_process_data(memcached_proto
         }
         else
         {
-          raw_response_handler(client, "OK\r\n");
+          ascii_raw_response_handler(client, "OK\r\n");
         }
         break;
 

@@ -2,7 +2,7 @@
 find_package(FLEX)
 find_package(BISON 2.3)
 
-if(${BISON_VERSION} VERSION_GREATER_EQUAL 3.0)
+if("${BISON_VERSION}" VERSION_GREATER_EQUAL 3.0)
         set(BISON_WARNINGS -Wno-deprecated)
 endif()
 
@@ -11,32 +11,17 @@ bison_target(CSL_PARSER csl/parser.yy ${CMAKE_CURRENT_BINARY_DIR}/csl/parser.cc
         DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/csl/parser.h
         COMPILE_FLAGS ${BISON_WARNINGS}
         )
+set_source_files_properties(${BISON_CSL_PARSER_OUTPUTS} PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
 flex_target(CSL_SCANNER csl/scanner.l ${CMAKE_CURRENT_BINARY_DIR}/csl/scanner.cc
         DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/csl/scanner.h
         )
+set_source_files_properties(${FLEX_CSL_SCANNER_OUTPUTS} PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
 add_flex_bison_dependency(CSL_SCANNER CSL_PARSER)
-
-if(HAVE_DTRACE)
-        add_custom_command(
-                OUTPUT dtrace_probes.h
-                COMMAND ${DTRACE_EXECUTABLE}
-                ARGS -h -o dtrace_probes.h -s ${CMAKE_CURRENT_SOURCE_DIR}/libmemcached_probes.d
-                MAIN_DEPENDENCY libmemcached_probes.d
-        )
-        add_custom_command(
-                OUTPUT libmemcached_probes.o
-                COMMAND ${DTRACE_EXECUTABLE}
-                ARGS -o libmemcached_probes.o -G -s ${CMAKE_CURRENT_SOURCE_DIR}/libmemcached_probes.d
-                MAIN_DEPENDENCY dtrace_probes.h
-        )
-        set(DTRACE_GENERATED_OUTPUT libmemcached_probes.o)
-endif()
 
 set(LIBMEMCACHED_SOURCES
         csl/context.cc
         ${BISON_CSL_PARSER_OUTPUTS}
         ${FLEX_CSL_SCANNER_OUTPUTS}
-        ${DTRACE_GENERATED_OUTPUT}
         allocators.cc
         analyze.cc
         array.c
@@ -89,16 +74,30 @@ set(LIBMEMCACHED_SOURCES
 add_library(libmemcached SHARED
         ${LIBMEMCACHED_SOURCES})
 add_library(memcached ALIAS libmemcached)
-set_target_properties(libmemcached PROPERTIES LIBRARY_OUTPUT_NAME memcached)
-target_link_libraries(libmemcached libhashkit Threads::Threads ${LIBSASL_LIBRARIES} ${CMAKE_DL_LIBS})
-target_include_directories(libmemcached PRIVATE ${LIBSASL_INCLUDEDIR})
+set_target_properties(libmemcached PROPERTIES
+        LIBRARY_OUTPUT_NAME memcached
+        LIBRARY_OUTPUT_NAME_DEBUG memcached-dbg
+        SOVERSION ${LIBMEMCACHED_SO_VERSION}
+        VERSION v${LIBMEMCACHED_VERSION})
 target_compile_definitions(libmemcached PRIVATE -DBUILDING_LIBMEMCACHED)
+target_link_libraries(libmemcached PUBLIC libhashkit Threads::Threads ${LIBSASL_LIBRARIES} ${CMAKE_DL_LIBS} ${Backtrace_LIBRARIES})
+target_include_directories(libmemcached PRIVATE ${Backtrace_INCLUDE_DIR})
+target_include_directories(libmemcached PRIVATE
+        ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_BINARY_DIR}/src
+        ${CMAKE_BINARY_DIR})
+target_include_directories(libmemcached PUBLIC ${LIBSASL_INCLUDEDIR})
+target_include_directories(libmemcached PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
+        $<INSTALL_INTERFACE:include>)
 
-set_target_properties(libmemcached PROPERTIES SOVERSION ${LIBMEMCACHED_SO_VERSION})
-install(TARGETS libmemcached EXPORT libmemcached
+enable_dtrace_for(libmemcached libmemcached_probes.d dtrace_probes.h)
+
+install(TARGETS libmemcached EXPORT libmemcached-targets
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
-export(EXPORT libmemcached)
-install(EXPORT libmemcached DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake)
+export(EXPORT libmemcached-targets NAMESPACE libmemcached::)
+install(EXPORT libmemcached-targets NAMESPACE libmemcached:: DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake)
 
 install_public_headers(
         libmemcached
@@ -112,9 +111,20 @@ add_library(libmemcachedinternal STATIC
         ${LIBMEMCACHED_SOURCES})
 add_library(memcachedinternal ALIAS libmemcachedinternal)
 set_target_properties(libmemcachedinternal PROPERTIES LIBRARY_OUTPUT_NAME memcachedinternal)
-target_link_libraries(libmemcachedinternal libhashkit Threads::Threads ${LIBSASL_LIBRARIES} ${CMAKE_DL_LIBS})
-target_include_directories(libmemcachedinternal PRIVATE ${LIBSASL_INCLUDEDIR})
 target_compile_definitions(libmemcachedinternal PRIVATE -DBUILDING_LIBMEMCACHEDINTERNAL)
+target_link_libraries(libmemcachedinternal PUBLIC libhashkit Threads::Threads ${LIBSASL_LIBRARIES} ${CMAKE_DL_LIBS} ${Backtrace_LIBRARIES})
+target_include_directories(libmemcachedinternal PRIVATE ${Backtrace_INCLUDE_DIR})
+target_include_directories(libmemcachedinternal PRIVATE
+        ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_BINARY_DIR}/src
+        ${CMAKE_BINARY_DIR})
+target_include_directories(libmemcachedinternal PUBLIC ${LIBSASL_INCLUDEDIR})
+target_include_directories(libmemcachedinternal PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
+        $<INSTALL_INTERFACE:include>)
+
+enable_dtrace_for(libmemcachedinternal libmemcached_probes.d dtrace_probes.h)
 
 # let libmemcached depend on libmemcachedinternal to ensure that they do not
 # compete for the same generated dependencies

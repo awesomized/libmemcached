@@ -167,7 +167,7 @@ static void _set(Memcached& memc, memcached_string_t *str, memcached_return_t &r
       errmsg[0]= 0;
       errmsg_ptr= errmsg;
 
-#if defined(STRERROR_R_CHAR_P) && STRERROR_R_CHAR_P
+#if defined(HAVE_STRERROR_R_CHAR_P) && HAVE_STRERROR_R_CHAR_P
       errmsg_ptr= strerror_r(local_errno, errmsg, sizeof(errmsg));
 #elif defined(HAVE_STRERROR_R) && HAVE_STRERROR_R
       strerror_r(local_errno, errmsg, sizeof(errmsg));

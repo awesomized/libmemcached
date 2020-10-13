@@ -1,0 +1,10 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+find_dependency(Threads)
+
+include(${CMAKE_CURRENT_LIST_DIR}/libhashkit-targets.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/libmemcached-targets.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/libmemcachedprotocol-targets.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/libmemcachedutil-targets.cmake)
+

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.9..3.16)
+cmake_minimum_required(VERSION 3.9...3.18)
 
 if(${CMAKE_VERSION} VERSION_LESS 3.12)
     cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
@@ -18,13 +18,6 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 include(CMakeConfig.txt)
 
 if(NOT BUILD_DOCSONLY)
-    foreach(INCLUDE IN ITEMS ${CMAKE_BINARY_DIR} .)
-        include_directories(
-                ${INCLUDE}/
-                ${INCLUDE}/include
-                ${INCLUDE}/src
-                )
-    endforeach()
 
     set(AUTOHEADER_FILE mem_config.h)
 
@@ -47,10 +40,7 @@ if(NOT BUILD_DOCSONLY)
     add_subdirectory(include)
     add_subdirectory(src)
     add_subdirectory(support)
-
-    if(BUILD_TESTING)
-        add_subdirectory(tests)
-    endif()
+    add_subdirectory(test)
 
     # keep last
     configure_file(src/mem_config.h.in ${AUTOHEADER_FILE} @ONLY)

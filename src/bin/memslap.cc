@@ -1,5 +1,5 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
- * 
+ *
  *  Libmemcached library
  *
  *  Copyright (C) 2011-2012 Data Differential, http://datadifferential.com/
@@ -214,10 +214,10 @@ int main(int argc, char *argv[])
     {
       opt_servers= strdup(temp);
     }
-    
+
     if (opt_servers == NULL)
     {
-      std::cerr << "No Servers provided" << std::endl;
+      std::cerr << "No servers provided" << std::endl;
       exit(EXIT_FAILURE);
     }
   }

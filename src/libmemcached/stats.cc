@@ -366,91 +366,91 @@ char *memcached_stat_get_value(const memcached_st* shell, memcached_stat_st *mem
 
   *error= MEMCACHED_SUCCESS;
 
-  if (memcmp("pid", key, sizeof("pid") -1) == 0)
+  if (!strcmp(key, "pid"))
   {
     length= snprintf(buffer, SMALL_STRING_LEN,"%lld", (signed long long)memc_stat->pid);
   }
-  else if (not memcmp("uptime", key, sizeof("uptime") -1))
+  else if (!strcmp(key, "uptime"))
   {
     length= snprintf(buffer, SMALL_STRING_LEN,"%lu", memc_stat->uptime);
   }
-  else if (not memcmp("time", key, sizeof("time") -1))
+  else if (!strcmp(key, "time"))
   {
     length= snprintf(buffer, SMALL_STRING_LEN,"%llu", (unsigned long long)memc_stat->time);
   }
-  else if (not memcmp("version", key, sizeof("version") -1))
+  else if (!strcmp(key, "version"))
   {
     length= snprintf(buffer, SMALL_STRING_LEN,"%s", memc_stat->version);
   }
-  else if (not memcmp("pointer_size", key, sizeof("pointer_size") -1))
+  else if (!strcmp(key, "pointer_size"))
   {
     length= snprintf(buffer, SMALL_STRING_LEN,"%lu", memc_stat->pointer_size);
   }
-  else if (not memcmp("rusage_user", key, sizeof("rusage_user") -1))
+  else if (!strcmp(key, "rusage_user"))
   {
     length= snprintf(buffer, SMALL_STRING_LEN,"%lu.%lu", memc_stat->rusage_user_seconds, memc_stat->rusage_user_microseconds);
   }
-  else if (not memcmp("rusage_system", key, sizeof("rusage_system") -1))
+  else if (!strcmp(key, "rusage_system"))
   {
     length= snprintf(buffer, SMALL_STRING_LEN,"%lu.%lu", memc_stat->rusage_system_seconds, memc_stat->rusage_system_microseconds);
   }
-  else if (not memcmp("curr_items", key, sizeof("curr_items") -1))
+  else if (!strcmp(key, "curr_items"))
   {
     length= snprintf(buffer, SMALL_STRING_LEN,"%lu", memc_stat->curr_items);
   }
-  else if (not memcmp("total_items", key, sizeof("total_items") -1))
+  else if (!strcmp(key, "total_items"))
   {
     length= snprintf(buffer, SMALL_STRING_LEN,"%lu", memc_stat->total_items);
   }
-  else if (not memcmp("curr_connections", key, sizeof("curr_connections") -1))
+  else if (!strcmp(key, "curr_connections"))
   {
     length= snprintf(buffer, SMALL_STRING_LEN,"%lu", memc_stat->curr_connections);
   }
-  else if (not memcmp("total_connections", key, sizeof("total_connections") -1))
+  else if (!strcmp(key, "total_connections"))
   {
     length= snprintf(buffer, SMALL_STRING_LEN,"%lu", memc_stat->total_connections);
   }
-  else if (not memcmp("connection_structures", key, sizeof("connection_structures") -1))
+  else if (!strcmp(key, "connection_structures"))
   {
     length= snprintf(buffer, SMALL_STRING_LEN,"%lu", memc_stat->connection_structures);
   }
-  else if (not memcmp("cmd_get", key, sizeof("cmd_get") -1))
+  else if (!strcmp(key, "cmd_get"))
   {
     length= snprintf(buffer, SMALL_STRING_LEN,"%llu", (unsigned long long)memc_stat->cmd_get);
   }
-  else if (not memcmp("cmd_set", key, sizeof("cmd_set") -1))
+  else if (!strcmp(key, "cmd_set"))
   {
     length= snprintf(buffer, SMALL_STRING_LEN,"%llu", (unsigned long long)memc_stat->cmd_set);
   }
-  else if (not memcmp("get_hits", key, sizeof("get_hits") -1))
+  else if (!strcmp(key, "get_hits"))
   {
     length= snprintf(buffer, SMALL_STRING_LEN,"%llu", (unsigned long long)memc_stat->get_hits);
   }
-  else if (not memcmp("get_misses", key, sizeof("get_misses") -1))
+  else if (!strcmp(key, "get_misses"))
   {
     length= snprintf(buffer, SMALL_STRING_LEN,"%llu", (unsigned long long)memc_stat->get_misses);
   }
-  else if (not memcmp("evictions", key, sizeof("evictions") -1))
+  else if (!strcmp(key, "evictions"))
   {
     length= snprintf(buffer, SMALL_STRING_LEN,"%llu", (unsigned long long)memc_stat->evictions);
   }
-  else if (not memcmp("bytes_read", key, sizeof("bytes_read") -1))
+  else if (!strcmp(key, "bytes_read"))
   {
     length= snprintf(buffer, SMALL_STRING_LEN,"%llu", (unsigned long long)memc_stat->bytes_read);
   }
-  else if (not memcmp("bytes_written", key, sizeof("bytes_written") -1))
+  else if (!strcmp(key, "bytes_written"))
   {
     length= snprintf(buffer, SMALL_STRING_LEN,"%llu", (unsigned long long)memc_stat->bytes_written);
   }
-  else if (not memcmp("bytes", key, sizeof("bytes") -1))
+  else if (!strcmp(key, "bytes"))
   {
     length= snprintf(buffer, SMALL_STRING_LEN,"%llu", (unsigned long long)memc_stat->bytes);
   }
-  else if (not memcmp("limit_maxbytes", key, sizeof("limit_maxbytes") -1))
+  else if (!strcmp(key, "limit_maxbytes"))
   {
     length= snprintf(buffer, SMALL_STRING_LEN,"%llu", (unsigned long long)memc_stat->limit_maxbytes);
   }
-  else if (not memcmp("threads", key, sizeof("threads") -1))
+  else if (!strcmp(key, "threads"))
   {
     length= snprintf(buffer, SMALL_STRING_LEN,"%lu", memc_stat->threads);
   }
@@ -653,7 +653,7 @@ memcached_stat_st *memcached_stat(memcached_st *shell, char *args, memcached_ret
     return NULL;
   }
 
-  memcached_return_t rc;
+  memcached_return_t rc = MEMCACHED_SUCCESS;
   size_t args_length= 0;
   if (args)
   {

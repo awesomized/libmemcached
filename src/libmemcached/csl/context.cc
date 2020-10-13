@@ -77,7 +77,7 @@ void Context::error(const char *error_arg, config_tokentype last_token, const ch
   // return a generic message 
   if (strcmp(error_arg, "syntax error") != 0)
   {
-    memcached_set_parser_error(*memc, MEMCACHED_AT, "Error occured during parsing (%s)", error_arg);
+    memcached_set_parser_error(*memc, MEMCACHED_AT, "Error occured during parsing (%s): last_token=%s(%d)", error_arg, last_token_str, last_token);
     return;
   }
 

@@ -93,6 +93,9 @@ use a bitmask.  For example, if you need only 10 bits, do
 In which case, the hash table should have hashsize(10) elements.
 */
 
+#if HAVE_ASAN
+__attribute__((no_sanitize_address,no_sanitize("address")))
+#endif
 uint32_t hashkit_jenkins(const char *key, size_t length, void *)
 {
   uint32_t a,b,c;                                          /* internal state */

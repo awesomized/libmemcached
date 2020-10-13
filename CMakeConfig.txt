@@ -1,12 +1,27 @@
-set(CMAKE_BUILD_TYPE Release
-    CACHE STRING "build type (Release, Debug, ...)")
+ 
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    if(NOT DEFINED ENV{CMAKE_BUILD_TYPE})
+        set(ENV{CMAKE_BUILD_TYPE} Release)
+    endif()
+    set(CMAKE_BUILD_TYPE $ENV{CMAKE_BUILD_TYPE}
+        CACHE STRING "build type (Release, Debug, ...)" FORCE)
+endif()
 set(CMAKE_INSTALL_PREFIX /usr/local
     CACHE PATH "install prefix")
 
+if(APPLE)
+    set(CMAKE_INSTALL_RPATH @loader_path
+        CACHE STRING "set relative rpath")
+elseif(UNIX)
+    # FIXME
+    set(CMAKE_INSTALL_RPATH $ORIGIN
+        CACHE STRING "set relative rpath")
+endif()
+
 option(BUILD_TESTING        "whether to enable build of the test suite"
-        OFF)
+        $ENV{BUILD_TESTING})
 option(BUILD_DOCSONLY       "build *only* documentation"
-        OFF)
+        $ENV{BUILD_DOCSONLY})
 option(BUILD_DOCS           "build documentation"
         ${BUILD_DOCSONLY})
 option(BUILD_DOCS_HTML      "build HTML docs"
@@ -17,24 +32,29 @@ option(BUILD_DOCS_MANGZ     "gzip manpages"
         ${BUILD_DOCS_MAN})
 
 option(ENABLE_DTRACE        "enable dtrace support"
-        OFF)
+        $ENV{ENABLE_DTRACE})
 option(ENABLE_HASH_FNV64    "enable fnv64 hash support"
         ON)
 option(ENABLE_HASH_MURMUR   "enable murmur hash support"
         ON)
 option(ENABLE_HASH_HSIEH    "enable hsieh hash support"
-        OFF)
+        $ENV{ENABLE_HASH_HSIEH})
 option(ENABLE_MEMASLAP      "enable memaslap client"
         ON)
 option(ENABLE_SASL          "enable SASL support"
-        OFF)
+        $ENV{ENABLE_SASL})
 
-set(ENABLE_SANITIZERS ""
+set(ENABLE_SANITIZERS $ENV{ENABLE_SANITIZERS}
     CACHE STRING "sanitizers to enable (e.g. address undefined ...)")
 
 if(BUILD_TESTING)
     set(MEMCACHED_BINARY "/usr/bin/memcached"
         CACHE FILEPATH "memcached binary")
+    set(CMAKE_CTEST_ARGUMENTS "--output-on-failure")
+    if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.17)
+        # available since CMake 3.17
+        list(APPEND CMAKE_CTEST_ARGUMENTS -j2 --repeat until-pass:2)
+    endif()
 endif()
 
 if(BUILD_DOCS)

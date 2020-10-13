@@ -59,8 +59,11 @@ int main(int argc, char *argv[])
   if (servers == NULL or memcached_server_list_count(servers) == 0)
   {
     std::cerr << "Invalid server list provided:" << opt_servers << std::endl;
+    free(opt_servers);
     return EXIT_FAILURE;
   }
+
+  free(opt_servers);
 
   memcached_st *memc= memcached_create(NULL);
   memcached_server_push(memc, servers);
@@ -90,12 +93,11 @@ int main(int argc, char *argv[])
   if (rc != MEMCACHED_SUCCESS)
   {
     std::cerr << memcached_last_error_message(memc) << std::endl;
+    memcached_free(memc);
+    return EXIT_FAILURE;
   }
 
   memcached_free(memc);
-
-  free(opt_servers);
-
   return EXIT_SUCCESS;
 }
 

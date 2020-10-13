@@ -1,3 +1,16 @@
+- Clients (src/bin):
+    - consolidate CLI
+    - convert to proper C++ where applicable
+- Stats:
+    - redo
+-Deprecations:
+    - UDP, disabled by default from memcached-1.5.6
+      soft (maybe only discourage in docs)
+    - API:
+        - memcached_delete(): expires param is obsolete
+
+## Legacy:
+
 - Write a shell application (?)
 - Fix version in command line tools
 - Write (more) test cases for all command line tools (!!!)
