@@ -212,7 +212,7 @@ static ssize_t timeout_io_op(memcached_socket_t fd, short direction, void *buf, 
     ret= recv(fd, buf, len, 0);
   }
 
-  if (ret == SOCKET_ERROR && get_socket_errno() == EWOULDBLOCK) 
+  if (ret == SOCKET_ERROR && get_socket_errno() == EWOULDBLOCK)
   {
     struct pollfd fds;
     memset(&fds, 0, sizeof(struct pollfd));
@@ -1271,7 +1271,7 @@ static enum test_return test_ascii_quit(void)
     execute(send_string("quit noreply\r\n"));
     execute(receive_error_response());
   }
-  
+
   /* Verify that quit works */
   execute(send_string("quit\r\n"));
 
@@ -1290,8 +1290,8 @@ static enum test_return test_ascii_version(void)
   execute(receive_line(buffer, sizeof(buffer)));
   verify(strncmp(buffer, "VERSION ", 8) == 0);
 
-  char *version = &buffer[sizeof("VERSION") + 2];
-  if (version[0] >= '1' || (version[0] == '1' && version[2] >= '6')) {
+  char *version = &buffer[sizeof("VERSION")];
+  if (version[0] > '1' || (version[0] == '1' && version[2] >= '6')) {
     v16x_or_greater = true;
   }
 
