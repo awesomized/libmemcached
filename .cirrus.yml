@@ -51,12 +51,12 @@ task:
     gitter_success_script: |
       curl -sS "${gitter}" \
         --data-urlencode "level=info" \
-        --data-urlencode "message=Cirrus-CI build for ${CIRRUS_BRANCH} on ${OS} [succeeded](https://cirrus-ci.org/tasg/${CIRRUS_TASK_ID})"
+        --data-urlencode "message=Cirrus-CI build for ${CIRRUS_BRANCH} on ${OS} [succeeded](https://cirrus-ci.org/task/${CIRRUS_TASK_ID})"
   on_failure:
     gitter_failure_script: |
       curl -sS "${gitter}" \
         --data-urlencode "level=error" \
-        --data-urlencode "message=Cirrus-CI build for ${CIRRUS_BRANCH} on ${OS} [failed](https://cirrus-ci.org/tasg/${CIRRUS_TASK_ID})"
+        --data-urlencode "message=Cirrus-CI build for ${CIRRUS_BRANCH} on ${OS} [failed](https://cirrus-ci.org/task/${CIRRUS_TASK_ID})"
     testlog_artifacts:
       path: build/Testing/Temporary/LastTest.log
       type: text/plain
