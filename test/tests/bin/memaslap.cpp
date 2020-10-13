@@ -33,11 +33,11 @@ TEST_CASE("bin/memaslap") {
   SECTION("with servers") {
     auto test = MemcachedCluster::network();
     auto examples = {
-        " -t 2s -S 1s",
-        " -t 2s -v 0.2 -e 0.05 -b",
-        " -t 2s -w 40k -S 20s -o 0.2",
-        " -t 2s -T 4 -c 128 -d 20 -P 40k",
-        " -t 2s -d 50 -a -n 10",
+        " -T 2 -c 32 -t 2s -S 1s",
+        " -T 2 -c 32 -t 2s -v 0.2 -e 0.05 -b",
+        " -T 2 -c 32 -t 2s -w 40k -o 0.2",
+        " -T 2 -c 32 -t 2s -d 20 -P 40k",
+        " -T 2 -c 32 -t 2s -d 50 -a -n 10",
     };
     string servers{"-s "};
 
