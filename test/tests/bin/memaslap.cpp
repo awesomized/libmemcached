@@ -1,0 +1,55 @@
+#include "test/lib/common.hpp"
+#include "test/lib/Shell.hpp"
+#include "test/lib/MemcachedCluster.hpp"
+
+#if HAVE_MEMASLAP
+
+using Catch::Matchers::Contains;
+
+TEST_CASE("bin/memaslap") {
+  Shell sh{string{TESTING_ROOT "/../src/bin"}};
+
+  SECTION("no servers provided") {
+    string output;
+    REQUIRE_FALSE(sh.run("memaslap", output));
+    REQUIRE_THAT(output, Contains("No servers provided\n"));
+  }
+
+  SECTION("--help") {
+    string output;
+
+    REQUIRE(sh.run("memaslap --help", output));
+    REQUIRE_THAT(output, Contains("memaslap"));
+    REQUIRE_THAT(output, Contains("v1"));
+    /* FIXME
+    REQUIRE_THAT(output, Contains("help"));
+    REQUIRE_THAT(output, Contains("version"));
+    REQUIRE_THAT(output, Contains("option"));
+     */
+    REQUIRE_THAT(output, Contains("--"));
+    REQUIRE_THAT(output, Contains("="));
+  }
+
+  SECTION("with servers") {
+    auto test = MemcachedCluster::network();
+    auto examples = {
+        " -t 2s -S 1s",
+        " -t 2s -v 0.2 -e 0.05 -b",
+        " -t 2s -w 40k -S 20s -o 0.2",
+        " -t 2s -T 4 -c 128 -d 20 -P 40k",
+        " -t 2s -d 50 -a -n 10",
+    };
+    string servers{"-s "};
+
+    for (const auto &server : test.cluster.getServers()) {
+      servers += "127.0.0.1:" + to_string(get<int>(server.getSocketOrPort())) + ",";
+    }
+    for (const auto args : examples) {
+      string output;
+      INFO(args);
+      REQUIRE(sh.run("memaslap " + servers + args, output));
+      REQUIRE_THAT(output, Contains("TPS"));
+    }
+  }
+}
+#endif // HAVE_MEMASLAP

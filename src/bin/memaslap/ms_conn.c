@@ -826,7 +826,7 @@ static int ms_network_connect(ms_conn_t *c,
     if (error != EAI_SYSTEM)
       fprintf(stderr, "getaddrinfo(): %s.\n", gai_strerror(error));
     else
-      perror("getaddrinfo()\n");
+      perror("getaddrinfo()");
 
     return -1;
   }
@@ -1169,7 +1169,7 @@ static int ms_ascii_process_line(ms_conn_t *c, char *command)
       {
         printf("<%d ERROR %s\n", c->sfd, strerror(errno));
       }
-      c->currcmd.key_prefix= *(uint64_t *)tokens[KEY_TOKEN].value;
+      memcpy(&c->currcmd.key_prefix, tokens[KEY_TOKEN].value, sizeof(c->currcmd.key_prefix));
 
       /*
        *  We read the \r\n into the string since not doing so is more

@@ -1,5 +1,5 @@
 /*
- *  memslap
+ *  memaslap
  *
  *  (c) Copyright 2009, Schooner Information Technology, Inc.
  *  All rights reserved.
@@ -41,7 +41,7 @@ ms_stats_t ms_stats;
 /* global statistic structure */
 ms_statistic_t ms_statistic;
 
-#define PROGRAM_NAME    "memslap"
+#define PROGRAM_NAME    "memaslap"
 #define PROGRAM_DESCRIPTION \
                         "Generates workload against memcached servers."
 
@@ -120,7 +120,7 @@ static int ms_check_para(void);
 static void ms_statistic_init(void);
 static void ms_stats_init(void);
 static void ms_print_statistics(int in_time);
-static void ms_print_memslap_stats(struct timeval *start_time,
+static void ms_print_memaslap_stats(struct timeval *start_time,
                                    struct timeval *end_time);
 static void ms_monitor_slap_mode(void);
 
@@ -131,7 +131,7 @@ static void ms_monitor_slap_mode(void);
  * @param description, description of this process
  * @param long_options, global options array
  */
-static __attribute__((noreturn)) void ms_help_command(const char *command_name, const char *description)
+static void ms_help_command(const char *command_name, const char *description)
 {
   char *help_message= NULL;
 
@@ -139,7 +139,7 @@ static __attribute__((noreturn)) void ms_help_command(const char *command_name, 
   printf("    %s\n\n", description);
   printf(
     "Usage:\n"
-    "    memslap -hV | -s servers [-F config_file] [-t time | -x exe_num] [...]\n\n"
+    "    memaslap -hV | -s servers [-F config_file] [-t time | -x exe_num] [...]\n\n"
     "Options:\n");
 
   for (int x= 0; long_options[x].name; x++)
@@ -155,15 +155,13 @@ static __attribute__((noreturn)) void ms_help_command(const char *command_name, 
 
   printf(
     "\nExamples:\n"
-    "    memslap -s 127.0.0.1:11211 -S 5s\n"
-    "    memslap -s 127.0.0.1:11211 -t 2m -v 0.2 -e 0.05 -b\n"
-    "    memslap -s 127.0.0.1:11211 -F config -t 2m -w 40k -S 20s -o 0.2\n"
-    "    memslap -s 127.0.0.1:11211 -F config -t 2m -T 4 -c 128 -d 20 -P 40k\n"
-    "    memslap -s 127.0.0.1:11211 -F config -t 2m -d 50 -a -n 40\n"
-    "    memslap -s 127.0.0.1:11211,127.0.0.1:11212 -F config -t 2m\n"
-    "    memslap -s 127.0.0.1:11211,127.0.0.1:11212 -F config -t 2m -p 2\n\n");
-
-  exit(0);
+    "    memaslap -s 127.0.0.1:11211 -S 5s\n"
+    "    memaslap -s 127.0.0.1:11211 -t 2m -v 0.2 -e 0.05 -b\n"
+    "    memaslap -s 127.0.0.1:11211 -F config -t 2m -w 40k -S 20s -o 0.2\n"
+    "    memaslap -s 127.0.0.1:11211 -F config -t 2m -T 4 -c 128 -d 20 -P 40k\n"
+    "    memaslap -s 127.0.0.1:11211 -F config -t 2m -d 50 -a -n 40\n"
+    "    memaslap -s 127.0.0.1:11211,127.0.0.1:11212 -F config -t 2m\n"
+    "    memaslap -s 127.0.0.1:11211,127.0.0.1:11212 -F config -t 2m -p 2\n\n");
 } /* ms_help_command */
 
 
@@ -295,7 +293,7 @@ static const char *ms_lookup_help(ms_options_t option)
 
   case OPT_UDP:
     return
-      "UDP support, default memslap uses TCP, TCP port and UDP port of\n"
+      "UDP support, by default memaslap uses TCP; TCP port and UDP port of\n"
       "        server must be same.";
 
   case OPT_EXPIRE:
@@ -442,6 +440,7 @@ static void ms_options_parse(int argc, char *argv[])
 
     case OPT_HELP:     /* --help or -h */
       ms_help_command(PROGRAM_NAME, PROGRAM_DESCRIPTION);
+      exit(0);
       break;
 
     case OPT_SERVERS:     /* --servers or -s */
@@ -660,7 +659,7 @@ static int ms_check_para()
     }
     else
     {
-      fprintf(stderr, "No Servers provided\n\n");
+      fprintf(stderr, "No servers provided\n\n");
       return -1;
     }
   }
@@ -717,11 +716,11 @@ static void ms_print_statistics(int in_time)
 } /* ms_print_statistics */
 
 
-/* used to print the states of memslap */
-static void ms_print_memslap_stats(struct timeval *start_time,
+/* used to print the states of memaslap */
+static void ms_print_memaslap_stats(struct timeval *start_time,
                                    struct timeval *end_time)
 {
-  char buf[1024];
+  char buf[0x2000];
   char *pos= buf;
 
   pos+= snprintf(pos,
@@ -808,11 +807,11 @@ static void ms_print_memslap_stats(struct timeval *start_time,
                           ms_stats.bytes_written
                           + ms_stats.bytes_read) / 1024 / 1024
                  / ((double)time_diff / 1000000));
-  assert(pos <= buf);
+  assert(pos <= (buf + sizeof(buf)));
 
-  fprintf(stdout, "%s", buf);
+  fwrite(buf, 1, pos - buf, stdout);
   fflush(stdout);
-} /* ms_print_memslap_stats */
+} /* ms_print_memaslap_stats */
 
 
 /* the loop of the main thread, wait the work threads to complete */
@@ -892,7 +891,7 @@ static void ms_monitor_slap_mode()
     gettimeofday(&end_time, NULL);
   }
 
-  ms_print_memslap_stats(&start_time, &end_time);
+  ms_print_memaslap_stats(&start_time, &end_time);
 } /* ms_monitor_slap_mode */
 
 
