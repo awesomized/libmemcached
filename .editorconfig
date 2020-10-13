@@ -6,20 +6,20 @@ end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-[*.{C,c{,c,pp,xx},h{,h,pp,xx}}]
+[*.{C,c,cc,cpp,cxx,H,h,hh,hpp,hxx}]
 indent_style = space
 indent_size = 2
 
-[*.yml]
+[*.{yml,yaml}]
 indent_style = space
 indent_size = 2
 
-[*.{rst,m{,{,ark}d{,own}}}}]
+[*.{rst,md}]
 trim_trailing_whitespace = false
 indent_style = space
 indent_size = 4
 
-[{CMake{Lists,Config}.txt,*.cmake}]
+[{CMakeLists.txt,CmakeConfig.txt,CMakeVersions.txt,*.cmake}]
 indent_style = space
 indent_size = 4
 
