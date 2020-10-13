@@ -1,6 +1,8 @@
 os: linux
 dist: focal
-arch: arm64
+arch:
+  - arm64
+  - ppc64le
 language: cpp
 
 addons:
