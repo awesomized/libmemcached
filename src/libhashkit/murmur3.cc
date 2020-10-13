@@ -39,11 +39,29 @@ static FORCE_INLINE uint64_t rotl64 ( uint64_t x, int8_t r )
 // Block read - if your platform needs to do endian-swapping or can only
 // handle aligned reads, do the conversion here
 
+#include <cassert>
 #include <cstring>
 template <typename T>
 static inline T getblock(const T *blocks, int i) {
   T b;
+#if WORDS_BIGENDIAN
+  const uint8_t *data = ((const uint8_t *) blocks) + i * sizeof(T);
+# define sl(s) (((T)data[s - 1]) << (8 * (sizeof(T) - s)))
+  b = 0;
+  switch (sizeof(T)) {
+  case 8: b |= sl(8); /* fall through */
+  case 7: b |= sl(7); /* fall through */
+  case 6: b |= sl(6); /* fall through */
+  case 5: b |= sl(5); /* fall through */
+  case 4: b |= sl(4); /* fall through */
+  case 3: b |= sl(3); /* fall through */
+  case 2: b |= sl(2); /* fall through */
+  case 1: b |= sl(1); break;
+  default: assert(0);
+  }
+#else
   memcpy(&b, ((const uint8_t *) blocks) + i * sizeof(T), sizeof(T));
+#endif
   return b;
 }
 
@@ -100,9 +118,9 @@ void MurmurHash3_x86_32 ( const void * key, int len,
     k1 *= c1;
     k1 = ROTL32(k1,15);
     k1 *= c2;
-    
+
     h1 ^= k1;
-    h1 = ROTL32(h1,13); 
+    h1 = ROTL32(h1,13);
     h1 = h1*5+0xe6546b64;
   }
 
@@ -115,11 +133,19 @@ void MurmurHash3_x86_32 ( const void * key, int len,
 
   switch(len & 3)
   {
+#if WORDS_BIGENDIAN
+  case 3: k1 ^= tail[2] << 8;
+          /* fall through */
+  case 2: k1 ^= tail[1] << 16;
+          /* fall through */
+  case 1: k1 ^= tail[0] << 24;
+#else
   case 3: k1 ^= tail[2] << 16;
           /* fall through */
   case 2: k1 ^= tail[1] << 8;
           /* fall through */
   case 1: k1 ^= tail[0];
+#endif
           k1 *= c1; k1 = ROTL32(k1,15); k1 *= c2; h1 ^= k1;
   };
 
@@ -131,7 +157,7 @@ void MurmurHash3_x86_32 ( const void * key, int len,
   h1 = fmix32(h1);
 
   *(uint32_t*)out = h1;
-} 
+}
 
 //-----------------------------------------------------------------------------
 
@@ -147,9 +173,9 @@ void MurmurHash3_x86_128 ( const void * key, const int len,
   uint32_t h3 = seed;
   uint32_t h4 = seed;
 
-  uint32_t c1 = 0x239b961b; 
+  uint32_t c1 = 0x239b961b;
   uint32_t c2 = 0xab0e9789;
-  uint32_t c3 = 0x38b34ae5; 
+  uint32_t c3 = 0x38b34ae5;
   uint32_t c4 = 0xa1e38b93;
 
   //----------

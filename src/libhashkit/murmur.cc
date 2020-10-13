@@ -84,9 +84,9 @@ uint32_t hashkit_murmur(const char *key, size_t length, void *context)
     uint32_t k;
 #if WORDS_BIGENDIAN
     k = (data[0]<<24)
-      + (data[1]<<16)
-      + (data[2]<<8)
-      + (data[3])
+      | (data[1]<<16)
+      | (data[2]<<8)
+      | (data[3])
     ;
 #else
     memcpy(&k, data, sizeof(k));
