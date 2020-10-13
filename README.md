@@ -1,7 +1,7 @@
 # libmemcached
 
-[![Build Status](https://github.com/m6w6/libmemcached/workflows/cmake-build-ci/badge.svg)](https://github.com/m6w6/libmemcached/actions?query=workflow%3Acmake-build-ci) 
 [![Gitter Chat](https://badges.gitter.im/m6w6/libmemcached.svg)](https://gitter.im/m6w6/libmemcached?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![BSD 3-Clause License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
 libmemcached is an open source C/C++ client library and tools for the
 memcached server (http://memcached.org/). It has been designed to be
@@ -24,12 +24,12 @@ libmemcached uses `CMake`. Please see/edit `CMakeConfig.txt` or use
 
 ### From source
 
-	git clone github.com:m6w6/libmemcached
-	mkdir build-libmemcached
-	cd $_
-	cmake ../libmemcached
-	make
-	sudo make install
+    git clone github.com:m6w6/libmemcached
+    mkdir build-libmemcached
+    cd $_
+    cmake ../libmemcached
+    make
+    sudo make install
 
 ## Testing
 
@@ -40,8 +40,21 @@ Enable the `BUILD_TESTING` setting for a build and run `make test`.
 
 ### Continuous integration
 
-CI/Test results are available at [Travis CI](https://travis-ci.org/m6w6/libmemcached).
- 
+CI/Test results are available at:
+
+| Provider     | Status              | OS           | Arch  | Compiler   |
+|--------------|---------------------|--------------|-------|------------|
+| [Travis CI]  | ![Travis CI Badge]  | Linux        | arm64 | GNU        |
+| [Cirrus CI]  | ![Cirrus CI Badge]  | FreeBSD      | amd64 | Clang      |
+| [GH Actions] | ![GH Actions Badge] | Linux, MacOS | amd64 | GNU, Clang |
+
+Additional project metrics:
+
+| Provider  | Type          | Status           |
+|-----------|---------------|------------------|
+| [Codecov] | Code coverage | ![Codecov Badge] |
+
+
 ## ChangeLog
 
 Check out the latest [releases](./releases) or the bundled
@@ -63,6 +76,16 @@ The list of current maintainers is available in [AUTHORS](./AUTHORS).
 
 ### Building and updating docs
 
-See [gh-pages/publish](./docs/gh-pages/publish.sh) script, which automates 
+See [gh-pages/publish](./docs/gh-pages/publish.sh) script, which automates
 pushing updated documentation to github pages.
 
+[Travis CI]:        https://travis-ci.org/github/m6w6/libmemcached "Travis CI Build Status"
+[Travis CI Badge]:  https://api.travis-ci.org/m6w6/libmemcached.svg?branch=v1.x "Travis CI Build Status"
+[Cirrus CI]:        https://cirrus-ci.com/github/m6w6/libmemcached "Cirrus CI Build Status"
+[Cirrus CI Badge]:  https://api.cirrus-ci.com/github/m6w6/libmemcached.svg?branch=v1.x "Cirrus CI Build Status"
+[GH Actions]:       https://github.com/m6w6/libmemcached/actions?query=workflow%3Acmake-build-ci "GH Actions Build Status"
+[GH Actions Badge]: https://img.shields.io/github/workflow/status/m6w6/libmemcached/cmake-build-ci?style=flat "GH Actions Build Status"
+
+
+[Codecov]:          https://codecov.io/gh/m6w6/libmemcached "Codecov Code Coverage"
+[Codecov Badge]:    https://codecov.io/gh/m6w6/libmemcached/branch/v1.x/graph/badge.svg "Codecov Code Coverage"
