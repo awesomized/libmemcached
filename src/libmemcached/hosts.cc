@@ -1,5 +1,5 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
- * 
+ *
  *  Libmemcached library
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
@@ -264,7 +264,7 @@ static memcached_return_t update_continuum(Memcached *ptr)
 
         if (size_t(sort_host_length) >= sizeof(sort_host) or sort_host_length < 0)
         {
-          return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
+          return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT,
                                      memcached_literal_param("snprintf(sizeof(sort_host))"));
         }
 
@@ -317,7 +317,7 @@ static memcached_return_t update_continuum(Memcached *ptr)
 
         if (size_t(sort_host_length) >= sizeof(sort_host) or sort_host_length < 0)
         {
-          return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
+          return memcached_set_error(*ptr, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT,
                                      memcached_literal_param("snprintf(sizeof(sort_host)))"));
         }
 
@@ -359,7 +359,7 @@ static memcached_return_t update_continuum(Memcached *ptr)
   return MEMCACHED_SUCCESS;
 }
 
-static memcached_return_t server_add(Memcached *memc, 
+static memcached_return_t server_add(Memcached *memc,
                                      const memcached_string_t& hostname,
                                      in_port_t port,
                                      uint32_t weight,
@@ -441,7 +441,7 @@ memcached_return_t memcached_server_push(memcached_st *shell, const memcached_se
       WATCHPOINT_ASSERT(instance);
 
       memcached_string_t hostname= { memcached_string_make_from_cstr(list[x].hostname) };
-      if (__instance_create_with(ptr, instance, 
+      if (__instance_create_with(ptr, instance,
                                  hostname,
                                  list[x].port, list[x].weight, list[x].type) == NULL)
       {
@@ -494,7 +494,7 @@ memcached_return_t memcached_instance_push(memcached_st *ptr, const struct memca
     WATCHPOINT_ASSERT(instance);
 
     memcached_string_t hostname= { memcached_string_make_from_cstr(list[x]._hostname) };
-    if (__instance_create_with(ptr, instance, 
+    if (__instance_create_with(ptr, instance,
                                hostname,
                                list[x].port(), list[x].weight, list[x].type) == NULL)
     {
