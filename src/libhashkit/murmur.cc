@@ -1,5 +1,5 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
- * 
+ *
  *  HashKit library
  *
  *  Copyright (C) 2011-2012 Data Differential, http://datadifferential.com/
@@ -81,8 +81,16 @@ uint32_t hashkit_murmur(const char *key, size_t length, void *context)
 
   while(length >= 4)
   {
-    unsigned int k;
-    memcpy(&k, data, sizeof(unsigned int));
+    uint32_t k;
+#if WORDS_BIGENDIAN
+    k = (data[0]<<24)
+      + (data[1]<<16)
+      + (data[2]<<8)
+      + (data[3])
+    ;
+#else
+    memcpy(&k, data, sizeof(k));
+#endif
 
     k *= m;
     k ^= k >> r;
@@ -99,9 +107,15 @@ uint32_t hashkit_murmur(const char *key, size_t length, void *context)
 
   switch(length)
   {
+#if WORDS_BIGENDIAN
+  case 3: h ^= ((uint32_t)data[2]) << 8;     /* fall through */
+  case 2: h ^= ((uint32_t)data[1]) << 16;    /* fall through */
+  case 1: h ^= ((uint32_t)data[0]) << 24;
+#else
   case 3: h ^= ((uint32_t)data[2]) << 16;   /* fall through */
   case 2: h ^= ((uint32_t)data[1]) << 8;    /* fall through */
   case 1: h ^= data[0];
+#endif
           h *= m;
   default: break;
   };
