@@ -26,6 +26,8 @@ include(CheckHeader)
 include(CheckCompiles)
 include(CheckType)
 include(CheckStdatomic)
+include(TestBigEndian)
+include(CheckByteswap)
 
 # configuration
 
@@ -76,8 +78,8 @@ endif()
 
 # system checks
 
-include(TestBigEndian)
 test_big_endian(WORDS_BIGENDIAN)
+check_byteswap()
 
 check_header(alloca.h)
 check_header(arpa/inet.h)
@@ -112,6 +114,7 @@ check_decl(sndtimeo sys/socket.h)
 check_decl(setenv stdlib.h)
 check_decl(strerror string.h)
 check_decl(strerror_r string.h)
+
 check_compiles(HAVE_STRERROR_R_CHAR_P "char x, y = *strerror_r(0,&x,1);" string.h)
 
 check_decl(abi::__cxa_demangle cxxabi.h)
