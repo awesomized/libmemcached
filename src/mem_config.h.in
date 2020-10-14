@@ -12,6 +12,7 @@
 
 #cmakedefine HAVE_ABI____CXA_DEMANGLE 1
 #cmakedefine HAVE_BACKTRACE 1
+#cmakedefine HAVE_BYTESWAP 1
 #cmakedefine HAVE_ALLOCA_H 1
 #cmakedefine HAVE_ARPA_INET_H 1
 #cmakedefine HAVE_DLFCN_H 1
@@ -72,6 +73,11 @@
 
 #if HAVE_BACKTRACE
 # define BACKTRACE_HEADER <@Backtrace_HEADER@>
+#endif
+
+#if HAVE_BYTESWAP
+# define BYTESWAP_32 @BYTESWAP_32@
+# cmakedefine BYTESWAP_HEADER <@BYTESWAP_HEADER@>
 #endif
 
 #define HAVE_LIBMEMCACHED 1

@@ -56,6 +56,10 @@
 
 #ifdef HAVE_MURMUR_HASH
 
+#ifdef BYTESWAP_HEADER
+# include BYTESWAP_HEADER
+#endif
+
 #include <cstring>
 
 uint32_t hashkit_murmur(const char *key, size_t length, void *context)
@@ -82,14 +86,9 @@ uint32_t hashkit_murmur(const char *key, size_t length, void *context)
   while(length >= 4)
   {
     uint32_t k;
-#if WORDS_BIGENDIAN
-    k = (data[0]<<24)
-      | (data[1]<<16)
-      | (data[2]<<8)
-      | (data[3])
-    ;
-#else
     memcpy(&k, data, sizeof(k));
+#if WORDS_BIGENDIAN
+    k = BYTESWAP_32(k);
 #endif
 
     k *= m;
@@ -104,21 +103,15 @@ uint32_t hashkit_murmur(const char *key, size_t length, void *context)
   }
 
   // Handle the last few bytes of the input array
-
-  switch(length)
-  {
+  if (length) {
+    uint32_t k = 0;
+    memcpy(&k, data, length);
 #if WORDS_BIGENDIAN
-  case 3: h ^= ((uint32_t)data[2]) << 8;     /* fall through */
-  case 2: h ^= ((uint32_t)data[1]) << 16;    /* fall through */
-  case 1: h ^= ((uint32_t)data[0]) << 24;
-#else
-  case 3: h ^= ((uint32_t)data[2]) << 16;   /* fall through */
-  case 2: h ^= ((uint32_t)data[1]) << 8;    /* fall through */
-  case 1: h ^= data[0];
+    k = BYTESWAP_32(k);
 #endif
-          h *= m;
-  default: break;
-  };
+    h ^= k;
+    h *= m;
+  }
 
   /*
     Do a few final mixes of the hash to ensure the last few bytes are
