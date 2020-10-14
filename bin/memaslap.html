@@ -1,7 +1,8 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
   
@@ -11,29 +12,27 @@
   
 
   
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-
-  
   
   
   
 
   
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="copyright" title="Copyright" href="../copyright.html" />
@@ -52,7 +51,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> libmemcached
+            <a href="../index.html" class="icon icon-home"> libmemcached
           
 
           
@@ -79,7 +78,6 @@
           
         </div>
 
-        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -108,7 +106,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Client Applications</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="index.html#data-manipulation">Data Manipulation</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html#tests-and-analysis">Tests and Analysis</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">memaslap - Load testing  and benchmarking a server</a><ul>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">memaslap - Load testing and benchmarking a server</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#synopsis">SYNOPSIS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#description">DESCRIPTION</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#features">FEATURES</a></li>
@@ -121,7 +119,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#see-also">SEE ALSO</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="memslap.html">memslap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memslap.html">memslap - Load testing and benchmarking a server</a></li>
 <li class="toctree-l3"><a class="reference internal" href="memping.html">memping – Ping a server</a></li>
 <li class="toctree-l3"><a class="reference internal" href="memstat.html">memstat – Gather statistics from a server</a></li>
 <li class="toctree-l3"><a class="reference internal" href="memerror.html">memerror — Translate libmemcached error codes</a></li>
@@ -141,7 +139,6 @@
             
           
         </div>
-        
       </div>
     </nav>
 
@@ -180,7 +177,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><a href="../index.html">Docs</a> &raquo;</li>
         
           <li><a href="index.html">Client Applications</a> &raquo;</li>
         
@@ -206,14 +203,14 @@
 <div class="section" id="synopsis">
 <h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
 <p>memaslap [options]</p>
-<dl class="std option">
+<dl class="option">
 <dt id="cmdoption-memaslap-help">
-<code class="sig-name descname">--help</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-memaslap-help" title="Permalink to this definition">¶</a></dt>
+<code class="descname">--help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memaslap-help" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="std envvar">
+<dl class="envvar">
 <dt id="envvar-MEMCACHED_SERVERS">
-<code class="sig-name descname">MEMCACHED_SERVERS</code><a class="headerlink" href="#envvar-MEMCACHED_SERVERS" title="Permalink to this definition">¶</a></dt>
+<code class="descname">MEMCACHED_SERVERS</code><a class="headerlink" href="#envvar-MEMCACHED_SERVERS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -406,7 +403,7 @@ the user can also be less or greater than the number of CPU cores. Because
 of the limitation of implementation, the number of concurrencies could be
 the multiple of the number of threads.</p>
 <ol class="arabic simple">
-<li><p>For 8 CPU cores system</p></li>
+<li>For 8 CPU cores system</li>
 </ol>
 <p>For example:</p>
 <p>--threads=2 --concurrency=128</p>
@@ -414,7 +411,7 @@ the multiple of the number of threads.</p>
 <p>--threads=8 --concurrency=256</p>
 <p>--threads=12 --concurrency=144</p>
 <ol class="arabic simple" start="2">
-<li><p>For 16 CPU cores system</p></li>
+<li>For 16 CPU cores system</li>
 </ol>
 <p>For example:</p>
 <p>--threads=8 --concurrency=128</p>
@@ -450,14 +447,14 @@ concurrency=128.</p>
 <p>1. Small cache cache_size=1M, 100% cache miss (all data get from SSD).
 win_size=10k</p>
 <ol class="arabic simple" start="2">
-<li><p>cache_size=4G</p></li>
+<li>cache_size=4G</li>
 </ol>
 <p>(1). cache miss rate 0%</p>
 <p>win_size=8k</p>
 <p>(2). cache miss rate 5%</p>
 <p>win_size=11k</p>
 <ol class="arabic simple" start="3">
-<li><p>cache_size=16G</p></li>
+<li>cache_size=16G</li>
 </ol>
 <p>(1). cache miss rate 0%</p>
 <p>win_size=32k</p>
@@ -696,32 +693,25 @@ one located at ~/.memaslap.cnf.</p>
 <h3>Where<a class="headerlink" href="#where" title="Permalink to this headline">¶</a></h3>
 <p>servers : &quot;servers&quot;</p>
 <blockquote>
-<div><p>The servers used by memaslap.</p>
-</div></blockquote>
+<div>The servers used by memaslap.</div></blockquote>
 <p>threads count</p>
 <blockquote>
-<div><p>The number of threads memaslap runs with.</p>
-</div></blockquote>
+<div>The number of threads memaslap runs with.</div></blockquote>
 <p>concurrency</p>
 <blockquote>
-<div><p>The number of concurrencies memaslap runs with.</p>
-</div></blockquote>
+<div>The number of concurrencies memaslap runs with.</div></blockquote>
 <p>run time</p>
 <blockquote>
-<div><p>How long to run memaslap.</p>
-</div></blockquote>
+<div>How long to run memaslap.</div></blockquote>
 <p>windows size</p>
 <blockquote>
-<div><p>The task window size of each concurrency.</p>
-</div></blockquote>
+<div>The task window size of each concurrency.</div></blockquote>
 <p>set proportion</p>
 <blockquote>
-<div><p>The proportion of set command.</p>
-</div></blockquote>
+<div>The proportion of set command.</div></blockquote>
 <p>get proportion</p>
 <blockquote>
-<div><p>The proportion of get command.</p>
-</div></blockquote>
+<div>The proportion of get command.</div></blockquote>
 <p>The output of dynamic statistics is something like this:</p>
 <div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="o">---------------------------------------------------------------------------------------------------------------------------------</span>
 <span class="n">Get</span> <span class="n">Statistics</span>
@@ -755,60 +745,46 @@ one located at ~/.memaslap.cnf.</p>
 <h3>Where<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>Get Statistics</p>
 <blockquote>
-<div><p>Statistics information of get command</p>
-</div></blockquote>
+<div>Statistics information of get command</div></blockquote>
 <p>Set Statistics</p>
 <blockquote>
-<div><p>Statistics information of set command</p>
-</div></blockquote>
+<div>Statistics information of set command</div></blockquote>
 <p>Total Statistics</p>
 <blockquote>
-<div><p>Statistics information of both get and set command</p>
-</div></blockquote>
+<div>Statistics information of both get and set command</div></blockquote>
 <p>Period</p>
 <blockquote>
-<div><p>Result within a period</p>
-</div></blockquote>
+<div>Result within a period</div></blockquote>
 <p>Global</p>
 <blockquote>
-<div><p>Accumulated results</p>
-</div></blockquote>
+<div>Accumulated results</div></blockquote>
 <p>Ops</p>
 <blockquote>
-<div><p>Total operations</p>
-</div></blockquote>
+<div>Total operations</div></blockquote>
 <p>TPS</p>
 <blockquote>
-<div><p>Throughput, operations/second</p>
-</div></blockquote>
+<div>Throughput, operations/second</div></blockquote>
 <p>Net</p>
 <blockquote>
-<div><p>The rate of network</p>
-</div></blockquote>
+<div>The rate of network</div></blockquote>
 <p>Get_miss</p>
 <blockquote>
-<div><p>How many objects can't be gotten</p>
-</div></blockquote>
+<div>How many objects can't be gotten</div></blockquote>
 <p>Min</p>
 <blockquote>
-<div><p>The minimum response time</p>
-</div></blockquote>
+<div>The minimum response time</div></blockquote>
 <p>Max</p>
 <blockquote>
-<div><p>The maximum response time</p>
-</div></blockquote>
+<div>The maximum response time</div></blockquote>
 <p>Avg:</p>
 <blockquote>
-<div><p>The average response time</p>
-</div></blockquote>
+<div>The average response time</div></blockquote>
 <p>Std_dev</p>
 <blockquote>
-<div><p>Standard deviation of response time</p>
-</div></blockquote>
+<div>Standard deviation of response time</div></blockquote>
 <p>Geo_dist</p>
 <blockquote>
-<div><p>Geometric distribution based on natural exponential function</p>
-</div></blockquote>
+<div>Geometric distribution based on natural exponential function</div></blockquote>
 <p>At the end, memaslap will output something like this:</p>
 <div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="o">---------------------------------------------------------------------------------------------------------------------------------</span>
 <span class="n">Get</span> <span class="n">Statistics</span> <span class="p">(</span><span class="mi">1257956</span> <span class="n">events</span><span class="p">)</span>
@@ -867,177 +843,161 @@ one located at ~/.memaslap.cnf.</p>
 <h3>Where<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p>Get Statistics</p>
 <blockquote>
-<div><p>Get statistics of response time</p>
-</div></blockquote>
+<div>Get statistics of response time</div></blockquote>
 <p>Set Statistics</p>
 <blockquote>
-<div><p>Set statistics of response time</p>
-</div></blockquote>
+<div>Set statistics of response time</div></blockquote>
 <p>Total Statistics</p>
 <blockquote>
-<div><p>Both get and set statistics of response time</p>
-</div></blockquote>
+<div>Both get and set statistics of response time</div></blockquote>
 <p>Min</p>
 <blockquote>
-<div><p>The accumulated and minimum response time</p>
-</div></blockquote>
+<div>The accumulated and minimum response time</div></blockquote>
 <p>Max</p>
 <blockquote>
-<div><p>The accumulated and maximum response time</p>
-</div></blockquote>
+<div>The accumulated and maximum response time</div></blockquote>
 <p>Avg</p>
 <blockquote>
-<div><p>The accumulated and average response time</p>
-</div></blockquote>
+<div>The accumulated and average response time</div></blockquote>
 <p>Std</p>
 <blockquote>
-<div><p>Standard deviation of response time</p>
-</div></blockquote>
+<div>Standard deviation of response time</div></blockquote>
 <p>Log2 Dist</p>
 <blockquote>
-<div><p>Geometric distribution based on logarithm 2</p>
-</div></blockquote>
+<div>Geometric distribution based on logarithm 2</div></blockquote>
 <p>cmd_get</p>
 <blockquote>
-<div><p>Total get commands done</p>
-</div></blockquote>
+<div>Total get commands done</div></blockquote>
 <p>cmd_set</p>
 <blockquote>
-<div><p>Total set commands done</p>
-</div></blockquote>
+<div>Total set commands done</div></blockquote>
 <p>get_misses</p>
 <blockquote>
-<div><p>How many objects can't be gotten from server</p>
-</div></blockquote>
+<div>How many objects can't be gotten from server</div></blockquote>
 <p>verify_misses</p>
 <blockquote>
-<div><p>How many objects need to verify but can't get them</p>
-</div></blockquote>
+<div>How many objects need to verify but can't get them</div></blockquote>
 <p>verify_failed</p>
 <blockquote>
-<div><p>How many objects with insistent value</p>
-</div></blockquote>
+<div>How many objects with insistent value</div></blockquote>
 <p>expired_get</p>
 <blockquote>
-<div><p>How many objects are expired but we get them</p>
-</div></blockquote>
+<div>How many objects are expired but we get them</div></blockquote>
 <p>unexpired_unget</p>
 <blockquote>
-<div><p>How many objects are unexpired but we can't get them</p>
-</div></blockquote>
+<div>How many objects are unexpired but we can't get them</div></blockquote>
 <p>written_bytes</p>
 <blockquote>
-<div><p>Total written bytes</p>
-</div></blockquote>
+<div>Total written bytes</div></blockquote>
 <p>read_bytes</p>
 <blockquote>
-<div><p>Total read bytes</p>
-</div></blockquote>
+<div>Total read bytes</div></blockquote>
 <p>object_bytes</p>
 <blockquote>
-<div><p>Total object bytes</p>
-</div></blockquote>
+<div>Total object bytes</div></blockquote>
 <p>packet_disorder</p>
 <blockquote>
-<div><p>How many UDP packages are disorder</p>
-</div></blockquote>
+<div>How many UDP packages are disorder</div></blockquote>
 <p>packet_drop</p>
 <blockquote>
-<div><p>How many UDP packages are lost</p>
-</div></blockquote>
+<div>How many UDP packages are lost</div></blockquote>
 <p>udp_timeout</p>
 <blockquote>
-<div><p>How many times UDP time out happen</p>
-</div></blockquote>
+<div>How many times UDP time out happen</div></blockquote>
 <p>Run time</p>
 <blockquote>
-<div><p>Total run time</p>
-</div></blockquote>
+<div>Total run time</div></blockquote>
 <p>Ops</p>
 <blockquote>
-<div><p>Total operations</p>
-</div></blockquote>
+<div>Total operations</div></blockquote>
 <p>TPS</p>
 <blockquote>
-<div><p>Throughput, operations/second</p>
-</div></blockquote>
+<div>Throughput, operations/second</div></blockquote>
 <p>Net_rate</p>
 <blockquote>
-<div><p>The average rate of network</p>
-</div></blockquote>
+<div>The average rate of network</div></blockquote>
 </div>
 </div>
 <div class="section" id="options">
 <h2>OPTIONS<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
-<dl class="simple">
-<dt>-s, --servers=</dt><dd><p>List one or more servers to connect. Servers count must be less than
-threads count. e.g.: --servers=localhost:1234,localhost:11211</p>
-</dd>
-<dt>-T, --threads=</dt><dd><p>Number of threads to startup, better equal to CPU numbers. Default 8.</p>
-</dd>
-<dt>-c, --concurrency=</dt><dd><p>Number of concurrency to simulate with load. Default 128.</p>
-</dd>
-<dt>-n, --conn_sock=</dt><dd><p>Number of TCP socks per concurrency. Default 1.</p>
-</dd>
-<dt>-x, --execute_number=</dt><dd><p>Number of operations(get and set) to execute for the
-given test. Default 1000000.</p>
-</dd>
-<dt>-t, --time=</dt><dd><p>How long the test to run, suffix: s-seconds, m-minutes, h-hours,
-d-days e.g.: --time=2h.</p>
-</dd>
-<dt>-F, --cfg_cmd=</dt><dd><p>Load the configure file to get command,key and value distribution list.</p>
-</dd>
-<dt>-w, --win_size=</dt><dd><p>Task window size of each concurrency, suffix: K, M e.g.: --win_size=10k.
-Default 10k.</p>
-</dd>
-<dt>-X, --fixed_size=</dt><dd><p>Fixed length of value.</p>
-</dd>
-<dt>-v, --verify=</dt><dd><p>The proportion of date verification, e.g.: --verify=0.01</p>
-</dd>
-<dt>-d, --division=</dt><dd><p>Number of keys to multi-get once. Default 1, means single get.</p>
-</dd>
-<dt>-S, --stat_freq=</dt><dd><p>Frequency of dumping statistic information. suffix: s-seconds,
-m-minutes, e.g.: --resp_freq=10s.</p>
-</dd>
-<dt>-e, --exp_verify=</dt><dd><p>The proportion of objects with expire time, e.g.: --exp_verify=0.01.
-Default no object with expire time</p>
-</dd>
-<dt>-o, --overwrite=</dt><dd><p>The proportion of objects need overwrite, e.g.: --overwrite=0.01.
-Default never overwrite object.</p>
-</dd>
+<dl class="docutils">
+<dt>-s, --servers=</dt>
+<dd>List one or more servers to connect. Servers count must be less than
+threads count. e.g.: --servers=localhost:1234,localhost:11211</dd>
+<dt>-T, --threads=</dt>
+<dd>Number of threads to startup, better equal to CPU numbers. Default 8.</dd>
+<dt>-c, --concurrency=</dt>
+<dd>Number of concurrency to simulate with load. Default 128.</dd>
+<dt>-n, --conn_sock=</dt>
+<dd>Number of TCP socks per concurrency. Default 1.</dd>
+<dt>-x, --execute_number=</dt>
+<dd>Number of operations(get and set) to execute for the
+given test. Default 1000000.</dd>
+<dt>-t, --time=</dt>
+<dd>How long the test to run, suffix: s-seconds, m-minutes, h-hours,
+d-days e.g.: --time=2h.</dd>
+<dt>-F, --cfg_cmd=</dt>
+<dd>Load the configure file to get command,key and value distribution list.</dd>
+<dt>-w, --win_size=</dt>
+<dd>Task window size of each concurrency, suffix: K, M e.g.: --win_size=10k.
+Default 10k.</dd>
+<dt>-X, --fixed_size=</dt>
+<dd>Fixed length of value.</dd>
+<dt>-v, --verify=</dt>
+<dd>The proportion of date verification, e.g.: --verify=0.01</dd>
+<dt>-d, --division=</dt>
+<dd>Number of keys to multi-get once. Default 1, means single get.</dd>
+<dt>-S, --stat_freq=</dt>
+<dd>Frequency of dumping statistic information. suffix: s-seconds,
+m-minutes, e.g.: --resp_freq=10s.</dd>
+<dt>-e, --exp_verify=</dt>
+<dd>The proportion of objects with expire time, e.g.: --exp_verify=0.01.
+Default no object with expire time</dd>
+<dt>-o, --overwrite=</dt>
+<dd>The proportion of objects need overwrite, e.g.: --overwrite=0.01.
+Default never overwrite object.</dd>
 </dl>
-<dl class="option-list">
-<dt><kbd><span class="option">-R</span>, <span class="option">--reconnect</span></kbd></dt>
-<dd><p>Reconnect tests, when connection is closed it will be reconnected.</p>
-</dd>
-<dt><kbd><span class="option">-U</span>, <span class="option">--udp</span></kbd></dt>
-<dd><p>UDP tests, default memaslap uses TCP, TCP port and UDP port of
-server must be same.</p>
-</dd>
-<dt><kbd><span class="option">-a</span>, <span class="option">--facebook</span></kbd></dt>
-<dd><p>Whether it enables facebook test feature, set with TCP and multi-get with UDP.</p>
-</dd>
-<dt><kbd><span class="option">-B</span>, <span class="option">--binary</span></kbd></dt>
-<dd><p>Whether it enables binary protocol. Default with ASCII protocol.</p>
-</dd>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-R</span>, <span class="option">--reconnect</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Reconnect tests, when connection is closed it will be reconnected.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-U</span>, <span class="option">--udp</span></kbd></td>
+<td>UDP tests, default memaslap uses TCP, TCP port and UDP port of
+server must be same.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-a</span>, <span class="option">--facebook</span></kbd></td>
+<td>Whether it enables facebook test feature, set with TCP and multi-get with UDP.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-B</span>, <span class="option">--binary</span></kbd></td>
+<td>Whether it enables binary protocol. Default with ASCII protocol.</td></tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>-P, --tps=</dt>
+<dd>Expected throughput, suffix: K, e.g.: --tps=10k.</dd>
+<dt>-p, --rep_write=</dt>
+<dd>The first nth servers can write data, e.g.: --rep_write=2.</dd>
 </dl>
-<dl class="simple">
-<dt>-P, --tps=</dt><dd><p>Expected throughput, suffix: K, e.g.: --tps=10k.</p>
-</dd>
-<dt>-p, --rep_write=</dt><dd><p>The first nth servers can write data, e.g.: --rep_write=2.</p>
-</dd>
-</dl>
-<dl class="option-list">
-<dt><kbd><span class="option">-b</span>, <span class="option">--verbose</span></kbd></dt>
-<dd><p>Whether it outputs detailed information when verification fails.</p>
-</dd>
-<dt><kbd><span class="option">-h</span>, <span class="option">--help</span></kbd></dt>
-<dd><p>Display this message and then exit.</p>
-</dd>
-<dt><kbd><span class="option">-V</span>, <span class="option">--version</span></kbd></dt>
-<dd><p>Display the version of the application and then exit.</p>
-</dd>
-</dl>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">-b</span>, <span class="option">--verbose</span></kbd></td>
+<td>Whether it outputs detailed information when verification fails.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-h</span>, <span class="option">--help</span></kbd></td>
+<td>Display this message and then exit.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-V</span>, <span class="option">--version</span></kbd></td>
+<td>Display the version of the application and then exit.</td></tr>
+</tbody>
+</table>
 </div>
 <div class="section" id="examples">
 <h2>EXAMPLES<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
@@ -1074,20 +1034,11 @@ server must be same.</p>
 
   <div role="contentinfo">
     <p>
-        
-        
         &copy; <a href="../copyright.html">Copyright</a> 
 
     </p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -1098,6 +1049,7 @@ server must be same.</p>
 
   </div>
   
+
 
   <script type="text/javascript">
       jQuery(function () {

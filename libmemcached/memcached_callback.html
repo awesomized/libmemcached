@@ -1,7 +1,8 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
   
@@ -11,29 +12,27 @@
   
 
   
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-
-  
   
   
   
 
   
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="copyright" title="Copyright" href="../copyright.html" />
@@ -52,7 +51,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> libmemcached
+            <a href="../index.html" class="icon icon-home"> libmemcached
           
 
           
@@ -79,7 +78,6 @@
           
         </div>
 
-        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -99,7 +97,7 @@
 <li class="toctree-l4"><a class="reference internal" href="memcached_behavior.html">Behaviors of the library</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">Library callbacks</a></li>
 <li class="toctree-l4"><a class="reference internal" href="memcached_memory_allocators.html">Use custom allocators for embedded usage</a></li>
-<li class="toctree-l4"><a class="reference internal" href="memcached_user_data.html">Storing custom user information in the client.</a></li>
+<li class="toctree-l4"><a class="reference internal" href="memcached_user_data.html">Storing custom information in the client</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="index_advanced_aeh.html">Authentication, Encryption &amp; Hashing</a></li>
@@ -135,7 +133,6 @@
             
           
         </div>
-        
       </div>
     </nav>
 
@@ -174,7 +171,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><a href="../index.html">Docs</a> &raquo;</li>
         
           <li><a href="index.html">libmemcached API</a> &raquo;</li>
         
@@ -203,86 +200,94 @@
 <h1>Library callbacks<a class="headerlink" href="#library-callbacks" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="synopsis">
 <h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<dl class="simple">
-<dt>#include &lt;libmemcached/memcached.h&gt;</dt><dd><p>Compile and link with -lmemcached</p>
-</dd>
+<dl class="docutils">
+<dt>#include &lt;libmemcached/memcached.h&gt;</dt>
+<dd>Compile and link with -lmemcached</dd>
 </dl>
-<dl class="cpp function">
+<dl class="function">
 <dt id="_CPPv422memcached_callback_setP12memcached_st20memcached_callback_tPKv">
-<span id="_CPPv322memcached_callback_setP12memcached_st20memcached_callback_tPKv"></span><span id="_CPPv222memcached_callback_setP12memcached_st20memcached_callback_tPKv"></span><span id="memcached_callback_set__memcached_stP.memcached_callback_t.voidCP"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_callback_set</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <a class="reference internal" href="#_CPPv420memcached_callback_t" title="memcached_callback_t">memcached_callback_t</a> <em>flag</em>, <em class="property">const</em> void *<em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422memcached_callback_setP12memcached_st20memcached_callback_tPKv" title="Permalink to this definition">¶</a><br /></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ptr</strong> -- pointer to initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</p></li>
-<li><p><strong>flag</strong> -- <a class="reference internal" href="#_CPPv420memcached_callback_t" title="memcached_callback_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_callback_t</span></code></a> flag to set</p></li>
-<li><p><strong>data</strong> -- data corresponding to <a class="reference internal" href="#_CPPv422memcached_callback_setP12memcached_st20memcached_callback_tPKv" title="memcached_callback_set::flag"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">flag</span></code></a></p></li>
+<span id="_CPPv322memcached_callback_setP12memcached_st20memcached_callback_tPKv"></span><span id="_CPPv222memcached_callback_setP12memcached_st20memcached_callback_tPKv"></span><span id="memcached_callback_set__memcached_stP.memcached_callback_t.voidCP"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="descname">memcached_callback_set</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <a class="reference internal" href="#_CPPv420memcached_callback_t" title="memcached_callback_t">memcached_callback_t</a> <em>flag</em>, <em class="property">const</em> void *<em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422memcached_callback_setP12memcached_st20memcached_callback_tPKv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ptr</strong> -- pointer to initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</li>
+<li><strong>flag</strong> -- <a class="reference internal" href="#_CPPv420memcached_callback_t" title="memcached_callback_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_callback_t</span></code></a> flag to set</li>
+<li><strong>data</strong> -- data corresponding to <a class="reference internal" href="#_CPPv422memcached_callback_setP12memcached_st20memcached_callback_tPKv" title="memcached_callback_set::flag"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">flag</span></code></a></li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
-<dl class="cpp function">
+<dl class="function">
 <dt id="_CPPv422memcached_callback_getP12memcached_st20memcached_callback_tP18memcached_return_t">
-<span id="_CPPv322memcached_callback_getP12memcached_st20memcached_callback_tP18memcached_return_t"></span><span id="_CPPv222memcached_callback_getP12memcached_st20memcached_callback_tP18memcached_return_t"></span><span id="memcached_callback_get__memcached_stP.memcached_callback_t.memcached_return_tP"></span>void *<code class="sig-name descname">memcached_callback_get</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <a class="reference internal" href="#_CPPv420memcached_callback_t" title="memcached_callback_t">memcached_callback_t</a> <em>flag</em>, <a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> *<em>error</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422memcached_callback_getP12memcached_st20memcached_callback_tP18memcached_return_t" title="Permalink to this definition">¶</a><br /></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ptr</strong> -- pointer to initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</p></li>
-<li><p><strong>flag</strong> -- <a class="reference internal" href="#_CPPv420memcached_callback_t" title="memcached_callback_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_callback_t</span></code></a> flag to query</p></li>
-<li><p><strong>error</strong> -- pointer to <a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</p></li>
+<span id="_CPPv322memcached_callback_getP12memcached_st20memcached_callback_tP18memcached_return_t"></span><span id="_CPPv222memcached_callback_getP12memcached_st20memcached_callback_tP18memcached_return_t"></span><span id="memcached_callback_get__memcached_stP.memcached_callback_t.memcached_return_tP"></span>void *<code class="descname">memcached_callback_get</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <a class="reference internal" href="#_CPPv420memcached_callback_t" title="memcached_callback_t">memcached_callback_t</a> <em>flag</em>, <a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> *<em>error</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422memcached_callback_getP12memcached_st20memcached_callback_tP18memcached_return_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ptr</strong> -- pointer to initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</li>
+<li><strong>flag</strong> -- <a class="reference internal" href="#_CPPv420memcached_callback_t" title="memcached_callback_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_callback_t</span></code></a> flag to query</li>
+<li><strong>error</strong> -- pointer to <a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">data</span></code> previously set</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">the <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">data</span></code> previously set</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
-<dl class="c type">
+<dl class="type">
 <dt id="c.memcached_callback_t">
-<em class="property">typedef </em><em class="property">enum</em> <a class="reference internal" href="#c.memcached_callback_t" title="memcached_callback_t">memcached_callback_t</a> <code class="sig-name descname">memcached_callback_t</code><a class="headerlink" href="#c.memcached_callback_t" title="Permalink to this definition">¶</a><br /></dt>
+enum <a class="reference internal" href="#c.memcached_callback_t" title="memcached_callback_t">memcached_callback_t</a> <code class="descname">memcached_callback_t</code><a class="headerlink" href="#c.memcached_callback_t" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="cpp enum">
+<dl class="enum">
 <dt id="_CPPv420memcached_callback_t">
-<span id="_CPPv320memcached_callback_t"></span><span id="_CPPv220memcached_callback_t"></span><em class="property">enum </em><code class="sig-name descname">memcached_callback_t</code><a class="headerlink" href="#_CPPv420memcached_callback_t" title="Permalink to this definition">¶</a><br /></dt>
-<dd><dl class="cpp enumerator">
+<span id="_CPPv320memcached_callback_t"></span><span id="_CPPv220memcached_callback_t"></span><em class="property">enum </em><code class="descname">memcached_callback_t</code><a class="headerlink" href="#_CPPv420memcached_callback_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="enumerator">
 <dt id="_CPPv4N20memcached_callback_t35MEMCACHED_CALLBACK_CLEANUP_FUNCTIONE">
-<span id="_CPPv3N20memcached_callback_t35MEMCACHED_CALLBACK_CLEANUP_FUNCTIONE"></span><span id="_CPPv2N20memcached_callback_t35MEMCACHED_CALLBACK_CLEANUP_FUNCTIONE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_CALLBACK_CLEANUP_FUNCTION</code><a class="headerlink" href="#_CPPv4N20memcached_callback_t35MEMCACHED_CALLBACK_CLEANUP_FUNCTIONE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N20memcached_callback_t35MEMCACHED_CALLBACK_CLEANUP_FUNCTIONE"></span><span id="_CPPv2N20memcached_callback_t35MEMCACHED_CALLBACK_CLEANUP_FUNCTIONE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_CALLBACK_CLEANUP_FUNCTION</code><a class="headerlink" href="#_CPPv4N20memcached_callback_t35MEMCACHED_CALLBACK_CLEANUP_FUNCTIONE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>When <a class="reference internal" href="memcached_create.html#_CPPv414memcached_freeP12memcached_st" title="memcached_free"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_free()</span></code></a> or <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_reset</span></code> is called this function
 will be executed. At the point of its execution all connections are closed.</p>
 <p>Its signature is:</p>
-<dl class="cpp type">
+<dl class="type">
 <dt id="_CPPv4N20memcached_callback_t35MEMCACHED_CALLBACK_CLEANUP_FUNCTION20memcached_cleanup_fnE">
-<span id="_CPPv3N20memcached_callback_t35MEMCACHED_CALLBACK_CLEANUP_FUNCTION20memcached_cleanup_fnE"></span><span id="_CPPv2N20memcached_callback_t35MEMCACHED_CALLBACK_CLEANUP_FUNCTION20memcached_cleanup_fnE"></span><span id="memcached_callback_t::MEMCACHED_CALLBACK_CLEANUP_FUNCTION::memcached_cleanup_fn"></span><em class="property">typedef </em><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> (*<code class="sig-name descname">memcached_cleanup_fn</code>)<span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *ptr<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N20memcached_callback_t35MEMCACHED_CALLBACK_CLEANUP_FUNCTION20memcached_cleanup_fnE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N20memcached_callback_t35MEMCACHED_CALLBACK_CLEANUP_FUNCTION20memcached_cleanup_fnE"></span><span id="_CPPv2N20memcached_callback_t35MEMCACHED_CALLBACK_CLEANUP_FUNCTION20memcached_cleanup_fnE"></span><span id="memcached_callback_t::MEMCACHED_CALLBACK_CLEANUP_FUNCTION::memcached_cleanup_fn"></span><em class="property">typedef </em><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> (*<code class="descname">memcached_cleanup_fn</code>)<span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *ptr<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N20memcached_callback_t35MEMCACHED_CALLBACK_CLEANUP_FUNCTION20memcached_cleanup_fnE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N20memcached_callback_t33MEMCACHED_CALLBACK_CLONE_FUNCTIONE">
-<span id="_CPPv3N20memcached_callback_t33MEMCACHED_CALLBACK_CLONE_FUNCTIONE"></span><span id="_CPPv2N20memcached_callback_t33MEMCACHED_CALLBACK_CLONE_FUNCTIONE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_CALLBACK_CLONE_FUNCTION</code><a class="headerlink" href="#_CPPv4N20memcached_callback_t33MEMCACHED_CALLBACK_CLONE_FUNCTIONE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N20memcached_callback_t33MEMCACHED_CALLBACK_CLONE_FUNCTIONE"></span><span id="_CPPv2N20memcached_callback_t33MEMCACHED_CALLBACK_CLONE_FUNCTIONE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_CALLBACK_CLONE_FUNCTION</code><a class="headerlink" href="#_CPPv4N20memcached_callback_t33MEMCACHED_CALLBACK_CLONE_FUNCTIONE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>When <a class="reference internal" href="memcached_create.html#_CPPv415memcached_cloneP12memcached_stP12memcached_st" title="memcached_clone"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_clone()</span></code></a> is called this function will be executed.</p>
 <p>Its signature is:</p>
-<dl class="cpp type">
+<dl class="type">
 <dt id="_CPPv4N20memcached_callback_t33MEMCACHED_CALLBACK_CLONE_FUNCTION18memcached_clone_fnE">
-<span id="_CPPv3N20memcached_callback_t33MEMCACHED_CALLBACK_CLONE_FUNCTION18memcached_clone_fnE"></span><span id="_CPPv2N20memcached_callback_t33MEMCACHED_CALLBACK_CLONE_FUNCTION18memcached_clone_fnE"></span><span id="memcached_callback_t::MEMCACHED_CALLBACK_CLONE_FUNCTION::memcached_clone_fn"></span><em class="property">typedef </em><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> (*<code class="sig-name descname">memcached_clone_fn</code>)<span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *destination, <em class="property">const</em> <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *source<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N20memcached_callback_t33MEMCACHED_CALLBACK_CLONE_FUNCTION18memcached_clone_fnE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N20memcached_callback_t33MEMCACHED_CALLBACK_CLONE_FUNCTION18memcached_clone_fnE"></span><span id="_CPPv2N20memcached_callback_t33MEMCACHED_CALLBACK_CLONE_FUNCTION18memcached_clone_fnE"></span><span id="memcached_callback_t::MEMCACHED_CALLBACK_CLONE_FUNCTION::memcached_clone_fn"></span><em class="property">typedef </em><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> (*<code class="descname">memcached_clone_fn</code>)<span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *destination, <em class="property">const</em> <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *source<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N20memcached_callback_t33MEMCACHED_CALLBACK_CLONE_FUNCTION18memcached_clone_fnE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N20memcached_callback_t29MEMCACHED_CALLBACK_PREFIX_KEYE">
-<span id="_CPPv3N20memcached_callback_t29MEMCACHED_CALLBACK_PREFIX_KEYE"></span><span id="_CPPv2N20memcached_callback_t29MEMCACHED_CALLBACK_PREFIX_KEYE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_CALLBACK_PREFIX_KEY</code><a class="headerlink" href="#_CPPv4N20memcached_callback_t29MEMCACHED_CALLBACK_PREFIX_KEYE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N20memcached_callback_t29MEMCACHED_CALLBACK_PREFIX_KEYE"></span><span id="_CPPv2N20memcached_callback_t29MEMCACHED_CALLBACK_PREFIX_KEYE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_CALLBACK_PREFIX_KEY</code><a class="headerlink" href="#_CPPv4N20memcached_callback_t29MEMCACHED_CALLBACK_PREFIX_KEYE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>See <a class="reference internal" href="#_CPPv4N20memcached_callback_t28MEMCACHED_CALLBACK_NAMESPACEE" title="memcached_callback_t::MEMCACHED_CALLBACK_NAMESPACE"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_CALLBACK_NAMESPACE</span></code></a>.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N20memcached_callback_t28MEMCACHED_CALLBACK_NAMESPACEE">
-<span id="_CPPv3N20memcached_callback_t28MEMCACHED_CALLBACK_NAMESPACEE"></span><span id="_CPPv2N20memcached_callback_t28MEMCACHED_CALLBACK_NAMESPACEE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_CALLBACK_NAMESPACE</code><a class="headerlink" href="#_CPPv4N20memcached_callback_t28MEMCACHED_CALLBACK_NAMESPACEE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N20memcached_callback_t28MEMCACHED_CALLBACK_NAMESPACEE"></span><span id="_CPPv2N20memcached_callback_t28MEMCACHED_CALLBACK_NAMESPACEE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_CALLBACK_NAMESPACE</code><a class="headerlink" href="#_CPPv4N20memcached_callback_t28MEMCACHED_CALLBACK_NAMESPACEE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>You can set a value which will be used to create a domain for your keys.
 The value specified here will be prefixed to each of your keys. The
 value can not be greater then <a class="reference internal" href="constants.html#c.MEMCACHED_MAX_NAMESPACE" title="MEMCACHED_MAX_NAMESPACE"><code class="xref c c-macro docutils literal notranslate"><span class="pre">MEMCACHED_MAX_NAMESPACE</span></code></a> - 1 and
@@ -294,41 +299,41 @@ key which is too long, <a class="reference internal" href="memcached_return_t.ht
 disabled.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N20memcached_callback_t28MEMCACHED_CALLBACK_USER_DATAE">
-<span id="_CPPv3N20memcached_callback_t28MEMCACHED_CALLBACK_USER_DATAE"></span><span id="_CPPv2N20memcached_callback_t28MEMCACHED_CALLBACK_USER_DATAE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_CALLBACK_USER_DATA</code><a class="headerlink" href="#_CPPv4N20memcached_callback_t28MEMCACHED_CALLBACK_USER_DATAE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N20memcached_callback_t28MEMCACHED_CALLBACK_USER_DATAE"></span><span id="_CPPv2N20memcached_callback_t28MEMCACHED_CALLBACK_USER_DATAE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_CALLBACK_USER_DATA</code><a class="headerlink" href="#_CPPv4N20memcached_callback_t28MEMCACHED_CALLBACK_USER_DATAE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>This allows you to store a pointer to a specific piece of data. This can
 be retrieved from inside of <a class="reference internal" href="memcached_get.html#_CPPv423memcached_fetch_executeP12memcached_stP20memcached_execute_fnPv8uint32_t" title="memcached_fetch_execute"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_fetch_execute()</span></code></a>. Cloning a
 <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> will copy the pointer to the clone.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N20memcached_callback_t34MEMCACHED_CALLBACK_MALLOC_FUNCTIONE">
-<span id="_CPPv3N20memcached_callback_t34MEMCACHED_CALLBACK_MALLOC_FUNCTIONE"></span><span id="_CPPv2N20memcached_callback_t34MEMCACHED_CALLBACK_MALLOC_FUNCTIONE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_CALLBACK_MALLOC_FUNCTION</code><a class="headerlink" href="#_CPPv4N20memcached_callback_t34MEMCACHED_CALLBACK_MALLOC_FUNCTIONE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N20memcached_callback_t34MEMCACHED_CALLBACK_MALLOC_FUNCTIONE"></span><span id="_CPPv2N20memcached_callback_t34MEMCACHED_CALLBACK_MALLOC_FUNCTIONE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_CALLBACK_MALLOC_FUNCTION</code><a class="headerlink" href="#_CPPv4N20memcached_callback_t34MEMCACHED_CALLBACK_MALLOC_FUNCTIONE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="deprecated">
-<p><span class="versionmodified deprecated">Deprecated since version &lt;0.32: </span>Use <a class="reference internal" href="memcached_memory_allocators.html#_CPPv431memcached_set_memory_allocatorsP12memcached_st19memcached_malloc_fn17memcached_free_fn20memcached_realloc_fn19memcached_calloc_fnPv" title="memcached_set_memory_allocators"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_set_memory_allocators()</span></code></a> instead.</p>
+<p><span class="versionmodified">Deprecated since version &lt;0.32: </span>Use <a class="reference internal" href="memcached_memory_allocators.html#_CPPv431memcached_set_memory_allocatorsP12memcached_st19memcached_malloc_fn17memcached_free_fn20memcached_realloc_fn19memcached_calloc_fnPv" title="memcached_set_memory_allocators"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_set_memory_allocators()</span></code></a> instead.</p>
 </div>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N20memcached_callback_t35MEMCACHED_CALLBACK_REALLOC_FUNCTIONE">
-<span id="_CPPv3N20memcached_callback_t35MEMCACHED_CALLBACK_REALLOC_FUNCTIONE"></span><span id="_CPPv2N20memcached_callback_t35MEMCACHED_CALLBACK_REALLOC_FUNCTIONE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_CALLBACK_REALLOC_FUNCTION</code><a class="headerlink" href="#_CPPv4N20memcached_callback_t35MEMCACHED_CALLBACK_REALLOC_FUNCTIONE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N20memcached_callback_t35MEMCACHED_CALLBACK_REALLOC_FUNCTIONE"></span><span id="_CPPv2N20memcached_callback_t35MEMCACHED_CALLBACK_REALLOC_FUNCTIONE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_CALLBACK_REALLOC_FUNCTION</code><a class="headerlink" href="#_CPPv4N20memcached_callback_t35MEMCACHED_CALLBACK_REALLOC_FUNCTIONE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="deprecated">
-<p><span class="versionmodified deprecated">Deprecated since version &lt;0.32: </span>Use <a class="reference internal" href="memcached_memory_allocators.html#_CPPv431memcached_set_memory_allocatorsP12memcached_st19memcached_malloc_fn17memcached_free_fn20memcached_realloc_fn19memcached_calloc_fnPv" title="memcached_set_memory_allocators"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_set_memory_allocators()</span></code></a> instead.</p>
+<p><span class="versionmodified">Deprecated since version &lt;0.32: </span>Use <a class="reference internal" href="memcached_memory_allocators.html#_CPPv431memcached_set_memory_allocatorsP12memcached_st19memcached_malloc_fn17memcached_free_fn20memcached_realloc_fn19memcached_calloc_fnPv" title="memcached_set_memory_allocators"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_set_memory_allocators()</span></code></a> instead.</p>
 </div>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N20memcached_callback_t32MEMCACHED_CALLBACK_FREE_FUNCTIONE">
-<span id="_CPPv3N20memcached_callback_t32MEMCACHED_CALLBACK_FREE_FUNCTIONE"></span><span id="_CPPv2N20memcached_callback_t32MEMCACHED_CALLBACK_FREE_FUNCTIONE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_CALLBACK_FREE_FUNCTION</code><a class="headerlink" href="#_CPPv4N20memcached_callback_t32MEMCACHED_CALLBACK_FREE_FUNCTIONE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N20memcached_callback_t32MEMCACHED_CALLBACK_FREE_FUNCTIONE"></span><span id="_CPPv2N20memcached_callback_t32MEMCACHED_CALLBACK_FREE_FUNCTIONE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_CALLBACK_FREE_FUNCTION</code><a class="headerlink" href="#_CPPv4N20memcached_callback_t32MEMCACHED_CALLBACK_FREE_FUNCTIONE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="deprecated">
-<p><span class="versionmodified deprecated">Deprecated since version &lt;0.32: </span>Use <a class="reference internal" href="memcached_memory_allocators.html#_CPPv431memcached_set_memory_allocatorsP12memcached_st19memcached_malloc_fn17memcached_free_fn20memcached_realloc_fn19memcached_calloc_fnPv" title="memcached_set_memory_allocators"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_set_memory_allocators()</span></code></a> instead.</p>
+<p><span class="versionmodified">Deprecated since version &lt;0.32: </span>Use <a class="reference internal" href="memcached_memory_allocators.html#_CPPv431memcached_set_memory_allocatorsP12memcached_st19memcached_malloc_fn17memcached_free_fn20memcached_realloc_fn19memcached_calloc_fnPv" title="memcached_set_memory_allocators"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_set_memory_allocators()</span></code></a> instead.</p>
 </div>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N20memcached_callback_t30MEMCACHED_CALLBACK_GET_FAILUREE">
-<span id="_CPPv3N20memcached_callback_t30MEMCACHED_CALLBACK_GET_FAILUREE"></span><span id="_CPPv2N20memcached_callback_t30MEMCACHED_CALLBACK_GET_FAILUREE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_CALLBACK_GET_FAILURE</code><a class="headerlink" href="#_CPPv4N20memcached_callback_t30MEMCACHED_CALLBACK_GET_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N20memcached_callback_t30MEMCACHED_CALLBACK_GET_FAILUREE"></span><span id="_CPPv2N20memcached_callback_t30MEMCACHED_CALLBACK_GET_FAILUREE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_CALLBACK_GET_FAILURE</code><a class="headerlink" href="#_CPPv4N20memcached_callback_t30MEMCACHED_CALLBACK_GET_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>This function implements the read through cache behavior. On failure of
 retrieval this callback will be called.</p>
 <p>You are responsible for populating the result object provided. This
@@ -340,23 +345,23 @@ will be stored only if you return <a class="reference internal" href="memcached_
 object to be buffered and not sent immediately (if this is the default
 behavior based on your connection setup this will happen automatically).</p>
 <p>The prototype for this is:</p>
-<dl class="cpp type">
+<dl class="type">
 <dt id="_CPPv4N20memcached_callback_t30MEMCACHED_CALLBACK_GET_FAILURE21memcached_trigger_keyE">
-<span id="_CPPv3N20memcached_callback_t30MEMCACHED_CALLBACK_GET_FAILURE21memcached_trigger_keyE"></span><span id="_CPPv2N20memcached_callback_t30MEMCACHED_CALLBACK_GET_FAILURE21memcached_trigger_keyE"></span><span id="memcached_callback_t::MEMCACHED_CALLBACK_GET_FAILURE::memcached_trigger_key"></span><em class="property">typedef </em><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> (*<code class="sig-name descname">memcached_trigger_key</code>)<span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *ptr, char *key, size_t key_length, <a class="reference internal" href="memcached_result_st.html#_CPPv419memcached_result_st" title="memcached_result_st">memcached_result_st</a> *result<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N20memcached_callback_t30MEMCACHED_CALLBACK_GET_FAILURE21memcached_trigger_keyE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N20memcached_callback_t30MEMCACHED_CALLBACK_GET_FAILURE21memcached_trigger_keyE"></span><span id="_CPPv2N20memcached_callback_t30MEMCACHED_CALLBACK_GET_FAILURE21memcached_trigger_keyE"></span><span id="memcached_callback_t::MEMCACHED_CALLBACK_GET_FAILURE::memcached_trigger_key"></span><em class="property">typedef </em><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> (*<code class="descname">memcached_trigger_key</code>)<span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *ptr, char *key, size_t key_length, <a class="reference internal" href="memcached_result_st.html#_CPPv419memcached_result_st" title="memcached_result_st">memcached_result_st</a> *result<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N20memcached_callback_t30MEMCACHED_CALLBACK_GET_FAILURE21memcached_trigger_keyE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N20memcached_callback_t33MEMCACHED_CALLBACK_DELETE_TRIGGERE">
-<span id="_CPPv3N20memcached_callback_t33MEMCACHED_CALLBACK_DELETE_TRIGGERE"></span><span id="_CPPv2N20memcached_callback_t33MEMCACHED_CALLBACK_DELETE_TRIGGERE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_CALLBACK_DELETE_TRIGGER</code><a class="headerlink" href="#_CPPv4N20memcached_callback_t33MEMCACHED_CALLBACK_DELETE_TRIGGERE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N20memcached_callback_t33MEMCACHED_CALLBACK_DELETE_TRIGGERE"></span><span id="_CPPv2N20memcached_callback_t33MEMCACHED_CALLBACK_DELETE_TRIGGERE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_CALLBACK_DELETE_TRIGGER</code><a class="headerlink" href="#_CPPv4N20memcached_callback_t33MEMCACHED_CALLBACK_DELETE_TRIGGERE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>This function implements a trigger upon successful deletion of a key.
 The <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> structure will need to be cloned in order to make use
 of it.</p>
 <p>The prototype for this is:</p>
-<dl class="cpp type">
+<dl class="type">
 <dt id="_CPPv4N20memcached_callback_t33MEMCACHED_CALLBACK_DELETE_TRIGGER28memcached_trigger_delete_keyE">
-<span id="_CPPv3N20memcached_callback_t33MEMCACHED_CALLBACK_DELETE_TRIGGER28memcached_trigger_delete_keyE"></span><span id="_CPPv2N20memcached_callback_t33MEMCACHED_CALLBACK_DELETE_TRIGGER28memcached_trigger_delete_keyE"></span><span id="memcached_callback_t::MEMCACHED_CALLBACK_DELETE_TRIGGER::memcached_trigger_delete_key"></span><em class="property">typedef </em><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> (*<code class="sig-name descname">memcached_trigger_delete_key</code>)<span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *ptr, char *key, size_t key_length<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N20memcached_callback_t33MEMCACHED_CALLBACK_DELETE_TRIGGER28memcached_trigger_delete_keyE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N20memcached_callback_t33MEMCACHED_CALLBACK_DELETE_TRIGGER28memcached_trigger_delete_keyE"></span><span id="_CPPv2N20memcached_callback_t33MEMCACHED_CALLBACK_DELETE_TRIGGER28memcached_trigger_delete_keyE"></span><span id="memcached_callback_t::MEMCACHED_CALLBACK_DELETE_TRIGGER::memcached_trigger_delete_key"></span><em class="property">typedef </em><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> (*<code class="descname">memcached_trigger_delete_key</code>)<span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *ptr, char *key, size_t key_length<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N20memcached_callback_t33MEMCACHED_CALLBACK_DELETE_TRIGGER28memcached_trigger_delete_keyE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -387,9 +392,9 @@ otherwise <a class="reference internal" href="memcached_return_t.html#_CPPv4N18m
 <div class="section" id="see-also">
 <h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><em class="manpage"><a class="manpage reference external" href="https://linux.die.net/man/1/memcached">memcached(1)</a></em></p></li>
-<li><p><a class="reference internal" href="../libmemcached.html"><span class="doc">C/C++ Client Library for memcached</span></a></p></li>
-<li><p><a class="reference internal" href="memcached_strerror.html"><span class="doc">Converting Error Codes to Messages</span></a></p></li>
+<li><em class="manpage"><a class="manpage reference external" href="https://linux.die.net/man/1/memcached">memcached(1)</a></em></li>
+<li><a class="reference internal" href="../libmemcached.html"><span class="doc">C/C++ Client Library for memcached</span></a></li>
+<li><a class="reference internal" href="memcached_strerror.html"><span class="doc">Converting Error Codes to Messages</span></a></li>
 </ul>
 </div>
 </div>
@@ -414,20 +419,11 @@ otherwise <a class="reference internal" href="memcached_return_t.html#_CPPv4N18m
 
   <div role="contentinfo">
     <p>
-        
-        
         &copy; <a href="../copyright.html">Copyright</a> 
 
     </p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -438,6 +434,7 @@ otherwise <a class="reference internal" href="memcached_return_t.html#_CPPv4N18m
 
   </div>
   
+
 
   <script type="text/javascript">
       jQuery(function () {

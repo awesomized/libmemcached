@@ -1,18 +1,15 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Storing custom user information in the client. &mdash; libmemcached 1.0.99 documentation</title>
+  <title>Storing custom information in the client &mdash; libmemcached 1.0.99 documentation</title>
   
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
 
   
   
@@ -20,20 +17,22 @@
   
 
   
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="copyright" title="Copyright" href="../copyright.html" />
@@ -52,7 +51,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> libmemcached
+            <a href="../index.html" class="icon icon-home"> libmemcached
           
 
           
@@ -79,7 +78,6 @@
           
         </div>
 
-        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -99,7 +97,7 @@
 <li class="toctree-l4"><a class="reference internal" href="memcached_behavior.html">Behaviors of the library</a></li>
 <li class="toctree-l4"><a class="reference internal" href="memcached_callback.html">Library callbacks</a></li>
 <li class="toctree-l4"><a class="reference internal" href="memcached_memory_allocators.html">Use custom allocators for embedded usage</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">Storing custom user information in the client.</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Storing custom information in the client</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="index_advanced_aeh.html">Authentication, Encryption &amp; Hashing</a></li>
@@ -135,7 +133,6 @@
             
           
         </div>
-        
       </div>
     </nav>
 
@@ -174,7 +171,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><a href="../index.html">Docs</a> &raquo;</li>
         
           <li><a href="index.html">libmemcached API</a> &raquo;</li>
         
@@ -182,7 +179,7 @@
         
           <li><a href="index_advanced_internals.html">Internal Behavior</a> &raquo;</li>
         
-      <li>Storing custom user information in the client.</li>
+      <li>Storing custom information in the client</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -199,43 +196,70 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="storing-custom-user-information-in-the-client">
-<h1>Storing custom user information in the client.<a class="headerlink" href="#storing-custom-user-information-in-the-client" title="Permalink to this headline">¶</a></h1>
-<p id="index-0">Manage user specific data</p>
-<div class="section" id="library">
-<h2>LIBRARY<a class="headerlink" href="#library" title="Permalink to this headline">¶</a></h2>
-<p>C Client Library for memcached (libmemcached, -lmemcached)</p>
-</div>
+  <div class="section" id="storing-custom-information-in-the-client">
+<h1>Storing custom information in the client<a class="headerlink" href="#storing-custom-information-in-the-client" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="synopsis">
 <h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p>#include &lt;libmemcached/memcached.h&gt;</p>
-<dl class="cpp function">
+<dl class="docutils">
+<dt>#include &lt;libmemcached/memcached.h&gt;</dt>
+<dd>Compile and link with -lmemcached</dd>
+</dl>
+<dl class="function">
 <dt id="_CPPv423memcached_get_user_dataP12memcached_st">
-<span id="_CPPv323memcached_get_user_dataP12memcached_st"></span><span id="_CPPv223memcached_get_user_dataP12memcached_st"></span><span id="memcached_get_user_data__memcached_stP"></span>void *<code class="sig-name descname">memcached_get_user_data</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423memcached_get_user_dataP12memcached_st" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv323memcached_get_user_dataP12memcached_st"></span><span id="_CPPv223memcached_get_user_dataP12memcached_st"></span><span id="memcached_get_user_data__memcached_stP"></span>void *<code class="descname">memcached_get_user_data</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423memcached_get_user_dataP12memcached_st" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ptr</strong> -- pointer to initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">opaque pointer to the user supplied data</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
-<dl class="cpp function">
+<dl class="function">
 <dt id="_CPPv423memcached_set_user_dataP12memcached_stPv">
-<span id="_CPPv323memcached_set_user_dataP12memcached_stPv"></span><span id="_CPPv223memcached_set_user_dataP12memcached_stPv"></span><span id="memcached_set_user_data__memcached_stP.voidP"></span>void *<code class="sig-name descname">memcached_set_user_data</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, void *<em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423memcached_set_user_dataP12memcached_stPv" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<span id="_CPPv323memcached_set_user_dataP12memcached_stPv"></span><span id="_CPPv223memcached_set_user_dataP12memcached_stPv"></span><span id="memcached_set_user_data__memcached_stP.voidP"></span>void *<code class="descname">memcached_set_user_data</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, void *<em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423memcached_set_user_dataP12memcached_stPv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ptr</strong> -- pointer to initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</li>
+<li><strong>data</strong> -- opaque pointer to user supplied data</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">opaque pointer to the previously set <a class="reference internal" href="#_CPPv423memcached_set_user_dataP12memcached_stPv" title="memcached_set_user_data::data"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">data</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
-<p>Compile and link with -lmemcached</p>
 </div>
 <div class="section" id="description">
 <h2>DESCRIPTION<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
-<p>libmemcached(3) allows you to store a pointer to a user specific data inside
+<p><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcached</span></code> allows you to store a pointer to a user specific data inside
 the memcached_st structure.</p>
 <p><a class="reference internal" href="#_CPPv423memcached_set_user_dataP12memcached_stPv" title="memcached_set_user_data"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_set_user_data()</span></code></a> is used to set the user specific data in the
 <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_st</span></code></a> structure.</p>
-<p><a class="reference internal" href="#_CPPv423memcached_get_user_dataP12memcached_st" title="memcached_get_user_data"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_get_user_data()</span></code></a> is used to retrieve the user specific data in the <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_st</span></code></a> structure.</p>
+<p><a class="reference internal" href="#_CPPv423memcached_get_user_dataP12memcached_st" title="memcached_get_user_data"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_get_user_data()</span></code></a> is used to retrieve the user specific data in
+the <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_st</span></code></a> structure.</p>
 </div>
 <div class="section" id="return-value">
 <h2>RETURN VALUE<a class="headerlink" href="#return-value" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference internal" href="#_CPPv423memcached_set_user_dataP12memcached_stPv" title="memcached_set_user_data"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_set_user_data()</span></code></a> returns the previous value of the user specific data.</p>
-<p><a class="reference internal" href="#_CPPv423memcached_get_user_dataP12memcached_st" title="memcached_get_user_data"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_get_user_data()</span></code></a> returns the current value uf the user specific data.</p>
+<p><a class="reference internal" href="#_CPPv423memcached_get_user_dataP12memcached_st" title="memcached_get_user_data"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_get_user_data()</span></code></a> returns the current value of the user specific data.</p>
 </div>
 <div class="section" id="see-also">
 <h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><em class="manpage"><a class="manpage reference external" href="https://linux.die.net/man/1/memcached">memcached(1)</a></em></li>
+<li><a class="reference internal" href="../libmemcached.html"><span class="doc">C/C++ Client Library for memcached</span></a></li>
+</ul>
 </div>
 </div>
 
@@ -259,20 +283,11 @@ the memcached_st structure.</p>
 
   <div role="contentinfo">
     <p>
-        
-        
         &copy; <a href="../copyright.html">Copyright</a> 
 
     </p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -283,6 +298,7 @@ the memcached_st structure.</p>
 
   </div>
   
+
 
   <script type="text/javascript">
       jQuery(function () {

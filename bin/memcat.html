@@ -1,7 +1,8 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
   
@@ -11,29 +12,27 @@
   
 
   
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-
-  
   
   
   
 
   
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="copyright" title="Copyright" href="../copyright.html" />
@@ -52,7 +51,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> libmemcached
+            <a href="../index.html" class="icon icon-home"> libmemcached
           
 
           
@@ -79,7 +78,6 @@
           
         </div>
 
-        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -134,7 +132,6 @@
             
           
         </div>
-        
       </div>
     </nav>
 
@@ -173,7 +170,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><a href="../index.html">Docs</a> &raquo;</li>
         
           <li><a href="index.html">Client Applications</a> &raquo;</li>
         
@@ -210,67 +207,67 @@ stored in a <em class="manpage"><a class="manpage reference external" href="http
 </div>
 <div class="section" id="options">
 <h2>OPTIONS<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
-<dl class="std option">
+<dl class="option">
 <dt id="cmdoption-memcat-help">
-<code class="sig-name descname">--help</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-memcat-help" title="Permalink to this definition">¶</a></dt>
+<code class="descname">--help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcat-help" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display help.</p>
 </dd></dl>
 
-<dl class="std option">
+<dl class="option">
 <dt id="cmdoption-memcat-version">
-<code class="sig-name descname">--version</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-memcat-version" title="Permalink to this definition">¶</a></dt>
+<code class="descname">--version</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcat-version" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display version.</p>
 </dd></dl>
 
-<dl class="std option">
+<dl class="option">
 <dt id="cmdoption-memcat-quiet">
-<code class="sig-name descname">--quiet</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-memcat-quiet" title="Permalink to this definition">¶</a></dt>
+<code class="descname">--quiet</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcat-quiet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Operate quietly.</p>
 </dd></dl>
 
-<dl class="std option">
+<dl class="option">
 <dt id="cmdoption-memcat-verbose">
-<code class="sig-name descname">--verbose</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-memcat-verbose" title="Permalink to this definition">¶</a></dt>
+<code class="descname">--verbose</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcat-verbose" title="Permalink to this definition">¶</a></dt>
 <dd><p>Operate more verbosely.</p>
 </dd></dl>
 
-<dl class="std option">
+<dl class="option">
 <dt id="cmdoption-memcat-debug">
-<code class="sig-name descname">--debug</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-memcat-debug" title="Permalink to this definition">¶</a></dt>
+<code class="descname">--debug</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcat-debug" title="Permalink to this definition">¶</a></dt>
 <dd><p>See <a class="reference internal" href="#cmdoption-memcat-verbose"><code class="xref std std-option docutils literal notranslate"><span class="pre">--verbose</span></code></a>.</p>
 </dd></dl>
 
-<dl class="std option">
+<dl class="option">
 <dt id="cmdoption-memcat-servers">
-<code class="sig-name descname">--servers</code><code class="sig-prename descclassname"> &lt;list of servers&gt;</code><a class="headerlink" href="#cmdoption-memcat-servers" title="Permalink to this definition">¶</a></dt>
+<code class="descname">--servers</code><code class="descclassname"> &lt;list of servers&gt;</code><a class="headerlink" href="#cmdoption-memcat-servers" title="Permalink to this definition">¶</a></dt>
 <dd><p>Specify the list of servers as <em>hostname[:port][,hostname[:port]...]</em>.</p>
 </dd></dl>
 
-<dl class="std option">
+<dl class="option">
 <dt id="cmdoption-memcat-binary">
-<code class="sig-name descname">--binary</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-memcat-binary" title="Permalink to this definition">¶</a></dt>
+<code class="descname">--binary</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcat-binary" title="Permalink to this definition">¶</a></dt>
 <dd><p>Enable binary protocol.</p>
 </dd></dl>
 
-<dl class="std option">
+<dl class="option">
 <dt id="cmdoption-memcat-hash">
-<code class="sig-name descname">--hash</code><code class="sig-prename descclassname"> &lt;algorithm&gt;</code><a class="headerlink" href="#cmdoption-memcat-hash" title="Permalink to this definition">¶</a></dt>
+<code class="descname">--hash</code><code class="descclassname"> &lt;algorithm&gt;</code><a class="headerlink" href="#cmdoption-memcat-hash" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use <em>algorithm</em> as key hash algo.
 See <a class="reference internal" href="../libmemcached/memcached_behavior.html#_CPPv4N20memcached_behavior_t23MEMCACHED_BEHAVIOR_HASHE" title="memcached_behavior_t::MEMCACHED_BEHAVIOR_HASH"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">memcached_behavior_t::MEMCACHED_BEHAVIOR_HASH</span></code></a>.</p>
 </dd></dl>
 
-<dl class="std option">
+<dl class="option">
 <dt id="cmdoption-memcat-flag">
-<code class="sig-name descname">--flag</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-memcat-flag" title="Permalink to this definition">¶</a></dt>
+<code class="descname">--flag</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcat-flag" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display stored flags.</p>
 </dd></dl>
 
 </div>
 <div class="section" id="environment">
 <h2>ENVIRONMENT<a class="headerlink" href="#environment" title="Permalink to this headline">¶</a></h2>
-<dl class="std envvar">
+<dl class="envvar">
 <dt id="envvar-MEMCACHED_SERVERS">
-<code class="sig-name descname">MEMCACHED_SERVERS</code><a class="headerlink" href="#envvar-MEMCACHED_SERVERS" title="Permalink to this definition">¶</a></dt>
+<code class="descname">MEMCACHED_SERVERS</code><a class="headerlink" href="#envvar-MEMCACHED_SERVERS" title="Permalink to this definition">¶</a></dt>
 <dd><p>Specify a list of servers.</p>
 </dd></dl>
 
@@ -278,8 +275,8 @@ See <a class="reference internal" href="../libmemcached/memcached_behavior.html#
 <div class="section" id="see-also">
 <h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="../libmemcached.html"><span class="doc">C/C++ Client Library for memcached</span></a></p></li>
-<li><p><a class="reference internal" href="../libmemcached/configuration.html"><span class="doc">libmemcached Configuration</span></a></p></li>
+<li><a class="reference internal" href="../libmemcached.html"><span class="doc">C/C++ Client Library for memcached</span></a></li>
+<li><a class="reference internal" href="../libmemcached/configuration.html"><span class="doc">libmemcached Configuration</span></a></li>
 </ul>
 </div>
 </div>
@@ -304,20 +301,11 @@ See <a class="reference internal" href="../libmemcached/memcached_behavior.html#
 
   <div role="contentinfo">
     <p>
-        
-        
         &copy; <a href="../copyright.html">Copyright</a> 
 
     </p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -328,6 +316,7 @@ See <a class="reference internal" href="../libmemcached/memcached_behavior.html#
 
   </div>
   
+
 
   <script type="text/javascript">
       jQuery(function () {

@@ -1,7 +1,8 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
   
@@ -11,29 +12,27 @@
   
 
   
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-
-  
   
   
   
 
   
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="copyright" title="Copyright" href="../copyright.html" />
@@ -52,7 +51,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> libmemcached
+            <a href="../index.html" class="icon icon-home"> libmemcached
           
 
           
@@ -79,7 +78,6 @@
           
         </div>
 
-        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -102,7 +100,6 @@
 <li class="toctree-l4 current"><a class="current reference internal" href="#">Dumping data from a server</a></li>
 <li class="toctree-l4"><a class="reference internal" href="memcached_flush.html">Wiping clean the contents of a server</a></li>
 <li class="toctree-l4"><a class="reference internal" href="memcached_verbosity.html">Setting the verbosity of a server</a></li>
-<li class="toctree-l4"><a class="reference internal" href="memcached_version.html">Getting version information about the client and server</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="index_advanced_stats.html">Statistics</a></li>
@@ -135,7 +132,6 @@
             
           
         </div>
-        
       </div>
     </nav>
 
@@ -174,7 +170,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><a href="../index.html">Docs</a> &raquo;</li>
         
           <li><a href="index.html">libmemcached API</a> &raquo;</li>
         
@@ -203,44 +199,52 @@
 <h1>Dumping data from a server<a class="headerlink" href="#dumping-data-from-a-server" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="synopsis">
 <h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<dl class="simple">
-<dt>#include &lt;libmemcached/memcached.h&gt;</dt><dd><p>Compile and link with -lmemcached</p>
-</dd>
+<dl class="docutils">
+<dt>#include &lt;libmemcached/memcached.h&gt;</dt>
+<dd>Compile and link with -lmemcached</dd>
 </dl>
-<dl class="cpp type">
+<dl class="type">
 <dt id="_CPPv417memcached_dump_fn">
-<span id="_CPPv317memcached_dump_fn"></span><span id="_CPPv217memcached_dump_fn"></span><span id="memcached_dump_fn"></span><em class="property">typedef </em><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> (*<code class="sig-name descname">memcached_dump_fn</code>)<span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *ptr, <em class="property">const</em> char *key, size_t key_length, void *context<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417memcached_dump_fn" title="Permalink to this definition">¶</a><br /></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ptr</strong> -- pointer to <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> object</p></li>
-<li><p><strong>key</strong> -- key string being dumped</p></li>
-<li><p><strong>key_length</strong> -- length of the key without any terminating zero</p></li>
-<li><p><strong>context</strong> -- pointer to the user supplied context</p></li>
+<span id="_CPPv317memcached_dump_fn"></span><span id="_CPPv217memcached_dump_fn"></span><span id="memcached_dump_fn"></span><em class="property">typedef </em><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> (*<code class="descname">memcached_dump_fn</code>)<span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *ptr, <em class="property">const</em> char *key, size_t key_length, void *context<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417memcached_dump_fn" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ptr</strong> -- pointer to <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> object</li>
+<li><strong>key</strong> -- key string being dumped</li>
+<li><strong>key_length</strong> -- length of the key without any terminating zero</li>
+<li><strong>context</strong> -- pointer to the user supplied context</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
-<dl class="cpp function">
+<dl class="function">
 <dt id="_CPPv414memcached_dumpP12memcached_stP17memcached_dump_fnPv8uint32_t">
-<span id="_CPPv314memcached_dumpP12memcached_stP17memcached_dump_fnPv8uint32_t"></span><span id="_CPPv214memcached_dumpP12memcached_stP17memcached_dump_fnPv8uint32_t"></span><span id="memcached_dump__memcached_stP.memcached_dump_fnP.voidP.uint32_t"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_dump</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <a class="reference internal" href="#_CPPv417memcached_dump_fn" title="memcached_dump_fn">memcached_dump_fn</a> *<em>function</em>, void *<em>context</em>, uint32_t <em>number_of_callbacks</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414memcached_dumpP12memcached_stP17memcached_dump_fnPv8uint32_t" title="Permalink to this definition">¶</a><br /></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ptr</strong> -- pointer to initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</p></li>
-<li><p><strong>function</strong> -- pointer to <a class="reference internal" href="#_CPPv414memcached_dumpP12memcached_stP17memcached_dump_fnPv8uint32_t" title="memcached_dump::number_of_callbacks"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">number_of_callbacks</span></code></a> <a class="reference internal" href="#_CPPv417memcached_dump_fn" title="memcached_dump_fn"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_dump_fn</span></code></a> callbacks</p></li>
-<li><p><strong>context</strong> -- pointer to a user managed context</p></li>
-<li><p><strong>number_of_callbacks</strong> -- number of callbacks in the <a class="reference internal" href="#_CPPv414memcached_dumpP12memcached_stP17memcached_dump_fnPv8uint32_t" title="memcached_dump::function"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">function</span></code></a> array</p></li>
+<span id="_CPPv314memcached_dumpP12memcached_stP17memcached_dump_fnPv8uint32_t"></span><span id="_CPPv214memcached_dumpP12memcached_stP17memcached_dump_fnPv8uint32_t"></span><span id="memcached_dump__memcached_stP.memcached_dump_fnP.voidP.uint32_t"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="descname">memcached_dump</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <a class="reference internal" href="#_CPPv417memcached_dump_fn" title="memcached_dump_fn">memcached_dump_fn</a> *<em>function</em>, void *<em>context</em>, uint32_t <em>number_of_callbacks</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414memcached_dumpP12memcached_stP17memcached_dump_fnPv8uint32_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ptr</strong> -- pointer to initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</li>
+<li><strong>function</strong> -- pointer to <a class="reference internal" href="#_CPPv414memcached_dumpP12memcached_stP17memcached_dump_fnPv8uint32_t" title="memcached_dump::number_of_callbacks"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">number_of_callbacks</span></code></a> <a class="reference internal" href="#_CPPv417memcached_dump_fn" title="memcached_dump_fn"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_dump_fn</span></code></a> callbacks</li>
+<li><strong>context</strong> -- pointer to a user managed context</li>
+<li><strong>number_of_callbacks</strong> -- number of callbacks in the <a class="reference internal" href="#_CPPv414memcached_dumpP12memcached_stP17memcached_dump_fnPv8uint32_t" title="memcached_dump::function"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">function</span></code></a> array</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -262,8 +266,8 @@ string.</p>
 <div class="section" id="see-also">
 <h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="../libmemcached.html"><span class="doc">C/C++ Client Library for memcached</span></a></p></li>
-<li><p><a class="reference internal" href="memcached_strerror.html"><span class="doc">Converting Error Codes to Messages</span></a></p></li>
+<li><a class="reference internal" href="../libmemcached.html"><span class="doc">C/C++ Client Library for memcached</span></a></li>
+<li><a class="reference internal" href="memcached_strerror.html"><span class="doc">Converting Error Codes to Messages</span></a></li>
 </ul>
 </div>
 </div>
@@ -288,20 +292,11 @@ string.</p>
 
   <div role="contentinfo">
     <p>
-        
-        
         &copy; <a href="../copyright.html">Copyright</a> 
 
     </p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -312,6 +307,7 @@ string.</p>
 
   </div>
   
+
 
   <script type="text/javascript">
       jQuery(function () {

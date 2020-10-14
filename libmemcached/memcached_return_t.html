@@ -1,7 +1,8 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
   
@@ -11,29 +12,27 @@
   
 
   
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-
-  
   
   
   
 
   
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="copyright" title="Copyright" href="../copyright.html" />
@@ -52,7 +51,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> libmemcached
+            <a href="../index.html" class="icon icon-home"> libmemcached
           
 
           
@@ -79,7 +78,6 @@
           
         </div>
 
-        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -127,7 +125,6 @@
             
           
         </div>
-        
       </div>
     </nav>
 
@@ -166,7 +163,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><a href="../index.html">Docs</a> &raquo;</li>
         
           <li><a href="index.html">libmemcached API</a> &raquo;</li>
         
@@ -193,333 +190,333 @@
 <h1>Error Codes - memcached_return_t<a class="headerlink" href="#error-codes-memcached-return-t" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="synopsis">
 <h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<dl class="simple">
-<dt>#include &lt;libmemcached/memcached.h&gt;</dt><dd><p>Compile and link with -lmemcached</p>
-</dd>
+<dl class="docutils">
+<dt>#include &lt;libmemcached/memcached.h&gt;</dt>
+<dd>Compile and link with -lmemcached</dd>
 </dl>
-<dl class="cpp function">
+<dl class="function">
 <dt id="_CPPv417memcached_success18memcached_return_t">
-<span id="_CPPv317memcached_success18memcached_return_t"></span><span id="_CPPv217memcached_success18memcached_return_t"></span><span id="memcached_success__memcached_return_t"></span>bool <code class="sig-name descname">memcached_success</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <em>rc</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417memcached_success18memcached_return_t" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv317memcached_success18memcached_return_t"></span><span id="_CPPv217memcached_success18memcached_return_t"></span><span id="memcached_success__memcached_return_t"></span>bool <code class="descname">memcached_success</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <em>rc</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417memcached_success18memcached_return_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="cpp function">
+<dl class="function">
 <dt id="_CPPv418memcached_continue18memcached_return_t">
-<span id="_CPPv318memcached_continue18memcached_return_t"></span><span id="_CPPv218memcached_continue18memcached_return_t"></span><span id="memcached_continue__memcached_return_t"></span>bool <code class="sig-name descname">memcached_continue</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <em>rc</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418memcached_continue18memcached_return_t" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv318memcached_continue18memcached_return_t"></span><span id="_CPPv218memcached_continue18memcached_return_t"></span><span id="memcached_continue__memcached_return_t"></span>bool <code class="descname">memcached_continue</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <em>rc</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418memcached_continue18memcached_return_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="cpp function">
+<dl class="function">
 <dt id="_CPPv416memcached_failed18memcached_return_t">
-<span id="_CPPv316memcached_failed18memcached_return_t"></span><span id="_CPPv216memcached_failed18memcached_return_t"></span><span id="memcached_failed__memcached_return_t"></span>bool <code class="sig-name descname">memcached_failed</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <em>rc</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416memcached_failed18memcached_return_t" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv316memcached_failed18memcached_return_t"></span><span id="_CPPv216memcached_failed18memcached_return_t"></span><span id="memcached_failed__memcached_return_t"></span>bool <code class="descname">memcached_failed</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <em>rc</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416memcached_failed18memcached_return_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="cpp function">
+<dl class="function">
 <dt id="_CPPv415memcached_fatal18memcached_return_t">
-<span id="_CPPv315memcached_fatal18memcached_return_t"></span><span id="_CPPv215memcached_fatal18memcached_return_t"></span><span id="memcached_fatal__memcached_return_t"></span>bool <code class="sig-name descname">memcached_fatal</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <em>rc</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415memcached_fatal18memcached_return_t" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv315memcached_fatal18memcached_return_t"></span><span id="_CPPv215memcached_fatal18memcached_return_t"></span><span id="memcached_fatal__memcached_return_t"></span>bool <code class="descname">memcached_fatal</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <em>rc</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415memcached_fatal18memcached_return_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="c type">
+<dl class="type">
 <dt id="c.memcached_return_t">
-<em class="property">typedef </em><em class="property">enum</em> <a class="reference internal" href="#c.memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_return_t</code><a class="headerlink" href="#c.memcached_return_t" title="Permalink to this definition">¶</a><br /></dt>
+enum <a class="reference internal" href="#c.memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="descname">memcached_return_t</code><a class="headerlink" href="#c.memcached_return_t" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="cpp enum">
+<dl class="enum">
 <dt id="_CPPv418memcached_return_t">
-<span id="_CPPv318memcached_return_t"></span><span id="_CPPv218memcached_return_t"></span><em class="property">enum </em><code class="sig-name descname">memcached_return_t</code><a class="headerlink" href="#_CPPv418memcached_return_t" title="Permalink to this definition">¶</a><br /></dt>
-<dd><dl class="cpp enumerator">
+<span id="_CPPv318memcached_return_t"></span><span id="_CPPv218memcached_return_t"></span><em class="property">enum </em><code class="descname">memcached_return_t</code><a class="headerlink" href="#_CPPv418memcached_return_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t23MEMCACHED_AUTH_CONTINUEE">
-<span id="_CPPv3N18memcached_return_t23MEMCACHED_AUTH_CONTINUEE"></span><span id="_CPPv2N18memcached_return_t23MEMCACHED_AUTH_CONTINUEE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_AUTH_CONTINUE</code><a class="headerlink" href="#_CPPv4N18memcached_return_t23MEMCACHED_AUTH_CONTINUEE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t23MEMCACHED_AUTH_CONTINUEE"></span><span id="_CPPv2N18memcached_return_t23MEMCACHED_AUTH_CONTINUEE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_AUTH_CONTINUE</code><a class="headerlink" href="#_CPPv4N18memcached_return_t23MEMCACHED_AUTH_CONTINUEE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Authentication has been paused.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t22MEMCACHED_AUTH_FAILUREE">
-<span id="_CPPv3N18memcached_return_t22MEMCACHED_AUTH_FAILUREE"></span><span id="_CPPv2N18memcached_return_t22MEMCACHED_AUTH_FAILUREE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_AUTH_FAILURE</code><a class="headerlink" href="#_CPPv4N18memcached_return_t22MEMCACHED_AUTH_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t22MEMCACHED_AUTH_FAILUREE"></span><span id="_CPPv2N18memcached_return_t22MEMCACHED_AUTH_FAILUREE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_AUTH_FAILURE</code><a class="headerlink" href="#_CPPv4N18memcached_return_t22MEMCACHED_AUTH_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The credentials provided are not valid for this server.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t22MEMCACHED_AUTH_PROBLEME">
-<span id="_CPPv3N18memcached_return_t22MEMCACHED_AUTH_PROBLEME"></span><span id="_CPPv2N18memcached_return_t22MEMCACHED_AUTH_PROBLEME"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_AUTH_PROBLEM</code><a class="headerlink" href="#_CPPv4N18memcached_return_t22MEMCACHED_AUTH_PROBLEME" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t22MEMCACHED_AUTH_PROBLEME"></span><span id="_CPPv2N18memcached_return_t22MEMCACHED_AUTH_PROBLEME"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_AUTH_PROBLEM</code><a class="headerlink" href="#_CPPv4N18memcached_return_t22MEMCACHED_AUTH_PROBLEME" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>An unknown issue has occurred during authentication.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t26MEMCACHED_BAD_KEY_PROVIDEDE">
-<span id="_CPPv3N18memcached_return_t26MEMCACHED_BAD_KEY_PROVIDEDE"></span><span id="_CPPv2N18memcached_return_t26MEMCACHED_BAD_KEY_PROVIDEDE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BAD_KEY_PROVIDED</code><a class="headerlink" href="#_CPPv4N18memcached_return_t26MEMCACHED_BAD_KEY_PROVIDEDE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t26MEMCACHED_BAD_KEY_PROVIDEDE"></span><span id="_CPPv2N18memcached_return_t26MEMCACHED_BAD_KEY_PROVIDEDE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_BAD_KEY_PROVIDED</code><a class="headerlink" href="#_CPPv4N18memcached_return_t26MEMCACHED_BAD_KEY_PROVIDEDE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The key provided is not a valid key.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t18MEMCACHED_BUFFEREDE">
-<span id="_CPPv3N18memcached_return_t18MEMCACHED_BUFFEREDE"></span><span id="_CPPv2N18memcached_return_t18MEMCACHED_BUFFEREDE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_BUFFERED</code><a class="headerlink" href="#_CPPv4N18memcached_return_t18MEMCACHED_BUFFEREDE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t18MEMCACHED_BUFFEREDE"></span><span id="_CPPv2N18memcached_return_t18MEMCACHED_BUFFEREDE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_BUFFERED</code><a class="headerlink" href="#_CPPv4N18memcached_return_t18MEMCACHED_BUFFEREDE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The request has been buffered.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t22MEMCACHED_CLIENT_ERRORE">
-<span id="_CPPv3N18memcached_return_t22MEMCACHED_CLIENT_ERRORE"></span><span id="_CPPv2N18memcached_return_t22MEMCACHED_CLIENT_ERRORE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_CLIENT_ERROR</code><a class="headerlink" href="#_CPPv4N18memcached_return_t22MEMCACHED_CLIENT_ERRORE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t22MEMCACHED_CLIENT_ERRORE"></span><span id="_CPPv2N18memcached_return_t22MEMCACHED_CLIENT_ERRORE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_CLIENT_ERROR</code><a class="headerlink" href="#_CPPv4N18memcached_return_t22MEMCACHED_CLIENT_ERRORE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>An unknown client error has occurred internally.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t33MEMCACHED_CONNECTION_BIND_FAILUREE">
-<span id="_CPPv3N18memcached_return_t33MEMCACHED_CONNECTION_BIND_FAILUREE"></span><span id="_CPPv2N18memcached_return_t33MEMCACHED_CONNECTION_BIND_FAILUREE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_CONNECTION_BIND_FAILURE</code><a class="headerlink" href="#_CPPv4N18memcached_return_t33MEMCACHED_CONNECTION_BIND_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t33MEMCACHED_CONNECTION_BIND_FAILUREE"></span><span id="_CPPv2N18memcached_return_t33MEMCACHED_CONNECTION_BIND_FAILUREE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_CONNECTION_BIND_FAILURE</code><a class="headerlink" href="#_CPPv4N18memcached_return_t33MEMCACHED_CONNECTION_BIND_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="deprecated">
-<p><span class="versionmodified deprecated">Deprecated since version &lt;0.30.</span></p>
+<p><span class="versionmodified">Deprecated since version &lt;0.30.</span></p>
 </div>
 <p>We were not able to bind() to the socket.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t28MEMCACHED_CONNECTION_FAILUREE">
-<span id="_CPPv3N18memcached_return_t28MEMCACHED_CONNECTION_FAILUREE"></span><span id="_CPPv2N18memcached_return_t28MEMCACHED_CONNECTION_FAILUREE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_CONNECTION_FAILURE</code><a class="headerlink" href="#_CPPv4N18memcached_return_t28MEMCACHED_CONNECTION_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t28MEMCACHED_CONNECTION_FAILUREE"></span><span id="_CPPv2N18memcached_return_t28MEMCACHED_CONNECTION_FAILUREE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_CONNECTION_FAILURE</code><a class="headerlink" href="#_CPPv4N18memcached_return_t28MEMCACHED_CONNECTION_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>A unknown error has occurred while trying to connect to a server.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t42MEMCACHED_CONNECTION_SOCKET_CREATE_FAILUREE">
-<span id="_CPPv3N18memcached_return_t42MEMCACHED_CONNECTION_SOCKET_CREATE_FAILUREE"></span><span id="_CPPv2N18memcached_return_t42MEMCACHED_CONNECTION_SOCKET_CREATE_FAILUREE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE</code><a class="headerlink" href="#_CPPv4N18memcached_return_t42MEMCACHED_CONNECTION_SOCKET_CREATE_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t42MEMCACHED_CONNECTION_SOCKET_CREATE_FAILUREE"></span><span id="_CPPv2N18memcached_return_t42MEMCACHED_CONNECTION_SOCKET_CREATE_FAILUREE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE</code><a class="headerlink" href="#_CPPv4N18memcached_return_t42MEMCACHED_CONNECTION_SOCKET_CREATE_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="deprecated">
-<p><span class="versionmodified deprecated">Deprecated since version &lt;0.30.</span></p>
+<p><span class="versionmodified">Deprecated since version &lt;0.30.</span></p>
 </div>
 <p>An error has occurred while trying to connect to a server.
 It is likely that either the number of file descriptors need to be increased or you are out of memory.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t29MEMCACHED_DATA_DOES_NOT_EXISTE">
-<span id="_CPPv3N18memcached_return_t29MEMCACHED_DATA_DOES_NOT_EXISTE"></span><span id="_CPPv2N18memcached_return_t29MEMCACHED_DATA_DOES_NOT_EXISTE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_DATA_DOES_NOT_EXIST</code><a class="headerlink" href="#_CPPv4N18memcached_return_t29MEMCACHED_DATA_DOES_NOT_EXISTE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t29MEMCACHED_DATA_DOES_NOT_EXISTE"></span><span id="_CPPv2N18memcached_return_t29MEMCACHED_DATA_DOES_NOT_EXISTE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_DATA_DOES_NOT_EXIST</code><a class="headerlink" href="#_CPPv4N18memcached_return_t29MEMCACHED_DATA_DOES_NOT_EXISTE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The data requested with the key given was not found.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t21MEMCACHED_DATA_EXISTSE">
-<span id="_CPPv3N18memcached_return_t21MEMCACHED_DATA_EXISTSE"></span><span id="_CPPv2N18memcached_return_t21MEMCACHED_DATA_EXISTSE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_DATA_EXISTS</code><a class="headerlink" href="#_CPPv4N18memcached_return_t21MEMCACHED_DATA_EXISTSE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t21MEMCACHED_DATA_EXISTSE"></span><span id="_CPPv2N18memcached_return_t21MEMCACHED_DATA_EXISTSE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_DATA_EXISTS</code><a class="headerlink" href="#_CPPv4N18memcached_return_t21MEMCACHED_DATA_EXISTSE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The data requested with the key given was not found.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t17MEMCACHED_DELETEDE">
-<span id="_CPPv3N18memcached_return_t17MEMCACHED_DELETEDE"></span><span id="_CPPv2N18memcached_return_t17MEMCACHED_DELETEDE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_DELETED</code><a class="headerlink" href="#_CPPv4N18memcached_return_t17MEMCACHED_DELETEDE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t17MEMCACHED_DELETEDE"></span><span id="_CPPv2N18memcached_return_t17MEMCACHED_DELETEDE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_DELETED</code><a class="headerlink" href="#_CPPv4N18memcached_return_t17MEMCACHED_DELETEDE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The object requested by the key has been deleted.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t20MEMCACHED_DEPRECATEDE">
-<span id="_CPPv3N18memcached_return_t20MEMCACHED_DEPRECATEDE"></span><span id="_CPPv2N18memcached_return_t20MEMCACHED_DEPRECATEDE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_DEPRECATED</code><a class="headerlink" href="#_CPPv4N18memcached_return_t20MEMCACHED_DEPRECATEDE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t20MEMCACHED_DEPRECATEDE"></span><span id="_CPPv2N18memcached_return_t20MEMCACHED_DEPRECATEDE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_DEPRECATED</code><a class="headerlink" href="#_CPPv4N18memcached_return_t20MEMCACHED_DEPRECATEDE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The method that was requested has been deprecated.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t15MEMCACHED_E2BIGE">
-<span id="_CPPv3N18memcached_return_t15MEMCACHED_E2BIGE"></span><span id="_CPPv2N18memcached_return_t15MEMCACHED_E2BIGE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_E2BIG</code><a class="headerlink" href="#_CPPv4N18memcached_return_t15MEMCACHED_E2BIGE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t15MEMCACHED_E2BIGE"></span><span id="_CPPv2N18memcached_return_t15MEMCACHED_E2BIGE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_E2BIG</code><a class="headerlink" href="#_CPPv4N18memcached_return_t15MEMCACHED_E2BIGE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Item is too large for the server to store.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t13MEMCACHED_ENDE">
-<span id="_CPPv3N18memcached_return_t13MEMCACHED_ENDE"></span><span id="_CPPv2N18memcached_return_t13MEMCACHED_ENDE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_END</code><a class="headerlink" href="#_CPPv4N18memcached_return_t13MEMCACHED_ENDE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t13MEMCACHED_ENDE"></span><span id="_CPPv2N18memcached_return_t13MEMCACHED_ENDE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_END</code><a class="headerlink" href="#_CPPv4N18memcached_return_t13MEMCACHED_ENDE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The server has completed returning all of the objects requested.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t15MEMCACHED_ERRNOE">
-<span id="_CPPv3N18memcached_return_t15MEMCACHED_ERRNOE"></span><span id="_CPPv2N18memcached_return_t15MEMCACHED_ERRNOE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_ERRNO</code><a class="headerlink" href="#_CPPv4N18memcached_return_t15MEMCACHED_ERRNOE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t15MEMCACHED_ERRNOE"></span><span id="_CPPv2N18memcached_return_t15MEMCACHED_ERRNOE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_ERRNO</code><a class="headerlink" href="#_CPPv4N18memcached_return_t15MEMCACHED_ERRNOE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>An error has occurred in the driver which has set errno.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t26MEMCACHED_FAIL_UNIX_SOCKETE">
-<span id="_CPPv3N18memcached_return_t26MEMCACHED_FAIL_UNIX_SOCKETE"></span><span id="_CPPv2N18memcached_return_t26MEMCACHED_FAIL_UNIX_SOCKETE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_FAIL_UNIX_SOCKET</code><a class="headerlink" href="#_CPPv4N18memcached_return_t26MEMCACHED_FAIL_UNIX_SOCKETE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t26MEMCACHED_FAIL_UNIX_SOCKETE"></span><span id="_CPPv2N18memcached_return_t26MEMCACHED_FAIL_UNIX_SOCKETE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_FAIL_UNIX_SOCKET</code><a class="headerlink" href="#_CPPv4N18memcached_return_t26MEMCACHED_FAIL_UNIX_SOCKETE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>A connection was not established with the server via a unix domain socket.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t17MEMCACHED_FAILUREE">
-<span id="_CPPv3N18memcached_return_t17MEMCACHED_FAILUREE"></span><span id="_CPPv2N18memcached_return_t17MEMCACHED_FAILUREE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_FAILURE</code><a class="headerlink" href="#_CPPv4N18memcached_return_t17MEMCACHED_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t17MEMCACHED_FAILUREE"></span><span id="_CPPv2N18memcached_return_t17MEMCACHED_FAILUREE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_FAILURE</code><a class="headerlink" href="#_CPPv4N18memcached_return_t17MEMCACHED_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="deprecated">
-<p><span class="versionmodified deprecated">Deprecated since version &lt;0.30.</span></p>
+<p><span class="versionmodified">Deprecated since version &lt;0.30.</span></p>
 </div>
 <p>A unknown failure has occurred in the server.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t27MEMCACHED_FETCH_NOTFINISHEDE">
-<span id="_CPPv3N18memcached_return_t27MEMCACHED_FETCH_NOTFINISHEDE"></span><span id="_CPPv2N18memcached_return_t27MEMCACHED_FETCH_NOTFINISHEDE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_FETCH_NOTFINISHED</code><a class="headerlink" href="#_CPPv4N18memcached_return_t27MEMCACHED_FETCH_NOTFINISHEDE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t27MEMCACHED_FETCH_NOTFINISHEDE"></span><span id="_CPPv2N18memcached_return_t27MEMCACHED_FETCH_NOTFINISHEDE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_FETCH_NOTFINISHED</code><a class="headerlink" href="#_CPPv4N18memcached_return_t27MEMCACHED_FETCH_NOTFINISHEDE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>A request has been made, but the server has not finished the fetch of the last request.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t29MEMCACHED_HOST_LOOKUP_FAILUREE">
-<span id="_CPPv3N18memcached_return_t29MEMCACHED_HOST_LOOKUP_FAILUREE"></span><span id="_CPPv2N18memcached_return_t29MEMCACHED_HOST_LOOKUP_FAILUREE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_HOST_LOOKUP_FAILURE</code><a class="headerlink" href="#_CPPv4N18memcached_return_t29MEMCACHED_HOST_LOOKUP_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t29MEMCACHED_HOST_LOOKUP_FAILUREE"></span><span id="_CPPv2N18memcached_return_t29MEMCACHED_HOST_LOOKUP_FAILUREE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_HOST_LOOKUP_FAILURE</code><a class="headerlink" href="#_CPPv4N18memcached_return_t29MEMCACHED_HOST_LOOKUP_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>A DNS failure has occurred.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t27MEMCACHED_INVALID_ARGUMENTSE">
-<span id="_CPPv3N18memcached_return_t27MEMCACHED_INVALID_ARGUMENTSE"></span><span id="_CPPv2N18memcached_return_t27MEMCACHED_INVALID_ARGUMENTSE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_INVALID_ARGUMENTS</code><a class="headerlink" href="#_CPPv4N18memcached_return_t27MEMCACHED_INVALID_ARGUMENTSE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t27MEMCACHED_INVALID_ARGUMENTSE"></span><span id="_CPPv2N18memcached_return_t27MEMCACHED_INVALID_ARGUMENTSE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_INVALID_ARGUMENTS</code><a class="headerlink" href="#_CPPv4N18memcached_return_t27MEMCACHED_INVALID_ARGUMENTSE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The arguments supplied to the given function were not valid.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t31MEMCACHED_INVALID_HOST_PROTOCOLE">
-<span id="_CPPv3N18memcached_return_t31MEMCACHED_INVALID_HOST_PROTOCOLE"></span><span id="_CPPv2N18memcached_return_t31MEMCACHED_INVALID_HOST_PROTOCOLE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_INVALID_HOST_PROTOCOL</code><a class="headerlink" href="#_CPPv4N18memcached_return_t31MEMCACHED_INVALID_HOST_PROTOCOLE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t31MEMCACHED_INVALID_HOST_PROTOCOLE"></span><span id="_CPPv2N18memcached_return_t31MEMCACHED_INVALID_HOST_PROTOCOLE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_INVALID_HOST_PROTOCOL</code><a class="headerlink" href="#_CPPv4N18memcached_return_t31MEMCACHED_INVALID_HOST_PROTOCOLE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The server you are connecting too has an invalid protocol.
 Most likely you are connecting to an older server that does not speak the binary protocol.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t14MEMCACHED_ITEME">
-<span id="_CPPv3N18memcached_return_t14MEMCACHED_ITEME"></span><span id="_CPPv2N18memcached_return_t14MEMCACHED_ITEME"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_ITEM</code><a class="headerlink" href="#_CPPv4N18memcached_return_t14MEMCACHED_ITEME" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t14MEMCACHED_ITEME"></span><span id="_CPPv2N18memcached_return_t14MEMCACHED_ITEME"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_ITEM</code><a class="headerlink" href="#_CPPv4N18memcached_return_t14MEMCACHED_ITEME" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>An item has been fetched (this is an internal error only).</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t21MEMCACHED_KEY_TOO_BIGE">
-<span id="_CPPv3N18memcached_return_t21MEMCACHED_KEY_TOO_BIGE"></span><span id="_CPPv2N18memcached_return_t21MEMCACHED_KEY_TOO_BIGE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_KEY_TOO_BIG</code><a class="headerlink" href="#_CPPv4N18memcached_return_t21MEMCACHED_KEY_TOO_BIGE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t21MEMCACHED_KEY_TOO_BIGE"></span><span id="_CPPv2N18memcached_return_t21MEMCACHED_KEY_TOO_BIGE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_KEY_TOO_BIG</code><a class="headerlink" href="#_CPPv4N18memcached_return_t21MEMCACHED_KEY_TOO_BIGE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The key that has been provided is too large for the given server.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t24MEMCACHED_MAXIMUM_RETURNE">
-<span id="_CPPv3N18memcached_return_t24MEMCACHED_MAXIMUM_RETURNE"></span><span id="_CPPv2N18memcached_return_t24MEMCACHED_MAXIMUM_RETURNE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_MAXIMUM_RETURN</code><a class="headerlink" href="#_CPPv4N18memcached_return_t24MEMCACHED_MAXIMUM_RETURNE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t24MEMCACHED_MAXIMUM_RETURNE"></span><span id="_CPPv2N18memcached_return_t24MEMCACHED_MAXIMUM_RETURNE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_MAXIMUM_RETURN</code><a class="headerlink" href="#_CPPv4N18memcached_return_t24MEMCACHED_MAXIMUM_RETURNE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>This in an internal only state.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t35MEMCACHED_MEMORY_ALLOCATION_FAILUREE">
-<span id="_CPPv3N18memcached_return_t35MEMCACHED_MEMORY_ALLOCATION_FAILUREE"></span><span id="_CPPv2N18memcached_return_t35MEMCACHED_MEMORY_ALLOCATION_FAILUREE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_MEMORY_ALLOCATION_FAILURE</code><a class="headerlink" href="#_CPPv4N18memcached_return_t35MEMCACHED_MEMORY_ALLOCATION_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t35MEMCACHED_MEMORY_ALLOCATION_FAILUREE"></span><span id="_CPPv2N18memcached_return_t35MEMCACHED_MEMORY_ALLOCATION_FAILUREE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_MEMORY_ALLOCATION_FAILURE</code><a class="headerlink" href="#_CPPv4N18memcached_return_t35MEMCACHED_MEMORY_ALLOCATION_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>An error has occurred while trying to allocate memory.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t25MEMCACHED_NO_KEY_PROVIDEDE">
-<span id="_CPPv3N18memcached_return_t25MEMCACHED_NO_KEY_PROVIDEDE"></span><span id="_CPPv2N18memcached_return_t25MEMCACHED_NO_KEY_PROVIDEDE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_NO_KEY_PROVIDED</code><a class="headerlink" href="#_CPPv4N18memcached_return_t25MEMCACHED_NO_KEY_PROVIDEDE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t25MEMCACHED_NO_KEY_PROVIDEDE"></span><span id="_CPPv2N18memcached_return_t25MEMCACHED_NO_KEY_PROVIDEDE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_NO_KEY_PROVIDED</code><a class="headerlink" href="#_CPPv4N18memcached_return_t25MEMCACHED_NO_KEY_PROVIDEDE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="deprecated">
-<p><span class="versionmodified deprecated">Deprecated since version &lt;0.30: </span>Use <a class="reference internal" href="#_CPPv4N18memcached_return_t26MEMCACHED_BAD_KEY_PROVIDEDE" title="memcached_return_t::MEMCACHED_BAD_KEY_PROVIDED"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BAD_KEY_PROVIDED</span></code></a> instead.</p>
+<p><span class="versionmodified">Deprecated since version &lt;0.30: </span>Use <a class="reference internal" href="#_CPPv4N18memcached_return_t26MEMCACHED_BAD_KEY_PROVIDEDE" title="memcached_return_t::MEMCACHED_BAD_KEY_PROVIDED"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_BAD_KEY_PROVIDED</span></code></a> instead.</p>
 </div>
 <p>No key was provided.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t20MEMCACHED_NO_SERVERSE">
-<span id="_CPPv3N18memcached_return_t20MEMCACHED_NO_SERVERSE"></span><span id="_CPPv2N18memcached_return_t20MEMCACHED_NO_SERVERSE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_NO_SERVERS</code><a class="headerlink" href="#_CPPv4N18memcached_return_t20MEMCACHED_NO_SERVERSE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t20MEMCACHED_NO_SERVERSE"></span><span id="_CPPv2N18memcached_return_t20MEMCACHED_NO_SERVERSE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_NO_SERVERS</code><a class="headerlink" href="#_CPPv4N18memcached_return_t20MEMCACHED_NO_SERVERSE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>No servers have been added to the memcached_st object.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t18MEMCACHED_NOTFOUNDE">
-<span id="_CPPv3N18memcached_return_t18MEMCACHED_NOTFOUNDE"></span><span id="_CPPv2N18memcached_return_t18MEMCACHED_NOTFOUNDE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_NOTFOUND</code><a class="headerlink" href="#_CPPv4N18memcached_return_t18MEMCACHED_NOTFOUNDE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t18MEMCACHED_NOTFOUNDE"></span><span id="_CPPv2N18memcached_return_t18MEMCACHED_NOTFOUNDE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_NOTFOUND</code><a class="headerlink" href="#_CPPv4N18memcached_return_t18MEMCACHED_NOTFOUNDE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The object requested was not found.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t19MEMCACHED_NOTSTOREDE">
-<span id="_CPPv3N18memcached_return_t19MEMCACHED_NOTSTOREDE"></span><span id="_CPPv2N18memcached_return_t19MEMCACHED_NOTSTOREDE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_NOTSTORED</code><a class="headerlink" href="#_CPPv4N18memcached_return_t19MEMCACHED_NOTSTOREDE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t19MEMCACHED_NOTSTOREDE"></span><span id="_CPPv2N18memcached_return_t19MEMCACHED_NOTSTOREDE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_NOTSTORED</code><a class="headerlink" href="#_CPPv4N18memcached_return_t19MEMCACHED_NOTSTOREDE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The request to store an object failed.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t23MEMCACHED_NOT_SUPPORTEDE">
-<span id="_CPPv3N18memcached_return_t23MEMCACHED_NOT_SUPPORTEDE"></span><span id="_CPPv2N18memcached_return_t23MEMCACHED_NOT_SUPPORTEDE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_NOT_SUPPORTED</code><a class="headerlink" href="#_CPPv4N18memcached_return_t23MEMCACHED_NOT_SUPPORTEDE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t23MEMCACHED_NOT_SUPPORTEDE"></span><span id="_CPPv2N18memcached_return_t23MEMCACHED_NOT_SUPPORTEDE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_NOT_SUPPORTED</code><a class="headerlink" href="#_CPPv4N18memcached_return_t23MEMCACHED_NOT_SUPPORTEDE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The given method is not supported in the server.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t21MEMCACHED_PARSE_ERRORE">
-<span id="_CPPv3N18memcached_return_t21MEMCACHED_PARSE_ERRORE"></span><span id="_CPPv2N18memcached_return_t21MEMCACHED_PARSE_ERRORE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_PARSE_ERROR</code><a class="headerlink" href="#_CPPv4N18memcached_return_t21MEMCACHED_PARSE_ERRORE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t21MEMCACHED_PARSE_ERRORE"></span><span id="_CPPv2N18memcached_return_t21MEMCACHED_PARSE_ERRORE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_PARSE_ERROR</code><a class="headerlink" href="#_CPPv4N18memcached_return_t21MEMCACHED_PARSE_ERRORE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>An error has occurred while trying to parse the configuration string.
 You should use memparse to determine what the error was.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t26MEMCACHED_PARSE_USER_ERRORE">
-<span id="_CPPv3N18memcached_return_t26MEMCACHED_PARSE_USER_ERRORE"></span><span id="_CPPv2N18memcached_return_t26MEMCACHED_PARSE_USER_ERRORE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_PARSE_USER_ERROR</code><a class="headerlink" href="#_CPPv4N18memcached_return_t26MEMCACHED_PARSE_USER_ERRORE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t26MEMCACHED_PARSE_USER_ERRORE"></span><span id="_CPPv2N18memcached_return_t26MEMCACHED_PARSE_USER_ERRORE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_PARSE_USER_ERROR</code><a class="headerlink" href="#_CPPv4N18memcached_return_t26MEMCACHED_PARSE_USER_ERRORE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>An error has occurred  in parsing the configuration string.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t22MEMCACHED_PARTIAL_READE">
-<span id="_CPPv3N18memcached_return_t22MEMCACHED_PARTIAL_READE"></span><span id="_CPPv2N18memcached_return_t22MEMCACHED_PARTIAL_READE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_PARTIAL_READ</code><a class="headerlink" href="#_CPPv4N18memcached_return_t22MEMCACHED_PARTIAL_READE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t22MEMCACHED_PARTIAL_READE"></span><span id="_CPPv2N18memcached_return_t22MEMCACHED_PARTIAL_READE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_PARTIAL_READ</code><a class="headerlink" href="#_CPPv4N18memcached_return_t22MEMCACHED_PARTIAL_READE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The read was only partially successful.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t24MEMCACHED_PROTOCOL_ERRORE">
-<span id="_CPPv3N18memcached_return_t24MEMCACHED_PROTOCOL_ERRORE"></span><span id="_CPPv2N18memcached_return_t24MEMCACHED_PROTOCOL_ERRORE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_PROTOCOL_ERROR</code><a class="headerlink" href="#_CPPv4N18memcached_return_t24MEMCACHED_PROTOCOL_ERRORE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t24MEMCACHED_PROTOCOL_ERRORE"></span><span id="_CPPv2N18memcached_return_t24MEMCACHED_PROTOCOL_ERRORE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_PROTOCOL_ERROR</code><a class="headerlink" href="#_CPPv4N18memcached_return_t24MEMCACHED_PROTOCOL_ERRORE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>An unknown error has occurred in the protocol.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t22MEMCACHED_READ_FAILUREE">
-<span id="_CPPv3N18memcached_return_t22MEMCACHED_READ_FAILUREE"></span><span id="_CPPv2N18memcached_return_t22MEMCACHED_READ_FAILUREE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_READ_FAILURE</code><a class="headerlink" href="#_CPPv4N18memcached_return_t22MEMCACHED_READ_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t22MEMCACHED_READ_FAILUREE"></span><span id="_CPPv2N18memcached_return_t22MEMCACHED_READ_FAILUREE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_READ_FAILURE</code><a class="headerlink" href="#_CPPv4N18memcached_return_t22MEMCACHED_READ_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>A read failure has occurred.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t22MEMCACHED_SERVER_ERRORE">
-<span id="_CPPv3N18memcached_return_t22MEMCACHED_SERVER_ERRORE"></span><span id="_CPPv2N18memcached_return_t22MEMCACHED_SERVER_ERRORE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_SERVER_ERROR</code><a class="headerlink" href="#_CPPv4N18memcached_return_t22MEMCACHED_SERVER_ERRORE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t22MEMCACHED_SERVER_ERRORE"></span><span id="_CPPv2N18memcached_return_t22MEMCACHED_SERVER_ERRORE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_SERVER_ERROR</code><a class="headerlink" href="#_CPPv4N18memcached_return_t22MEMCACHED_SERVER_ERRORE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>An unknown error has occurred in the server.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t28MEMCACHED_SERVER_MARKED_DEADE">
-<span id="_CPPv3N18memcached_return_t28MEMCACHED_SERVER_MARKED_DEADE"></span><span id="_CPPv2N18memcached_return_t28MEMCACHED_SERVER_MARKED_DEADE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_SERVER_MARKED_DEAD</code><a class="headerlink" href="#_CPPv4N18memcached_return_t28MEMCACHED_SERVER_MARKED_DEADE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t28MEMCACHED_SERVER_MARKED_DEADE"></span><span id="_CPPv2N18memcached_return_t28MEMCACHED_SERVER_MARKED_DEADE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_SERVER_MARKED_DEAD</code><a class="headerlink" href="#_CPPv4N18memcached_return_t28MEMCACHED_SERVER_MARKED_DEADE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The requested server has been marked dead.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t21MEMCACHED_SOME_ERRORSE">
-<span id="_CPPv3N18memcached_return_t21MEMCACHED_SOME_ERRORSE"></span><span id="_CPPv2N18memcached_return_t21MEMCACHED_SOME_ERRORSE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_SOME_ERRORS</code><a class="headerlink" href="#_CPPv4N18memcached_return_t21MEMCACHED_SOME_ERRORSE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t21MEMCACHED_SOME_ERRORSE"></span><span id="_CPPv2N18memcached_return_t21MEMCACHED_SOME_ERRORSE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_SOME_ERRORS</code><a class="headerlink" href="#_CPPv4N18memcached_return_t21MEMCACHED_SOME_ERRORSE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>A multi request has been made, and some undetermined number of errors have occurred.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t14MEMCACHED_STATE">
-<span id="_CPPv3N18memcached_return_t14MEMCACHED_STATE"></span><span id="_CPPv2N18memcached_return_t14MEMCACHED_STATE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_STAT</code><a class="headerlink" href="#_CPPv4N18memcached_return_t14MEMCACHED_STATE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t14MEMCACHED_STATE"></span><span id="_CPPv2N18memcached_return_t14MEMCACHED_STATE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_STAT</code><a class="headerlink" href="#_CPPv4N18memcached_return_t14MEMCACHED_STATE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>A &quot;stat&quot; command has been returned in the protocol.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t16MEMCACHED_STOREDE">
-<span id="_CPPv3N18memcached_return_t16MEMCACHED_STOREDE"></span><span id="_CPPv2N18memcached_return_t16MEMCACHED_STOREDE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_STORED</code><a class="headerlink" href="#_CPPv4N18memcached_return_t16MEMCACHED_STOREDE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t16MEMCACHED_STOREDE"></span><span id="_CPPv2N18memcached_return_t16MEMCACHED_STOREDE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_STORED</code><a class="headerlink" href="#_CPPv4N18memcached_return_t16MEMCACHED_STOREDE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The requested object has been successfully stored on the server.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t17MEMCACHED_SUCCESSE">
-<span id="_CPPv3N18memcached_return_t17MEMCACHED_SUCCESSE"></span><span id="_CPPv2N18memcached_return_t17MEMCACHED_SUCCESSE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_SUCCESS</code><a class="headerlink" href="#_CPPv4N18memcached_return_t17MEMCACHED_SUCCESSE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t17MEMCACHED_SUCCESSE"></span><span id="_CPPv2N18memcached_return_t17MEMCACHED_SUCCESSE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_SUCCESS</code><a class="headerlink" href="#_CPPv4N18memcached_return_t17MEMCACHED_SUCCESSE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The request was successfully executed.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t17MEMCACHED_TIMEOUTE">
-<span id="_CPPv3N18memcached_return_t17MEMCACHED_TIMEOUTE"></span><span id="_CPPv2N18memcached_return_t17MEMCACHED_TIMEOUTE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_TIMEOUT</code><a class="headerlink" href="#_CPPv4N18memcached_return_t17MEMCACHED_TIMEOUTE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t17MEMCACHED_TIMEOUTE"></span><span id="_CPPv2N18memcached_return_t17MEMCACHED_TIMEOUTE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_TIMEOUT</code><a class="headerlink" href="#_CPPv4N18memcached_return_t17MEMCACHED_TIMEOUTE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Operation has timed out.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t30MEMCACHED_UNKNOWN_READ_FAILUREE">
-<span id="_CPPv3N18memcached_return_t30MEMCACHED_UNKNOWN_READ_FAILUREE"></span><span id="_CPPv2N18memcached_return_t30MEMCACHED_UNKNOWN_READ_FAILUREE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_UNKNOWN_READ_FAILURE</code><a class="headerlink" href="#_CPPv4N18memcached_return_t30MEMCACHED_UNKNOWN_READ_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t30MEMCACHED_UNKNOWN_READ_FAILUREE"></span><span id="_CPPv2N18memcached_return_t30MEMCACHED_UNKNOWN_READ_FAILUREE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_UNKNOWN_READ_FAILURE</code><a class="headerlink" href="#_CPPv4N18memcached_return_t30MEMCACHED_UNKNOWN_READ_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>An unknown read failure only occurs when either there is a bug in the server,
 or in rare cases where an ethernet nic is reporting dubious information.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t26MEMCACHED_UNKNOWN_STAT_KEYE">
-<span id="_CPPv3N18memcached_return_t26MEMCACHED_UNKNOWN_STAT_KEYE"></span><span id="_CPPv2N18memcached_return_t26MEMCACHED_UNKNOWN_STAT_KEYE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_UNKNOWN_STAT_KEY</code><a class="headerlink" href="#_CPPv4N18memcached_return_t26MEMCACHED_UNKNOWN_STAT_KEYE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t26MEMCACHED_UNKNOWN_STAT_KEYE"></span><span id="_CPPv2N18memcached_return_t26MEMCACHED_UNKNOWN_STAT_KEYE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_UNKNOWN_STAT_KEY</code><a class="headerlink" href="#_CPPv4N18memcached_return_t26MEMCACHED_UNKNOWN_STAT_KEYE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The server you are communicating with has a stat key which has not be defined in the protocol.</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t15MEMCACHED_VALUEE">
-<span id="_CPPv3N18memcached_return_t15MEMCACHED_VALUEE"></span><span id="_CPPv2N18memcached_return_t15MEMCACHED_VALUEE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_VALUE</code><a class="headerlink" href="#_CPPv4N18memcached_return_t15MEMCACHED_VALUEE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t15MEMCACHED_VALUEE"></span><span id="_CPPv2N18memcached_return_t15MEMCACHED_VALUEE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_VALUE</code><a class="headerlink" href="#_CPPv4N18memcached_return_t15MEMCACHED_VALUEE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>A value has been returned from the server (this is an internal condition only).</p>
 </dd></dl>
 
-<dl class="cpp enumerator">
+<dl class="enumerator">
 <dt id="_CPPv4N18memcached_return_t23MEMCACHED_WRITE_FAILUREE">
-<span id="_CPPv3N18memcached_return_t23MEMCACHED_WRITE_FAILUREE"></span><span id="_CPPv2N18memcached_return_t23MEMCACHED_WRITE_FAILUREE"></span><em class="property">enumerator </em><code class="sig-name descname">MEMCACHED_WRITE_FAILURE</code><a class="headerlink" href="#_CPPv4N18memcached_return_t23MEMCACHED_WRITE_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18memcached_return_t23MEMCACHED_WRITE_FAILUREE"></span><span id="_CPPv2N18memcached_return_t23MEMCACHED_WRITE_FAILUREE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_WRITE_FAILURE</code><a class="headerlink" href="#_CPPv4N18memcached_return_t23MEMCACHED_WRITE_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>An error has occurred while trying to write to a server.</p>
 </dd></dl>
 
@@ -529,9 +526,9 @@ or in rare cases where an ethernet nic is reporting dubious information.</p>
 <div class="section" id="see-also">
 <h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><em class="manpage"><a class="manpage reference external" href="https://linux.die.net/man/1/memcached">memcached(1)</a></em></p></li>
-<li><p><a class="reference internal" href="../libmemcached.html"><span class="doc">C/C++ Client Library for memcached</span></a></p></li>
-<li><p><a class="reference internal" href="memcached_strerror.html"><span class="doc">Converting Error Codes to Messages</span></a></p></li>
+<li><em class="manpage"><a class="manpage reference external" href="https://linux.die.net/man/1/memcached">memcached(1)</a></em></li>
+<li><a class="reference internal" href="../libmemcached.html"><span class="doc">C/C++ Client Library for memcached</span></a></li>
+<li><a class="reference internal" href="memcached_strerror.html"><span class="doc">Converting Error Codes to Messages</span></a></li>
 </ul>
 </div>
 </div>
@@ -556,20 +553,11 @@ or in rare cases where an ethernet nic is reporting dubious information.</p>
 
   <div role="contentinfo">
     <p>
-        
-        
         &copy; <a href="../copyright.html">Copyright</a> 
 
     </p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -580,6 +568,7 @@ or in rare cases where an ethernet nic is reporting dubious information.</p>
 
   </div>
   
+
 
   <script type="text/javascript">
       jQuery(function () {

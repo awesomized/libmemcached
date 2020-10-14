@@ -1,7 +1,8 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
   
@@ -11,29 +12,27 @@
   
 
   
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-
-  
   
   
   
 
   
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="copyright" title="Copyright" href="../copyright.html" />
@@ -52,7 +51,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> libmemcached
+            <a href="../index.html" class="icon icon-home"> libmemcached
           
 
           
@@ -79,7 +78,6 @@
           
         </div>
 
-        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -121,7 +119,6 @@
             
           
         </div>
-        
       </div>
     </nav>
 
@@ -160,7 +157,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><a href="../index.html">Docs</a> &raquo;</li>
         
           <li><a href="index_misc.html">Misc</a> &raquo;</li>
         
@@ -185,117 +182,117 @@
 <h1>libmemcached Constants and Defaults<a class="headerlink" href="#libmemcached-constants-and-defaults" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="synopsis">
 <h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<dl class="simple">
-<dt>#include &lt;libmemcached-1.0/memcached.h&gt;</dt><dd><p>Compile and link with -lmemcached</p>
-</dd>
+<dl class="docutils">
+<dt>#include &lt;libmemcached-1.0/memcached.h&gt;</dt>
+<dd>Compile and link with -lmemcached</dd>
 </dl>
-<dl class="c macro">
+<dl class="macro">
 <dt id="c.LIBMEMCACHED_VERSION_STRING">
-<code class="sig-name descname">LIBMEMCACHED_VERSION_STRING</code><a class="headerlink" href="#c.LIBMEMCACHED_VERSION_STRING" title="Permalink to this definition">¶</a><br /></dt>
+<code class="descname">LIBMEMCACHED_VERSION_STRING</code><a class="headerlink" href="#c.LIBMEMCACHED_VERSION_STRING" title="Permalink to this definition">¶</a></dt>
 <dd><p>String value of libmemcached version such as &quot;1.0.99&quot;</p>
 </dd></dl>
 
-<dl class="c macro">
+<dl class="macro">
 <dt id="c.LIBMEMCACHED_VERSION_HEX">
-<code class="sig-name descname">LIBMEMCACHED_VERSION_HEX</code><a class="headerlink" href="#c.LIBMEMCACHED_VERSION_HEX" title="Permalink to this definition">¶</a><br /></dt>
+<code class="descname">LIBMEMCACHED_VERSION_HEX</code><a class="headerlink" href="#c.LIBMEMCACHED_VERSION_HEX" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hex value of the version number, e.g. &quot;0x00048000&quot;.
 This can be used for comparing versions based on number.</p>
 </dd></dl>
 
-<dl class="c macro">
+<dl class="macro">
 <dt id="c.MEMCACHED_DEFAULT_PORT">
-<code class="sig-name descname">MEMCACHED_DEFAULT_PORT</code><a class="headerlink" href="#c.MEMCACHED_DEFAULT_PORT" title="Permalink to this definition">¶</a><br /></dt>
+<code class="descname">MEMCACHED_DEFAULT_PORT</code><a class="headerlink" href="#c.MEMCACHED_DEFAULT_PORT" title="Permalink to this definition">¶</a></dt>
 <dd><p>The default port used by <a class="reference internal" href="configuration.html#_CPPv49memcachedPKc6size_t" title="memcached"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached()</span></code></a>.</p>
 </dd></dl>
 
-<dl class="c macro">
+<dl class="macro">
 <dt id="c.MEMCACHED_DEFAULT_TIMEOUT">
-<code class="sig-name descname">MEMCACHED_DEFAULT_TIMEOUT</code><a class="headerlink" href="#c.MEMCACHED_DEFAULT_TIMEOUT" title="Permalink to this definition">¶</a><br /></dt>
+<code class="descname">MEMCACHED_DEFAULT_TIMEOUT</code><a class="headerlink" href="#c.MEMCACHED_DEFAULT_TIMEOUT" title="Permalink to this definition">¶</a></dt>
 <dd><p>Default timeout of 5000 milliseconds.</p>
 </dd></dl>
 
-<dl class="c macro">
+<dl class="macro">
 <dt id="c.MEMCACHED_DEFAULT_CONNECT_TIMEOUT">
-<code class="sig-name descname">MEMCACHED_DEFAULT_CONNECT_TIMEOUT</code><a class="headerlink" href="#c.MEMCACHED_DEFAULT_CONNECT_TIMEOUT" title="Permalink to this definition">¶</a><br /></dt>
+<code class="descname">MEMCACHED_DEFAULT_CONNECT_TIMEOUT</code><a class="headerlink" href="#c.MEMCACHED_DEFAULT_CONNECT_TIMEOUT" title="Permalink to this definition">¶</a></dt>
 <dd><p>Default connect timeout of 4000 milliseconds.</p>
 </dd></dl>
 
-<dl class="c macro">
+<dl class="macro">
 <dt id="c.MEMCACHED_MAX_BUFFER">
-<code class="sig-name descname">MEMCACHED_MAX_BUFFER</code><a class="headerlink" href="#c.MEMCACHED_MAX_BUFFER" title="Permalink to this definition">¶</a><br /></dt>
+<code class="descname">MEMCACHED_MAX_BUFFER</code><a class="headerlink" href="#c.MEMCACHED_MAX_BUFFER" title="Permalink to this definition">¶</a></dt>
 <dd><p>Default size of read/write buffers (which includes the null pointer).</p>
 </dd></dl>
 
-<dl class="c macro">
+<dl class="macro">
 <dt id="c.MEMCACHED_MAX_KEY">
-<code class="sig-name descname">MEMCACHED_MAX_KEY</code><a class="headerlink" href="#c.MEMCACHED_MAX_KEY" title="Permalink to this definition">¶</a><br /></dt>
+<code class="descname">MEMCACHED_MAX_KEY</code><a class="headerlink" href="#c.MEMCACHED_MAX_KEY" title="Permalink to this definition">¶</a></dt>
 <dd><p>Default maximum size of a key (which includes the null pointer). Master keys
 have no limit, this only applies to keys used for storage.</p>
 </dd></dl>
 
-<dl class="c macro">
+<dl class="macro">
 <dt id="c.MEMCACHED_MAX_NAMESPACE">
-<code class="sig-name descname">MEMCACHED_MAX_NAMESPACE</code><a class="headerlink" href="#c.MEMCACHED_MAX_NAMESPACE" title="Permalink to this definition">¶</a><br /></dt>
+<code class="descname">MEMCACHED_MAX_NAMESPACE</code><a class="headerlink" href="#c.MEMCACHED_MAX_NAMESPACE" title="Permalink to this definition">¶</a></dt>
 <dd><p>Maximum length allowed for namespacing of a key. Defaults to 128.</p>
 </dd></dl>
 
-<dl class="c macro">
+<dl class="macro">
 <dt id="c.MEMCACHED_MAX_HOST_LENGTH">
-<code class="sig-name descname">MEMCACHED_MAX_HOST_LENGTH</code><a class="headerlink" href="#c.MEMCACHED_MAX_HOST_LENGTH" title="Permalink to this definition">¶</a><br /></dt>
+<code class="descname">MEMCACHED_MAX_HOST_LENGTH</code><a class="headerlink" href="#c.MEMCACHED_MAX_HOST_LENGTH" title="Permalink to this definition">¶</a></dt>
 <dd><p>Maximum allowed length of the hostname.</p>
 </dd></dl>
 
-<dl class="c macro">
+<dl class="macro">
 <dt id="c.MEMCACHED_MAX_HOST_SORT_LENGTH">
-<code class="sig-name descname">MEMCACHED_MAX_HOST_SORT_LENGTH</code><a class="headerlink" href="#c.MEMCACHED_MAX_HOST_SORT_LENGTH" title="Permalink to this definition">¶</a><br /></dt>
+<code class="descname">MEMCACHED_MAX_HOST_SORT_LENGTH</code><a class="headerlink" href="#c.MEMCACHED_MAX_HOST_SORT_LENGTH" title="Permalink to this definition">¶</a></dt>
 <dd><p>Length of the host string used for sorting. Used for Ketama.</p>
 </dd></dl>
 
-<dl class="c macro">
+<dl class="macro">
 <dt id="c.MEMCACHED_MAX_INTEGER_DISPLAY_LENGTH">
-<code class="sig-name descname">MEMCACHED_MAX_INTEGER_DISPLAY_LENGTH</code><a class="headerlink" href="#c.MEMCACHED_MAX_INTEGER_DISPLAY_LENGTH" title="Permalink to this definition">¶</a><br /></dt>
+<code class="descname">MEMCACHED_MAX_INTEGER_DISPLAY_LENGTH</code><a class="headerlink" href="#c.MEMCACHED_MAX_INTEGER_DISPLAY_LENGTH" title="Permalink to this definition">¶</a></dt>
 <dd><p>Maximum display width of an integer represented as string.</p>
 </dd></dl>
 
-<dl class="c macro">
+<dl class="macro">
 <dt id="c.MEMCACHED_CONTINUUM_ADDITION">
-<code class="sig-name descname">MEMCACHED_CONTINUUM_ADDITION</code><a class="headerlink" href="#c.MEMCACHED_CONTINUUM_ADDITION" title="Permalink to this definition">¶</a><br /></dt>
+<code class="descname">MEMCACHED_CONTINUUM_ADDITION</code><a class="headerlink" href="#c.MEMCACHED_CONTINUUM_ADDITION" title="Permalink to this definition">¶</a></dt>
 <dd><p>How many extra slots we should build for in the continuum, defaults to 10.</p>
 </dd></dl>
 
-<dl class="c macro">
+<dl class="macro">
 <dt id="c.MEMCACHED_EXPIRATION_NOT_ADD">
-<code class="sig-name descname">MEMCACHED_EXPIRATION_NOT_ADD</code><a class="headerlink" href="#c.MEMCACHED_EXPIRATION_NOT_ADD" title="Permalink to this definition">¶</a><br /></dt>
+<code class="descname">MEMCACHED_EXPIRATION_NOT_ADD</code><a class="headerlink" href="#c.MEMCACHED_EXPIRATION_NOT_ADD" title="Permalink to this definition">¶</a></dt>
 <dd><p>Value <code class="docutils literal notranslate"><span class="pre">0xffffffffU</span></code></p>
 </dd></dl>
 
-<dl class="c macro">
+<dl class="macro">
 <dt id="c.MEMCACHED_STRIDE">
-<code class="sig-name descname">MEMCACHED_STRIDE</code><a class="headerlink" href="#c.MEMCACHED_STRIDE" title="Permalink to this definition">¶</a><br /></dt>
+<code class="descname">MEMCACHED_STRIDE</code><a class="headerlink" href="#c.MEMCACHED_STRIDE" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is the &quot;stride&quot; used in the consistent hash used between replicas.</p>
 </dd></dl>
 
-<dl class="c macro">
+<dl class="macro">
 <dt id="c.MEMCACHED_SERVER_FAILURE_LIMIT">
-<code class="sig-name descname">MEMCACHED_SERVER_FAILURE_LIMIT</code><a class="headerlink" href="#c.MEMCACHED_SERVER_FAILURE_LIMIT" title="Permalink to this definition">¶</a><br /></dt>
+<code class="descname">MEMCACHED_SERVER_FAILURE_LIMIT</code><a class="headerlink" href="#c.MEMCACHED_SERVER_FAILURE_LIMIT" title="Permalink to this definition">¶</a></dt>
 <dd><p>Value 5</p>
 </dd></dl>
 
-<dl class="c macro">
+<dl class="macro">
 <dt id="c.MEMCACHED_SERVER_FAILURE_RETRY_TIMEOUT">
-<code class="sig-name descname">MEMCACHED_SERVER_FAILURE_RETRY_TIMEOUT</code><a class="headerlink" href="#c.MEMCACHED_SERVER_FAILURE_RETRY_TIMEOUT" title="Permalink to this definition">¶</a><br /></dt>
+<code class="descname">MEMCACHED_SERVER_FAILURE_RETRY_TIMEOUT</code><a class="headerlink" href="#c.MEMCACHED_SERVER_FAILURE_RETRY_TIMEOUT" title="Permalink to this definition">¶</a></dt>
 <dd><p>Value 2</p>
 </dd></dl>
 
-<dl class="c macro">
+<dl class="macro">
 <dt id="c.MEMCACHED_SERVER_FAILURE_DEAD_TIMEOUT">
-<code class="sig-name descname">MEMCACHED_SERVER_FAILURE_DEAD_TIMEOUT</code><a class="headerlink" href="#c.MEMCACHED_SERVER_FAILURE_DEAD_TIMEOUT" title="Permalink to this definition">¶</a><br /></dt>
+<code class="descname">MEMCACHED_SERVER_FAILURE_DEAD_TIMEOUT</code><a class="headerlink" href="#c.MEMCACHED_SERVER_FAILURE_DEAD_TIMEOUT" title="Permalink to this definition">¶</a></dt>
 <dd><p>Value 0</p>
 </dd></dl>
 
-<dl class="c macro">
+<dl class="macro">
 <dt id="c.MEMCACHED_VERSION_STRING_LENGTH">
-<code class="sig-name descname">MEMCACHED_VERSION_STRING_LENGTH</code><a class="headerlink" href="#c.MEMCACHED_VERSION_STRING_LENGTH" title="Permalink to this definition">¶</a><br /></dt>
+<code class="descname">MEMCACHED_VERSION_STRING_LENGTH</code><a class="headerlink" href="#c.MEMCACHED_VERSION_STRING_LENGTH" title="Permalink to this definition">¶</a></dt>
 <dd><p>Value 24</p>
 </dd></dl>
 
@@ -326,20 +323,11 @@ have no limit, this only applies to keys used for storage.</p>
 
   <div role="contentinfo">
     <p>
-        
-        
         &copy; <a href="../copyright.html">Copyright</a> 
 
     </p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -350,6 +338,7 @@ have no limit, this only applies to keys used for storage.</p>
 
   </div>
   
+
 
   <script type="text/javascript">
       jQuery(function () {

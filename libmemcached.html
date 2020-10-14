@@ -1,7 +1,8 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
   
@@ -11,29 +12,27 @@
   
 
   
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-
-  
   
   
   
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="copyright" title="Copyright" href="copyright.html" />
@@ -52,7 +51,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> libmemcached
+            <a href="index.html" class="icon icon-home"> libmemcached
           
 
           
@@ -79,7 +78,6 @@
           
         </div>
 
-        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -115,7 +113,6 @@
             
           
         </div>
-        
       </div>
     </nav>
 
@@ -154,7 +151,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><a href="index.html">Docs</a> &raquo;</li>
         
       <li>C/C++ Client Library for memcached</li>
     
@@ -177,9 +174,9 @@
 <h1>C/C++ Client Library for memcached<a class="headerlink" href="#c-c-client-library-for-memcached" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="synopsis">
 <h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<dl class="simple">
-<dt>#include &lt;libmemcached/memcached.h&gt;</dt><dd><p>Compile and link with -lmemcached</p>
-</dd>
+<dl class="docutils">
+<dt>#include &lt;libmemcached/memcached.h&gt;</dt>
+<dd>Compile and link with -lmemcached</dd>
 </dl>
 <hr class="docutils" />
 <p><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcached</span></code> is an open source C/C++ client library and tools for the
@@ -188,13 +185,13 @@ memory usage, thread safe, and provide full access to server side methods.</p>
 <p><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcached</span></code> was designed to provide the greatest number of options to use
 Memcached. Some of the features provided:</p>
 <ol class="arabic simple">
-<li><p>Asynchronous and Synchronous Transport Support.</p></li>
-<li><p>Consistent Hashing and Distribution.</p></li>
-<li><p>Tunable Hashing algorithm to match keys.</p></li>
-<li><p>Access to large object support.</p></li>
-<li><p>Local replication.</p></li>
-<li><p>A complete reference guide and documentation to the API.</p></li>
-<li><p>Tools to Manage your Memcached networks.</p></li>
+<li>Asynchronous and Synchronous Transport Support.</li>
+<li>Consistent Hashing and Distribution.</li>
+<li>Tunable Hashing algorithm to match keys.</li>
+<li>Access to large object support.</li>
+<li>Local replication.</li>
+<li>A complete reference guide and documentation to the API.</li>
+<li>Tools to Manage your Memcached networks.</li>
 </ol>
 </div>
 <div class="section" id="description">
@@ -245,35 +242,35 @@ about Systemtap.</p>
 <h2>CLIENT PROGRAMS<a class="headerlink" href="#client-programs" title="Permalink to this headline">¶</a></h2>
 <p><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcached</span></code> comes with a few useful client programs:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="bin/memaslap.html"><span class="doc">memaslap - Load testing  and benchmarking a server</span></a></p></li>
-<li><p><a class="reference internal" href="bin/memcapable.html"><span class="doc">memcapable</span></a></p></li>
-<li><p><a class="reference internal" href="bin/memcat.html"><span class="doc">memcat</span></a></p></li>
-<li><p><a class="reference internal" href="bin/memcp.html"><span class="doc">memcp</span></a></p></li>
-<li><p><a class="reference internal" href="bin/memdump.html"><span class="doc">memdump</span></a></p></li>
-<li><p><a class="reference internal" href="bin/memerror.html"><span class="doc">memerror</span></a></p></li>
-<li><p><a class="reference internal" href="bin/memexist.html"><span class="doc">memexist</span></a></p></li>
-<li><p><a class="reference internal" href="bin/memflush.html"><span class="doc">memflush</span></a></p></li>
-<li><p><a class="reference internal" href="bin/memparse.html"><span class="doc">memparse</span></a></p></li>
-<li><p><a class="reference internal" href="bin/memping.html"><span class="doc">memping</span></a></p></li>
-<li><p><a class="reference internal" href="bin/memrm.html"><span class="doc">memrm</span></a></p></li>
-<li><p><a class="reference internal" href="bin/memslap.html"><span class="doc">memslap</span></a></p></li>
-<li><p><a class="reference internal" href="bin/memstat.html"><span class="doc">memstat</span></a></p></li>
-<li><p><a class="reference internal" href="bin/memtouch.html"><span class="doc">memtouch</span></a></p></li>
+<li><a class="reference internal" href="bin/memaslap.html"><span class="doc">memaslap - Load testing  and benchmarking a server</span></a></li>
+<li><a class="reference internal" href="bin/memcapable.html"><span class="doc">memcapable</span></a></li>
+<li><a class="reference internal" href="bin/memcat.html"><span class="doc">memcat</span></a></li>
+<li><a class="reference internal" href="bin/memcp.html"><span class="doc">memcp</span></a></li>
+<li><a class="reference internal" href="bin/memdump.html"><span class="doc">memdump</span></a></li>
+<li><a class="reference internal" href="bin/memerror.html"><span class="doc">memerror</span></a></li>
+<li><a class="reference internal" href="bin/memexist.html"><span class="doc">memexist</span></a></li>
+<li><a class="reference internal" href="bin/memflush.html"><span class="doc">memflush</span></a></li>
+<li><a class="reference internal" href="bin/memparse.html"><span class="doc">memparse</span></a></li>
+<li><a class="reference internal" href="bin/memping.html"><span class="doc">memping</span></a></li>
+<li><a class="reference internal" href="bin/memrm.html"><span class="doc">memrm</span></a></li>
+<li><a class="reference internal" href="bin/memslap.html"><span class="doc">memslap</span></a></li>
+<li><a class="reference internal" href="bin/memstat.html"><span class="doc">memstat</span></a></li>
+<li><a class="reference internal" href="bin/memtouch.html"><span class="doc">memtouch</span></a></li>
 </ul>
 </div>
 <div class="section" id="utility-libraries">
 <h2>UTILITY LIBRARIES<a class="headerlink" href="#utility-libraries" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="libhashkit.html"><span class="doc">libhashkit - C/C++ hashing library</span></a></p></li>
-<li><p><a class="reference internal" href="libmemcachedutil.html"><span class="doc">libmemcachedutil - C/C++ utilities extending libmemcached</span></a></p></li>
+<li><a class="reference internal" href="libhashkit.html"><span class="doc">libhashkit - C/C++ hashing library</span></a></li>
+<li><a class="reference internal" href="libmemcachedutil.html"><span class="doc">libmemcachedutil - C/C++ utilities extending libmemcached</span></a></li>
 </ul>
 </div>
 <div class="section" id="see-also">
 <h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><em class="manpage"><a class="manpage reference external" href="https://linux.die.net/man/1/memcached">memcached(1)</a></em></p></li>
-<li><p><a class="reference internal" href="libmemcached/configuration.html"><span class="doc">libmemcached Configuration</span></a></p></li>
-<li><p><a class="reference internal" href="libmemcached/examples.html"><span class="doc">libmemcached Examples</span></a></p></li>
+<li><em class="manpage"><a class="manpage reference external" href="https://linux.die.net/man/1/memcached">memcached(1)</a></em></li>
+<li><a class="reference internal" href="libmemcached/configuration.html"><span class="doc">libmemcached Configuration</span></a></li>
+<li><a class="reference internal" href="libmemcached/examples.html"><span class="doc">libmemcached Examples</span></a></li>
 </ul>
 </div>
 </div>
@@ -298,20 +295,11 @@ about Systemtap.</p>
 
   <div role="contentinfo">
     <p>
-        
-        
         &copy; <a href="copyright.html">Copyright</a> 
 
     </p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -322,6 +310,7 @@ about Systemtap.</p>
 
   </div>
   
+
 
   <script type="text/javascript">
       jQuery(function () {

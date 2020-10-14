@@ -1,7 +1,8 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
   
@@ -11,29 +12,27 @@
   
 
   
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-
-  
   
   
   
 
   
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="copyright" title="Copyright" href="../copyright.html" />
@@ -52,7 +51,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> libmemcached
+            <a href="../index.html" class="icon icon-home"> libmemcached
           
 
           
@@ -79,7 +78,6 @@
           
         </div>
 
-        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -118,7 +116,6 @@
             
           
         </div>
-        
       </div>
     </nav>
 
@@ -157,7 +154,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><a href="../index.html">Docs</a> &raquo;</li>
         
           <li><a href="index.html">libmemcachedutil API</a> &raquo;</li>
         
@@ -182,138 +179,160 @@
 <h1>Working with memcached pools<a class="headerlink" href="#working-with-memcached-pools" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="synopsis">
 <h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<dl class="simple">
-<dt>#include &lt;libmemcachedutil-1.0/pool.h&gt;</dt><dd><p>Compile and link with -lmemcachedutil -lmemcached</p>
-</dd>
+<dl class="docutils">
+<dt>#include &lt;libmemcachedutil-1.0/pool.h&gt;</dt>
+<dd>Compile and link with -lmemcachedutil -lmemcached</dd>
 </dl>
-<dl class="cpp type">
+<dl class="type">
 <dt id="_CPPv417memcached_pool_st">
-<span id="_CPPv317memcached_pool_st"></span><span id="_CPPv217memcached_pool_st"></span><span id="memcached_pool_st"></span><em class="property">typedef </em><em class="property">struct</em> <a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st">memcached_pool_st</a> <code class="sig-name descname">memcached_pool_st</code><a class="headerlink" href="#_CPPv417memcached_pool_st" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv317memcached_pool_st"></span><span id="_CPPv217memcached_pool_st"></span><span id="memcached_pool_st"></span><em class="property">typedef </em><em class="property">struct</em> <a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st">memcached_pool_st</a> <code class="descname">memcached_pool_st</code><a class="headerlink" href="#_CPPv417memcached_pool_st" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
-<dl class="cpp function">
+<dl class="function">
 <dt id="_CPPv414memcached_poolPKc6size_t">
-<span id="_CPPv314memcached_poolPKc6size_t"></span><span id="_CPPv214memcached_poolPKc6size_t"></span><span id="memcached_pool__cCP.s"></span><a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st">memcached_pool_st</a> *<code class="sig-name descname">memcached_pool</code><span class="sig-paren">(</span><em class="property">const</em> char *<em>option_string</em>, size_t <em>option_string_length</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414memcached_poolPKc6size_t" title="Permalink to this definition">¶</a><br /></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>option_string</strong> -- <a class="reference internal" href="../libmemcached/configuration.html"><span class="doc">configuration</span></a> string</p></li>
-<li><p><strong>option_string_length</strong> -- length of <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">options_string</span></code> without any trailing zero byte</p></li>
+<span id="_CPPv314memcached_poolPKc6size_t"></span><span id="_CPPv214memcached_poolPKc6size_t"></span><span id="memcached_pool__cCP.s"></span><a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st">memcached_pool_st</a> *<code class="descname">memcached_pool</code><span class="sig-paren">(</span><em class="property">const</em> char *<em>option_string</em>, size_t <em>option_string_length</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414memcached_poolPKc6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>option_string</strong> -- <a class="reference internal" href="../libmemcached/configuration.html"><span class="doc">configuration</span></a> string</li>
+<li><strong>option_string_length</strong> -- length of <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">options_string</span></code> without any trailing zero byte</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>allocated and initialized <a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_pool_st</span></code></a> instance on success or nullptr on failure</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">allocated and initialized <a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_pool_st</span></code></a> instance on success or nullptr on failure</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
-<dl class="cpp function">
+<dl class="function">
 <dt id="_CPPv422memcached_pool_destroyP17memcached_pool_st">
-<span id="_CPPv322memcached_pool_destroyP17memcached_pool_st"></span><span id="_CPPv222memcached_pool_destroyP17memcached_pool_st"></span><span id="memcached_pool_destroy__memcached_pool_stP"></span><a class="reference internal" href="../libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<code class="sig-name descname">memcached_pool_destroy</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st">memcached_pool_st</a> *<em>pool</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422memcached_pool_destroyP17memcached_pool_st" title="Permalink to this definition">¶</a><br /></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>pool</strong> -- initialized <a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_pool_st</span></code></a> instance to free</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>pointer to the 'master' <a class="reference internal" href="../libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> instance by legacy</p>
-</dd>
-</dl>
+<span id="_CPPv322memcached_pool_destroyP17memcached_pool_st"></span><span id="_CPPv222memcached_pool_destroyP17memcached_pool_st"></span><span id="memcached_pool_destroy__memcached_pool_stP"></span><a class="reference internal" href="../libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<code class="descname">memcached_pool_destroy</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st">memcached_pool_st</a> *<em>pool</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422memcached_pool_destroyP17memcached_pool_st" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pool</strong> -- initialized <a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_pool_st</span></code></a> instance to free</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">pointer to the 'master' <a class="reference internal" href="../libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> instance by legacy</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
-<dl class="cpp function">
+<dl class="function">
 <dt id="_CPPv420memcached_pool_fetchP17memcached_pool_stP8timespecP18memcached_return_t">
-<span id="_CPPv320memcached_pool_fetchP17memcached_pool_stP8timespecP18memcached_return_t"></span><span id="_CPPv220memcached_pool_fetchP17memcached_pool_stP8timespecP18memcached_return_t"></span><span id="memcached_pool_fetch__memcached_pool_stP.timespecP.memcached_return_tP"></span><a class="reference internal" href="../libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<code class="sig-name descname">memcached_pool_fetch</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st">memcached_pool_st</a> *<em>pool</em>, <em class="property">struct</em> timespec *<em>relative_time</em>, <a class="reference internal" href="../libmemcached/memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> *<em>rc</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420memcached_pool_fetchP17memcached_pool_stP8timespecP18memcached_return_t" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv320memcached_pool_fetchP17memcached_pool_stP8timespecP18memcached_return_t"></span><span id="_CPPv220memcached_pool_fetchP17memcached_pool_stP8timespecP18memcached_return_t"></span><span id="memcached_pool_fetch__memcached_pool_stP.timespecP.memcached_return_tP"></span><a class="reference internal" href="../libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<code class="descname">memcached_pool_fetch</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st">memcached_pool_st</a> *<em>pool</em>, <em class="property">struct</em> timespec *<em>relative_time</em>, <a class="reference internal" href="../libmemcached/memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> *<em>rc</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420memcached_pool_fetchP17memcached_pool_stP8timespecP18memcached_return_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="versionadded">
-<p><span class="versionmodified added">New in version 0.53: </span>Synonym for memcached_pool_pop</p>
+<p><span class="versionmodified">New in version 0.53: </span>Synonym for memcached_pool_pop</p>
 </div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>pool</strong> -- initialized <a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_pool_st</span></code></a> instance</p></li>
-<li><p><strong>relative_time</strong> -- time to block thread and wait for a connection to become available when pool size is exceeded, unless nullptr</p></li>
-<li><p><strong>rc</strong> -- out pointer to <a class="reference internal" href="../libmemcached/memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a></p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pool</strong> -- initialized <a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_pool_st</span></code></a> instance</li>
+<li><strong>relative_time</strong> -- time to block thread and wait for a connection to become available when pool size is exceeded, unless nullptr</li>
+<li><strong>rc</strong> -- out pointer to <a class="reference internal" href="../libmemcached/memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a></li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>pointer to an available <a class="reference internal" href="../libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> instance</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">pointer to an available <a class="reference internal" href="../libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> instance</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
-<dl class="cpp function">
+<dl class="function">
 <dt id="_CPPv422memcached_pool_releaseP17memcached_pool_stP12memcached_st">
-<span id="_CPPv322memcached_pool_releaseP17memcached_pool_stP12memcached_st"></span><span id="_CPPv222memcached_pool_releaseP17memcached_pool_stP12memcached_st"></span><span id="memcached_pool_release__memcached_pool_stP.memcached_stP"></span><a class="reference internal" href="../libmemcached/memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_pool_release</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st">memcached_pool_st</a> *<em>pool</em>, <a class="reference internal" href="../libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>mmc</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422memcached_pool_releaseP17memcached_pool_stP12memcached_st" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv322memcached_pool_releaseP17memcached_pool_stP12memcached_st"></span><span id="_CPPv222memcached_pool_releaseP17memcached_pool_stP12memcached_st"></span><span id="memcached_pool_release__memcached_pool_stP.memcached_stP"></span><a class="reference internal" href="../libmemcached/memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="descname">memcached_pool_release</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st">memcached_pool_st</a> *<em>pool</em>, <a class="reference internal" href="../libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>mmc</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422memcached_pool_releaseP17memcached_pool_stP12memcached_st" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="versionadded">
-<p><span class="versionmodified added">New in version 0.53: </span>Synonym for memcached_pool_push.</p>
+<p><span class="versionmodified">New in version 0.53: </span>Synonym for memcached_pool_push.</p>
 </div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>pool</strong> -- initialized <a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_pool_st</span></code></a> instance</p></li>
-<li><p><strong>mmc</strong> -- the <a class="reference internal" href="../libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> instance to return to the pool</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pool</strong> -- initialized <a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_pool_st</span></code></a> instance</li>
+<li><strong>mmc</strong> -- the <a class="reference internal" href="../libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> instance to return to the pool</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><a class="reference internal" href="../libmemcached/memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="../libmemcached/memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
-<dl class="cpp function">
+<dl class="function">
 <dt id="_CPPv427memcached_pool_behavior_setP17memcached_pool_st20memcached_behavior_t8uint64_t">
-<span id="_CPPv327memcached_pool_behavior_setP17memcached_pool_st20memcached_behavior_t8uint64_t"></span><span id="_CPPv227memcached_pool_behavior_setP17memcached_pool_st20memcached_behavior_t8uint64_t"></span><span id="memcached_pool_behavior_set__memcached_pool_stP.memcached_behavior_t.uint64_t"></span><a class="reference internal" href="../libmemcached/memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_pool_behavior_set</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st">memcached_pool_st</a> *<em>pool</em>, <a class="reference internal" href="../libmemcached/memcached_behavior.html#_CPPv420memcached_behavior_t" title="memcached_behavior_t">memcached_behavior_t</a> <em>flag</em>, uint64_t <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427memcached_pool_behavior_setP17memcached_pool_st20memcached_behavior_t8uint64_t" title="Permalink to this definition">¶</a><br /></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>pool</strong> -- initialized <a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_pool_st</span></code></a> instance</p></li>
-<li><p><strong>flag</strong> -- the <a class="reference internal" href="../libmemcached/memcached_behavior.html"><span class="doc">behavior</span></a> to change</p></li>
-<li><p><strong>value</strong> -- the value to set for <a class="reference internal" href="#_CPPv427memcached_pool_behavior_setP17memcached_pool_st20memcached_behavior_t8uint64_t" title="memcached_pool_behavior_set::flag"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">flag</span></code></a></p></li>
+<span id="_CPPv327memcached_pool_behavior_setP17memcached_pool_st20memcached_behavior_t8uint64_t"></span><span id="_CPPv227memcached_pool_behavior_setP17memcached_pool_st20memcached_behavior_t8uint64_t"></span><span id="memcached_pool_behavior_set__memcached_pool_stP.memcached_behavior_t.uint64_t"></span><a class="reference internal" href="../libmemcached/memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="descname">memcached_pool_behavior_set</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st">memcached_pool_st</a> *<em>pool</em>, <a class="reference internal" href="../libmemcached/memcached_behavior.html#_CPPv420memcached_behavior_t" title="memcached_behavior_t">memcached_behavior_t</a> <em>flag</em>, uint64_t <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427memcached_pool_behavior_setP17memcached_pool_st20memcached_behavior_t8uint64_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pool</strong> -- initialized <a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_pool_st</span></code></a> instance</li>
+<li><strong>flag</strong> -- the <a class="reference internal" href="../libmemcached/memcached_behavior.html"><span class="doc">behavior</span></a> to change</li>
+<li><strong>value</strong> -- the value to set for <a class="reference internal" href="#_CPPv427memcached_pool_behavior_setP17memcached_pool_st20memcached_behavior_t8uint64_t" title="memcached_pool_behavior_set::flag"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">flag</span></code></a></li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><a class="reference internal" href="../libmemcached/memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="../libmemcached/memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
-<dl class="cpp function">
+<dl class="function">
 <dt id="_CPPv427memcached_pool_behavior_getP17memcached_pool_st20memcached_behavior_tP8uint64_t">
-<span id="_CPPv327memcached_pool_behavior_getP17memcached_pool_st20memcached_behavior_tP8uint64_t"></span><span id="_CPPv227memcached_pool_behavior_getP17memcached_pool_st20memcached_behavior_tP8uint64_t"></span><span id="memcached_pool_behavior_get__memcached_pool_stP.memcached_behavior_t.uint64_tP"></span><a class="reference internal" href="../libmemcached/memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_pool_behavior_get</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st">memcached_pool_st</a> *<em>pool</em>, <a class="reference internal" href="../libmemcached/memcached_behavior.html#_CPPv420memcached_behavior_t" title="memcached_behavior_t">memcached_behavior_t</a> <em>flag</em>, uint64_t *<em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427memcached_pool_behavior_getP17memcached_pool_st20memcached_behavior_tP8uint64_t" title="Permalink to this definition">¶</a><br /></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>pool</strong> -- initialized <a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_pool_st</span></code></a> instance</p></li>
-<li><p><strong>flag</strong> -- the <a class="reference internal" href="../libmemcached/memcached_behavior.html"><span class="doc">behavior</span></a> to read</p></li>
-<li><p><strong>value</strong> -- out pointer to receive the set value of <a class="reference internal" href="#_CPPv427memcached_pool_behavior_getP17memcached_pool_st20memcached_behavior_tP8uint64_t" title="memcached_pool_behavior_get::flag"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">flag</span></code></a></p></li>
+<span id="_CPPv327memcached_pool_behavior_getP17memcached_pool_st20memcached_behavior_tP8uint64_t"></span><span id="_CPPv227memcached_pool_behavior_getP17memcached_pool_st20memcached_behavior_tP8uint64_t"></span><span id="memcached_pool_behavior_get__memcached_pool_stP.memcached_behavior_t.uint64_tP"></span><a class="reference internal" href="../libmemcached/memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="descname">memcached_pool_behavior_get</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st">memcached_pool_st</a> *<em>pool</em>, <a class="reference internal" href="../libmemcached/memcached_behavior.html#_CPPv420memcached_behavior_t" title="memcached_behavior_t">memcached_behavior_t</a> <em>flag</em>, uint64_t *<em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427memcached_pool_behavior_getP17memcached_pool_st20memcached_behavior_tP8uint64_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pool</strong> -- initialized <a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_pool_st</span></code></a> instance</li>
+<li><strong>flag</strong> -- the <a class="reference internal" href="../libmemcached/memcached_behavior.html"><span class="doc">behavior</span></a> to read</li>
+<li><strong>value</strong> -- out pointer to receive the set value of <a class="reference internal" href="#_CPPv427memcached_pool_behavior_getP17memcached_pool_st20memcached_behavior_tP8uint64_t" title="memcached_pool_behavior_get::flag"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">flag</span></code></a></li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><a class="reference internal" href="../libmemcached/memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="../libmemcached/memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
-<dl class="cpp function">
+<dl class="function">
 <dt id="_CPPv421memcached_pool_createP12memcached_stii">
-<span id="_CPPv321memcached_pool_createP12memcached_stii"></span><span id="_CPPv221memcached_pool_createP12memcached_stii"></span><span id="memcached_pool_create__memcached_stP.i.i"></span><a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st">memcached_pool_st</a> *<code class="sig-name descname">memcached_pool_create</code><span class="sig-paren">(</span><a class="reference internal" href="../libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>mmc</em>, int <em>initial</em>, int <em>max</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421memcached_pool_createP12memcached_stii" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv321memcached_pool_createP12memcached_stii"></span><span id="_CPPv221memcached_pool_createP12memcached_stii"></span><span id="memcached_pool_create__memcached_stP.i.i"></span><a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st">memcached_pool_st</a> *<code class="descname">memcached_pool_create</code><span class="sig-paren">(</span><a class="reference internal" href="../libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>mmc</em>, int <em>initial</em>, int <em>max</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421memcached_pool_createP12memcached_stii" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="deprecated">
-<p><span class="versionmodified deprecated">Deprecated since version 0.46: </span>Use <a class="reference internal" href="#_CPPv414memcached_poolPKc6size_t" title="memcached_pool"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_pool()</span></code></a></p>
+<p><span class="versionmodified">Deprecated since version 0.46: </span>Use <a class="reference internal" href="#_CPPv414memcached_poolPKc6size_t" title="memcached_pool"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_pool()</span></code></a></p>
 </div>
 </dd></dl>
 
-<dl class="cpp function">
+<dl class="function">
 <dt id="_CPPv418memcached_pool_popP17memcached_pool_stbP18memcached_return_t">
-<span id="_CPPv318memcached_pool_popP17memcached_pool_stbP18memcached_return_t"></span><span id="_CPPv218memcached_pool_popP17memcached_pool_stbP18memcached_return_t"></span><span id="memcached_pool_pop__memcached_pool_stP.b.memcached_return_tP"></span><a class="reference internal" href="../libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<code class="sig-name descname">memcached_pool_pop</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st">memcached_pool_st</a> *<em>pool</em>, bool <em>block</em>, <a class="reference internal" href="../libmemcached/memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> *<em>rc</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418memcached_pool_popP17memcached_pool_stbP18memcached_return_t" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv318memcached_pool_popP17memcached_pool_stbP18memcached_return_t"></span><span id="_CPPv218memcached_pool_popP17memcached_pool_stbP18memcached_return_t"></span><span id="memcached_pool_pop__memcached_pool_stP.b.memcached_return_tP"></span><a class="reference internal" href="../libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<code class="descname">memcached_pool_pop</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st">memcached_pool_st</a> *<em>pool</em>, bool <em>block</em>, <a class="reference internal" href="../libmemcached/memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> *<em>rc</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418memcached_pool_popP17memcached_pool_stbP18memcached_return_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="deprecated">
-<p><span class="versionmodified deprecated">Deprecated since version 0.53: </span>Use <a class="reference internal" href="#_CPPv420memcached_pool_fetchP17memcached_pool_stP8timespecP18memcached_return_t" title="memcached_pool_fetch"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_pool_fetch()</span></code></a></p>
+<p><span class="versionmodified">Deprecated since version 0.53: </span>Use <a class="reference internal" href="#_CPPv420memcached_pool_fetchP17memcached_pool_stP8timespecP18memcached_return_t" title="memcached_pool_fetch"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_pool_fetch()</span></code></a></p>
 </div>
 </dd></dl>
 
-<dl class="cpp function">
+<dl class="function">
 <dt id="_CPPv419memcached_pool_pushP17memcached_pool_stP12memcached_st">
-<span id="_CPPv319memcached_pool_pushP17memcached_pool_stP12memcached_st"></span><span id="_CPPv219memcached_pool_pushP17memcached_pool_stP12memcached_st"></span><span id="memcached_pool_push__memcached_pool_stP.memcached_stP"></span><a class="reference internal" href="../libmemcached/memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="sig-name descname">memcached_pool_push</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st">memcached_pool_st</a> *<em>pool</em>, <a class="reference internal" href="../libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>mmc</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419memcached_pool_pushP17memcached_pool_stP12memcached_st" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv319memcached_pool_pushP17memcached_pool_stP12memcached_st"></span><span id="_CPPv219memcached_pool_pushP17memcached_pool_stP12memcached_st"></span><span id="memcached_pool_push__memcached_pool_stP.memcached_stP"></span><a class="reference internal" href="../libmemcached/memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="descname">memcached_pool_push</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st">memcached_pool_st</a> *<em>pool</em>, <a class="reference internal" href="../libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>mmc</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419memcached_pool_pushP17memcached_pool_stP12memcached_st" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="deprecated">
-<p><span class="versionmodified deprecated">Deprecated since version 0.53: </span>Use <a class="reference internal" href="#_CPPv422memcached_pool_releaseP17memcached_pool_stP12memcached_st" title="memcached_pool_release"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_pool_release()</span></code></a></p>
+<p><span class="versionmodified">Deprecated since version 0.53: </span>Use <a class="reference internal" href="#_CPPv422memcached_pool_releaseP17memcached_pool_stP12memcached_st" title="memcached_pool_release"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_pool_release()</span></code></a></p>
 </div>
 </dd></dl>
 
@@ -353,20 +372,20 @@ pool (or NULL if an allocation cannot be satisfied).</p>
 waiting for a free <a class="reference internal" href="../libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> instance, <a class="reference internal" href="../libmemcached/memcached_return_t.html#_CPPv4N18memcached_return_t18MEMCACHED_NOTFOUNDE" title="MEMCACHED_NOTFOUND"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_NOTFOUND</span></code></a> if no <a class="reference internal" href="../libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a>
 instance was available, respectively.</p>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
+<p class="first admonition-title">Note</p>
 <p>If any method returns <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_IN_PROGRESS</span></code> then a lock on the pool could not
 be obtained.</p>
-<p>If any of the parameters passed to any of these functions is
+<p class="last">If any of the parameters passed to any of these functions is
 invalid, <a class="reference internal" href="../libmemcached/memcached_return_t.html#_CPPv4N18memcached_return_t27MEMCACHED_INVALID_ARGUMENTSE" title="MEMCACHED_INVALID_ARGUMENTS"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_INVALID_ARGUMENTS</span></code></a> will be returned.</p>
 </div>
 </div>
 <div class="section" id="see-also">
 <h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><em class="manpage"><a class="manpage reference external" href="https://linux.die.net/man/1/memcached">memcached(1)</a></em></p></li>
-<li><p><a class="reference internal" href="../libmemcached.html"><span class="doc">C/C++ Client Library for memcached</span></a></p></li>
-<li><p><a class="reference internal" href="../libmemcached/configuration.html"><span class="doc">libmemcached Configuration</span></a></p></li>
-<li><p><a class="reference internal" href="../libmemcached/memcached_strerror.html"><span class="doc">Converting Error Codes to Messages</span></a></p></li>
+<li><em class="manpage"><a class="manpage reference external" href="https://linux.die.net/man/1/memcached">memcached(1)</a></em></li>
+<li><a class="reference internal" href="../libmemcached.html"><span class="doc">C/C++ Client Library for memcached</span></a></li>
+<li><a class="reference internal" href="../libmemcached/configuration.html"><span class="doc">libmemcached Configuration</span></a></li>
+<li><a class="reference internal" href="../libmemcached/memcached_strerror.html"><span class="doc">Converting Error Codes to Messages</span></a></li>
 </ul>
 </div>
 </div>
@@ -391,20 +410,11 @@ invalid, <a class="reference internal" href="../libmemcached/memcached_return_t.
 
   <div role="contentinfo">
     <p>
-        
-        
         &copy; <a href="../copyright.html">Copyright</a> 
 
     </p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -415,6 +425,7 @@ invalid, <a class="reference internal" href="../libmemcached/memcached_return_t.
 
   </div>
   
+
 
   <script type="text/javascript">
       jQuery(function () {
