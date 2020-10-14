@@ -38,7 +38,7 @@ task:
   prepare_script: |
     mkdir build
     chown nobody build
-    pw user mod -s /bin/sh -d $(pwd)/build nobody
+    pw user mod nobody -s /bin/sh -d $(pwd)/build
   configure_script: |
     sudo -E -u nobody CFLAGS="-O0 --coverage" CXXFLAGS="-O0 --coverage" cmake -S . -B build
   build_script: |
