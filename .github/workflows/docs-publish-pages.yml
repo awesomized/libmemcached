@@ -33,9 +33,3 @@ jobs:
           keep_history: true
           allow_empty_commit: false
           build_dir: build/docs/html
-          commit_message: |
-            ${{ github.event.push.pusher }} pushed the following commits:\
-            \
-            ${{ join(github.event.push.commits.*.message, '\n\n') }}\
-            \
-            ${{ github.event.push.compare }}
