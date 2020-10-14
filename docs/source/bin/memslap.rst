@@ -8,7 +8,7 @@ memslap [options]
 
 .. program::  memslap
 
-Load testing  and benchmarking a server
+Load testing and benchmarking a server
 
 DESCRIPTION
 -----------
