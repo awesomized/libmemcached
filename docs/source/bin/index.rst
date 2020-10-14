@@ -20,7 +20,7 @@ Tests and Analysis
     :titlesonly:
 
     memaslap - Load testing and benchmarking a server <memaslap>
-    memslap - Load testing and benchmarking a server <memslap>
+    memslap - Load testing and benchmarking a server <memslap>  
     memping – Ping a server <memping>
     memstat – Gather statistics from a server <memstat>
     memerror — Translate libmemcached error codes <memerror>

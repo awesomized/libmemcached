@@ -7,6 +7,9 @@ on:
     branches:
       - v1.x
 
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
   publish:
     runs-on: ubuntu-20.04
@@ -19,7 +22,7 @@ jobs:
             python3-sphinx-rtd-theme
       - name: Configure
         run: |
-          cmake -DBUILD_DOCSONLY=ON -DBUILD_DOCS_MAN=OFF -S . -B build
+          cmake -DBUILD_DOCSONLY=ON -DBUILD_DOCS_HTML=ON -DBUILD_DOCS_MAN=OFF -S . -B build
       - name: Build
         run: |
           make -C build html
@@ -31,7 +34,7 @@ jobs:
           allow_empty_commit: false
           build_dir: build/docs/html
           commit_message: |
-            ${{ github.event.push.pusher }} pushed to following commits:\
+            ${{ github.event.push.pusher }} pushed the following commits:\
             \
             ${{ join(github.event.push.commits.*.message, '\n\n') }}\
             \
