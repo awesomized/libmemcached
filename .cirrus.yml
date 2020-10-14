@@ -1,0 +1,62 @@
+env:
+  CMAKE_BUILD_TYPE:   Debug
+  BUILD_TESTING:      "ON"
+  ENABLE_SASL:        "ON"
+  ENABLE_HASH_HSIEH:  "ON"
+  ENABLE_DTRACE:      "ON"
+  VERBOSE:            "ON"
+  MEMCACHED_BINARY:   "/usr/local/bin/memcached"
+
+task:
+  name: Freebsd
+  env:
+    gitter: ENCRYPTED[92e34815ac1a27681bf868c8299bfa37f3cb98c7d88156884c85dfb33e786bd3124c5d624721fb13735d23f7c57ead4b]
+    ports: RELEASE_12_1_0
+  freebsd_instance:
+    image_family: freebsd-12-1
+  dependencies_script: |
+    pkg update
+    pkg upgrade -y
+    pkg install -y \
+      autotools \
+      bison \
+      cmake \
+      cyrus-sasl \
+      flex \
+      libevent \
+      pkgconf \
+      subversion \
+      sudo
+  memcached_script: |
+    svn co https://svn.freebsd.org/ports/tags/${ports}/databases/memcached memcached
+    svn co https://svn.freebsd.org/ports/tags/${ports}/Mk /usr/ports/Mk
+    svn co https://svn.freebsd.org/ports/tags/${ports}/Templates /usr/ports/Templates
+    cd memcached
+    echo bin/memcached > pkg-plist
+    make all install SASLPWDB_CONFIGURE_ENABLE=sasl-pwdb OPTIONS_SET="SASL SASLPWDB" OPTIONS_DEFINE="SASL SASLPWDB"
+    cd ..
+  prepare_script: |
+    mkdir build
+    chown nobody build
+    chsh -s /bin/sh nobody
+  configure_script: |
+    sudo -E -u nobody cmake -S . -B build
+  build_script: |
+    sudo -E -u nobody make -C build -j2 all
+  test_script: |
+    sudo -E -u nobody make -C build -j2 test/fast
+  install_script: |
+    sudo -E -u nobody make -C build install DESTDIR=/tmp
+  on_success:
+    gitter_success_script: |
+      curl -sS "${gitter}" \
+        --data-urlencode "level=info" \
+        --data-urlencode "message=Cirrus-CI build for ${CIRRUS_BRANCH} on ${OS} [succeeded](https://cirrus-ci.org/task/${CIRRUS_TASK_ID})"
+  on_failure:
+    gitter_failure_script: |
+      curl -sS "${gitter}" \
+        --data-urlencode "level=error" \
+        --data-urlencode "message=Cirrus-CI build for ${CIRRUS_BRANCH} on ${OS} [failed](https://cirrus-ci.org/task/${CIRRUS_TASK_ID})"
+    testlog_artifacts:
+      path: build/Testing/Temporary/LastTest.log
+      type: text/plain
