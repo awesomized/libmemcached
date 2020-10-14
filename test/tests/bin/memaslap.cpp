@@ -49,7 +49,9 @@ TEST_CASE("bin/memaslap") {
     for (const auto args : examples) {
       string output;
       INFO(args);
-      REQUIRE(sh.run("memaslap " + servers + args, output));
+      auto ok = sh.run("memaslap -b " + servers + args, output);
+      INFO(output);
+      REQUIRE(ok);
       REQUIRE_THAT(output, Contains("TPS"));
     }
   }
