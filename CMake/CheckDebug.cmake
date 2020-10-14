@@ -14,56 +14,61 @@ endfunction()
 
 function(check_debug)
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        check_flag(-Og -O0)
-        check_flag(-ggdb -g)
         add_definitions(-DDEBUG=1)
-        foreach(FLAG IN ITEMS
-                -fno-inline
-                -fno-omit-frame-pointer
-                -fno-eliminate-unused-debug-types
-                -funsafe-loop-optimizations
+        if(CMAKE_CXX_FLAGS MATCHES --coverage)
+            message("-- Coverage build detected!")
+            message("--   Skipping debug and sanitizer flag checks.")
+        else()
+            check_flag(-Og -O0)
+            check_flag(-ggdb -g)
+            foreach(FLAG IN ITEMS
+                    -fno-inline
+                    -fno-omit-frame-pointer
+                    -fno-eliminate-unused-debug-types
+                    -funsafe-loop-optimizations
 
-                -Wall
-                -Wextra
+                    -Wall
+                    -Wextra
 
-                -Wdouble-promotion
-                -Wduplicated-cond
-                -Wduplicated-branches
-                -Wformat=2
-                -Wlogical-op
-                -Wnull-dereference
-                -Wrestrict
-                -Wshadow
-                -Wunknown-pragmas
-                -Wunsafe-loop-optimizations
-                )
-            check_flag(${FLAG} IGNORE)
-        endforeach()
+                    -Wdouble-promotion
+                    -Wduplicated-cond
+                    -Wduplicated-branches
+                    -Wformat=2
+                    -Wlogical-op
+                    -Wnull-dereference
+                    -Wrestrict
+                    -Wshadow
+                    -Wunknown-pragmas
+                    -Wunsafe-loop-optimizations
+                    )
+                check_flag(${FLAG} IGNORE)
+            endforeach()
 
-        if(ENABLE_SANITIZERS)
-            if(address IN_LIST ENABLE_SANITIZERS OR asan IN_LIST ENABLE_SANITIZERS)
-                cmake_push_check_state(RESET)
-                set(CMAKE_REQUIRED_LIBRARIES asan)
-                check_cxx_compiler_flag(-fsanitize=address HAVE_ASAN)
-                cmake_pop_check_state()
-                if(HAVE_ASAN)
-                    add_compile_definitions(HAVE_ASAN)
-                    add_compile_options(-fsanitize=address)
-                    link_libraries(-fsanitize=address)
-                    check_flag(-fsanitize-recover=address IGNORE)
+            if(ENABLE_SANITIZERS)
+                if(address IN_LIST ENABLE_SANITIZERS OR asan IN_LIST ENABLE_SANITIZERS)
+                    cmake_push_check_state(RESET)
+                    set(CMAKE_REQUIRED_LIBRARIES asan)
+                    check_cxx_compiler_flag(-fsanitize=address HAVE_ASAN)
+                    cmake_pop_check_state()
+                    if(HAVE_ASAN)
+                        add_compile_definitions(HAVE_ASAN)
+                        add_compile_options(-fsanitize=address)
+                        link_libraries(-fsanitize=address)
+                        check_flag(-fsanitize-recover=address IGNORE)
+                    endif()
                 endif()
-            endif()
 
-            if(undefined IN_LIST ENABLE_SANITIZERS OR ubsan IN_LIST ENABLE_SANITIZERS)
-                cmake_push_check_state(RESET)
-                set(CMAKE_REQUIRED_LIBRARIES ubsan)
-                check_cxx_compiler_flag(-fsanitize=undefined HAVE_UBSAN)
-                cmake_pop_check_state()
-                if(HAVE_UBSAN)
-                    add_compile_definitions(HAVE_UBSAN)
-                    add_compile_options(-fsanitize=undefined)
-                    link_libraries(-fsanitize=undefined)
-                    check_flag(-fsanitize-recover=undefined IGNORE)
+                if(undefined IN_LIST ENABLE_SANITIZERS OR ubsan IN_LIST ENABLE_SANITIZERS)
+                    cmake_push_check_state(RESET)
+                    set(CMAKE_REQUIRED_LIBRARIES ubsan)
+                    check_cxx_compiler_flag(-fsanitize=undefined HAVE_UBSAN)
+                    cmake_pop_check_state()
+                    if(HAVE_UBSAN)
+                        add_compile_definitions(HAVE_UBSAN)
+                        add_compile_options(-fsanitize=undefined)
+                        link_libraries(-fsanitize=undefined)
+                        check_flag(-fsanitize-recover=undefined IGNORE)
+                    endif()
                 endif()
             endif()
         endif()

@@ -49,7 +49,7 @@ task:
     sudo -E -u nobody make -C build install DESTDIR=/tmp
   on_success:
     codecov_script: |
-      bash <(curl -s https://codecov.io/bash) -- -x "llvm-cov gcov"
+      bash <(curl -s https://codecov.io/bash) -x "llvm-cov gcov"
     gitter_success_script: |
       curl -sS "${gitter}" \
         --data-urlencode "level=info" \
