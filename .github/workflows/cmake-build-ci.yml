@@ -6,6 +6,7 @@ on:
       - "docs/**"
       - ".travis.yml"
       - ".cirrus.yml"
+      - ".github/workflows/docs*"
     branches-ignore:
       - gh-pages
   pull_request:

@@ -1,0 +1,38 @@
+name: docs-publish-pages
+
+on:
+  push:
+    paths:
+      - 'docs/**'
+    branches:
+      - v1.x
+
+jobs:
+  publish:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          sudo apt-get install -y \
+            python3-sphinx \
+            python3-sphinx-rtd-theme
+      - name: Configure
+        run: |
+          cmake -DBUILD_DOCSONLY=ON -DBUILD_DOCS_MAN=OFF -S . -B build
+      - name: Build
+        run: |
+          make -C build html
+      - uses: crazy-max/ghaction-github-pages@v2
+        if: success()
+        with:
+          jekyll: false
+          keep_history: true
+          allow_empty_commit: false
+          build_dir: build/docs/html
+          commit_message: |
+            ${{ github.event.push.pusher }} pushed to following commits:\
+            \
+            ${{ join(github.event.push.commits.*.message, '\n\n') }}\
+            \
+            ${{ github.event.push.compare }}
