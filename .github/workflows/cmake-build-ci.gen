@@ -257,10 +257,14 @@ jobs:
   dbg-mac:
     name: dbg-mac (<?=DEF["macOS"]?>, <?=DEF[DEF["macOS"]]?>, <?=DEF[DEF[DEF["macOS"]]]["ver"]?>)
     runs-on: <?=DEF["macOS"]?> #
+    env:
+      CFLAGS: -O0 --coverage
+      CXXFLAGS: -O0 --coverage
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
 <?php steps(false); ?>
+      - uses: codecov/codecov-action@v1.0.13
 
   # release builds
   release:

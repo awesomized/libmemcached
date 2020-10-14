@@ -42,11 +42,11 @@ Enable the `BUILD_TESTING` setting for a build and run `make test`.
 
 CI/Test results are available at:
 
-| Provider     | Status              | OS           | Arch  | Compiler   |
-|--------------|---------------------|--------------|-------|------------|
-| [Travis CI]  | ![Travis CI Badge]  | Linux        | arm64 | GNU        |
-| [Cirrus CI]  | ![Cirrus CI Badge]  | FreeBSD      | amd64 | Clang      |
-| [GH Actions] | ![GH Actions Badge] | Linux, MacOS | amd64 | GNU, Clang |
+| Provider     | Status              | OS           | Compiler   | Arch                  |
+|--------------|---------------------|--------------|------------|-----------------------|
+| [Travis CI]  | ![Travis CI Badge]  | Linux        | GNU        | arm64, ppc64le, s390x |
+| [Cirrus CI]  | ![Cirrus CI Badge]  | FreeBSD      | Clang      | amd64                 |
+| [GH Actions] | ![GH Actions Badge] | Linux, MacOS | GNU, Clang | amd64                 |
 
 Additional project metrics:
 

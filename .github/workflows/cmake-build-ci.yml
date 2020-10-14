@@ -224,6 +224,9 @@ jobs:
   dbg-mac:
     name: dbg-mac (macos-10.15, clang, apple)
     runs-on: macos-10.15 #
+    env:
+      CFLAGS: -O0 --coverage
+      CXXFLAGS: -O0 --coverage
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
@@ -274,6 +277,7 @@ jobs:
       - name: Failed tests log
         if: ${{ failure() }}
         run: cat build/Testing/Temporary/LastTest.log || true
+      - uses: codecov/codecov-action@v1.0.13
 
   # release builds
   release:

@@ -38,9 +38,9 @@ task:
   prepare_script: |
     mkdir build
     chown nobody build
-    chsh -s /bin/sh nobody
+    pw user mod -s /bin/sh -d $(pwd)/build nobody
   configure_script: |
-    sudo -E -u nobody cmake -S . -B build
+    sudo -E -u nobody CFLAGS="-O0 --coverage" CXXFLAGS="-O0 --coverage" cmake -S . -B build
   build_script: |
     sudo -E -u nobody make -C build -j2 all
   test_script: |
@@ -48,6 +48,8 @@ task:
   install_script: |
     sudo -E -u nobody make -C build install DESTDIR=/tmp
   on_success:
+    codecov_script: |
+      bash <(curl -s https://codecov.io/bash)
     gitter_success_script: |
       curl -sS "${gitter}" \
         --data-urlencode "level=info" \
