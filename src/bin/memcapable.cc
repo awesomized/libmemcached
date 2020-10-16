@@ -2083,9 +2083,6 @@ struct testcase testcases[]= {
   { NULL, NULL}
 };
 
-const int ascii_tests = 1;
-const int binary_tests = 2;
-
 struct test_type_st
 {
   bool ascii;

@@ -71,6 +71,16 @@ set(LIBMEMCACHED_SOURCES
         version.cc
         virtual_bucket.c)
 
+check_cxx_compiler_flag(-Wno-deprecated-register W_NO_DEPRECATED_REGISTER)
+
+if(W_NO_DEPRECATED_REGISTER)
+        set_source_files_properties(
+                ${FLEX_CSL_SCANNER_OUTPUTS}
+                ${BISON_CSL_PARSER_OUTPUTS}
+                PROPERTIES COMPILE_OPTIONS -Wno-deprecated-register
+        )
+endif()
+
 add_library(libmemcached SHARED
         ${LIBMEMCACHED_SOURCES})
 add_library(memcached ALIAS libmemcached)

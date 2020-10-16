@@ -10,7 +10,6 @@ public:
   {}
 
   ReturnMatcher(const ReturnMatcher &) = default;
-  ReturnMatcher &operator = (const ReturnMatcher &) = default;
 
   ReturnMatcher(ReturnMatcher &&rm);
   ReturnMatcher &operator = (ReturnMatcher &&rm);

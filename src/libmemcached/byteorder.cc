@@ -40,6 +40,7 @@
 
 /* Byte swap a 64-bit number. */
 #ifndef swap64
+# ifndef HAVE_HTONLL
 static inline uint64_t swap64(uint64_t in)
 {
 #if !WORDS_BIGENDIAN
@@ -57,6 +58,7 @@ static inline uint64_t swap64(uint64_t in)
   return in;
 #endif // WORDS_BIGENDIAN
 }
+# endif
 #endif
 
 #ifdef HAVE_SYS_TYPES_H
