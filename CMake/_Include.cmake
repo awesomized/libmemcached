@@ -54,6 +54,10 @@ endif()
 
 ## uuid
 if(BUILD_TESTING)
+    if(NOT MEMCACHED_BINARY)
+        find_package(Memcached)
+        set(MEMCACHED_BINARY ${MEMCACHED_EXECUTABLE})
+    endif()
     check_dependency(LIBUUID uuid uuid/uuid.h)
 endif()
 

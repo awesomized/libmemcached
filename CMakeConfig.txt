@@ -44,11 +44,11 @@ option(ENABLE_MEMASLAP      "enable memaslap client"
 option(ENABLE_SASL          "enable SASL support"
         $ENV{ENABLE_SASL})
 
-set(ENABLE_SANITIZERS $ENV{ENABLE_SANITIZERS}
+set(ENABLE_SANITIZERS "$ENV{ENABLE_SANITIZERS}"
     CACHE STRING "sanitizers to enable (e.g. address undefined ...)")
 
 if(BUILD_TESTING)
-    set(MEMCACHED_BINARY $ENV{MEMCACHED_BINARY}
+    set(MEMCACHED_BINARY "$ENV{MEMCACHED_BINARY}"
             CACHE STRING "memcached binary")
     set(CMAKE_CTEST_ARGUMENTS "--output-on-failure")
     if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.17)
