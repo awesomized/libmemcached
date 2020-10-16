@@ -4,6 +4,15 @@ endif()
 
 include(CMake/Catch.cmake)
 
+if(NOT MEMCACHED_BINARY)
+    find_program(MEMCACHED_BINARY memcached DOC "memcached binary")
+    if(NOT MEMCACHED_BINARY)
+        message(SEND_ERROR "Could not find memcached(1) binary")
+        set(ENV{INVALID_CONFIGURATION} 1)
+    endif()
+endif()
+
+
 check_decl(pipe2 unistd.h)
 check_decl(SOCK_NONBLOCK sys/socket.h)
 check_decl(SOCK_CLOEXEC sys/socket.h)
