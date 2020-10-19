@@ -21,39 +21,71 @@ has been incremented due to the following changes:
 
 * Fix build failure due to comparison of incompatible types in bin/memflush and bin/memstat.
 * Fix wrong type of memcached_instance_st::server_timeout_counter_query_id from uint32_t to uint64_t.
-* Fix memcached_dump(): returned MEMCACHED_CLIENT_ERROR on request to dump illegal slab id.
-* Fix bin/memcapable: failed with "No hostname was provided" when providing a hostname.
-* Fix hashkit/murmur and hashkit/murur3: undefined behavior on platforms requiring aligned access.
-* Fix Memcache::set(): possible subscription of empty vector.
+* Fix memcached_dump():
+  returned MEMCACHED_CLIENT_ERROR on request to dump illegal slab id.
+* Fix bin/memcapable:
+  failed with "No hostname was provided" when providing a hostname.
+* Fix hashkit/murmur and hashkit/murur3:
+  undefined behavior on platforms requiring aligned access.
+* Fix Memcache::set():
+  possible subscription of empty vector.
 * Fix libmemcached_util_version_check().
-* Fix ketama/consistent hashing: crash on reallocation of continuum.
-* Fix gh #90: Build fails on Darwin.
-* Fix gh #83: memcp waits forever if file no found.
-* Fix gh #80: memparse docs.
-* Fix gh #72 and gh #47: memcached_return_t docs.
-* Fix gh #62: uint32_t overflow cause busy loop.
+* Fix ketama/consistent hashing:
+  crash on reallocation of continuum.
+* Fix [gh #90](https://github.com/m6w6/libmemcached/issues/90):
+  Build fails on Darwin.
+* Fix [gh #83](https://github.com/m6w6/libmemcached/issues/83):
+  memcp waits forever if file no found.
+* Fix [gh #80](https://github.com/m6w6/libmemcached/issues/80):
+  memparse docs.
+* Fix [gh #72](https://github.com/m6w6/libmemcached/issues/72)
+  and [gh #47](https://github.com/m6w6/libmemcached/issues/47):
+  memcached_return_t docs.
+* Fix [gh #62](https://github.com/m6w6/libmemcached/issues/62):
+  uint32_t overflow cause busy loop.
 * Removed restriction of UDP+IPv6.
-* Fix SERVER_ERROR_MEMORY_ALLOCATION_FAILURE: recognize more strings returned by the server.
-* Fix gh #13: reset continuum counter after freeing them.
-* Fix gh #14 and gh #17: SASL: AUTH_CONTINUE was considered a failure and caused IO reset.
-* Fix gh #25: hashkit/murmur3 unavailable.
+* Fix SERVER_ERROR_MEMORY_ALLOCATION_FAILURE: 
+  recognize more strings returned by the server.
+* Fix [gh #13](https://github.com/m6w6/libmemcached/issues/13):
+  reset continuum counter after freeing them.
+* Fix [gh #14](https://github.com/m6w6/libmemcached/issues/14)
+  and [gh #17](https://github.com/m6w6/libmemcached/issues/17):
+  SASL: AUTH_CONTINUE was considered a failure and caused IO reset.
+* Fix [gh #25](https://github.com/m6w6/libmemcached/issues/25):
+  hashkit/murmur3 unavailable.
 * Fix missing handling of EAGAIN for non-blocking unix domain socket.
-* Fix gh #35: handling of BEHAVIOR_REMOVE_FAILED_SERVERS.
-* Fix gh #41: ensure stable sort on continuum host key collision.
-* Fix gh #42: MEMCACHED_MAX_BUFFER docs.
-* Fix gh #43: libmemcached_configuration docs.
-* Fix gh #46: clarification on millisecond timeout docs.
-* Fix gh #50: memcached_fetch_result() can return previously returned data.
-* Fix gh #53: stack overflow in memcached_fetch_result().
-* Fix gh #57: include <inttypes.h> vs <cinttypes>
-* Fix gh #58: more specific error messages when connect() fails.
-* Fix gh #59: bin/memcat: typo in "No servers provied".
-* Fix gh #77: undeclared UINT64_C in ketama.cc.
-* Fix gh #12: never reconnects after connection reset (binary protocol).
-* Fix gh #49: assertion memcached_failed(rc) failed in memcached_send_ascii().
-* Fix gh #67: get returns NOTFOUND on timeout.
-* Fix gh #76: memcached_touch() crashes when expiration=-1 (ASCII only).
-* Fix gh #23: build fails with bison 2.3.
+* Fix [gh #35](https://github.com/m6w6/libmemcached/issues/35):
+  handling of BEHAVIOR_REMOVE_FAILED_SERVERS.
+* Fix [gh #41](https://github.com/m6w6/libmemcached/issues/41):
+  ensure stable sort on continuum host key collision.
+* Fix [gh #42](https://github.com/m6w6/libmemcached/issues/42):
+  MEMCACHED_MAX_BUFFER docs.
+* Fix [gh #43](https://github.com/m6w6/libmemcached/issues/43):
+  libmemcached_configuration docs.
+* Fix [gh #46](https://github.com/m6w6/libmemcached/issues/46):
+  clarification on millisecond timeout docs.
+* Fix [gh #50](https://github.com/m6w6/libmemcached/issues/50):
+  memcached_fetch_result() can return previously returned data.
+* Fix [gh #53](https://github.com/m6w6/libmemcached/issues/53):
+  stack overflow in memcached_fetch_result().
+* Fix [gh #57](https://github.com/m6w6/libmemcached/issues/57):
+  include <inttypes.h> vs <cinttypes>
+* Fix [gh #58](https://github.com/m6w6/libmemcached/issues/58):
+  more specific error messages when connect() fails.
+* Fix [gh #59](https://github.com/m6w6/libmemcached/issues/59):
+  bin/memcat: typo in "No servers provied".
+* Fix [gh #77](https://github.com/m6w6/libmemcached/issues/77):
+  undeclared UINT64_C in ketama.cc.
+* Fix [gh #12](https://github.com/m6w6/libmemcached/issues/12):
+  never reconnects after connection reset (binary protocol).
+* Fix [gh #49](https://github.com/m6w6/libmemcached/issues/49):
+  assertion memcached_failed(rc) failed in memcached_send_ascii().
+* Fix [gh #67](https://github.com/m6w6/libmemcached/issues/67):
+  get returns NOTFOUND on timeout.
+* Fix [gh #76](https://github.com/m6w6/libmemcached/issues/76):
+  memcached_touch() crashes when expiration=-1 (ASCII only).
+* Fix [gh #23](https://github.com/m6w6/libmemcached/issues/23):
+  build fails with bison 2.3.
 * Fix memaslap: build fails with newer compiler versions.
 * Fix usage of strerror_r() implementations returning pointer to char.
 * Fix pipelining commands with memcached >= 1.6.
