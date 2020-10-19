@@ -1,5 +1,5 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
- * 
+ *
  *  Libmemcached library
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
@@ -40,11 +40,11 @@
 
 #include <cassert>
 
-#ifndef SOCK_CLOEXEC 
+#ifndef SOCK_CLOEXEC
 #  define SOCK_CLOEXEC 0
 #endif
 
-#ifndef SOCK_NONBLOCK 
+#ifndef SOCK_NONBLOCK
 # define SOCK_NONBLOCK 0
 #endif
 
@@ -136,7 +136,7 @@ static memcached_return_t connect_poll(memcached_instance_st* server, const int 
     assert (number_of == 1);
 
     if (fds[0].revents & POLLERR or
-        fds[0].revents & POLLHUP or 
+        fds[0].revents & POLLHUP or
         fds[0].revents & POLLNVAL)
     {
       int err;
@@ -191,7 +191,7 @@ static memcached_return_t set_hostinfo(memcached_instance_st* server)
   int length= snprintf(str_port, MEMCACHED_NI_MAXSERV, "%u", uint32_t(server->port()));
   if (length >= MEMCACHED_NI_MAXSERV or length <= 0 or errno != 0)
   {
-    return memcached_set_error(*server, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT, 
+    return memcached_set_error(*server, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT,
                                memcached_literal_param("snprintf(NI_MAXSERV)"));
   }
 
@@ -298,15 +298,15 @@ static bool set_socket_options(memcached_instance_st* server)
     {
       int flags;
       do
-      { 
+      {
         flags= fcntl(server->fd, F_GETFD, 0);
       } while (flags == -1 and (errno == EINTR or errno == EAGAIN));
 
       if (flags != -1)
-      { 
+      {
         int rval;
         do
-        { 
+        {
           rval= fcntl (server->fd, F_SETFD, flags | FD_CLOEXEC);
         } while (rval == -1 && (errno == EINTR or errno == EAGAIN));
         // we currently ignore the case where rval is -1
@@ -320,7 +320,7 @@ static bool set_socket_options(memcached_instance_st* server)
     return true;
   }
 
-#ifdef HAVE_SNDTIMEO
+#ifdef HAVE_SO_SNDTIMEO
   if (server->root->snd_timeout > 0)
   {
     struct timeval waittime;
@@ -335,7 +335,7 @@ static bool set_socket_options(memcached_instance_st* server)
   }
 #endif
 
-#ifdef HAVE_RCVTIMEO
+#ifdef HAVE_SO_RCVTIMEO
   if (server->root->rcv_timeout > 0)
   {
     struct timeval waittime;
@@ -660,7 +660,7 @@ static memcached_return_t backoff_handling(memcached_instance_st* server, bool& 
   struct timeval curr_time;
   bool _gettime_success= (gettimeofday(&curr_time, NULL) == 0);
 
-  /* 
+  /*
     If we hit server_failure_limit then something is completely wrong about the server.
 
     1) If autoeject is enabled we do that.
@@ -669,7 +669,7 @@ static memcached_return_t backoff_handling(memcached_instance_st* server, bool& 
   if (server->server_failure_counter >= server->root->server_failure_limit)
   {
     /*
-      We just auto_eject if we hit this point 
+      We just auto_eject if we hit this point
     */
     if (_is_auto_eject_host(server->root))
     {

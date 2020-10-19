@@ -11,6 +11,10 @@ static memcached_return_t item_counter(const memcached_instance_st *, const char
   return MEMCACHED_SUCCESS;
 }
 
+static memcached_return_t stat_null(const memcached_instance_st *, const char *, size_t, const char *, size_t, void *) {
+  return MEMCACHED_SUCCESS;
+}
+
 TEST_CASE("memcached_stat") {
   MemcachedCluster test;
   auto memc = &test.memc;
@@ -31,6 +35,9 @@ TEST_CASE("memcached_stat") {
     size_t count = 0;
     REQUIRE_SUCCESS(memcached_stat_execute(memc, nullptr, item_counter, &count));
     REQUIRE(count == 64);
+
+    auto arg = GENERATE(as<string>(), "slabs", "items", "sizes");
+    REQUIRE_SUCCESS(memcached_stat_execute(memc, arg.c_str(), stat_null, nullptr));
   }
 
   SECTION("servername") {

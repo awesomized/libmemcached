@@ -59,5 +59,20 @@ TEST_CASE("memcached_simple") {
 
       REQUIRE_SUCCESS(memcached_replace(memc, S(__func__), S("replaced"), 0, 0));
     }
+
+    DYNAMIC_SECTION("not found (buffered=" << buffered << ",binary=" << binary << ")") {
+      memcached_return_t rc;
+      Malloced val(memcached_get(memc, S("not-found"), nullptr, nullptr, &rc));
+      REQUIRE_RC(MEMCACHED_NOTFOUND, rc);
+      REQUIRE_FALSE(*val);
+
+      val = memcached_get_by_key(memc, S("not-found"), S("not-found"), nullptr, nullptr, &rc);
+      REQUIRE_RC(MEMCACHED_NOTFOUND, rc);
+      REQUIRE_FALSE(*val);
+    }
+
+    DYNAMIC_SECTION("verbosity (buffered=" << buffered << ",binary=" << binary << ")") {
+      REQUIRE_SUCCESS(memcached_verbosity(memc, 0));
+    }
   }
 }

@@ -8,7 +8,7 @@ TEST_CASE("memcached_value_flags") {
   auto blob = make_unique<char[]>(size);
 
   SECTION("set & get flags") {
-    uint32_t flag = GENERATE(123, 456, 789);
+    uint32_t flag = GENERATE(123, 456, 789, UINT32_MAX);
 
     REQUIRE_SUCCESS(memcached_set(memc, S(__func__), blob.get(), size, 0, flag));
 

@@ -36,11 +36,11 @@
 #cmakedefine HAVE_MURMUR_HASH 1
 #cmakedefine HAVE_NETDB_H 1
 #cmakedefine HAVE_POLL_H 1
-#cmakedefine HAVE_RCVTIMEO 1
 #cmakedefine HAVE_SASL_SASL_H 1
 #cmakedefine HAVE_SETENV 1
 #cmakedefine HAVE_SHARED_ENABLED 1
-#cmakedefine HAVE_SNDTIMEO 1
+#cmakedefine HAVE_SO_RCVTIMEO 1
+#cmakedefine HAVE_SO_SNDTIMEO 1
 #cmakedefine HAVE_STDDEF_H 1
 #cmakedefine HAVE_STDLIB_H 1
 #cmakedefine HAVE_STRERROR 1
