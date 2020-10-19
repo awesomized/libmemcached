@@ -4,7 +4,10 @@
 #include "test/lib/Server.hpp"
 
 TEST_CASE("lib/Server") {
-  Server server{MEMCACHED_BINARY, {Server::arg_t{"-v"}}};
+  Server server{MEMCACHED_BINARY, {
+    Server::arg_t{"-v"},
+    Server::arg_pair_t{"-p", random_port_string}
+  }};
 
   SECTION("starts and listens") {
 
