@@ -165,7 +165,7 @@ function steps_build() {
       - name: Test
         run: make -C build -j2 test
       - name: Install
-        run: make -C build -j2 install DESTDIR=.
+        run: make -C build -j2 install DESTDIR=/tmp
       - name: Failed tests log
         if: ${{ failure() }}
         run: cat build/Testing/Temporary/LastTest.log || true

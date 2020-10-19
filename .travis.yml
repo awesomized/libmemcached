@@ -40,7 +40,7 @@ script:
  - cmake -DMEMCACHED_BINARY=/opt/bin/memcached ..
  - make -j2 VERBOSE=1
  - make test VERBOSE=1
- - make install DESTDIR=.
+ - make install DESTDIR=/tmp
 
 after_failure:
  - cat Testing/Temporary/LastTest.log || true

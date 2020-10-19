@@ -6,7 +6,7 @@ ignore:
   - "/Applications/"
 
 fixes:
-  - "libmemcachedinternal::libmemcached"
+  - "src/libmemcachedinternal::src/libmemcached"
 
 coverage:
   status:
