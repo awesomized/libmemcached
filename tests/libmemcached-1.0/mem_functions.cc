@@ -1066,67 +1066,6 @@ test_return_t wrong_failure_counter_two_test(memcached_st *memc)
 }
 
 
-test_return_t regression_1021819_TEST(memcached_st *original)
-{
-  memcached_st *memc= memcached_clone(NULL, original);
-  test_true(memc);
-
-  test_compare(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SND_TIMEOUT, 2000000), MEMCACHED_SUCCESS);
-  test_compare(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_RCV_TIMEOUT, 3000000), MEMCACHED_SUCCESS);
-
-  memcached_return_t rc;
-
-  memcached_get(memc,
-                test_literal_param(__func__),
-                NULL, NULL, &rc);
-
-  test_compare(rc, MEMCACHED_NOTFOUND);
-
-  memcached_free(memc);
-
-  return TEST_SUCCESS;
-}
-
-test_return_t regression_bug_583031(memcached_st *)
-{
-  memcached_st *memc= memcached_create(NULL);
-  test_true(memc);
-  test_compare(MEMCACHED_SUCCESS, memcached_server_add(memc, "10.2.251.4", 11211));
-
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT, 3000);
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_RETRY_TIMEOUT, 1000);
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SND_TIMEOUT, 1000);
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_RCV_TIMEOUT, 1000);
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, 1000);
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT, 3);
-
-  memcached_return_t rc;
-  size_t length;
-  uint32_t flags;
-
-  const char *value= memcached_get(memc, "dsf", 3, &length, &flags, &rc);
-  test_false(value);
-  test_zero(length);
-
-  test_compare(MEMCACHED_TIMEOUT, memc);
-
-  memcached_free(memc);
-
-  return TEST_SUCCESS;
-}
-
-test_return_t regression_bug_581030(memcached_st *)
-{
-#ifndef DEBUG
-  memcached_stat_st *local_stat= memcached_stat(NULL, NULL, NULL);
-  test_false(local_stat);
-
-  memcached_stat_free(NULL, NULL);
-#endif
-
-  return TEST_SUCCESS;
-}
-
 #define regression_bug_655423_COUNT 6000
 test_return_t regression_bug_655423(memcached_st *memc)
 {
@@ -1316,40 +1255,4 @@ test_return_t regression_994772_TEST(memcached_st* memc)
                                                 time_t(0), uint32_t(0)));
 
   return TEST_SUCCESS;
-}
-
-test_return_t regression_bug_854604(memcached_st *)
-{
-  char buffer[1024];
-
-  test_compare(MEMCACHED_INVALID_ARGUMENTS, libmemcached_check_configuration(0, 0, buffer, 0));
-
-  test_compare(MEMCACHED_PARSE_ERROR, libmemcached_check_configuration(test_literal_param("syntax error"), buffer, 0));
-
-  test_compare(MEMCACHED_PARSE_ERROR, libmemcached_check_configuration(test_literal_param("syntax error"), buffer, 1));
-  test_compare(buffer[0], 0);
-
-  test_compare(MEMCACHED_PARSE_ERROR, libmemcached_check_configuration(test_literal_param("syntax error"), buffer, 10));
-  test_true(strlen(buffer));
-
-  test_compare(MEMCACHED_PARSE_ERROR, libmemcached_check_configuration(test_literal_param("syntax error"), buffer, sizeof(buffer)));
-  test_true(strlen(buffer));
-
-  return TEST_SUCCESS;
-}
-
-static void die_message(memcached_st* mc, memcached_return error, const char* what, uint32_t it)
-{
-  fprintf(stderr, "Iteration #%u: ", it);
-
-  if (error == MEMCACHED_ERRNO)
-  {
-    fprintf(stderr, "system error %d from %s: %s\n",
-            errno, what, strerror(errno));
-  }
-  else
-  {
-    fprintf(stderr, "error %d from %s: %s\n", error, what,
-            memcached_strerror(mc, error));
-  }
 }

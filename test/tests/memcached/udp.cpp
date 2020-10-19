@@ -4,6 +4,11 @@
 TEST_CASE("memcached_udp") {
   auto test = MemcachedCluster::udp();
   auto memc = &test.memc;
+  MemcachedPtr check;
+
+  for (const auto &server : test.cluster.getServers()) {
+    memcached_server_add(*check, "localhost", get<int>(server.getSocketOrPort()));
+  }
 
   SECTION("compat") {
     memcached_return_t rc;
@@ -19,7 +24,7 @@ TEST_CASE("memcached_udp") {
 
   SECTION("io") {
     const auto max = 1025; // request id rolls over at 1024
-    auto binary = GENERATE(0,1);
+    auto binary = GENERATE(0, 1);
 
     test.enableBinaryProto(binary);
 
@@ -30,9 +35,17 @@ TEST_CASE("memcached_udp") {
           INFO("i=" << i);
           REQUIRE_SUCCESS(memcached_set(memc, s.c_str(), s.length(), s.c_str(), s.length(), 0, 0));
         }
-        // FIXME: check request id
         memcached_quit(memc);
         REQUIRE_SUCCESS(memcached_last_error(memc));
+
+        for (auto i = 0; i < max; ++i) {
+          auto s = to_string(i);
+          memcached_return_t rc;
+          INFO("i=" << i);
+          Malloced val(memcached_get(*check, s.c_str(), s.length(), nullptr, nullptr, &rc));
+          CHECK(*val);
+          CHECK(MEMCACHED_SUCCESS == rc);
+        }
       }
 
       SECTION("set too big") {
@@ -69,6 +82,30 @@ TEST_CASE("memcached_udp") {
         }
         memcached_quit(memc);
         REQUIRE_SUCCESS(memcached_last_error(memc));
+      }
+
+      SECTION("incremend/decrement") {
+        uint64_t newval = 0;
+        REQUIRE_SUCCESS(memcached_set(memc, S("udp-incr"), S("1"), 0, 0));
+        memcached_quit(memc);
+        this_thread::sleep_for(1s);
+        REQUIRE_SUCCESS(memcached_increment(memc, S("udp-incr"), 1, &newval));
+        memcached_quit(memc);
+        this_thread::sleep_for(1s);
+        REQUIRE(newval == UINT64_MAX);
+        memcached_return_t rc;
+        Malloced val(memcached_get(*check, S("udp-incr"), nullptr, nullptr, &rc));
+        REQUIRE_SUCCESS(rc);
+        REQUIRE(*val);
+        CHECK(string(*val) == "2");
+        REQUIRE_SUCCESS(memcached_decrement(memc, S("udp-incr"), 1, &newval));
+        memcached_quit(memc);
+        this_thread::sleep_for(1s);
+        REQUIRE(newval == UINT64_MAX);
+        val = memcached_get(*check, S("udp-incr"), nullptr, nullptr, &rc);
+        REQUIRE_SUCCESS(rc);
+        REQUIRE(*val);
+        CHECK(string(*val) == "1");
       }
     }
   }

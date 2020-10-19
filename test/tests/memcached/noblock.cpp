@@ -38,6 +38,5 @@ TEST_CASE("memcached_noblock") {
     CHECK_FALSE(hit);
   } else {
     CHECK(hit > 0);
-    CHECK(hit <= test.cluster.getServers().size());
   }
 }
