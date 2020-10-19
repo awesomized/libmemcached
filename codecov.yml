@@ -3,6 +3,10 @@ ignore:
   - "/usr"
   - "example/"
   - "test/"
+  - "/Applications/"
+
+fixes:
+  - "libmemcachedinternal::libmemcached"
 
 coverage:
   status:
