@@ -58,7 +58,7 @@ Additional project metrics:
 ## ChangeLog
 
 Check out the latest [releases](./releases) or the bundled
-[ChangeLog](./ChangeLog) for a comprehensive list of changes.
+[ChangeLog](./ChangeLog.md) for a comprehensive list of changes.
 
 ## License
 
