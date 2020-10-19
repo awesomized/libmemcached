@@ -1,5 +1,5 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
- * 
+ *
  *  Libmemcached library
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
@@ -86,7 +86,6 @@ enum memcached_return_t {
   MEMCACHED_IN_PROGRESS,
   MEMCACHED_SERVER_TEMPORARILY_DISABLED,
   MEMCACHED_SERVER_MEMORY_ALLOCATION_FAILURE,
-  MEMCACHED_UNIX_SOCKET_PATH_TOO_BIG,
   MEMCACHED_MAXIMUM_RETURN, /* Always add new error code before */
   MEMCACHED_CONNECTION_SOCKET_CREATE_FAILURE= MEMCACHED_ERROR
 };

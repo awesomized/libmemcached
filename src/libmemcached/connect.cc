@@ -467,7 +467,7 @@ static memcached_return_t unix_socket_connect(memcached_instance_st* server)
     memset(&servAddr, 0, sizeof (struct sockaddr_un));
     servAddr.sun_family= AF_UNIX;
     if (strlen(server->hostname()) >= sizeof(servAddr.sun_path)) {
-        return memcached_set_error(*server, MEMCACHED_UNIX_SOCKET_PATH_TOO_BIG, MEMCACHED_AT);
+        return memcached_set_error(*server, MEMCACHED_FAIL_UNIX_SOCKET, MEMCACHED_AT);
     }
     strncpy(servAddr.sun_path, server->hostname(), sizeof(servAddr.sun_path)-1); /* Copy filename */
 
