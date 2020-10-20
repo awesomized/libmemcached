@@ -56,6 +56,11 @@ TEST_CASE("bin/memstat") {
         REQUIRE(sh.run(comm + "--analyze", output));
         REQUIRE_THAT(output, Contains("Number of Servers Analyzed         : 2"));
       }
+      SECTION("analyze=latency") {
+        string output;
+        REQUIRE(sh.run(comm + "--analyze=latency", output));
+        REQUIRE_THAT(output, Contains("Network Latency Test:"));
+      }
     }
 
     SECTION("connection failure") {
