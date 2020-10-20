@@ -1,5 +1,5 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
- * 
+ *
  *  Libmemcached library
  *
  *  Copyright (C) 2011-2013 Data Differential, http://datadifferential.com/
@@ -36,21 +36,12 @@
  */
 
 #include "libmemcached/common.h"
-#include "libmemcached/assert.hpp"
-
-static void _set_encoding_key(Memcached& memc, const char *key, size_t key_length)
-{
-  hashkit_key(&memc.hashkit, key, key_length);
-}
 
 memcached_return_t memcached_set_encoding_key(memcached_st* shell, const char *key, size_t key_length)
 {
-  Memcached* memc= memcached2Memcached(shell);
-  if (memc)
-  {
-    _set_encoding_key(*memc, key, key_length);
-    return MEMCACHED_SUCCESS;
+  if (!shell) {
+    return MEMCACHED_INVALID_ARGUMENTS;
   }
-
-  return MEMCACHED_INVALID_ARGUMENTS;
+  hashkit_key(&shell->hashkit, key, key_length);
+  return MEMCACHED_SUCCESS;
 }

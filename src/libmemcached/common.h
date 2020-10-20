@@ -1,5 +1,5 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
- * 
+ *
  *  LibMemcached
  *
  *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
@@ -168,7 +168,6 @@ memcached_instance_st* memcached_instance_fetch(memcached_st *ptr, uint32_t serv
 # include "libmemcached/assert.hpp"
 # include "libmemcached/server.hpp"
 # include "libmemcached/key.hpp"
-# include "libmemcached/encoding_key.h"
 # include "libmemcached/result.h"
 # include "libmemcached/version.hpp"
 #endif
