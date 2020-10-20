@@ -1,21 +1,6 @@
 #include "test/lib/common.hpp"
 #include "test/lib/MemcachedCluster.hpp"
-
-static memcached_return_t delete_trigger(memcached_st *, const char *, size_t) {
-  return MEMCACHED_SUCCESS;
-}
-
-static memcached_return_t read_through_trigger(memcached_st *, char *, size_t, memcached_result_st *result) {
-  return memcached_result_set_value(result, S("updated by read through trigger"));
-}
-
-static memcached_return_t clone_callback(memcached_st *, memcached_st *) {
-  return MEMCACHED_SUCCESS;
-}
-
-static memcached_return_t cleanup_callback(memcached_st *) {
-  return MEMCACHED_SUCCESS;
-}
+#include "test/fixtures/callbacks.hpp"
 
 TEST_CASE("memcached_callbacks") {
   auto test{MemcachedCluster::mixed()};

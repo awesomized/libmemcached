@@ -1,18 +1,6 @@
 #include "test/lib/common.hpp"
-
 #include "test/lib/MemcachedCluster.hpp"
-
-static memcached_return_t server_display_function(const memcached_st *,
-    const memcached_instance_st * server,
-    void *context)
-{
-  if (context) {
-    auto bigger = reinterpret_cast<size_t *>(context);
-    REQUIRE(*bigger <= memcached_server_port(server));
-    *bigger = memcached_server_port(server);
-  }
-  return MEMCACHED_SUCCESS;
-}
+#include "test/fixtures/callbacks.hpp"
 
 TEST_CASE("memcached_servers") {
   SECTION("memcached_servers_parse") {
@@ -60,10 +48,10 @@ TEST_CASE("memcached_servers") {
     auto local_memc = *memc;
     LoneReturnMatcher test{local_memc};
     size_t bigger = 0; /* Prime the value for the test_true in server_display_function */
-    memcached_server_fn callbacks[1]{server_display_function};
+    memcached_server_fn callbacks[1]{server_sort_callback};
 
     REQUIRE_SUCCESS(memcached_behavior_set(local_memc, MEMCACHED_BEHAVIOR_SORT_HOSTS, 1));
-    
+
     SECTION("variation 1") {
       for (uint32_t x = 0; x < 7; x++) {
         REQUIRE_SUCCESS(memcached_server_add_with_weight(local_memc, "localhost", random_port(), 0));

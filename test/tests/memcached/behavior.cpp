@@ -1,12 +1,6 @@
 #include "test/lib/common.hpp"
 #include "test/lib/MemcachedCluster.hpp"
-
-static memcached_return_t callback_counter(const memcached_st *, memcached_result_st *, void *context) {
-  auto *counter = reinterpret_cast<size_t *>(context);
-  *counter = *counter + 1;
-
-  return MEMCACHED_SUCCESS;
-}
+#include "test/fixtures/callbacks.hpp"
 
 TEST_CASE("memcached_behavior") {
   auto test = MemcachedCluster::network();

@@ -1,14 +1,8 @@
 #include "test/lib/common.hpp"
 #include "test/lib/MemcachedCluster.hpp"
+#include "test/fixtures/callbacks.hpp"
 
 #define NUM_KEYS 20480U
-
-static memcached_return_t callback_counter(const memcached_st *, memcached_result_st *, void *context) {
-  auto *counter= reinterpret_cast<size_t *>(context);
-  *counter = *counter + 1;
-
-  return MEMCACHED_SUCCESS;
-}
 
 TEST_CASE("memcached_regression_lp490486") {
   MemcachedCluster test{Cluster{Server{MEMCACHED_BINARY, {"-p", random_port_string}}, 1}};

@@ -1,16 +1,9 @@
 #include "test/lib/common.hpp"
 #include "test/lib/MemcachedCluster.hpp"
+#include "test/fixtures/callbacks.hpp"
 
 #include "libmemcached/instance.hpp"
 #include "libmemcachedutil/common.h"
-
-static memcached_return_t ping_callback(const memcached_st *, const memcached_instance_st *instance, void *) {
-  memcached_return_t rc;
-
-  REQUIRE(libmemcached_util_ping(memcached_server_name(instance), memcached_server_port(instance), &rc));
-  REQUIRE(rc == MEMCACHED_SUCCESS);
-  return MEMCACHED_SUCCESS;
-}
 
 TEST_CASE("memcached_util") {
   SECTION("version_check") {
@@ -43,6 +36,7 @@ TEST_CASE("memcached_util") {
     }
   }
 
+  // see sasl.cpp for getpid2 test
   SECTION("getpid") {
     auto test = MemcachedCluster::network();
     memcached_return_t rc;
@@ -56,6 +50,7 @@ TEST_CASE("memcached_util") {
     REQUIRE(memcached_fatal(rc));
   }
 
+  // see sasl.cpp for ping2 test
   SECTION("ping") {
     auto test = MemcachedCluster::network();
     auto memc = &test.memc;

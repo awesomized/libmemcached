@@ -14,10 +14,6 @@ check_decl(pipe2 unistd.h)
 check_decl(SOCK_NONBLOCK sys/socket.h)
 check_decl(SOCK_CLOEXEC sys/socket.h)
 
-if(ENABLE_MEMASLAP AND LIBEVENT AND HAVE_C_STDATOMIC)
-    set(HAVE_MEMASLAP 1)
-endif()
-
 file(GLOB_RECURSE TESTING_SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
 set(TESTING_ROOT ${CMAKE_CURRENT_BINARY_DIR})
 set_source_files_properties(main.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
@@ -31,6 +27,9 @@ target_include_directories(runtests PRIVATE
         ${CMAKE_BINARY_DIR}/src)
 target_link_libraries(runtests PRIVATE libhashkit libmemcachedinternal libmemcachedutil)
 add_dependencies(runtests ${CLIENTS})
+if(HAVE_MEMASLAP)
+    add_dependencies(runtests memaslap)
+endif()
 
 catch_discover_tests(runtests
         TEST_SPEC "lib*")

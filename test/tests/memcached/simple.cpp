@@ -74,5 +74,9 @@ TEST_CASE("memcached_simple") {
     DYNAMIC_SECTION("verbosity (buffered=" << buffered << ",binary=" << binary << ")") {
       REQUIRE_SUCCESS(memcached_verbosity(memc, 0));
     }
+
+    DYNAMIC_SECTION("version (buffered=" << buffered << ",binary=" << binary << ")") {
+      REQUIRE_SUCCESS(memcached_version(memc));
+    }
   }
 }

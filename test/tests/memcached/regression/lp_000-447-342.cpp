@@ -1,27 +1,20 @@
 #include "test/lib/common.hpp"
 #include "test/lib/MemcachedCluster.hpp"
-
+#include "test/fixtures/callbacks.hpp"
 #include "libmemcached/instance.hpp"
-
-static memcached_return_t callback_counter(const memcached_st *, memcached_result_st *, void *context) {
-  auto *counter= reinterpret_cast<size_t *>(context);
-  *counter = *counter + 1;
-
-  return MEMCACHED_SUCCESS;
-}
 
 #define NUM_KEYS 100U
 
 TEST_CASE("memcached_regression_lp447342") {
   auto test = MemcachedCluster::network();
   auto memc = &test.memc;
-  
+
   REQUIRE_SUCCESS(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, 2));
-  
+
   array<string, NUM_KEYS> str;
   array<char *, NUM_KEYS> chr;
   array<size_t, NUM_KEYS> len;
-  
+
   for (auto i = 0U; i < NUM_KEYS; ++i) {
     str[i] = random_ascii_string(random_num(12, 16)) + to_string(i);
     chr[i] = str[i].data();
@@ -42,16 +35,16 @@ TEST_CASE("memcached_regression_lp447342") {
  ** as an example for your own code, please note that you shouldn't need
  ** to do this ;-)
  */
- 
+
  memcached_quit(memc);
- 
+
  REQUIRE_SUCCESS(memcached_mget(memc, chr.data(), len.data(), NUM_KEYS));
 
  size_t counter = 0;
  memcached_execute_fn cb[] = {&callback_counter};
  REQUIRE_SUCCESS(memcached_fetch_execute(memc, cb, &counter, 1));
  REQUIRE(counter == NUM_KEYS);
- 
+
  memcached_quit(memc);
 
   /*

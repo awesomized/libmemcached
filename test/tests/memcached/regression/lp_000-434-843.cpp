@@ -1,12 +1,6 @@
 #include "test/lib/common.hpp"
 #include "test/lib/MemcachedCluster.hpp"
-
-static memcached_return_t callback_counter(const memcached_st *, memcached_result_st *, void *context) {
-  auto *counter= reinterpret_cast<size_t *>(context);
-  *counter = *counter + 1;
-
-  return MEMCACHED_SUCCESS;
-}
+#include "test/fixtures/callbacks.hpp"
 
 #define NUM_KEYS 1024
 
@@ -26,7 +20,7 @@ TEST_CASE("memcached_regression_lp434843") {
   array<string, NUM_KEYS> str;
   array<char *, NUM_KEYS> chr;
   array<size_t, NUM_KEYS> len;
-  
+
   for (auto i = 0; i < NUM_KEYS; ++i) {
     str[i] = random_ascii_string(12) + to_string(i);
     chr[i] = str[i].data();

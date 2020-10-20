@@ -39,6 +39,9 @@ if(ENABLE_MEMASLAP)
     check_stdatomic()
     check_dependency(LIBEVENT event event.h)
     check_decl(getline stdio.h)
+    if(LIBEVENT AND HAVE_C_STDATOMIC)
+        set(HAVE_MEMASLAP 1)
+    endif()
 endif()
 
 ## dtrace

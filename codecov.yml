@@ -4,6 +4,7 @@ ignore:
   - "/usr"
   - "example"
   - "tests"
+  - "test/lib/catch.hpp"
 
 fixes:
   - "src/libmemcachedinternal::src/libmemcached"
