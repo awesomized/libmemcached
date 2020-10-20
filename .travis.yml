@@ -13,7 +13,7 @@ addons:
    - libsasl2-dev
 
 env:
- - CMAKE_BUILD_TYPE=Debug BUILD_TESTING=true ENABLE_SASL=true CFLAGS="-O0 --coverage" CXXFLAGS="-O0 --coverage"
+ - CMAKE_BUILD_TYPE=Debug BUILD_TESTING=true ENABLE_SASL=true ENABLE_HASH_HSIEH=true CFLAGS="-O0 --coverage" CXXFLAGS="-O0 --coverage"
 
 install:
  - |

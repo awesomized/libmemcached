@@ -1,8 +1,8 @@
 #include "test/lib/common.hpp"
 #include "test/fixtures/hashes.hpp"
 
-static constexpr const uint32_t md5_hosts[] = {4U, 1U, 0U, 1U, 4U, 2U, 0U, 3U, 0U, 0U, 3U, 1U, 0U, 0U, 1U, 3U, 0U, 0U, 0U, 3U, 1U, 0U, 4U, 4U, 3U};
-static constexpr const uint32_t crc_hosts[] = {2U, 4U, 1U, 0U, 2U, 4U, 4U, 4U, 1U, 2U, 3U, 4U, 3U, 4U, 1U, 3U, 3U, 2U, 0U, 0U, 0U, 1U, 2U, 4U, 0U};
+static constexpr const uint32_t md5_hosts[] = {4U, 1U, 0U, 1U, 4U, 2U, 0U, 3U, 0U, 0U, 3U, 1U, 0U, 0U, 1U, 3U, 0U, 0U, 0U, 3U, 1U, 0U, 4U, 4U, 3U, 1U};
+static constexpr const uint32_t crc_hosts[] = {2U, 4U, 1U, 0U, 2U, 4U, 4U, 4U, 1U, 2U, 3U, 4U, 3U, 4U, 1U, 3U, 3U, 2U, 0U, 0U, 0U, 1U, 2U, 4U, 0U, 4U};
 static constexpr const uint32_t *hosts[] = {nullptr, md5_hosts, crc_hosts};
 
 TEST_CASE("memcached_generate_hash") {

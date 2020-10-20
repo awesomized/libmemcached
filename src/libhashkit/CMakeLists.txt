@@ -7,7 +7,6 @@ endif()
 add_library(libhashkit SHARED
         aes.cc
         algorithm.cc
-        behavior.cc
         common.h
         crc32.cc
         digest.cc
@@ -19,7 +18,6 @@ add_library(libhashkit SHARED
         hashkit.cc
         ${HSIEH_CC}
         jenkins.cc
-        ketama.cc
         md5.cc
         murmur.cc
         murmur3.cc

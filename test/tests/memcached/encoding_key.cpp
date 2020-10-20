@@ -2,8 +2,8 @@
 #include "test/lib/MemcachedCluster.hpp"
 
 #define TEST_KEY S("test")
-#define INITIAL_VAL S("initial")
-#define REPLACED_VAL S("replaced")
+#define INITIAL_VAL S("initial value, which is longer than AES_BLOCK_SIZE")
+#define REPLACED_VAL S("replaced value, thich is longer than AES_BLOCK_SIZE")
 
 static inline void check(memcached_st *enc, memcached_st *raw, const char *val, size_t len) {
   memcached_return_t enc_rc, raw_rc;

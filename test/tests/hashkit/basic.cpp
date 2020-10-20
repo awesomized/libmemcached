@@ -79,6 +79,14 @@ TEST_CASE("hashkit") {
     REQUIRE_FALSE(hashkit_compare(&st, hp));
   }
 
+  SECTION("strerror") {
+    auto bad_str = string{hashkit_strerror(hp, HASHKIT_MAXIMUM_RETURN)};
+    for (int h = HASHKIT_SUCCESS; h < HASHKIT_MAXIMUM_RETURN; ++h) {
+      auto r = static_cast<hashkit_return_t>(h);
+      REQUIRE(bad_str != hashkit_strerror(hp, r));
+    }
+  }
+
   hashkit_free(&st);
   hashkit_free(hp);
 }
