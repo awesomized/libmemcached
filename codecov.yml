@@ -1,9 +1,9 @@
 
 ignore:
+  - "/Applications"
   - "/usr"
-  - "example/"
-  - "test/"
-  - "/Applications/"
+  - "example"
+  - "tests"
 
 fixes:
   - "src/libmemcachedinternal::src/libmemcached"
