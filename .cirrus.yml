@@ -53,12 +53,12 @@ task:
     gitter_success_script: |
       curl -sS "${gitter}" \
         --data-urlencode "level=info" \
-        --data-urlencode "message=Cirrus-CI build for ${CIRRUS_BRANCH} on ${OS} [succeeded](https://cirrus-ci.org/task/${CIRRUS_TASK_ID})"
+        --data-urlencode "message=Cirrus [${CIRRUS_REPO_FULL_NAME}](https://github.com/${CIRRUS_REPO_FULL_NAME}/compare/${CIRRUS_LAST_GREEN_CHANGE}...${CIRRUS_CHANGE_IN_REPO}) (${CIRRUS_BRANCH}) [success](https://cirrus-ci.org/task/${CIRRUS_TASK_ID}) (${CIRRUS_OS})"
   on_failure:
     gitter_failure_script: |
       curl -sS "${gitter}" \
         --data-urlencode "level=error" \
-        --data-urlencode "message=Cirrus-CI build for ${CIRRUS_BRANCH} on ${OS} [failed](https://cirrus-ci.org/task/${CIRRUS_TASK_ID})"
+        --data-urlencode "message=Cirrus [${CIRRUS_REPO_FULL_NAME}](https://github.com/${CIRRUS_REPO_FULL_NAME}/compare/${CIRRUS_LAST_GREEN_CHANGE}...${CIRRUS_CHANGE_IN_REPO}) (${CIRRUS_BRANCH}) [failure](https://cirrus-ci.org/task/${CIRRUS_TASK_ID}) (${CIRRUS_OS})"
     testlog_artifacts:
       path: build/Testing/Temporary/LastTest.log
       type: text/plain
