@@ -223,6 +223,8 @@ jobs:
       INSTALL_MEMCACHED:
       MEMCACHED_PREFIX: /tmp
       ENABLE_SASL:      "ON"
+      CFLAGS:           "-O0 --coverage"
+      CXXFLAGS:         "-O0 --coverage"
     steps:
       - uses: actions/checkout@v2
       - uses: actions/checkout@v2
@@ -231,6 +233,7 @@ jobs:
           path: memcached
           ref: 1.6.7
 <?php steps(); ?>
+      - uses: codecov/codecov-action@v1.0.13
 
   # sanitizer build
   dbg-san:
@@ -241,18 +244,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 <?php steps(); ?>
-
-  # coverage build
-  dbg-cov:
-    name: dbg-cov (<?=defaults()?>)
-    runs-on: <?=DEF[DEF["os"]]?> #
-    env:
-      CFLAGS: -O0 --coverage
-      CXXFLAGS: -O0 --coverage
-    steps:
-      - uses: actions/checkout@v2
-<?php steps(); ?>
-      - uses: codecov/codecov-action@v1.0.13
 
   # mac build
   dbg-mac:
