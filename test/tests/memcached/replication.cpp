@@ -64,7 +64,7 @@ TEST_CASE("memcached_replication") {
       memcached_result_free(&r);
     }
 
-    SECTION("randomize reads") {
+    SECTION("deletes and randomize reads") {
       REQUIRE_SUCCESS(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ, 1));
       for (auto i = 0; i < NUM_KEYS; ++i) {
         memcached_return_t rc;
@@ -78,8 +78,10 @@ TEST_CASE("memcached_replication") {
           ++n;
           REQUIRE_SUCCESS(rc);
         }
-        CHECK(n == NUM_KEYS);
+        CHECK(n + i == NUM_KEYS);
         REQUIRE_RC(MEMCACHED_END, rc);
+
+        REQUIRE_SUCCESS(memcached_delete(memc, chr[i], len[i], 0));
       }
     }
 
