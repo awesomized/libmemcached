@@ -492,23 +492,26 @@ from your storage commands (set, add, replace, append, prepend).</p>
 <dl class="enumerator">
 <dt id="_CPPv4N20memcached_behavior_t37MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICASE">
 <span id="_CPPv3N20memcached_behavior_t37MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICASE"></span><span id="_CPPv2N20memcached_behavior_t37MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICASE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t37MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICASE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Specify the numbers of replicas <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcached</span></code> should store of each item
+<dd><p>Specify the number of replicas <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcached</span></code> should store of each item
 (on different servers).</p>
 <p>This replication does not dedicate certain memcached servers to store
 the replicas in, but instead it will store the replicas together with
 all of the other objects (on the 'n' next servers specified in your
 server list).</p>
+<p>Requires the binary protocol and only supports (M)GET/SET/DELETE.</p>
+<p><strong>NOTE</strong>: <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcached</span></code> does not guarantee nor enforce any consistency.</p>
 </dd></dl>
 
 <dl class="enumerator">
 <dt id="_CPPv4N20memcached_behavior_t41MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READE">
 <span id="_CPPv3N20memcached_behavior_t41MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READE"></span><span id="_CPPv2N20memcached_behavior_t41MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t41MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Allows randomizing the replica reads starting point. Normally the read
-is done from primary server and in case of miss the read is done from
+is done from primary server and in case of failure the read is done from
 primary + 1, then primary + 2 all the way to 'n' replicas.</p>
-<p>If this option is set on the starting point of the replica reads is
-randomized between the servers.  This allows distributing read load to
-multiple servers with the expense of more write traffic.</p>
+<p>This allows distributing read load to multiple servers with the expense
+of more write traffic.</p>
+<p><strong>NOTE</strong>: Only errors to communicate with a server are considered
+failures, so <a class="reference internal" href="memcached_return_t.html#_CPPv4N18memcached_return_t18MEMCACHED_NOTFOUNDE" title="MEMCACHED_NOTFOUND"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MEMCACHED_NOTFOUND</span></code></a> does <em>not</em> account for failure.</p>
 </dd></dl>
 
 <dl class="enumerator">
