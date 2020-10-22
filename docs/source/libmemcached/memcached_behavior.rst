@@ -222,7 +222,7 @@ SYNOPSIS
 
     .. enumerator:: MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS
 
-        Specify the numbers of replicas `libmemcached` should store of each item
+        Specify the number of replicas `libmemcached` should store of each item
         (on different servers).
 
         This replication does not dedicate certain memcached servers to store
@@ -230,15 +230,21 @@ SYNOPSIS
         all of the other objects (on the 'n' next servers specified in your
         server list).
 
+        Requires the binary protocol and only supports (M)GET/SET/DELETE.
+
+        **NOTE**: `libmemcached` does not guarantee nor enforce any consistency.
+
     .. enumerator:: MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ
 
         Allows randomizing the replica reads starting point. Normally the read
-        is done from primary server and in case of miss the read is done from
+        is done from primary server and in case of failure the read is done from
         primary + 1, then primary + 2 all the way to 'n' replicas.
 
-        If this option is set on the starting point of the replica reads is
-        randomized between the servers.  This allows distributing read load to
-        multiple servers with the expense of more write traffic.
+        This allows distributing read load to multiple servers with the expense
+        of more write traffic.
+
+        **NOTE**: Only errors to communicate with a server are considered 
+        failures, so `MEMCACHED_NOTFOUND` does *not* account for failure.
 
     .. enumerator:: MEMCACHED_BEHAVIOR_CORK
 

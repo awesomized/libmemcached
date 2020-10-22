@@ -67,6 +67,10 @@ found in the accompanying [LICENSE](./LICENSE) file.
 
 ## Contributing
 
+Please report any issues on the [bug tracker](https://github.com/m6w6/libmemcached/issues).
+
+A list of known permanent issues is maintained in [BUGS](./BUGS.md).
+
 All forms of contribution are welcome! Please see the bundled
 [CONTRIBUTING](./CONTRIBUTING.md) note for the general principles followed.
 

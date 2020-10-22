@@ -95,6 +95,10 @@ has been incremented due to the following changes:
 * Fix bin/memaslap to idnentify itself as memaslap instead of memslap.
 * Fix bin/memcapable to work with memcached >= 1.6.
 * Fix murmur and murmur3 hashes on big endian platforms.
+* Fix [gh #82](https://github.com/m6w6/libmemcached/issues/82),
+  [gh #64](https://github.com/m6w6/libmemcached/issues/64) and
+  [gh #21](https://github.com/m6w6/libmemcached/issues/21):
+  clarify documentation on replication.
 
 ---
 
