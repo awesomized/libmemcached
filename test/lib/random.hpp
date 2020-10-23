@@ -30,11 +30,11 @@ using kv_pair = pair<string, string>;
 template<typename T>
 enable_if_t<is_integral_v<T>, T> random_num(T min, T max) {
   using namespace chrono;
-  using rnd = mt19937;
-  using dst = uniform_int_distribution<T>;
+  using rnd = mt19937_64;
+  using dst = uniform_int_distribution<uintmax_t>;
 
   static auto time = duration_cast<nanoseconds>(system_clock::now().time_since_epoch());
-  static auto seed = static_cast<rnd::result_type>(time.count() % numeric_limits<T>::max());
+  static auto seed = static_cast<rnd::result_type>(time.count());
   static auto rgen = rnd{seed};
 
   return dst(min, max)(rgen);
