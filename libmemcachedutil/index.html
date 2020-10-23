@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>libmemcachedutil API &mdash; libmemcached 1.0.99 documentation</title>
+  <title>libmemcachedutil - C/C++ utilities extending libmemcached &mdash; libmemcached 1.0.99 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
     <link rel="search" title="Search" href="../search.html" />
     <link rel="copyright" title="Copyright" href="../copyright.html" />
     <link rel="next" title="Working with memcached pools" href="memcached_pool.html" />
-    <link rel="prev" title="libmemcachedutil - C/C++ utilities extending libmemcached" href="../libmemcachedutil.html" /> 
+    <link rel="prev" title="memcached_fetch" href="../libmemcached/memcached_fetch.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -85,31 +85,19 @@
               
             
             
-              <p class="caption"><span class="caption-text">libmemcached</span></p>
-<ul>
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../libmemcached.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../libmemcached/index.html">libmemcached API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../libmemcached/index_misc.html">Misc</a></li>
-</ul>
-<p class="caption"><span class="caption-text">libmemcachedutil</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../libmemcachedutil.html">Introduction</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">libmemcachedutil API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="memcached_pool.html">Working with memcached pools</a></li>
 </ul>
 </li>
-</ul>
-<p class="caption"><span class="caption-text">libhashkit</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../libhashkit.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../libhashkit/index.html">libhashkit API</a></li>
-</ul>
-<p class="caption"><span class="caption-text">Client Applications</span></p>
-<ul>
 <li class="toctree-l1"><a class="reference internal" href="../bin/index.html">Client Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../libmemcached/index_misc.html">Miscellaneous</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Copyright</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../changelogs.html">Change Logs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../copyright.html">Copyright</a></li>
 </ul>
 
@@ -156,12 +144,16 @@
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
         
-      <li>libmemcachedutil API</li>
+      <li>libmemcachedutil - C/C++ utilities extending libmemcached</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
+            
+              <a href="https://github.com/m6w6/libmemcached/blob/v1.x/docs/source/libmemcachedutil/index.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
         
       </li>
     
@@ -173,12 +165,38 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="libmemcachedutil-api">
-<h1>libmemcachedutil API<a class="headerlink" href="#libmemcachedutil-api" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="libmemcachedutil-c-c-utilities-extending-libmemcached">
+<h1>libmemcachedutil - C/C++ utilities extending libmemcached<a class="headerlink" href="#libmemcachedutil-c-c-utilities-extending-libmemcached" title="Permalink to this headline">¶</a></h1>
+<p>Utility library for libmemcached</p>
+<div class="section" id="synopsis">
+<h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>#include &lt;libmemcachedutil-1.0/util.h&gt;</dt>
+<dd>Compile and link with -lmemcachedutil -lmemcached</dd>
+</dl>
+</div>
+<div class="section" id="description">
+<h2>DESCRIPTION<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcachedutil</span></code> is a small and thread-safe client library that provides extra
+functionality built on top of <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcached</span></code>.</p>
+</div>
+<div class="section" id="threads-and-processes">
+<h2>THREADS AND PROCESSES<a class="headerlink" href="#threads-and-processes" title="Permalink to this headline">¶</a></h2>
+<p>Do not try to access an instance of <a class="reference internal" href="../libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> from multiple threads at the
+same time. If you want to access memcached from multiple threads you should
+either clone the <a class="reference internal" href="../libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a>, or use the memcached pool implementation. See
+<a class="reference internal" href="memcached_pool.html#_CPPv414memcached_poolPKc6size_t" title="memcached_pool"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_pool()</span></code></a>.</p>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Additional Utilities</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="memcached_pool.html">Working with memcached pools</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="see-also">
+<h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference internal" href="../libmemcached.html"><span class="doc">C/C++ Client Library for memcached</span></a></li>
 </ul>
 </div>
 </div>
@@ -194,7 +212,7 @@
         <a href="memcached_pool.html" class="btn btn-neutral float-right" title="Working with memcached pools" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../libmemcachedutil.html" class="btn btn-neutral float-left" title="libmemcachedutil - C/C++ utilities extending libmemcached" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../libmemcached/memcached_fetch.html" class="btn btn-neutral float-left" title="memcached_fetch" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

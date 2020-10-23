@@ -1,0 +1,414 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ChangeLog v1.0 &mdash; libmemcached 1.0.99 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="copyright" title="Copyright" href="copyright.html" />
+    <link rel="next" title="ChangeLog v0.x" href="ChangeLog-0.html" />
+    <link rel="prev" title="ChangeLog v1.1" href="ChangeLog-1.1.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> libmemcached
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="libmemcached.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="libmemcached/index.html">libmemcached API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="libmemcachedutil/index.html">libmemcachedutil API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="libhashkit/index.html">libhashkit API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bin/index.html">Client Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="libmemcached/index_misc.html">Miscellaneous</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="changelogs.html">Change Logs</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="ChangeLog-1.1.html">ChangeLog v1.1</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">ChangeLog v1.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#v-1-0-18">v 1.0.18</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-1-0-17">v 1.0.17</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-1-0-16">v 1.0.16</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-1-0-15">v 1.0.15</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-1-0-14">v 1.0.14</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-1-0-13">v 1.0.13</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-1-0-12">v 1.0.12</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-1-0-11">v 1.0.11</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-1-0-10">v 1.0.10</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-1-0-9">v 1.0.9</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-1-0-8">v 1.0.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-1-0-7">v 1.0.7</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-1-0-6">v 1.0.6</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-1-0-5">v 1.0.5</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-1-0-4">v 1.0.4</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-1-0-3">v 1.0.3</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-1-0-2">v 1.0.2</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ChangeLog-0.html">ChangeLog v0.x</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="copyright.html">Copyright</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">libmemcached</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="changelogs.html">Change Logs</a> &raquo;</li>
+        
+      <li>ChangeLog v1.0</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/m6w6/libmemcached/blob/v1.x/docs/source/ChangeLog-1.0.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="changelog-v1-0">
+<h1>ChangeLog v1.0<a class="headerlink" href="#changelog-v1-0" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="v-1-0-18">
+<h2>v 1.0.18<a class="headerlink" href="#v-1-0-18" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2014-02-09</div></blockquote>
+<ul class="simple">
+<li>MEMCACHED_BEHAVIOR_RETRY_TIMEOUT can now be set to zero.</li>
+<li>Numerous bug fixes.</li>
+</ul>
+</div>
+<div class="section" id="v-1-0-17">
+<h2>v 1.0.17<a class="headerlink" href="#v-1-0-17" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2013-04-03</div></blockquote>
+<ul class="simple">
+<li>Remove c++ namespace that was being exposed (the API should be plug compatible)..</li>
+<li>Fix cases where --servers wasn't behaving the same in all clients.</li>
+</ul>
+</div>
+<div class="section" id="v-1-0-16">
+<h2>v 1.0.16<a class="headerlink" href="#v-1-0-16" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2013-02-01</div></blockquote>
+<ul class="simple">
+<li>Added support to do two part shutdown of socket.</li>
+<li>Fixes for Fedora 18.</li>
+<li>Fix for binary memcached_touch()</li>
+</ul>
+</div>
+<div class="section" id="v-1-0-15">
+<h2>v 1.0.15<a class="headerlink" href="#v-1-0-15" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2012-12-17</div></blockquote>
+<ul class="simple">
+<li>Added support for Murmur3 (HASHKIT_HASH_MURMUR3)</li>
+<li>Portability fixes.</li>
+</ul>
+</div>
+<div class="section" id="v-1-0-14">
+<h2>v 1.0.14<a class="headerlink" href="#v-1-0-14" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2012-11-14</div></blockquote>
+<ul class="simple">
+<li>CLIENT_ERROR fixed to not be treated as a fatal error.</li>
+<li>Compiler fixes for older Ubuntu releases.</li>
+</ul>
+</div>
+<div class="section" id="v-1-0-13">
+<h2>v 1.0.13<a class="headerlink" href="#v-1-0-13" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2012-10-19</div></blockquote>
+<ul class="simple">
+<li>Fix bug that caused version string to not be exported correctly.</li>
+</ul>
+</div>
+<div class="section" id="v-1-0-12">
+<h2>v 1.0.12<a class="headerlink" href="#v-1-0-12" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2012-10-09</div></blockquote>
+<ul class="simple">
+<li>Added memcached_result_take_value().</li>
+<li>Added ax_libmemcached.m4</li>
+</ul>
+</div>
+<div class="section" id="v-1-0-11">
+<h2>v 1.0.11<a class="headerlink" href="#v-1-0-11" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2012-09-17</div></blockquote>
+<ul class="simple">
+<li>Removed custom version of memcached.</li>
+<li>Updated hardening rules.</li>
+<li>Fixed a case where the return error from a socket connection differred from that of a TCP/IP socket.</li>
+</ul>
+</div>
+<div class="section" id="v-1-0-10">
+<h2>v 1.0.10<a class="headerlink" href="#v-1-0-10" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2012-07-30</div></blockquote>
+<ul class="simple">
+<li>--disable-assert has been removed from configure, and --enable-assert has been added in its place.</li>
+<li>Compiling fixes for Clang on OSX Mountain Lion.</li>
+</ul>
+</div>
+<div class="section" id="v-1-0-9">
+<h2>v 1.0.9<a class="headerlink" href="#v-1-0-9" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2012-07-05</div></blockquote>
+<ul class="simple">
+<li>Faster close on socket.</li>
+<li>Instance allocation is now seperated from server interface.
+This should allow for a better preservation of ABI compliance from now on.</li>
+<li>Fix close on exec bug.</li>
+<li>Numerous other bug fixes.</li>
+</ul>
+</div>
+<div class="section" id="v-1-0-8">
+<h2>v 1.0.8<a class="headerlink" href="#v-1-0-8" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2012-05-22</div></blockquote>
+<ul class="simple">
+<li>Added support for setting options via ENV variable LIBMEMCACHED</li>
+<li>Fix corner case on last used result.</li>
+</ul>
+</div>
+<div class="section" id="v-1-0-7">
+<h2>v 1.0.7<a class="headerlink" href="#v-1-0-7" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2012-04-28</div></blockquote>
+<ul class="simple">
+<li>Add API call for exist calls.</li>
+<li>Update all license files to be BSD.</li>
+</ul>
+</div>
+<div class="section" id="v-1-0-6">
+<h2>v 1.0.6<a class="headerlink" href="#v-1-0-6" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2012-04-08</div></blockquote>
+<ul class="simple">
+<li>Fixes for gcc 4.7, lp:961812</li>
+<li>Fix for restart issue that happens under testing.</li>
+<li>Fix for lp:962815.</li>
+<li>Support for transparent AES encryption.</li>
+</ul>
+</div>
+<div class="section" id="v-1-0-5">
+<h2>v 1.0.5<a class="headerlink" href="#v-1-0-5" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2012-03-14</div></blockquote>
+<ul class="simple">
+<li>Fixes for OSX.</li>
+<li>Version is now parsed directly in the parser, which makes buffered operations now work with it..</li>
+<li>memstat has been extended so that it can be used to find the version of the server.</li>
+<li>Update documentation.</li>
+<li>Fixes for compile issues on Debian and Ubuntu</li>
+</ul>
+</div>
+<div class="section" id="v-1-0-4">
+<h2>v 1.0.4<a class="headerlink" href="#v-1-0-4" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2012-01-27</div></blockquote>
+<ul class="simple">
+<li>Fix for memcached_dump().</li>
+<li>Additional testing for memcached_stat_execute().</li>
+</ul>
+</div>
+<div class="section" id="v-1-0-3">
+<h2>v 1.0.3<a class="headerlink" href="#v-1-0-3" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2012-01-09</div></blockquote>
+<ul class="simple">
+<li>Increased size of sort buffer used during Ketama.</li>
+<li>Added support for new behavior to handle dead servers.</li>
+<li>Overall haul of UDP IO.</li>
+<li>Fixed C compile issue with memcached_exist()</li>
+<li>Numerous bug fixes.</li>
+<li>Clang support for OSX.</li>
+<li>All commands now using vector send support.</li>
+</ul>
+</div>
+<div class="section" id="v-1-0-2">
+<h2>v 1.0.2<a class="headerlink" href="#v-1-0-2" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2011-10-24</div></blockquote>
+<ul class="simple">
+<li>Dropped libmemcached/memcached_util.h (undocumented header file)</li>
+<li>Added memcached_touch() and memcached_touch_by_key()</li>
+<li>UDP support restructured to toggle on a complete memcached_st structure.</li>
+</ul>
+<hr class="docutils" />
+<p>See <a class="reference internal" href="ChangeLog-0.html"><span class="doc">ChangeLog-0</span></a> for changes prior v1.0.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="ChangeLog-0.html" class="btn btn-neutral float-right" title="ChangeLog v0.x" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="ChangeLog-1.1.html" class="btn btn-neutral float-left" title="ChangeLog v1.1" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; <a href="copyright.html">Copyright</a> 
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

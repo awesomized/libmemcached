@@ -84,28 +84,16 @@
               
             
             
-              <p class="caption"><span class="caption-text">libmemcached</span></p>
-<ul>
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="libmemcached.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="libmemcached/index.html">libmemcached API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="libmemcached/index_misc.html">Misc</a></li>
-</ul>
-<p class="caption"><span class="caption-text">libmemcachedutil</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="libmemcachedutil.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="libmemcachedutil/index.html">libmemcachedutil API</a></li>
-</ul>
-<p class="caption"><span class="caption-text">libhashkit</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="libhashkit.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="libhashkit/index.html">libhashkit API</a></li>
-</ul>
-<p class="caption"><span class="caption-text">Client Applications</span></p>
-<ul>
 <li class="toctree-l1"><a class="reference internal" href="bin/index.html">Client Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="libmemcached/index_misc.html">Miscellaneous</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Copyright</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="changelogs.html">Change Logs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="copyright.html">Copyright</a></li>
 </ul>
 
@@ -158,6 +146,10 @@
       <li class="wy-breadcrumbs-aside">
         
             
+            
+              <a href="https://github.com/m6w6/libmemcached/blob/v1.x/docs/source/index.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
         
       </li>
     
@@ -175,7 +167,6 @@
 memcached server (<a class="reference external" href="http://memcached.org/">http://memcached.org/</a>). It has been designed to be light on
 memory usage, thread safe, and provide full access to server side methods.</p>
 <div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">libmemcached</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="libmemcached.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="libmemcached/index.html">libmemcached API</a><ul>
@@ -242,7 +233,35 @@ memory usage, thread safe, and provide full access to server side methods.</p>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="libmemcached/index_misc.html">Misc</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="libmemcachedutil/index.html">libmemcachedutil API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="libmemcachedutil/memcached_pool.html">Working with memcached pools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="libhashkit/index.html">libhashkit API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="libhashkit/hashkit_create.html">Creating a hashkit structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libhashkit/hashkit_function.html">Set Hash Function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libhashkit/hashkit_functions.html">Available Hashes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="libhashkit/hashkit_value.html">Generate hash value</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bin/index.html">Client Applications</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bin/memexist.html">memexist — Check for the existence of a key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memcat.html">memcat — &quot;cat&quot; data from a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memcp.html">memcp — &quot;cp&quot; files to a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memtouch.html">memtouch — &quot;touch&quot; a key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memrm.html">memrm – &quot;rm&quot; a key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memaslap.html">memaslap - Load testing and benchmarking a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memslap.html">memslap - Load testing and benchmarking a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memping.html">memping – Ping a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memstat.html">memstat – Gather statistics from a server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memerror.html">memerror — Translate libmemcached error codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memparse.html">memparse — Parse and validate an option string</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memcapable.html">memcapable — Check a server's capabilities and compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memdump.html">memdump — Dump a server's data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bin/memflush.html">memflush — Flush a server (erase all cached data)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="libmemcached/index_misc.html">Miscellaneous</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="libmemcached/configuration.html">Configuration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="libmemcached/constants.html">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="libmemcached/examples.html">Examples</a></li>
@@ -252,35 +271,10 @@ memory usage, thread safe, and provide full access to server side methods.</p>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">libmemcachedutil</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="libmemcachedutil.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="libmemcachedutil/index.html">libmemcachedutil API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="libmemcachedutil/memcached_pool.html">Working with memcached pools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelogs.html">Change Logs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="copyright.html">Copyright</a></li>
 </ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">libhashkit</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="libhashkit.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="libhashkit/index.html">libhashkit API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="libhashkit/hashkit_create.html">Creating a hashkit structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="libhashkit/hashkit_function.html">Set Hash Function</a></li>
-<li class="toctree-l2"><a class="reference internal" href="libhashkit/hashkit_functions.html">Available Hashes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="libhashkit/hashkit_value.html">Generate hash value</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">Client Applications</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="bin/index.html">Client Applications</a></li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
 </div>
 <div class="section" id="index">
 <h2>Index<a class="headerlink" href="#index" title="Permalink to this headline">¶</a></h2>

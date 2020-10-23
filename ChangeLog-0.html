@@ -1,0 +1,943 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ChangeLog v0.x &mdash; libmemcached 1.0.99 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="copyright" title="Copyright" href="copyright.html" />
+    <link rel="next" title="Copyright" href="copyright.html" />
+    <link rel="prev" title="ChangeLog v1.0" href="ChangeLog-1.0.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> libmemcached
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="libmemcached.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="libmemcached/index.html">libmemcached API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="libmemcachedutil/index.html">libmemcachedutil API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="libhashkit/index.html">libhashkit API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bin/index.html">Client Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="libmemcached/index_misc.html">Miscellaneous</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="changelogs.html">Change Logs</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="ChangeLog-1.1.html">ChangeLog v1.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ChangeLog-1.0.html">ChangeLog v1.0</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">ChangeLog v0.x</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-53">v 0.53</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-52">v 0.52</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-51">v 0.51</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-50">v 0.50</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-49">v 0.49</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-48">v 0.48</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-47">v 0.47</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-46">v 0.46</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-45">v 0.45</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-44">v 0.44</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-43">v 0.43</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-42">v 0.42</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-41">v 0.41</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-40">v 0.40</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-39">v 0.39</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-38">v 0.38</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-37">v 0.37</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-36">v 0.36</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-35">v 0.35</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-34">v 0.34</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-33">v 0.33</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-32">v 0.32</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-31">v 0.31</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-30">v 0.30</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-29">v 0.29</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-28">v 0.28</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-27">v 0.27</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-26">v 0.26</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-25">v 0.25</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-24">v 0.24</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-23">v 0.23</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-22">v 0.22</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-21">v 0.21</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-20">v 0.20</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-19">v 0.19</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-18">v 0.18</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-17">v 0.17</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-16">v 0.16</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-15">v 0.15</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-14">v 0.14</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-13">v 0.13</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-12">v 0.12</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-11">v 0.11</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-10">v 0.10</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-9">v 0.9</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-8">v 0.8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-7">v 0.7</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-6">v 0.6</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-5">v 0.5</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-4">v 0.4</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-3">v 0.3</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v-0-2">v 0.2</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="copyright.html">Copyright</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">libmemcached</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="changelogs.html">Change Logs</a> &raquo;</li>
+        
+      <li>ChangeLog v0.x</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/m6w6/libmemcached/blob/v1.x/docs/source/ChangeLog-0.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="changelog-v0-x">
+<h1>ChangeLog v0.x<a class="headerlink" href="#changelog-v0-x" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="v-0-53">
+<h2>v 0.53<a class="headerlink" href="#v-0-53" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2011-09-27</div></blockquote>
+<ul class="simple">
+<li>Fix for FreeBSD/OpenBSD and -lm</li>
+<li>Added memcached_exist()</li>
+<li>Fix for memory when using config test.</li>
+<li>CLI gained --quiet</li>
+</ul>
+</div>
+<div class="section" id="v-0-52">
+<h2>v 0.52<a class="headerlink" href="#v-0-52" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2011-09-12</div></blockquote>
+<ul class="simple">
+<li>Build fixes for Ubuntu/Suse.</li>
+<li>Fixes for OSX Lion.</li>
+<li>Bug fix for looping back through dns lookups under certain failures.</li>
+<li>Fixes related to dead server failures.</li>
+</ul>
+</div>
+<div class="section" id="v-0-51">
+<h2>v 0.51<a class="headerlink" href="#v-0-51" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2011-07-21</div></blockquote>
+<ul class="simple">
+<li>memcached_callback_set() now takes its data argument as const</li>
+<li>Update to tests.</li>
+<li>Fix in parser for port number.</li>
+</ul>
+</div>
+<div class="section" id="v-0-50">
+<h2>v 0.50<a class="headerlink" href="#v-0-50" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2011-06-20</div></blockquote>
+<ul class="simple">
+<li>Updates to C++ interface</li>
+<li>Custom free allocators need to now check for value before calling free.</li>
+<li>memcached_fetch_result() now uses the internal result when available (about 25 to 50% faster).</li>
+<li>Fix for stats structure.</li>
+<li>Updates to documentation.</li>
+<li>memcached_fetch_result() now uses the internal result when available (about 25 to 50% faster).</li>
+</ul>
+</div>
+<div class="section" id="v-0-49">
+<h2>v 0.49<a class="headerlink" href="#v-0-49" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2011-04-14</div></blockquote>
+<ul class="simple">
+<li>Fix calls to auto methods so that if value is not passed in nothing bad happens.</li>
+<li>New parser calls for generating memcached_st objects.</li>
+<li>New error system.</li>
+<li>New flow control for messages means faster get/set calls.</li>
+<li>Added new documentation system.</li>
+<li>A behavior change has been now made that if you specify a weight for any server, we enable the weight flag and do weight balancing.</li>
+<li>Added MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS to simplify the setting of AUTO REJECT for servers.</li>
+</ul>
+</div>
+<div class="section" id="v-0-48">
+<h2>v 0.48<a class="headerlink" href="#v-0-48" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2011-03-16</div></blockquote>
+<ul class="simple">
+<li>Fix memory leak in server parse.</li>
+<li>Move test framework out to be its own library (easier to work with Gearman).</li>
+</ul>
+</div>
+<div class="section" id="v-0-47">
+<h2>v 0.47<a class="headerlink" href="#v-0-47" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2011-02-24</div></blockquote>
+<ul class="simple">
+<li>Additional fixes for OpenBSD.</li>
+<li>Bug fix 677609, 456080.</li>
+<li>SIGPIPE fix for Linux send().</li>
+<li>memcapable can now test ascii or binary based on flags.</li>
+<li>Additional build fixes for SASL.</li>
+</ul>
+</div>
+<div class="section" id="v-0-46">
+<h2>v 0.46<a class="headerlink" href="#v-0-46" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2011-02-14</div></blockquote>
+<ul class="simple">
+<li>Fixes a number of corner case bugs.</li>
+<li>Fixes related to OpenBSD.</li>
+<li>Better testing for protocol version.</li>
+<li>Removes special case infinite wait on blocking setup.</li>
+</ul>
+</div>
+<div class="section" id="v-0-45">
+<h2>v 0.45<a class="headerlink" href="#v-0-45" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2011-02-09</div></blockquote>
+<ul class="simple">
+<li>Add support for systemtap</li>
+</ul>
+</div>
+<div class="section" id="v-0-44">
+<h2>v 0.44<a class="headerlink" href="#v-0-44" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2010-09-23</div></blockquote>
+<ul class="simple">
+<li>Windows bug fixes.</li>
+<li>Hudson port support in test harness.</li>
+<li>Improved portability of test hanrness.</li>
+<li>SASL fixes.</li>
+</ul>
+</div>
+<div class="section" id="v-0-43">
+<h2>v 0.43<a class="headerlink" href="#v-0-43" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2010-07-28</div></blockquote>
+<ul class="simple">
+<li>Added --args to memstat so that a greater range of values can be returned.</li>
+<li>Prelimanary support for Windows.</li>
+<li>memcached_stat_execute() merged.</li>
+</ul>
+</div>
+<div class="section" id="v-0-42">
+<h2>v 0.42<a class="headerlink" href="#v-0-42" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2010-07-06</div></blockquote>
+<ul class="simple">
+<li>Mistake in libtool caused issue with library version</li>
+</ul>
+</div>
+<div class="section" id="v-0-41">
+<h2>v 0.41<a class="headerlink" href="#v-0-41" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2010-06-30</div></blockquote>
+<ul class="simple">
+<li>Added --file for memcat.</li>
+<li>Added limemcached_ping() to libmemcached_util</li>
+<li>Bugfix for some cases where connect would have issues with timeout.</li>
+<li>Wrong value for errno given as error on an IO failure inside of poll.</li>
+<li>Bug fix for issue where multiple interfaces with bad DNS were not being caught.</li>
+</ul>
+</div>
+<div class="section" id="v-0-40">
+<h2>v 0.40<a class="headerlink" href="#v-0-40" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2010-04-23</div></blockquote>
+<ul class="simple">
+<li>Placed retry logic in for busted resolvers</li>
+<li>Add an ignore for SIGPIPE to solve OSX issues.</li>
+<li>A couple of fixed for memcached_light server.</li>
+<li>Updated to debug mode to track io_wait</li>
+</ul>
+</div>
+<div class="section" id="v-0-39">
+<h2>v 0.39<a class="headerlink" href="#v-0-39" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2010-04-06</div></blockquote>
+<ul class="simple">
+<li>Add support for prefix keys to binary protocol.</li>
+<li>Remove the undocumented call memcached_server_remove().</li>
+<li>The undocumented call memcached_server_by_key() now returns const.</li>
+<li>memcached_server_error_reset() has been deprecated.</li>
+<li>memcached_server_list() has been deprecated. Use memcached_server_cursor() to walk the servers found in a memcached_st() structure.</li>
+<li>memcached_verbosity() can now be run concurrently with other operations.</li>
+<li>SASL support.</li>
+<li>Fixes memory leak found in EJECT HOSTS.</li>
+</ul>
+</div>
+<div class="section" id="v-0-38">
+<h2>v 0.38<a class="headerlink" href="#v-0-38" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2010-02-10</div></blockquote>
+<ul class="simple">
+<li>C++ interface for libhashkit.</li>
+<li>Modified memcached_set_memory_allocators() so that it requires a context pointer.</li>
+<li>memcached_clone() now runs 5 times faster.</li>
+<li>Functions used for callbacks are now given const memcached_st.</li>
+<li>Added MEMCACHED_BEHAVIOR_CORK.</li>
+<li>memslap now creates a configuration file at ~/.memslap.cnf</li>
+<li>memcached_purge() now calls any callbacks registered during get execution.</li>
+<li>Many fixes to memslap.</li>
+<li>Updates for memcapable.</li>
+<li>Compile fixes for OpenBSD.</li>
+<li>Fix for possible recursive decent on IO failure.</li>
+</ul>
+</div>
+<div class="section" id="v-0-37">
+<h2>v 0.37<a class="headerlink" href="#v-0-37" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2010-01-12</div></blockquote>
+<ul class="simple">
+<li>Fixed build for libhashkit.</li>
+<li>Fixed install path regression.</li>
+<li>Modified RPM to strict check install.</li>
+<li>Added documentation for memcached_server_cursor();</li>
+<li>Added memcached_servers_reset().</li>
+<li>Modified memcached_st to remove dead cursor_server member.</li>
+</ul>
+</div>
+<div class="section" id="v-0-36">
+<h2>v 0.36<a class="headerlink" href="#v-0-36" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2010-01-07</div></blockquote>
+<ul class="simple">
+<li>Merged in new memslap utility.</li>
+<li>All of constants.h has been updated to match style (all old identifiers continue to work).</li>
+<li>Added first pass for libhashkit.</li>
+<li>Updated test Framework/extended tests.</li>
+<li>Random read support during replication added.</li>
+<li>Modified use_sort so that the option can be applied to any distribution type.</li>
+<li>We removed the MEMCACHED_BEHAVIOR_KETAMA_COMPAT_MODE added in 0.35. Instead use memcached_behavior_set_distribution().</li>
+</ul>
+</div>
+<div class="section" id="v-0-35">
+<h2>v 0.35<a class="headerlink" href="#v-0-35" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2009-11-09</div></blockquote>
+<ul class="simple">
+<li>Added support for by_key operations for inc/dec methods.</li>
+<li>Added mget test to memslap.</li>
+<li>Support for compatible ketama for SpyMemcached</li>
+<li>Update C++ interface.</li>
+<li>Fix for memcp</li>
+</ul>
+</div>
+<div class="section" id="v-0-34">
+<h2>v 0.34<a class="headerlink" href="#v-0-34" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2009-10-13</div></blockquote>
+<ul class="simple">
+<li>Added support for setting behavior flags on a connection pool.</li>
+<li>Don't increment server_failure_counter on normal disconnects.</li>
+<li>Added prototype for a callback based protocol parser (server side) with examples so that you could let your own application speak the memcached protocol</li>
+<li>Updated memcapable to test ASCII protocol.</li>
+<li>Changed behavior so that server can be removed at first sign of failure.</li>
+<li>Added memcached_server_get_last_disconnect() call</li>
+</ul>
+</div>
+<div class="section" id="v-0-33">
+<h2>v 0.33<a class="headerlink" href="#v-0-33" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2009-09-23</div></blockquote>
+<ul class="simple">
+<li>Added memcapable to test servers for binary compatibility.</li>
+<li>Updated C++ interface. Added basic support for C++ exceptions. Added multiple constructors the memcached client object. The C++ interface now takes parameters which are C++ types (such as std::string).</li>
+<li>Several bug fixes for binary protocol support.</li>
+<li>Fixed crashing issue with dumping from memcachd server (server internals were changed without documenting change).</li>
+</ul>
+</div>
+<div class="section" id="v-0-32">
+<h2>v 0.32<a class="headerlink" href="#v-0-32" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2009-09-15</div></blockquote>
+<ul class="simple">
+<li>Change of behavior where linger is only modified for no-block and then it is set to zero.</li>
+<li>Added Twitter's memcached_server_error() functions.</li>
+<li>Fix for OSX compiles in development builds.</li>
+<li>Updated C++ interface.</li>
+<li>Updated memcached_mget and memcached_mget_by_key to take a size_t as a parameter instead of an unsigned int for number_of_keys.</li>
+</ul>
+</div>
+<div class="section" id="v-0-31">
+<h2>v 0.31<a class="headerlink" href="#v-0-31" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2009-07-10</div></blockquote>
+<ul class="simple">
+<li>Added support or HA via replication.</li>
+<li>malloc() removed for server key usage.</li>
+<li>Update build system.</li>
+<li>Added support for memcached_set_memory_allocators().</li>
+<li>Fixed bug in configure.ac for have_htoll.</li>
+</ul>
+</div>
+<div class="section" id="v-0-30">
+<h2>v 0.30<a class="headerlink" href="#v-0-30" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2009-06-01</div></blockquote>
+<ul class="simple">
+<li>Added memcachd_dump command (and framework for memdump tool).</li>
+<li>Realigned all structures to remove padding (and line up important bits for 64bit caches.</li>
+<li>Remove some of sprintf() in storage calls().</li>
+<li>Removed printf() in stat call for unknown stat member.</li>
+<li>memcached_generate_hash() function added.</li>
+<li>Added tests to make sure all hash functions are stable.</li>
+</ul>
+</div>
+<div class="section" id="v-0-29">
+<h2>v 0.29<a class="headerlink" href="#v-0-29" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2009-05-19</div></blockquote>
+<ul class="simple">
+<li>Fixed malloc usage to calloc for spots where we need zero filled memory.</li>
+<li>All code warnings now treated as errors.</li>
+<li>Fixes for debian packaging.</li>
+<li>Added new pooling mechanism.</li>
+<li>MEMCACHED_BEHAVIOR_NO_BLOCK no longer also sets MEMCACHED_BEHAVIOR_BUFFER_REQUESTS.</li>
+<li>Updated generic rpm.</li>
+</ul>
+</div>
+<div class="section" id="v-0-28">
+<h2>v 0.28<a class="headerlink" href="#v-0-28" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2009-04-15</div></blockquote>
+<ul class="simple">
+<li>Fixed bug in init sructure (reapplied)</li>
+<li>Fixed bug in get/set by key (<a class="reference external" href="mailto:nikkhils&#37;&#52;&#48;gmail&#46;com">nikkhils<span>&#64;</span>gmail<span>&#46;</span>com</a>)</li>
+</ul>
+</div>
+<div class="section" id="v-0-27">
+<h2>v 0.27<a class="headerlink" href="#v-0-27" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2009-03-30</div></blockquote>
+<ul class="simple">
+<li>Added new UDP fire-forget mode.</li>
+<li>Reworked performance for mget() to better make use of async protocol</li>
+<li>Cleaned up execution of fetch (just one set of code now)</li>
+<li>Fixed Jenkin's for big endian hosts.</li>
+<li>Updates for memstat to determine network latency.</li>
+<li>Updates for binary protocol.</li>
+<li>Many updates to documentation.</li>
+</ul>
+</div>
+<div class="section" id="v-0-26">
+<h2>v 0.26<a class="headerlink" href="#v-0-26" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2009-01-29</div></blockquote>
+<ul class="simple">
+<li>Fix for decrement on hash key</li>
+<li>Fixed assert that was catching bad memset() call in host_reset()</li>
+<li>Fix purge issue for blocked IO which has been stacked.</li>
+</ul>
+</div>
+<div class="section" id="v-0-25">
+<h2>v 0.25<a class="headerlink" href="#v-0-25" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2008-11-28</div></blockquote>
+<ul class="simple">
+<li>Jenkins HASH added.</li>
+<li>Update of Murmur hash code</li>
+<li>Support explicit weights (Robey Pointer, Evan Weaver)</li>
+<li>Bugfix for ketama continuum (Robey Pointer)</li>
+<li>New behavior MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY (Robey Pointer)</li>
+<li>Don't ever call stats for weighting servers, because it is unstable.</li>
+</ul>
+</div>
+<div class="section" id="v-0-24">
+<h2>v 0.24<a class="headerlink" href="#v-0-24" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2008-09-16</div></blockquote>
+<ul class="simple">
+<li>Cleanup compile warnings.</li>
+<li>Fix issues in partitioning by keys.</li>
+<li>Fixed &quot;fail case&quot; to make sure when calling memcached_clone() no memcached_st is over written.</li>
+<li>New memcached_server_by_key() method for finding a server from a key.</li>
+<li>memcached_server_free() was added for freeing server structures.</li>
+</ul>
+</div>
+<div class="section" id="v-0-23">
+<h2>v 0.23<a class="headerlink" href="#v-0-23" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2008-09-07</div></blockquote>
+<ul class="simple">
+<li>Added strings.h header for Solaris 9</li>
+<li>Solaris 64bit fix.</li>
+<li>Support for weighted Ketama from Yin Chen.</li>
+<li>Fix for Chinese</li>
+<li>Fix for 0 length key to trigger bad key.</li>
+<li>Added behaviors MEMCACHED_BEHAVIOR_SND_TIMEOUT, MEMCACHED_BEHAVIOR_RCV_TIMEOUT</li>
+<li>Support for Binary Protocol added</li>
+</ul>
+</div>
+<div class="section" id="v-0-22">
+<h2>v 0.22<a class="headerlink" href="#v-0-22" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2008-07-14</div></blockquote>
+<ul class="simple">
+<li>Fix where master key was no being checked for &quot;bad key&quot;</li>
+<li>Fixed bugs in stats output (thread output was wrong)</li>
+<li>Clarified MEMCACHED_BAD_KEY_PROVIDED is return for bad prefix key.</li>
+<li>Found a bug in Flags return (Jacek Ostrowski)</li>
+<li>Fixed issue with compiling on Visual Studio</li>
+</ul>
+</div>
+<div class="section" id="v-0-21">
+<h2>v 0.21<a class="headerlink" href="#v-0-21" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2008-05-24</div></blockquote>
+<ul class="simple">
+<li>Change of char * to const char * for all key based functions.</li>
+<li>New  MEMCACHED_CALLBACK_PREFIX_KEY added. You can now create domains for values.</li>
+<li>Fixed bug introducd in last version on memcp</li>
+<li>Fix for death of file io to call shutdown()</li>
+</ul>
+</div>
+<div class="section" id="v-0-20">
+<h2>v 0.20<a class="headerlink" href="#v-0-20" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2008-05-05</div></blockquote>
+<ul class="simple">
+<li>New consistent distribution tests.</li>
+<li>Found a memory leak when a server constantly fails.</li>
+<li>Fix in watchpoint macro</li>
+<li>Changed default timeout to 1 second for poll timeouts</li>
+<li>Wheel uses less memory/dynamic allocation for size (no longer limited to 512 hosts by default.</li>
+<li>memslap memory leak fix</li>
+<li>Added Ketama distribution</li>
+<li>Fix assert.h compile problem on CentOS</li>
+</ul>
+</div>
+<div class="section" id="v-0-19">
+<h2>v 0.19<a class="headerlink" href="#v-0-19" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2008-04-09</div></blockquote>
+<ul class="simple">
+<li>Documentation fix in libmemcached.</li>
+<li>Fixed bug where sort was always occuring on hosts</li>
+<li>Logic fix in branch prediction (thanks Jay!)</li>
+<li>Read through cached support.</li>
+<li>Fixed for cas by key operation.</li>
+<li>Fix for memcached_server_st list structures to have correct count.</li>
+<li>Added callback MEMCACHED_CALLBACK_DELETE_TRIGGER</li>
+<li>Removed function call in favor of macro (aka cut out some instructions)</li>
+</ul>
+</div>
+<div class="section" id="v-0-18">
+<h2>v 0.18<a class="headerlink" href="#v-0-18" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2008-03-17</div></blockquote>
+<ul class="simple">
+<li>Fix plus tests for non-zero value objects and flags.</li>
+<li>MEMCACHED_HASH_MURMUR added for murmur algorithm provided.</li>
+<li>MEMCACHED_BEHAVIOR_RETRY_TIMEOUT added to keep connecting from looping on timeout.</li>
+<li>gcc branch prediction optimizations</li>
+<li>Refactored entire tree to make include files cleaner</li>
+<li>Fixed leaked socket.</li>
+</ul>
+</div>
+<div class="section" id="v-0-17">
+<h2>v 0.17<a class="headerlink" href="#v-0-17" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2008-02-27</div></blockquote>
+<ul class="simple">
+<li>MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT added for connect timeout in non-block mode.</li>
+<li>Incompatible change in memcached_behavior_set() api. We now use a uint64_t, instead of a pointer.</li>
+<li>Fix for storage of values for zero.</li>
+<li>memcached_server_cursor() function added to API for cycling through servers.</li>
+</ul>
+</div>
+<div class="section" id="v-0-16">
+<h2>v 0.16<a class="headerlink" href="#v-0-16" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2008-02-18</div></blockquote>
+<ul class="simple">
+<li>Work on the UDP protocol</li>
+<li>Added get_by_key, set_by_key tests for C++ API</li>
+<li>Fix for limit_maxbytes to be 64bit in stats</li>
+<li>Added Atom Smasher test (scale baby, scale!)</li>
+<li>Servers are now sorted, meaning that servers are now ordered so that clients with the same lists, will have same distribution. (Idea from Ross McFarland). MEMCACHED_BEHAVIOR_SORT_HOSTS was added to enable this support.</li>
+<li>Added MEMCACHED_BAD_KEY_PROVIDED error for auto, set, and get operations.  MEMCACHED_BEHAVIOR_VERIFY_KEY was added to enable this feature.</li>
+<li>More error messages on command line tools.</li>
+<li>Fixed bugs in memcached_cas() operator.</li>
+<li>Fix to loop through interfaces</li>
+</ul>
+</div>
+<div class="section" id="v-0-15">
+<h2>v 0.15<a class="headerlink" href="#v-0-15" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2008-01-29</div></blockquote>
+<ul class="simple">
+<li>More work on the C++ API.</li>
+<li>Bug fixes around block corner cases.</li>
+<li>Slight performance increase in both read() and write().</li>
+</ul>
+</div>
+<div class="section" id="v-0-14">
+<h2>v 0.14<a class="headerlink" href="#v-0-14" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2008-01-22</div></blockquote>
+<ul class="simple">
+<li>For for bug found by Evan Weaver where increment() was not returning propper error of value was not found.</li>
+<li>Fix for bad null pointer on flag by Toru Maesaka.</li>
+<li>Refactor of all IO to just pass in the active server</li>
+<li>Problem configuring (PKG_CHECK_MODULES) fixed by removal of &quot;rpath&quot; in support/libmemcached.pc.in (Thanks to Ross McFarland).</li>
+<li>Added memcached_callback_get()/set()</li>
+<li>First prototype of C++ interface</li>
+<li>Updated docs for uint16_t changes in previous release</li>
+</ul>
+</div>
+<div class="section" id="v-0-13">
+<h2>v 0.13<a class="headerlink" href="#v-0-13" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2008-01-13</div></blockquote>
+<ul class="simple">
+<li>MEMCACHED_BEHAVIOR_USER_DATA added to store user pointer.</li>
+<li>Fix for failure to connect to invalidate socket.</li>
+<li>Patch from Marc Rossi to add --hash option for memcp, memrm, and memcat.</li>
+<li>Kevin's patch for fixing EOF issues during a read.</li>
+<li>Toru Maesaka patch for stats mismatch</li>
+<li>Fix for when CRC return 0</li>
+<li>Fixed uint16_t issues around flags. Turns out the documentation on the protocol was wrong.</li>
+<li>Lingering socket fixes for FreeBSD.</li>
+<li>Patches from Kevin Dalley for FreeBSD 4.0</li>
+<li>Added multi delete functions.</li>
+<li>All get key returns have C style null termination</li>
+<li>If memcached_server_list_append is passed NULLs instead of pointers it returns NULL.</li>
+<li>Added memcached_fetch_execute() method</li>
+<li>Found a bug where memcached_fetch() was not null terminating the result value.</li>
+<li>memcached_behavior() now has the ability to set &quot;buffering&quot; so that data is not automatically flushed.</li>
+<li>Behavior change, buffered commands now return MEMCACHED_BUFFERED</li>
+</ul>
+</div>
+<div class="section" id="v-0-12">
+<h2>v 0.12<a class="headerlink" href="#v-0-12" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2007-12-11</div></blockquote>
+<ul class="simple">
+<li>Updates for consistent hashing</li>
+<li>IPV6 support</li>
+<li>Static allocation for hostname (performance)</li>
+<li>Fixed bug where in non-block mode all data might not have been sent on close().</li>
+<li>Refactor of memcached_get() to use common code.</li>
+<li>Change in value fetch, MEMCACHED_END is now returned when keys are no longer in the pipe.</li>
+<li>Fixed bug where key could be out of range of characters</li>
+<li>Added _by_key() methods to allow partitioning of values to particular servers.</li>
+<li>MEMCACHED_DEFAILT_TIMEOUT is now set to a non -1 value.</li>
+<li>Performance improvements in get operations.</li>
+</ul>
+</div>
+<div class="section" id="v-0-11">
+<h2>v 0.11<a class="headerlink" href="#v-0-11" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2007-11-26</div></blockquote>
+<ul class="simple">
+<li>Added option to memcache_behavior_set() so that poll() can be timed out.</li>
+<li>Fixed memory leak in case of using memcached_fetch_result() where no value was returned.</li>
+<li>Bug fixed in memcached_connect() which would cause servers that did not need to be enabled to be enabled (performance issue).</li>
+<li>Rewrote bounds checking code for get calls.</li>
+<li>&quot;make test&quot; now starts its own memcached servers.</li>
+<li>Added Hseih hash (MEMCACHED_HASH_HSIEH), which is showing about 7% performance over standard hash.</li>
+</ul>
+</div>
+<div class="section" id="v-0-10">
+<h2>v 0.10<a class="headerlink" href="#v-0-10" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2007-11-21</div></blockquote>
+<ul class="simple">
+<li>Added append binary test.</li>
+<li>Added MEMCACHED_BEHAVIOR_CACHE_LOOKUPS behavior so that you can save on multiple DNS lookups.</li>
+<li>Added CAS support, though this is optional and must be enabled during runtime.</li>
+<li>Added the utility memerror to create human readable error strings from memcached errors (aka convert ints to strings)</li>
+<li>Fixed type in MEMCACHED_HOST_LOOKUP_FAILURE</li>
+<li>Fixed bug where hostname might not be null terminated</li>
+<li>Moved to using gethostbyname_r() on Linux to solve thread safety issue</li>
+<li>Added -rpath support for pkg-config</li>
+<li>Documentation fix for hash setting using memcached_behavior_set()</li>
+</ul>
+</div>
+<div class="section" id="v-0-9">
+<h2>v 0.9<a class="headerlink" href="#v-0-9" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2007-11-15</div></blockquote>
+<ul class="simple">
+<li>fix for when no servers are definied.</li>
+<li>different buffers are now kept for different connections to speed up async efforts</li>
+<li>Modified increment/decrement functions to return uint64_t values</li>
+<li>Fixed bug in cases where zero length keys were provided</li>
+<li>Thread cleanup issue in memslap</li>
+<li>No hostname lookup on reconnect</li>
+<li>Fix for flag settings (was doing hex by accident!)</li>
+<li>Support for 1.2.4 server additions &quot;prepend&quot; and &quot;append&quot; added.</li>
+<li>Added memcached_version()... not sure if I will make this public or not.</li>
+</ul>
+</div>
+<div class="section" id="v-0-8">
+<h2>v 0.8<a class="headerlink" href="#v-0-8" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2007-11-05</div></blockquote>
+<ul class="simple">
+<li>Adding support for CRC hash method</li>
+<li>Adding support for UNIX sockets</li>
+<li>Added additional HASHing methods of FNV1_64,FNV1A_64, FNV1_32, FNV1A_32</li>
+<li>Added pkgconfig support (PKG_CHECK_MODULES)</li>
+<li>Fixed conflict with defined type in MySQL</li>
+<li>Added memcached_result_st structure and functions to manipulate it.</li>
+</ul>
+</div>
+<div class="section" id="v-0-7">
+<h2>v 0.7<a class="headerlink" href="#v-0-7" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2007-10-30</div></blockquote>
+<ul class="simple">
+<li>Poved to poll() from select()</li>
+<li>Fixes in internal string class for allocation of large numbers of strings.</li>
+<li>memcached_mget() function now sends keys as it parses them instead of building strings as it goes.</li>
+<li>Propper flush now for making sure we get all IO sent even when in non-block mode.</li>
+<li>Added --enable-debug rule for configure</li>
+<li>All asserts() removed (hey this is going into production!)</li>
+</ul>
+</div>
+<div class="section" id="v-0-6">
+<h2>v 0.6<a class="headerlink" href="#v-0-6" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2007-10-17</div></blockquote>
+<ul class="simple">
+<li>get value returns are now null terminated (request by Cal Heldenbrand)</li>
+<li>Fixed connections for more hosts then two.</li>
+<li>Rewrite of the read/write IO systems to handle different sorts of host failures.</li>
+<li>Added man pages for all functions and tools</li>
+<li>Raised buffer size for readinng/writing to 16K</li>
+<li>You can now optionally set the socket size for recv/send via memached_behavior_set/get.</li>
+</ul>
+</div>
+<div class="section" id="v-0-5">
+<h2>v 0.5<a class="headerlink" href="#v-0-5" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2007-10-09</div></blockquote>
+<ul class="simple">
+<li>Ruby maintainer mentioned TCP_NODELAY patch he had added. Added this to C
+library as well. (Eric Hodel <a class="reference external" href="mailto:drbrain&#37;&#52;&#48;segment7&#46;net">drbrain<span>&#64;</span>segment7<span>&#46;</span>net</a>)</li>
+<li>Added support script for set_benchmark</li>
+<li>Updated memslap to allow testing of TCP_NODELAY</li>
+<li>Updated memslap to support --flush (aka dump memcache servers before testing)</li>
+<li>Fixed bug in multiple hosts not being activated</li>
+<li>Added environmental variable MEMCACHED_SERVERS which can be used to set the servers list.</li>
+<li>fixed memcached_stat method (and now memstat works)</li>
+<li>server connect now happens on demand.</li>
+<li>Help for all command line applications</li>
+</ul>
+</div>
+<div class="section" id="v-0-4">
+<h2>v 0.4<a class="headerlink" href="#v-0-4" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2007-10-03</div></blockquote>
+<ul class="simple">
+<li>Added buffered IO to write calls for keys</li>
+<li>Added buffered IO for reads</li>
+<li>memstat was broken (bad if/else on connect)</li>
+<li>New non-blocking IO (not default yet). Mucho faster</li>
+<li>Refactor of test system.</li>
+<li>memslap crash solved</li>
+</ul>
+</div>
+<div class="section" id="v-0-3">
+<h2>v 0.3<a class="headerlink" href="#v-0-3" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2007-10-01</div></blockquote>
+<ul class="simple">
+<li>Jeff Fisher <a class="reference external" href="mailto:guppy&#37;&#52;&#48;techmonkeys&#46;org">guppy<span>&#64;</span>techmonkeys<span>&#46;</span>org</a> provided a spec file</li>
+<li>Added &quot;make rpm&quot; around dist file</li>
+<li>Added support for Solaris</li>
+<li>Added support for DTrace</li>
+<li>Fixed read to be recv and write to be send</li>
+<li>Bug fix where memstat would core if no server was found</li>
+<li>Added memslap tool (load generator)</li>
+<li>Numerous bug fixes in library</li>
+<li>Added calls to library for creating host lists (see text cases to understand how to use this).</li>
+</ul>
+</div>
+<div class="section" id="v-0-2">
+<h2>v 0.2<a class="headerlink" href="#v-0-2" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div>released 2007-09-27</div></blockquote>
+<ul class="simple">
+<li>First public version</li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="copyright.html" class="btn btn-neutral float-right" title="Copyright" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="ChangeLog-1.0.html" class="btn btn-neutral float-left" title="ChangeLog v1.0" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; <a href="copyright.html">Copyright</a> 
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
