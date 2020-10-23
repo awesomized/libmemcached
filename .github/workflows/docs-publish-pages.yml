@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'docs/**'
+      - 'ChangeLog*'
     branches:
       - v1.x
 
@@ -18,6 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get install -y \
+            python3-m2r \
             python3-sphinx \
             python3-sphinx-rtd-theme
       - name: Configure

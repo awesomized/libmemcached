@@ -2,11 +2,12 @@
 name: cmake-build-ci
 on:
   push:
-    paths-ignore:
-      - "docs/**"
-      - ".travis.yml"
-      - ".cirrus.yml"
-      - ".github/workflows/docs*"
+    paths:
+      - "include/**"
+      - "src/**"
+      - "test/**"
+      - "CMake*"
+      - ".github/workflows/cmake-build-ci*"
     branches-ignore:
       - gh-pages
   pull_request:
