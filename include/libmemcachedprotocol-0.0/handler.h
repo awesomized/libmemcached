@@ -1,21 +1,23 @@
-/* LibMemcached
- * Copyright (C) 2006-2009 Brian Aker
- * All rights reserved.
- *
- * Use and distribution licensed under the BSD license.  See
- * the COPYING file in the parent directory for full text.
- *
- * Summary: Definition of the callback interface to the protocol handler
- *
- * Author: Trond Norbye
- *
- */
+/*
+    +--------------------------------------------------------------------+
+    | libmemcached - C/C++ Client Library for memcached                  |
+    +--------------------------------------------------------------------+
+    | Redistribution and use in source and binary forms, with or without |
+    | modification, are permitted under the terms of the BSD license.    |
+    | You should have received a copy of the license in a bundled file   |
+    | named LICENSE; in case you did not receive a copy you can review   |
+    | the terms online at: https://opensource.org/licenses/BSD-3-Clause  |
+    +--------------------------------------------------------------------+
+    | Copyright (c) 2006-2014 Brian Aker   https://datadifferential.com/ |
+    | Copyright (c) 2020 Michael Wallner   <mike@php.net>                |
+    +--------------------------------------------------------------------+
+*/
 
 #pragma once
 
 #include <sys/types.h>
 #if !defined(__cplusplus)
-# include <stdbool.h>
+#  include <stdbool.h>
 #endif
 
 #include "libmemcached-1.0/visibility.h"
@@ -47,10 +49,8 @@ extern "C" {
  * @return the number of bytes copied into buf
  *         or -1 upon error (errno should contain more information)
  */
-typedef ssize_t (*memcached_protocol_recv_func)(const void *cookie,
-                                                memcached_socket_t fd,
-                                                void *buf,
-                                                size_t nbuf);
+typedef ssize_t (*memcached_protocol_recv_func)(const void *cookie, memcached_socket_t fd,
+                                                void *buf, size_t nbuf);
 
 /**
  * Function the protocol handler should call to send data.
@@ -63,10 +63,8 @@ typedef ssize_t (*memcached_protocol_recv_func)(const void *cookie,
  * @return the number of bytes sent
  *         or -1 upon error (errno should contain more information)
  */
-typedef ssize_t (*memcached_protocol_send_func)(const void *cookie,
-                                                memcached_socket_t fd,
-                                                const void *buf,
-                                                size_t nbuf);
+typedef ssize_t (*memcached_protocol_send_func)(const void *cookie, memcached_socket_t fd,
+                                                const void *buf, size_t nbuf);
 
 /**
  * Create an instance of the protocol handler
@@ -81,7 +79,8 @@ memcached_protocol_st *memcached_protocol_create_instance(void);
  * @return the callbacks currently used
  */
 LIBMEMCACHED_API
-memcached_binary_protocol_callback_st *memcached_binary_protocol_get_callbacks(memcached_protocol_st *instance);
+memcached_binary_protocol_callback_st *
+memcached_binary_protocol_get_callbacks(memcached_protocol_st *instance);
 
 /**
  * Set the callbacks to be used by the given protocol handler instance
@@ -89,7 +88,8 @@ memcached_binary_protocol_callback_st *memcached_binary_protocol_get_callbacks(m
  * @param callback the callbacks to use
  */
 LIBMEMCACHED_API
-void memcached_binary_protocol_set_callbacks(memcached_protocol_st *instance, memcached_binary_protocol_callback_st *callback);
+void memcached_binary_protocol_set_callbacks(memcached_protocol_st *instance,
+                                             memcached_binary_protocol_callback_st *callback);
 
 /**
  * Should the library inspect the packages being sent and received and verify
@@ -131,7 +131,6 @@ void memached_protocol_set_io_functions(memcached_protocol_st *instance,
                                         memcached_protocol_recv_func recv,
                                         memcached_protocol_send_func send);
 
-
 /**
  * Create a new client instance and associate it with a socket
  * @param instance the protocol instance to bind the client to
@@ -139,7 +138,8 @@ void memached_protocol_set_io_functions(memcached_protocol_st *instance,
  * @return NULL if allocation fails, otherwise an instance
  */
 LIBMEMCACHED_API
-memcached_protocol_client_st *memcached_protocol_create_client(memcached_protocol_st *instance, memcached_socket_t sock);
+memcached_protocol_client_st *memcached_protocol_create_client(memcached_protocol_st *instance,
+                                                               memcached_socket_t sock);
 
 /**
  * Destroy a client handle.
@@ -211,7 +211,8 @@ int memcached_protocol_client_get_errno(memcached_protocol_client_st *client);
  *         the generic callback too limiting
  */
 LIBMEMCACHED_API
-memcached_binary_protocol_raw_response_handler memcached_binary_protocol_get_raw_response_handler(const void *cookie);
+memcached_binary_protocol_raw_response_handler
+memcached_binary_protocol_get_raw_response_handler(const void *cookie);
 
 #ifdef __cplusplus
 }
