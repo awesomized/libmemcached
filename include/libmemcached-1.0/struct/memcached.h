@@ -1,39 +1,17 @@
-/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
- * 
- *  Libmemcached library
- *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *  Copyright (C) 2006-2009 Brian Aker All rights reserved.
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions are
- *  met:
- *
- *      * Redistributions of source code must retain the above copyright
- *  notice, this list of conditions and the following disclaimer.
- *
- *      * Redistributions in binary form must reproduce the above
- *  copyright notice, this list of conditions and the following disclaimer
- *  in the documentation and/or other materials provided with the
- *  distribution.
- *
- *      * The names of its contributors may not be used to endorse or
- *  promote products derived from this software without specific prior
- *  written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- */
+/*
+    +--------------------------------------------------------------------+
+    | libmemcached - C/C++ Client Library for memcached                  |
+    +--------------------------------------------------------------------+
+    | Redistribution and use in source and binary forms, with or without |
+    | modification, are permitted under the terms of the BSD license.    |
+    | You should have received a copy of the license in a bundled file   |
+    | named LICENSE; in case you did not receive a copy you can review   |
+    | the terms online at: https://opensource.org/licenses/BSD-3-Clause  |
+    +--------------------------------------------------------------------+
+    | Copyright (c) 2006-2014 Brian Aker   https://datadifferential.com/ |
+    | Copyright (c) 2020 Michael Wallner   <mike@php.net>                |
+    +--------------------------------------------------------------------+
+*/
 
 #pragma once
 
@@ -42,30 +20,30 @@ struct memcached_st {
     @note these are static and should not change without a call to behavior.
   */
   struct {
-    bool is_purging:1;
-    bool is_processing_input:1;
-    bool is_time_for_rebuild:1;
-    bool is_parsing:1;
+    bool is_purging : 1;
+    bool is_processing_input : 1;
+    bool is_time_for_rebuild : 1;
+    bool is_parsing : 1;
   } state;
 
   struct {
     // Everything below here is pretty static.
-    bool auto_eject_hosts:1;
-    bool binary_protocol:1;
-    bool buffer_requests:1;
-    bool hash_with_namespace:1;
-    bool no_block:1; // Don't block
-    bool reply:1;
-    bool randomize_replica_read:1;
-    bool support_cas:1;
-    bool tcp_nodelay:1;
-    bool use_sort_hosts:1;
-    bool use_udp:1;
-    bool verify_key:1;
-    bool tcp_keepalive:1;
-    bool is_aes:1;
-    bool is_fetching_version:1;
-    bool not_used:1;
+    bool auto_eject_hosts : 1;
+    bool binary_protocol : 1;
+    bool buffer_requests : 1;
+    bool hash_with_namespace : 1;
+    bool no_block : 1; // Don't block
+    bool reply : 1;
+    bool randomize_replica_read : 1;
+    bool support_cas : 1;
+    bool tcp_nodelay : 1;
+    bool use_sort_hosts : 1;
+    bool use_udp : 1;
+    bool verify_key : 1;
+    bool tcp_keepalive : 1;
+    bool is_aes : 1;
+    bool is_fetching_version : 1;
+    bool not_used : 1;
   } flags;
 
   memcached_server_distribution_t distribution;
@@ -97,9 +75,9 @@ struct memcached_st {
 
   struct {
     bool weighted_;
-    uint32_t continuum_count; // Ketama
-    uint32_t continuum_points_counter; // Ketama
-    time_t next_distribution_rebuild; // Ketama
+    uint32_t continuum_count;                      // Ketama
+    uint32_t continuum_points_counter;             // Ketama
+    time_t next_distribution_rebuild;              // Ketama
     struct memcached_continuum_item_st *continuum; // Ketama
   } ketama;
 
@@ -118,11 +96,11 @@ struct memcached_st {
   struct {
     uint32_t initial_pool_size;
     uint32_t max_pool_size;
-    int32_t version; // This is used by pool and others to determine if the memcached_st is out of date.
+    int32_t
+        version; // This is used by pool and others to determine if the memcached_st is out of date.
     struct memcached_array_st *filename;
   } configure;
   struct {
-    bool is_allocated:1;
+    bool is_allocated : 1;
   } options;
-
 };
