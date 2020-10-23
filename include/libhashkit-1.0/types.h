@@ -1,40 +1,17 @@
-/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
- * 
- *  HashKit library
- *
- *  Copyright (C) 2011-2012 Data Differential, http://datadifferential.com/
- *  Copyright (C) 2009-2010 Brian Aker All rights reserved.
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions are
- *  met:
- *
- *      * Redistributions of source code must retain the above copyright
- *  notice, this list of conditions and the following disclaimer.
- *
- *      * Redistributions in binary form must reproduce the above
- *  copyright notice, this list of conditions and the following disclaimer
- *  in the documentation and/or other materials provided with the
- *  distribution.
- *
- *      * The names of its contributors may not be used to endorse or
- *  promote products derived from this software without specific prior
- *  written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- */
-
+/*
+    +--------------------------------------------------------------------+
+    | libmemcached - C/C++ Client Library for memcached                  |
+    +--------------------------------------------------------------------+
+    | Redistribution and use in source and binary forms, with or without |
+    | modification, are permitted under the terms of the BSD license.    |
+    | You should have received a copy of the license in a bundled file   |
+    | named LICENSE; in case you did not receive a copy you can review   |
+    | the terms online at: https://opensource.org/licenses/BSD-3-Clause  |
+    +--------------------------------------------------------------------+
+    | Copyright (c) 2006-2014 Brian Aker   https://datadifferential.com/ |
+    | Copyright (c) 2020 Michael Wallner   <mike@php.net>                |
+    +--------------------------------------------------------------------+
+*/
 
 #pragma once
 
@@ -47,18 +24,16 @@ typedef enum {
   HASHKIT_MAXIMUM_RETURN /* Always add new error code before */
 } hashkit_return_t;
 
-static inline bool hashkit_success(const hashkit_return_t rc)
-{
+static inline bool hashkit_success(const hashkit_return_t rc) {
   return (rc == HASHKIT_SUCCESS);
 }
 
-static inline bool hashkit_failed(const hashkit_return_t rc)
-{
+static inline bool hashkit_failed(const hashkit_return_t rc) {
   return (rc != HASHKIT_SUCCESS);
 }
 
 typedef enum {
-  HASHKIT_HASH_DEFAULT= 0, // hashkit_one_at_a_time()
+  HASHKIT_HASH_DEFAULT = 0, // hashkit_one_at_a_time()
   HASHKIT_HASH_MD5,
   HASHKIT_HASH_CRC,
   HASHKIT_HASH_FNV1_64,
@@ -76,8 +51,7 @@ typedef enum {
 /**
  * Hash distributions that are available to use.
  */
-typedef enum
-{
+typedef enum {
   HASHKIT_DISTRIBUTION_MODULA,
   HASHKIT_DISTRIBUTION_RANDOM,
   HASHKIT_DISTRIBUTION_KETAMA,
