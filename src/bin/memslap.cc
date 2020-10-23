@@ -285,7 +285,7 @@ void scheduler(memcached_server_st *servers, conclusions_st *conclusion) {
     }
 
     /* now you create the thread */
-    if (pthread_create(threads + x, NULL, run_task, (void *) context) != 0) {
+    if (pthread_create(threads + x, NULL, run_task, (void *) context)) {
       fprintf(stderr, "Could not create thread\n");
       exit(1);
     }
@@ -408,7 +408,7 @@ void options_parse(int argc, char *argv[]) {
     case OPT_SLAP_CONCURRENCY:
       errno = 0;
       opt_concurrency = (unsigned int) strtoul(optarg, (char **) NULL, 10);
-      if (errno != 0) {
+      if (errno) {
         fprintf(stderr, "Invalid value for concurrency: %s\n", optarg);
         exit(EXIT_FAILURE);
       }
@@ -417,7 +417,7 @@ void options_parse(int argc, char *argv[]) {
     case OPT_SLAP_EXECUTE_NUMBER:
       errno = 0;
       opt_execute_number = (unsigned int) strtoul(optarg, (char **) NULL, 10);
-      if (errno != 0) {
+      if (errno) {
         fprintf(stderr, "Invalid value for execute: %s\n", optarg);
         exit(EXIT_FAILURE);
       }
@@ -426,7 +426,7 @@ void options_parse(int argc, char *argv[]) {
     case OPT_SLAP_INITIAL_LOAD:
       errno = 0;
       opt_createial_load = (unsigned int) strtoul(optarg, (char **) NULL, 10);
-      if (errno != 0) {
+      if (errno) {
         fprintf(stderr, "Invalid value for initial load: %s\n", optarg);
         exit(EXIT_FAILURE);
       }

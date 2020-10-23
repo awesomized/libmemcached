@@ -200,7 +200,7 @@ void options_parse(int argc, char *argv[]) {
     case OPT_EXPIRE:
       errno = 0;
       expiration = time_t(strtoul(optarg, (char **) NULL, 10));
-      if (errno != 0) {
+      if (errno) {
         fprintf(stderr, "Invalid value for --expire: %s\n", optarg);
         exit(EXIT_FAILURE);
       }

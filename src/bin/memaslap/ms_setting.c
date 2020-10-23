@@ -130,7 +130,7 @@ static ssize_t getline(char **line, size_t *line_size, FILE *fp) {
       break;
   }
   (*line)[cur_len] = '\0';
-  if (cur_len != 0)
+  if (cur_len)
     return (ssize_t) cur_len;
   return result;
 }
@@ -236,7 +236,7 @@ ms_conf_type_t ms_get_conf_type(char *line) {
  * @return if success, return EXIT_FAILURE, else return EXIT_SUCCESS
  */
 static int ms_is_line_data(char *line) {
-  assert(line != NULL);
+  assert(line);
 
   char *begin_ptr = line;
 
@@ -454,7 +454,7 @@ static void ms_parse_cfg_file(char *cfg_file) {
 
   fclose(f);
 
-  if (line != NULL) {
+  if (line) {
     free(line);
   }
 } /* ms_parse_cfg_file */
@@ -626,7 +626,7 @@ static void ms_build_distr() {
   offset = 0;
 
   /* initialize value distribution */
-  if (ms_setting.fixed_value_size != 0) {
+  if (ms_setting.fixed_value_size) {
     for (int i = 0; i < units * UNIT_ITEMS_COUNT; i++) {
       ms_setting.distr[i].value_size = ms_setting.fixed_value_size;
     }
@@ -797,7 +797,7 @@ static void ms_setting_slapmode_init_post() {
   ms_parse_cfg_file(ms_setting.cfg_file);
 
   /* run time mode */
-  if ((ms_setting.exec_num == 0) && (ms_setting.run_time != 0)) {
+  if ((ms_setting.exec_num == 0) && (ms_setting.run_time)) {
     ms_setting.exec_num = (int64_t) MAX_EXEC_NUM;
   } else {
     /* execute number mode */
@@ -870,31 +870,31 @@ void ms_setting_init_post() {
  * clean up the global setting structure
  */
 void ms_setting_cleanup() {
-  if (ms_setting.distr != NULL) {
+  if (ms_setting.distr) {
     free(ms_setting.distr);
   }
 
-  if (ms_setting.char_block != NULL) {
+  if (ms_setting.char_block) {
     free(ms_setting.char_block);
   }
 
-  if (ms_setting.srv_str != NULL) {
+  if (ms_setting.srv_str) {
     free(ms_setting.srv_str);
   }
 
-  if (ms_setting.cfg_file != NULL) {
+  if (ms_setting.cfg_file) {
     free(ms_setting.cfg_file);
   }
 
-  if (ms_setting.servers != NULL) {
+  if (ms_setting.servers) {
     free(ms_setting.servers);
   }
 
-  if (ms_setting.key_distr != NULL) {
+  if (ms_setting.key_distr) {
     free(ms_setting.key_distr);
   }
 
-  if (ms_setting.value_distr != NULL) {
+  if (ms_setting.value_distr) {
     free(ms_setting.value_distr);
   }
 } /* ms_setting_cleanup */

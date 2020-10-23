@@ -106,7 +106,7 @@ static struct addrinfo *lookuphost(const char *hostname, const char *port) {
   hints.ai_socktype = SOCK_STREAM;
 
   int error = getaddrinfo(hostname, port, &hints, &ai);
-  if (error != 0) {
+  if (error) {
     if (error != EAI_SYSTEM) {
       fprintf(stderr, "getaddrinfo(): %s\n", gai_strerror(error));
     } else {
@@ -157,7 +157,7 @@ static memcached_socket_t set_noblock(void) {
 static memcached_socket_t connect_server(const char *hostname, const char *port) {
   struct addrinfo *ai = lookuphost(hostname, port);
   sock = INVALID_SOCKET;
-  if (ai != NULL) {
+  if (ai) {
     if ((sock = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol)) != INVALID_SOCKET) {
       if (connect(sock, ai->ai_addr, ai->ai_addrlen) == SOCKET_ERROR) {
         fprintf(stderr, "Failed to connect socket: %s\n", strerror(get_socket_errno()));
@@ -362,7 +362,7 @@ static void storage_command(command *cmd, uint8_t cc, const void *key, size_t ke
 
   off_t key_offset = sizeof(protocol_binary_request_no_extras) + 8;
   memcpy(cmd->bytes + key_offset, key, keylen);
-  if (dta != NULL)
+  if (dta)
     memcpy(cmd->bytes + key_offset + keylen, dta, dtalen);
 }
 
@@ -387,10 +387,10 @@ static void raw_command(command *cmd, uint8_t cc, const void *key, size_t keylen
 
   off_t key_offset = sizeof(protocol_binary_request_no_extras);
 
-  if (key != NULL)
+  if (key)
     memcpy(cmd->bytes + key_offset, key, keylen);
 
-  if (dta != NULL)
+  if (dta)
     memcpy(cmd->bytes + key_offset + keylen, dta, dtalen);
 }
 
@@ -407,7 +407,7 @@ static void flush_command(command *cmd, uint8_t cc, uint32_t exptime, bool use_e
   cmd->flush.message.header.request.opcode = cc;
   cmd->flush.message.header.request.opaque = 0xdeadbeef;
 
-  if (exptime != 0 || use_extra) {
+  if (exptime || use_extra) {
     cmd->flush.message.header.request.extlen = 4;
     cmd->flush.message.body.expiration = htonl(exptime);
     cmd->flush.message.header.request.bodylen = 4;
@@ -480,7 +480,7 @@ static enum test_return do_validate_response_header(response *rsp, uint8_t cc, u
       verify(rsp->plain.message.header.response.keylen == 0);
       verify(rsp->plain.message.header.response.extlen == 0);
       verify(rsp->plain.message.header.response.bodylen == 0);
-      verify(rsp->plain.message.header.response.cas != 0);
+      verify(rsp->plain.message.header.response.cas);
       break;
     case PROTOCOL_BINARY_CMD_FLUSH:
     case PROTOCOL_BINARY_CMD_NOOP:
@@ -497,7 +497,7 @@ static enum test_return do_validate_response_header(response *rsp, uint8_t cc, u
       verify(rsp->plain.message.header.response.keylen == 0);
       verify(rsp->plain.message.header.response.extlen == 0);
       verify(rsp->plain.message.header.response.bodylen == 8);
-      verify(rsp->plain.message.header.response.cas != 0);
+      verify(rsp->plain.message.header.response.cas);
       break;
 
     case PROTOCOL_BINARY_CMD_STAT:
@@ -509,7 +509,7 @@ static enum test_return do_validate_response_header(response *rsp, uint8_t cc, u
     case PROTOCOL_BINARY_CMD_VERSION:
       verify(rsp->plain.message.header.response.keylen == 0);
       verify(rsp->plain.message.header.response.extlen == 0);
-      verify(rsp->plain.message.header.response.bodylen != 0);
+      verify(rsp->plain.message.header.response.bodylen);
       verify(rsp->plain.message.header.response.cas == 0);
       break;
 
@@ -517,14 +517,14 @@ static enum test_return do_validate_response_header(response *rsp, uint8_t cc, u
     case PROTOCOL_BINARY_CMD_GETQ:
       verify(rsp->plain.message.header.response.keylen == 0);
       verify(rsp->plain.message.header.response.extlen == 4);
-      verify(rsp->plain.message.header.response.cas != 0);
+      verify(rsp->plain.message.header.response.cas);
       break;
 
     case PROTOCOL_BINARY_CMD_GETK:
     case PROTOCOL_BINARY_CMD_GETKQ:
-      verify(rsp->plain.message.header.response.keylen != 0);
+      verify(rsp->plain.message.header.response.keylen);
       verify(rsp->plain.message.header.response.extlen == 4);
-      verify(rsp->plain.message.header.response.cas != 0);
+      verify(rsp->plain.message.header.response.cas);
       break;
 
     default:
@@ -1036,7 +1036,7 @@ static enum test_return test_binary_stat(void) {
     execute(recv_packet(&rsp));
     verify(
         validate_response_header(&rsp, PROTOCOL_BINARY_CMD_STAT, PROTOCOL_BINARY_RESPONSE_SUCCESS));
-  } while (rsp.plain.message.header.response.keylen != 0);
+  } while (rsp.plain.message.header.response.keylen);
 
   return TEST_PASS;
 }
@@ -1066,7 +1066,7 @@ static enum test_return receive_line(char *buffer, size_t size) {
 static enum test_return receive_response(const char *msg) {
   char buffer[80];
   execute(receive_line(buffer, sizeof(buffer)));
-  if (strcmp(msg, buffer) != 0) {
+  if (strcmp(msg, buffer)) {
     fprintf(stderr, "[%s]\n", buffer);
   }
   verify(strcmp(msg, buffer) == 0);
@@ -1209,12 +1209,12 @@ static enum test_return ascii_get_unknown_value(char **key, char **value, ssize_
   execute(receive_line(buffer, sizeof(buffer)));
   verify(strncmp(buffer, "VALUE ", 6) == 0);
   char *end = strchr(buffer + 6, ' ');
-  verify(end != NULL);
+  verify(end);
   if (end) {
     *end = '\0';
   }
   *key = strdup(buffer + 6);
-  verify(*key != NULL);
+  verify(*key);
   char *ptr = end + 1;
 
   errno = 0;
@@ -1222,17 +1222,17 @@ static enum test_return ascii_get_unknown_value(char **key, char **value, ssize_
   verify(errno == 0);
   verify(ptr != end);
   verify(val == 0);
-  verify(end != NULL);
+  verify(end);
   errno = 0;
   *ndata = (ssize_t) strtoul(end, &end, 10); /* size */
   verify(errno == 0);
   verify(ptr != end);
-  verify(end != NULL);
+  verify(end);
   while (end and *end != '\n' and isspace(*end)) ++end;
   verify(end and *end == '\n');
 
   *value = static_cast<char *>(malloc((size_t) *ndata));
-  verify(*value != NULL);
+  verify(*value);
 
   execute(retry_read(*value, (size_t) *ndata));
 
@@ -1258,14 +1258,14 @@ static enum test_return ascii_get_value(const char *key, const char *value) {
   verify(errno == 0);
   verify(ptr != end);
   verify(val == 0);
-  verify(end != NULL);
+  verify(end);
 
   errno = 0;
   val = strtoul(end, &end, 10); /* size */
   verify(errno == 0);
   verify(ptr != end);
   verify(val == datasize);
-  verify(end != NULL);
+  verify(end);
   while (end and *end != '\n' and isspace(*end)) {
     ++end;
   }
@@ -1283,7 +1283,7 @@ static enum test_return ascii_get_value(const char *key, const char *value) {
 static enum test_return ascii_get_item(const char *key, const char *value, bool exist) {
   char buffer[1024];
   size_t datasize = 0;
-  if (value != NULL) {
+  if (value) {
     datasize = strlen(value);
   }
 
@@ -1317,21 +1317,21 @@ static enum test_return ascii_gets_value(const char *key, const char *value, uns
   verify(errno == 0);
   verify(ptr != end);
   verify(val == 0);
-  verify(end != NULL);
+  verify(end);
 
   errno = 0;
   val = strtoul(end, &end, 10); /* size */
   verify(errno == 0);
   verify(ptr != end);
   verify(val == datasize);
-  verify(end != NULL);
+  verify(end);
 
   errno = 0;
   *cas = strtoul(end, &end, 10); /* cas */
   verify(errno == 0);
   verify(ptr != end);
   verify(val == datasize);
-  verify(end != NULL);
+  verify(end);
 
   while (end and *end != '\n' and isspace(*end)) {
     ++end;
@@ -1351,7 +1351,7 @@ static enum test_return ascii_gets_item(const char *key, const char *value, bool
                                         unsigned long *cas) {
   char buffer[1024];
   size_t datasize = 0;
-  if (value != NULL) {
+  if (value) {
     datasize = strlen(value);
   }
 
@@ -1727,7 +1727,7 @@ static enum test_return test_ascii_stat(void) {
   char buffer[1024];
   do {
     execute(receive_line(buffer, sizeof(buffer)));
-  } while (strcmp(buffer, "END\r\n") != 0);
+  } while (strcmp(buffer, "END\r\n"));
 
   return TEST_PASS_RECONNECT;
 }
@@ -1890,8 +1890,8 @@ int main(int argc, char **argv) {
     return EXIT_FAILURE;
   }
 
-  for (int ii = 0; testcases[ii].description != NULL; ++ii) {
-    if (testname != NULL && strcmp(testcases[ii].description, testname) != 0) {
+  for (int ii = 0; testcases[ii].description; ++ii) {
+    if (testname && strcmp(testcases[ii].description, testname)) {
       continue;
     }
 
@@ -1907,7 +1907,7 @@ int main(int argc, char **argv) {
     if (prompt) {
       fprintf(stdout, "\nPress <return> when you are ready? ");
       char buffer[80] = {0};
-      if (fgets(buffer, sizeof(buffer), stdin) != NULL) {
+      if (fgets(buffer, sizeof(buffer), stdin)) {
         if (strncmp(buffer, "skip", 4) == 0) {
           fprintf(stdout, "%-40s%s\n", testcases[ii].description, status_msg[TEST_SKIP]);
           fflush(stdout);

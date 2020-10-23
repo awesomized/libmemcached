@@ -263,7 +263,7 @@ static void ms_kick_out_item(ms_task_item_t *item) {
 static bool ms_need_overwrite_item(ms_task_t *task) {
   ms_task_item_t *item = task->item;
 
-  assert(item != NULL);
+  assert(item);
   assert(task->cmd == CMD_SET);
 
   /**
@@ -291,7 +291,7 @@ static bool ms_need_overwrite_item(ms_task_t *task) {
 static bool ms_adjust_opt(ms_conn_t *c, ms_task_t *task) {
   ms_task_item_t *item = task->item;
 
-  assert(item != NULL);
+  assert(item);
 
   if (task->cmd == CMD_SET) {
     /* If did set operation too fast, skip some */
@@ -369,7 +369,7 @@ static bool ms_adjust_opt(ms_conn_t *c, ms_task_t *task) {
 static void ms_task_data_verify_init(ms_task_t *task) {
   ms_task_item_t *item = task->item;
 
-  assert(item != NULL);
+  assert(item);
   assert(task->cmd == CMD_GET);
 
   /**
@@ -397,7 +397,7 @@ static void ms_task_data_verify_init(ms_task_t *task) {
 static void ms_task_expire_verify_init(ms_task_t *task) {
   ms_task_item_t *item = task->item;
 
-  assert(item != NULL);
+  assert(item);
   assert(task->cmd == CMD_GET);
   assert(item->exp_time > 0);
 
@@ -614,7 +614,7 @@ static void ms_update_multi_get_result(ms_conn_t *c) {
   if (c == NULL) {
     return;
   }
-  assert(c != NULL);
+  assert(c);
 
   for (int i = 0; i < c->mlget_task.mlget_num; i++) {
     mlget_item = &c->mlget_task.mlget_item[i];
@@ -698,8 +698,8 @@ static void ms_update_single_get_result(ms_conn_t *c, ms_task_item_t *item) {
   if ((c == NULL) || (item == NULL)) {
     return;
   }
-  assert(c != NULL);
-  assert(item != NULL);
+  assert(c);
+  assert(item);
 
   orignval = &ms_setting.char_block[item->value_offset];
   orignkey = &ms_setting.char_block[item->key_suffix_offset];
@@ -772,8 +772,8 @@ static void ms_update_set_result(ms_conn_t *c, ms_task_item_t *item) {
   if ((c == NULL) || (item == NULL)) {
     return;
   }
-  assert(c != NULL);
-  assert(item != NULL);
+  assert(c);
+  assert(item);
 
   if (c->precmd.cmd == CMD_SET) {
     switch (c->precmd.retstat) {
@@ -810,7 +810,7 @@ static void ms_update_stat_result(ms_conn_t *c) {
   if (c == NULL) {
     return;
   }
-  assert(c != NULL);
+  assert(c);
 
   gettimeofday(&c->end_time, NULL);
   uint64_t time_diff = (uint64_t) ms_time_diff(&c->start_time, &c->end_time);
@@ -850,13 +850,13 @@ static void ms_update_task_result(ms_conn_t *c) {
   if (c == NULL) {
     return;
   }
-  assert(c != NULL);
+  assert(c);
 
   item = ms_get_cur_opt_item(c);
   if (item == NULL) {
     return;
   }
-  assert(item != NULL);
+  assert(item);
 
   ms_update_set_result(c, item);
 
@@ -918,7 +918,7 @@ int ms_exec_task(struct conn *c) {
   if (!ms_global.finish_warmup) {
     ms_warmup_server(c);
   } else {
-    if (ms_run_getset_task(c) != 0) {
+    if (ms_run_getset_task(c)) {
       return -1;
     }
   }

@@ -224,9 +224,9 @@ static int ms_conn_udp_init(ms_conn_t *c, const bool is_udp) {
     c->udppkt = (ms_udppkt_t *) malloc(MAX_UDP_PACKET * sizeof(ms_udppkt_t));
 
     if ((c->rudpbuf == NULL) || (c->udppkt == NULL)) {
-      if (c->rudpbuf != NULL)
+      if (c->rudpbuf)
         free(c->rudpbuf);
-      if (c->udppkt != NULL)
+      if (c->udppkt)
         free(c->udppkt);
       fprintf(stderr, "malloc()\n");
       return -1;
@@ -249,7 +249,7 @@ static int ms_conn_udp_init(ms_conn_t *c, const bool is_udp) {
  */
 static int ms_conn_init(ms_conn_t *c, const int init_state, const int read_buffer_size,
                         const bool is_udp) {
-  assert(c != NULL);
+  assert(c);
 
   c->rbuf = c->wbuf = 0;
   c->iov = 0;
@@ -282,17 +282,17 @@ static int ms_conn_init(ms_conn_t *c, const int init_state, const int read_buffe
       || (c->tcpsfd == NULL)
       || ((ms_setting.mult_key_num > 1) && (c->mlget_task.mlget_item == NULL)))
   {
-    if (c->rbuf != NULL)
+    if (c->rbuf)
       free(c->rbuf);
-    if (c->wbuf != NULL)
+    if (c->wbuf)
       free(c->wbuf);
-    if (c->iov != NULL)
+    if (c->iov)
       free(c->iov);
-    if (c->msglist != NULL)
+    if (c->msglist)
       free(c->msglist);
-    if (c->mlget_task.mlget_item != NULL)
+    if (c->mlget_task.mlget_item)
       free(c->mlget_task.mlget_item);
-    if (c->tcpsfd != NULL)
+    if (c->tcpsfd)
       free(c->tcpsfd);
     fprintf(stderr, "malloc()\n");
     return -1;
@@ -328,7 +328,7 @@ static int ms_conn_init(ms_conn_t *c, const int init_state, const int read_buffe
   }
 
   /* initialize udp */
-  if (ms_conn_udp_init(c, is_udp) != 0) {
+  if (ms_conn_udp_init(c, is_udp)) {
     return -1;
   }
 
@@ -421,8 +421,8 @@ static int ms_conn_sock_init(ms_conn_t *c) {
   int ret_sfd;
   uint32_t srv_idx = 0;
 
-  assert(c != NULL);
-  assert(c->tcpsfd != NULL);
+  assert(c);
+  assert(c->tcpsfd);
 
   for (i = 0; i < c->total_sfds; i++) {
     ret_sfd = 0;
@@ -436,7 +436,7 @@ static int ms_conn_sock_init(ms_conn_t *c) {
 
     if (ms_network_connect(c, ms_setting.servers[srv_idx].srv_host_name,
                            ms_setting.servers[srv_idx].srv_port, ms_setting.udp, &ret_sfd)
-        != 0)
+)
     {
       break;
     }
@@ -457,7 +457,7 @@ static int ms_conn_sock_init(ms_conn_t *c) {
     ret_sfd = 0;
     if (ms_network_connect(c, ms_setting.servers[srv_idx].srv_host_name,
                            ms_setting.servers[srv_idx].srv_port, true, &ret_sfd)
-        != 0)
+)
     {
       c->udpsfd = 0;
     } else {
@@ -474,7 +474,7 @@ static int ms_conn_sock_init(ms_conn_t *c) {
       }
     }
 
-    if (c->udpsfd != 0) {
+    if (c->udpsfd) {
       close(c->udpsfd);
     }
 
@@ -516,19 +516,19 @@ static int ms_conn_event_init(ms_conn_t *c) {
  * @return int, if success, return EXIT_SUCCESS, else return -1
  */
 int ms_setup_conn(ms_conn_t *c) {
-  if (ms_item_win_init(c) != 0) {
+  if (ms_item_win_init(c)) {
     return -1;
   }
 
-  if (ms_conn_init(c, conn_write, DATA_BUFFER_SIZE, ms_setting.udp) != 0) {
+  if (ms_conn_init(c, conn_write, DATA_BUFFER_SIZE, ms_setting.udp)) {
     return -1;
   }
 
-  if (ms_conn_sock_init(c) != 0) {
+  if (ms_conn_sock_init(c)) {
     return -1;
   }
 
-  if (ms_conn_event_init(c) != 0) {
+  if (ms_conn_event_init(c)) {
     return -1;
   }
 
@@ -542,26 +542,26 @@ int ms_setup_conn(ms_conn_t *c) {
  */
 void ms_conn_free(ms_conn_t *c) {
   ms_thread_t *ms_thread = pthread_getspecific(ms_thread_key);
-  if (c != NULL) {
-    if (c->hdrbuf != NULL)
+  if (c) {
+    if (c->hdrbuf)
       free(c->hdrbuf);
-    if (c->msglist != NULL)
+    if (c->msglist)
       free(c->msglist);
-    if (c->rbuf != NULL)
+    if (c->rbuf)
       free(c->rbuf);
-    if (c->wbuf != NULL)
+    if (c->wbuf)
       free(c->wbuf);
-    if (c->iov != NULL)
+    if (c->iov)
       free(c->iov);
-    if (c->mlget_task.mlget_item != NULL)
+    if (c->mlget_task.mlget_item)
       free(c->mlget_task.mlget_item);
-    if (c->rudpbuf != NULL)
+    if (c->rudpbuf)
       free(c->rudpbuf);
-    if (c->udppkt != NULL)
+    if (c->udppkt)
       free(c->udppkt);
-    if (c->item_win != NULL)
+    if (c->item_win)
       free(c->item_win);
-    if (c->tcpsfd != NULL)
+    if (c->tcpsfd)
       free(c->tcpsfd);
 
     if (--ms_thread->nactive_conn == 0) {
@@ -577,7 +577,7 @@ void ms_conn_free(ms_conn_t *c) {
  */
 static void ms_conn_close(ms_conn_t *c) {
   ms_thread_t *ms_thread = pthread_getspecific(ms_thread_key);
-  assert(c != NULL);
+  assert(c);
 
   /* delete the event, the socket and the connection */
   event_del(&c->event);
@@ -639,7 +639,7 @@ static void ms_maximize_sndbuf(const int sfd) {
   unsigned int old_size;
 
   /* Start with the default size. */
-  if (getsockopt(sfd, SOL_SOCKET, SO_SNDBUF, &old_size, &intsize) != 0) {
+  if (getsockopt(sfd, SOL_SOCKET, SO_SNDBUF, &old_size, &intsize)) {
     fprintf(stderr, "getsockopt(SO_SNDBUF)\n");
     return;
   }
@@ -706,7 +706,7 @@ static int ms_network_connect(ms_conn_t *c, char *srv_host_name, const int srv_p
 
   snprintf(port_buf, NI_MAXSERV, "%d", srv_port);
   error = getaddrinfo(srv_host_name, port_buf, &hints, &ai);
-  if (error != 0) {
+  if (error) {
     if (error != EAI_SYSTEM)
       fprintf(stderr, "getaddrinfo(): %s.\n", gai_strerror(error));
     else
@@ -748,7 +748,7 @@ static int ms_network_connect(ms_conn_t *c, char *srv_host_name, const int srv_p
       return -1;
     }
 
-    if (ret_sfd != NULL) {
+    if (ret_sfd) {
       *ret_sfd = sfd;
     }
 
@@ -795,7 +795,7 @@ static int ms_reconn(ms_conn_t *c) {
     uint32_t i = 0;
 
     for (i = 0; i < c->total_sfds; i++) {
-      if (c->tcpsfd[i] != 0) {
+      if (c->tcpsfd[i]) {
         break;
       }
     }
@@ -856,7 +856,7 @@ int ms_reconn_socks(ms_conn_t *c) {
   uint32_t srv_conn_cnt = 0;
   struct timeval cur_time;
 
-  assert(c != NULL);
+  assert(c);
 
   if ((c->total_sfds == 1) || (c->total_sfds == c->alive_sfds)) {
     return EXIT_SUCCESS;
@@ -917,7 +917,7 @@ int ms_reconn_socks(ms_conn_t *c) {
  * Usage example:
  *
  *  while(ms_tokenize_command(command, ncommand, tokens, max_tokens) > 0) {
- *      for(int ix = 0; tokens[ix].length != 0; ix++) {
+ *      for(int ix = 0; tokens[ix].length; ix++) {
  *          ...
  *      }
  *      ncommand = tokens[ix].value - command;
@@ -934,7 +934,7 @@ static int ms_tokenize_command(char *command, token_t *tokens, const int max_tok
   char *s, *e;
   int ntokens = 0;
 
-  assert(command != NULL && tokens != NULL && max_tokens > 1);
+  assert(command && tokens && max_tokens > 1);
 
   for (s = e = command; ntokens < max_tokens - 1; ++e) {
     if (*e == ' ') {
@@ -973,7 +973,7 @@ static int ms_ascii_process_line(ms_conn_t *c, char *command) {
   int64_t value_len;
   char *buffer = command;
 
-  assert(c != NULL);
+  assert(c);
 
   /**
    * for command get, we store the returned value into local buffer
@@ -987,7 +987,7 @@ static int ms_ascii_process_line(ms_conn_t *c, char *command) {
       ms_tokenize_command(command, tokens, MAX_TOKENS);
       errno = 0;
       value_len = strtol(tokens[VALUELEN_TOKEN].value, NULL, 10);
-      if (errno != 0) {
+      if (errno) {
         printf("<%d ERROR %s\n", c->sfd, strerror(errno));
       }
       memcpy(&c->currcmd.key_prefix, tokens[KEY_TOKEN].value, sizeof(c->currcmd.key_prefix));
@@ -1081,7 +1081,7 @@ static int ms_ascii_process_line(ms_conn_t *c, char *command) {
  * @param timeout, whether it's timeout
  */
 void ms_reset_conn(ms_conn_t *c, bool timeout) {
-  assert(c != NULL);
+  assert(c);
 
   if (c->udp) {
     if ((c->packets > 0) && (c->packets < MAX_UDP_PACKET)) {
@@ -1124,7 +1124,7 @@ static int ms_try_read_line(ms_conn_t *c) {
       return EXIT_SUCCESS;
     } else {
 #ifdef NEED_ALIGN
-      if (((long) (c->rcurr)) % 8 != 0) {
+      if (((long) (c->rcurr)) % 8) {
         /* must realign input buffer */
         memmove(c->rbuf, c->rcurr, c->rbytes);
         c->rcurr = c->rbuf;
@@ -1161,7 +1161,7 @@ static int ms_try_read_line(ms_conn_t *c) {
   } else {
     char *el, *cont;
 
-    assert(c != NULL);
+    assert(c);
     assert(c->rcurr <= (c->rbuf + c->rsize));
 
     if (c->rbytes == 0)
@@ -1216,8 +1216,8 @@ static int ms_sort_udp_packet(ms_conn_t *c, char *buf, int rbytes) {
   unsigned char *header = NULL;
 
   /* no enough data */
-  assert(c != NULL);
-  assert(buf != NULL);
+  assert(c);
+  assert(buf);
   assert(c->rudpbytes >= UDP_HEADER_SIZE);
 
   /* calculate received packets count */
@@ -1262,7 +1262,7 @@ static int ms_sort_udp_packet(ms_conn_t *c, char *buf, int rbytes) {
 
   for (int i = c->ordcurr; i < c->recvpkt; i++) {
     /* there is some data to copy */
-    if ((c->udppkt[i].data != NULL) && (c->udppkt[i].copybytes < c->udppkt[i].rbytes)) {
+    if ((c->udppkt[i].data) && (c->udppkt[i].copybytes < c->udppkt[i].rbytes)) {
       header = c->udppkt[i].header;
       len = c->udppkt[i].rbytes - c->udppkt[i].copybytes;
       if (len > rbytes - wbytes) {
@@ -1402,13 +1402,13 @@ static int ms_try_read_network(ms_conn_t *c) {
   int res;
   int64_t avail;
 
-  assert(c != NULL);
+  assert(c);
 
   if ((c->rcurr != c->rbuf)
       && (!c->readval || (c->rvbytes > c->rsize - (c->rcurr - c->rbuf))
           || (c->readval && (c->rcurr - c->rbuf > c->rbytes))))
   {
-    if (c->rbytes != 0) /* otherwise there's nothing to copy */
+    if (c->rbytes) /* otherwise there's nothing to copy */
       memmove(c->rbuf, c->rcurr, (size_t) c->rbytes);
     c->rcurr = c->rbuf;
   }
@@ -1514,7 +1514,7 @@ static void ms_verify_value(ms_conn_t *c, ms_mlget_task_item_t *mlget_item, char
         }
       }
     } else {
-      if ((c->curr_task.item->value_size != vlen) || (memcmp(orignval, value, (size_t) vlen) != 0))
+      if ((c->curr_task.item->value_size != vlen) || (memcmp(orignval, value, (size_t) vlen)))
       {
         atomic_add_size(&ms_stats.vef_failed, 1);
 
@@ -1538,7 +1538,7 @@ static void ms_verify_value(ms_conn_t *c, ms_mlget_task_item_t *mlget_item, char
 
     c->curr_task.finish_verify = true;
 
-    if (mlget_item != NULL) {
+    if (mlget_item) {
       mlget_item->finish_verify = true;
     }
   }
@@ -1551,7 +1551,7 @@ static void ms_verify_value(ms_conn_t *c, ms_mlget_task_item_t *mlget_item, char
  * @param c, pointer of the concurrency
  */
 static void ms_ascii_complete_nread(ms_conn_t *c) {
-  assert(c != NULL);
+  assert(c);
   assert(c->rbytes >= c->rvbytes);
   assert(c->protocol == ascii_prot);
   if (c->rvbytes > 2) {
@@ -1604,7 +1604,7 @@ static void ms_ascii_complete_nread(ms_conn_t *c) {
  * @param c, pointer of the concurrency
  */
 static void ms_bin_complete_nread(ms_conn_t *c) {
-  assert(c != NULL);
+  assert(c);
   assert(c->rbytes >= c->rvbytes);
   assert(c->protocol == binary_prot);
 
@@ -1669,7 +1669,7 @@ static void ms_bin_complete_nread(ms_conn_t *c) {
  * @param c, pointer of the concurrency
  */
 static void ms_complete_nread(ms_conn_t *c) {
-  assert(c != NULL);
+  assert(c);
   assert(c->rbytes >= c->rvbytes);
   assert(c->protocol == ascii_prot || c->protocol == binary_prot);
 
@@ -1690,7 +1690,7 @@ static void ms_complete_nread(ms_conn_t *c) {
 static int ms_add_msghdr(ms_conn_t *c) {
   struct msghdr *msg;
 
-  assert(c != NULL);
+  assert(c);
 
   if (c->msgsize == c->msgused) {
     msg = realloc(c->msglist, (size_t) c->msgsize * 2 * sizeof(struct msghdr));
@@ -1736,7 +1736,7 @@ static int ms_add_msghdr(ms_conn_t *c) {
  * @return int, if success, return EXIT_SUCCESS, else return -1
  */
 static int ms_ensure_iov_space(ms_conn_t *c) {
-  assert(c != NULL);
+  assert(c);
 
   if (c->iovused >= c->iovsize) {
     int i, iovnum;
@@ -1773,7 +1773,7 @@ static int ms_add_iov(ms_conn_t *c, const void *buf, int len) {
   int leftover;
   bool limit_to_mtu;
 
-  assert(c != NULL);
+  assert(c);
 
   do {
     m = &c->msglist[c->msgused - 1];
@@ -1792,7 +1792,7 @@ static int ms_add_iov(ms_conn_t *c, const void *buf, int len) {
     }
 #endif
 
-    if (ms_ensure_iov_space(c) != 0)
+    if (ms_ensure_iov_space(c))
       return -1;
 
     /* If the fragment is too big to fit in the datagram, split it up */
@@ -1829,7 +1829,7 @@ static int ms_build_udp_headers(ms_conn_t *c) {
   int i;
   unsigned char *hdr;
 
-  assert(c != NULL);
+  assert(c);
 
   c->request_id = ms_get_udp_request_id();
 
@@ -1881,7 +1881,7 @@ static int ms_build_udp_headers(ms_conn_t *c) {
  *          TRANSMIT_HARD_ERROR Can't write (c->state is set to conn_closing)
  */
 static int ms_transmit(ms_conn_t *c) {
-  assert(c != NULL);
+  assert(c);
 
   if ((c->msgcurr < c->msgused) && (c->msglist[c->msgcurr].msg_iovlen == 0)) {
     /* Finished writing the current msg; advance to the next. */
@@ -1943,7 +1943,7 @@ static int ms_transmit(ms_conn_t *c) {
  * @param c, pointer of the concurrency
  */
 static void ms_conn_shrink(ms_conn_t *c) {
-  assert(c != NULL);
+  assert(c);
 
   if (c->udp)
     return;
@@ -2004,7 +2004,7 @@ static void ms_conn_shrink(ms_conn_t *c) {
  * @param state, connection state
  */
 static void ms_conn_set_state(ms_conn_t *c, int state) {
-  assert(c != NULL);
+  assert(c);
 
   if (state != c->state) {
     if (state == conn_read) {
@@ -2025,7 +2025,7 @@ static void ms_conn_set_state(ms_conn_t *c, int state) {
  * @return bool, if success, return true, else return false
  */
 static bool ms_update_event(ms_conn_t *c, const int new_flags) {
-  assert(c != NULL);
+  assert(c);
 
   struct event_base *base = c->event.ev_base;
   if ((c->ev_flags == new_flags) && (ms_setting.rep_write_srv == 0)
@@ -2109,7 +2109,7 @@ static void ms_update_start_time(ms_conn_t *c) {
 static void ms_drive_machine(ms_conn_t *c) {
   bool stop = false;
 
-  assert(c != NULL);
+  assert(c);
 
   while (!stop) {
     switch (c->state) {
@@ -2120,12 +2120,12 @@ static void ms_drive_machine(ms_conn_t *c) {
           break;
         }
       } else {
-        if (ms_try_read_line(c) != 0) {
+        if (ms_try_read_line(c)) {
           break;
         }
       }
 
-      if (ms_try_read_network(c) != 0) {
+      if (ms_try_read_network(c)) {
         break;
       }
 
@@ -2159,7 +2159,7 @@ static void ms_drive_machine(ms_conn_t *c) {
         break;
       }
 
-      if (!c->ctnwrite && (ms_exec_task(c) != 0)) {
+      if (!c->ctnwrite && (ms_exec_task(c))) {
         ms_conn_set_state(c, conn_closing);
         break;
       }
@@ -2228,7 +2228,7 @@ static void ms_drive_machine(ms_conn_t *c) {
       if (ms_setting.reconnect
           && (!ms_global.time_out || ((ms_setting.run_time == 0) && (c->remain_exec_num > 0))))
       {
-        if (ms_reconn(c) != 0) {
+        if (ms_reconn(c)) {
           ms_conn_close(c);
           stop = true;
           break;
@@ -2267,7 +2267,7 @@ static void ms_drive_machine(ms_conn_t *c) {
 void ms_event_handler(const int fd, const short which, void *arg) {
   ms_conn_t *c = (ms_conn_t *) arg;
 
-  assert(c != NULL);
+  assert(c);
 
   c->which = which;
 
@@ -2353,7 +2353,7 @@ static uint32_t ms_get_next_sock_index(ms_conn_t *c) {
  * @return int, if success, return EXIT_SUCCESS, else return -1
  */
 static int ms_update_conn_sock_event(ms_conn_t *c) {
-  assert(c != NULL);
+  assert(c);
 
   switch (c->currcmd.cmd) {
   case CMD_SET:
@@ -2389,7 +2389,7 @@ static int ms_update_conn_sock_event(ms_conn_t *c) {
     }
 
     c->sfd = c->tcpsfd[c->cur_idx];
-    assert(c->sfd != 0);
+    assert(c->sfd);
     c->change_sfd = true;
   }
 
@@ -2433,14 +2433,14 @@ static int ms_build_ascii_write_buf_set(ms_conn_t *c, ms_task_item_t *item) {
     value_offset = item->value_offset;
   }
 
-  if ((ms_add_iov(c, "set ", 4) != 0)
-      || (ms_add_iov(c, (char *) &item->key_prefix, (int) KEY_PREFIX_SIZE) != 0)
+  if ((ms_add_iov(c, "set ", 4))
+      || (ms_add_iov(c, (char *) &item->key_prefix, (int) KEY_PREFIX_SIZE))
       || (ms_add_iov(c, &ms_setting.char_block[item->key_suffix_offset],
                      item->key_size - (int) KEY_PREFIX_SIZE)
-          != 0)
-      || (ms_add_iov(c, buffer, write_len) != 0)
-      || (ms_add_iov(c, &ms_setting.char_block[value_offset], item->value_size) != 0)
-      || (ms_add_iov(c, "\r\n", 2) != 0) || (c->udp && (ms_build_udp_headers(c) != 0)))
+)
+      || (ms_add_iov(c, buffer, write_len))
+      || (ms_add_iov(c, &ms_setting.char_block[value_offset], item->value_size))
+      || (ms_add_iov(c, "\r\n", 2)) || (c->udp && (ms_build_udp_headers(c))))
   {
     return -1;
   }
@@ -2458,31 +2458,31 @@ static int ms_build_ascii_write_buf_set(ms_conn_t *c, ms_task_item_t *item) {
  * @return int, if success, return EXIT_SUCCESS, else return -1
  */
 int ms_mcd_set(ms_conn_t *c, ms_task_item_t *item) {
-  assert(c != NULL);
+  assert(c);
 
   c->currcmd.cmd = CMD_SET;
   c->currcmd.isfinish = false;
   c->currcmd.retstat = MCD_FAILURE;
 
-  if (ms_update_conn_sock_event(c) != 0) {
+  if (ms_update_conn_sock_event(c)) {
     return -1;
   }
 
   c->msgcurr = 0;
   c->msgused = 0;
   c->iovused = 0;
-  if (ms_add_msghdr(c) != 0) {
+  if (ms_add_msghdr(c)) {
     fprintf(stderr, "Out of memory preparing request.");
     return -1;
   }
 
   /* binary protocol */
   if (c->protocol == binary_prot) {
-    if (ms_build_bin_write_buf_set(c, item) != 0) {
+    if (ms_build_bin_write_buf_set(c, item)) {
       return -1;
     }
   } else {
-    if (ms_build_ascii_write_buf_set(c, item) != 0) {
+    if (ms_build_ascii_write_buf_set(c, item)) {
       return -1;
     }
   }
@@ -2504,12 +2504,12 @@ int ms_mcd_set(ms_conn_t *c, ms_task_item_t *item) {
  * @return int, if success, return EXIT_SUCCESS, else return -1
  */
 static int ms_build_ascii_write_buf_get(ms_conn_t *c, ms_task_item_t *item) {
-  if ((ms_add_iov(c, "get ", 4) != 0)
-      || (ms_add_iov(c, (char *) &item->key_prefix, (int) KEY_PREFIX_SIZE) != 0)
+  if ((ms_add_iov(c, "get ", 4))
+      || (ms_add_iov(c, (char *) &item->key_prefix, (int) KEY_PREFIX_SIZE))
       || (ms_add_iov(c, &ms_setting.char_block[item->key_suffix_offset],
                      item->key_size - (int) KEY_PREFIX_SIZE)
-          != 0)
-      || (ms_add_iov(c, "\r\n", 2) != 0) || (c->udp && (ms_build_udp_headers(c) != 0)))
+)
+      || (ms_add_iov(c, "\r\n", 2)) || (c->udp && (ms_build_udp_headers(c))))
   {
     return -1;
   }
@@ -2527,31 +2527,31 @@ static int ms_build_ascii_write_buf_get(ms_conn_t *c, ms_task_item_t *item) {
  * @return int, if success, return EXIT_SUCCESS, else return -1
  */
 int ms_mcd_get(ms_conn_t *c, ms_task_item_t *item) {
-  assert(c != NULL);
+  assert(c);
 
   c->currcmd.cmd = CMD_GET;
   c->currcmd.isfinish = false;
   c->currcmd.retstat = MCD_FAILURE;
 
-  if (ms_update_conn_sock_event(c) != 0) {
+  if (ms_update_conn_sock_event(c)) {
     return -1;
   }
 
   c->msgcurr = 0;
   c->msgused = 0;
   c->iovused = 0;
-  if (ms_add_msghdr(c) != 0) {
+  if (ms_add_msghdr(c)) {
     fprintf(stderr, "Out of memory preparing request.");
     return -1;
   }
 
   /* binary protocol */
   if (c->protocol == binary_prot) {
-    if (ms_build_bin_write_buf_get(c, item) != 0) {
+    if (ms_build_bin_write_buf_get(c, item)) {
       return -1;
     }
   } else {
-    if (ms_build_ascii_write_buf_get(c, item) != 0) {
+    if (ms_build_ascii_write_buf_get(c, item)) {
       return -1;
     }
   }
@@ -2572,24 +2572,24 @@ int ms_mcd_get(ms_conn_t *c, ms_task_item_t *item) {
 static int ms_build_ascii_write_buf_mlget(ms_conn_t *c) {
   ms_task_item_t *item;
 
-  if (ms_add_iov(c, "get", 3) != 0) {
+  if (ms_add_iov(c, "get", 3)) {
     return -1;
   }
 
   for (int i = 0; i < c->mlget_task.mlget_num; i++) {
     item = c->mlget_task.mlget_item[i].item;
-    assert(item != NULL);
-    if ((ms_add_iov(c, " ", 1) != 0)
-        || (ms_add_iov(c, (char *) &item->key_prefix, (int) KEY_PREFIX_SIZE) != 0)
+    assert(item);
+    if ((ms_add_iov(c, " ", 1))
+        || (ms_add_iov(c, (char *) &item->key_prefix, (int) KEY_PREFIX_SIZE))
         || (ms_add_iov(c, &ms_setting.char_block[item->key_suffix_offset],
                        item->key_size - (int) KEY_PREFIX_SIZE)
-            != 0))
+))
     {
       return -1;
     }
   }
 
-  if ((ms_add_iov(c, "\r\n", 2) != 0) || (c->udp && (ms_build_udp_headers(c) != 0))) {
+  if ((ms_add_iov(c, "\r\n", 2)) || (c->udp && (ms_build_udp_headers(c)))) {
     return -1;
   }
 
@@ -2606,32 +2606,32 @@ static int ms_build_ascii_write_buf_mlget(ms_conn_t *c) {
 int ms_mcd_mlget(ms_conn_t *c) {
   ms_task_item_t *item;
 
-  assert(c != NULL);
+  assert(c);
   assert(c->mlget_task.mlget_num >= 1);
 
   c->currcmd.cmd = CMD_GET;
   c->currcmd.isfinish = false;
   c->currcmd.retstat = MCD_FAILURE;
 
-  if (ms_update_conn_sock_event(c) != 0) {
+  if (ms_update_conn_sock_event(c)) {
     return -1;
   }
 
   c->msgcurr = 0;
   c->msgused = 0;
   c->iovused = 0;
-  if (ms_add_msghdr(c) != 0) {
+  if (ms_add_msghdr(c)) {
     fprintf(stderr, "Out of memory preparing request.");
     return -1;
   }
 
   /* binary protocol */
   if (c->protocol == binary_prot) {
-    if (ms_build_bin_write_buf_mlget(c) != 0) {
+    if (ms_build_bin_write_buf_mlget(c)) {
       return -1;
     }
   } else {
-    if (ms_build_ascii_write_buf_mlget(c) != 0) {
+    if (ms_build_ascii_write_buf_mlget(c)) {
       return -1;
     }
   }
@@ -2661,7 +2661,7 @@ int ms_mcd_mlget(ms_conn_t *c) {
 static int ms_bin_process_response(ms_conn_t *c) {
   const char *errstr = NULL;
 
-  assert(c != NULL);
+  assert(c);
 
   uint32_t bodylen = c->binary_header.response.bodylen;
   uint8_t opcode = c->binary_header.response.opcode;
@@ -2723,7 +2723,7 @@ static int ms_bin_process_response(ms_conn_t *c) {
       break;
     } /* switch */
 
-    if (errstr != NULL) {
+    if (errstr) {
       fprintf(stderr, "%s\n", errstr);
     }
   }
@@ -2746,7 +2746,7 @@ static void ms_add_bin_header(ms_conn_t *c, uint8_t opcode, uint8_t hdr_len, uin
                               uint32_t body_len) {
   protocol_binary_request_header *header;
 
-  assert(c != NULL);
+  assert(c);
 
   header = (protocol_binary_request_header *) c->wcurr;
 
@@ -2850,7 +2850,7 @@ static int ms_build_bin_write_buf_mlget(ms_conn_t *c) {
 
   for (int i = 0; i < c->mlget_task.mlget_num; i++) {
     item = c->mlget_task.mlget_item[i].item;
-    assert(item != NULL);
+    assert(item);
 
     ms_add_bin_header(c, PROTOCOL_BINARY_CMD_GET, 0, (uint16_t) item->key_size,
                       (uint32_t) item->key_size);

@@ -152,7 +152,7 @@ bool memcached_binary_protocol_pedantic_check_response(
       ensure(response->response.keylen == 0);
       ensure(response->response.extlen == 0);
       ensure(response->response.bodylen == 0);
-      ensure(response->response.cas != 0);
+      ensure(response->response.cas);
       break;
     case PROTOCOL_BINARY_CMD_FLUSH:
     case PROTOCOL_BINARY_CMD_NOOP:
@@ -169,7 +169,7 @@ bool memcached_binary_protocol_pedantic_check_response(
       ensure(response->response.keylen == 0);
       ensure(response->response.extlen == 0);
       ensure(ntohl(response->response.bodylen) == 8);
-      ensure(response->response.cas != 0);
+      ensure(response->response.cas);
       break;
 
     case PROTOCOL_BINARY_CMD_STAT:
@@ -181,7 +181,7 @@ bool memcached_binary_protocol_pedantic_check_response(
     case PROTOCOL_BINARY_CMD_VERSION:
       ensure(response->response.keylen == 0);
       ensure(response->response.extlen == 0);
-      ensure(response->response.bodylen != 0);
+      ensure(response->response.bodylen);
       ensure(response->response.cas == 0);
       break;
 
@@ -189,14 +189,14 @@ bool memcached_binary_protocol_pedantic_check_response(
     case PROTOCOL_BINARY_CMD_GETQ:
       ensure(response->response.keylen == 0);
       ensure(response->response.extlen == 4);
-      ensure(response->response.cas != 0);
+      ensure(response->response.cas);
       break;
 
     case PROTOCOL_BINARY_CMD_GETK:
     case PROTOCOL_BINARY_CMD_GETKQ:
-      ensure(response->response.keylen != 0);
+      ensure(response->response.keylen);
       ensure(response->response.extlen == 4);
-      ensure(response->response.cas != 0);
+      ensure(response->response.cas);
       break;
 
     default:

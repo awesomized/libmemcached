@@ -345,7 +345,7 @@ memcached_return_t memcached_server_push(memcached_st *shell, const memcached_se
 
     ptr->state.is_parsing = true;
     for (uint32_t x = 0; x < count; ++x, ++original_host_size) {
-      WATCHPOINT_ASSERT(list[x].hostname[0] != 0);
+      WATCHPOINT_ASSERT(list[x].hostname[0]);
 
       // We have extended the array, and now we will find it, and use it.
       memcached_instance_st *instance = memcached_instance_fetch(ptr, original_host_size);
@@ -396,7 +396,7 @@ memcached_return_t memcached_instance_push(memcached_st *ptr,
   // We use original_host_size since size will now point to the first new
   // instance allocated.
   for (uint32_t x = 0; x < number_of_hosts; ++x, ++original_host_size) {
-    WATCHPOINT_ASSERT(list[x]._hostname[0] != 0);
+    WATCHPOINT_ASSERT(list[x]._hostname[0]);
 
     // We have extended the array, and now we will find it, and use it.
     memcached_instance_st *instance = memcached_instance_fetch(ptr, original_host_size);

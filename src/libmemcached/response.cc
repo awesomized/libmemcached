@@ -66,7 +66,7 @@ static memcached_return_t textual_value_fetch(memcached_instance_st *instance, c
   errno = 0;
   result->item_flags = (uint32_t) strtoul(next_ptr, &string_ptr, 10);
 
-  if (errno != 0 or end_ptr == string_ptr) {
+  if (errno or end_ptr == string_ptr) {
     goto read_error;
   }
 
@@ -81,7 +81,7 @@ static memcached_return_t textual_value_fetch(memcached_instance_st *instance, c
   errno = 0;
   value_length = (size_t) strtoull(next_ptr, &string_ptr, 10);
 
-  if (errno != 0 or end_ptr == string_ptr) {
+  if (errno or end_ptr == string_ptr) {
     goto read_error;
   }
 
@@ -97,7 +97,7 @@ static memcached_return_t textual_value_fetch(memcached_instance_st *instance, c
     result->item_cas = strtoull(next_ptr, &string_ptr, 10);
   }
 
-  if (errno != 0 or end_ptr < string_ptr) {
+  if (errno or end_ptr < string_ptr) {
     goto read_error;
   }
 
@@ -202,7 +202,7 @@ static memcached_return_t textual_read_one_response(memcached_instance_st *insta
       char *endptr;
       errno = 0;
       long int version = strtol(response_ptr, &endptr, 10);
-      if (errno != 0 or version == LONG_MIN or version == LONG_MAX or version > UINT8_MAX
+      if (errno or version == LONG_MIN or version == LONG_MAX or version > UINT8_MAX
           or version == 0) {
         instance->major_version = instance->minor_version = instance->micro_version = UINT8_MAX;
         return memcached_set_error(
@@ -214,7 +214,7 @@ static memcached_return_t textual_read_one_response(memcached_instance_st *insta
       endptr++;
       errno = 0;
       version = strtol(endptr, &endptr, 10);
-      if (errno != 0 or version == LONG_MIN or version == LONG_MAX or version > UINT8_MAX) {
+      if (errno or version == LONG_MIN or version == LONG_MAX or version > UINT8_MAX) {
         instance->major_version = instance->minor_version = instance->micro_version = UINT8_MAX;
         return memcached_set_error(
             *instance, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT,
@@ -225,7 +225,7 @@ static memcached_return_t textual_read_one_response(memcached_instance_st *insta
       endptr++;
       errno = 0;
       version = strtol(endptr, &endptr, 10);
-      if (errno != 0 or version == LONG_MIN or version == LONG_MAX or version > UINT8_MAX) {
+      if (errno or version == LONG_MIN or version == LONG_MAX or version > UINT8_MAX) {
         instance->major_version = instance->minor_version = instance->micro_version = UINT8_MAX;
         return memcached_set_error(
             *instance, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT,
@@ -409,7 +409,7 @@ static memcached_return_t textual_read_one_response(memcached_instance_st *insta
       result->numeric_value = UINT64_MAX;
       return memcached_set_error(*instance, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT,
                                  memcached_literal_param("Numeric response was out of range"));
-    } else if (errno != 0) {
+    } else if (errno) {
       result->numeric_value = UINT64_MAX;
       return memcached_set_error(*instance, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT,
                                  memcached_literal_param("Numeric response was out of range"));
@@ -544,7 +544,7 @@ static memcached_return_t binary_read_one_response(memcached_instance_st *instan
     } break;
 
     case PROTOCOL_BINARY_CMD_SASL_LIST_MECHS: {
-      if (header.response.keylen != 0 || bodylen + 1 > buffer_length) {
+      if (header.response.keylen || bodylen + 1 > buffer_length) {
         return MEMCACHED_UNKNOWN_READ_FAILURE;
       } else {
         if ((rc = memcached_safe_read(instance, buffer, bodylen)) != MEMCACHED_SUCCESS) {
@@ -564,7 +564,7 @@ static memcached_return_t binary_read_one_response(memcached_instance_st *instan
       char *endptr;
       errno = 0;
       long int version = strtol(version_buffer, &endptr, 10);
-      if (errno != 0 or version == LONG_MIN or version == LONG_MAX or version > UINT8_MAX
+      if (errno or version == LONG_MIN or version == LONG_MAX or version > UINT8_MAX
           or version == 0) {
         instance->major_version = instance->minor_version = instance->micro_version = UINT8_MAX;
         return memcached_set_error(
@@ -576,7 +576,7 @@ static memcached_return_t binary_read_one_response(memcached_instance_st *instan
       endptr++;
       errno = 0;
       version = strtol(endptr, &endptr, 10);
-      if (errno != 0 or version == LONG_MIN or version == LONG_MAX or version > UINT8_MAX) {
+      if (errno or version == LONG_MIN or version == LONG_MAX or version > UINT8_MAX) {
         instance->major_version = instance->minor_version = instance->micro_version = UINT8_MAX;
         return memcached_set_error(
             *instance, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT,
@@ -587,7 +587,7 @@ static memcached_return_t binary_read_one_response(memcached_instance_st *instan
       endptr++;
       errno = 0;
       version = strtol(endptr, &endptr, 10);
-      if (errno != 0 or version == LONG_MIN or version == LONG_MAX or version > UINT8_MAX) {
+      if (errno or version == LONG_MIN or version == LONG_MAX or version > UINT8_MAX) {
         instance->major_version = instance->minor_version = instance->micro_version = UINT8_MAX;
         return memcached_set_error(
             *instance, MEMCACHED_UNKNOWN_READ_FAILURE, MEMCACHED_AT,
@@ -701,7 +701,7 @@ static memcached_return_t binary_read_one_response(memcached_instance_st *instan
   }
 
   rc = MEMCACHED_SUCCESS;
-  if (header.response.status != 0) {
+  if (header.response.status) {
     switch (header.response.status) {
     case PROTOCOL_BINARY_RESPONSE_KEY_ENOENT:
       rc = MEMCACHED_NOTFOUND;

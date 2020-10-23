@@ -82,7 +82,7 @@ static bool drain_output(struct memcached_protocol_client_st *client) {
   }
 
   /* Do we have pending data to send? */
-  while (client->output != NULL) {
+  while (client->output) {
     ssize_t len =
         client->root->send(client, client->sock, client->output->data + client->output->offset,
                            client->output->nbytes - client->output->offset);
@@ -238,7 +238,7 @@ static memcached_protocol_event_t determine_protocol(struct memcached_protocol_c
 */
 struct memcached_protocol_st *memcached_protocol_create_instance(void) {
   struct memcached_protocol_st *ret = calloc(1, sizeof(*ret));
-  if (ret != NULL) {
+  if (ret) {
     ret->recv = default_recv;
     ret->send = default_send;
     ret->drain = drain_output;
@@ -273,7 +273,7 @@ void memcached_protocol_destroy_instance(struct memcached_protocol_st *instance)
 struct memcached_protocol_client_st *
 memcached_protocol_create_client(struct memcached_protocol_st *instance, memcached_socket_t sock) {
   struct memcached_protocol_client_st *ret = calloc(1, sizeof(memcached_protocol_client_st));
-  if (ret != NULL) {
+  if (ret) {
     ret->root = instance;
     ret->sock = sock;
     ret->work = determine_protocol;

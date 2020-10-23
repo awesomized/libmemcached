@@ -54,7 +54,7 @@ memcached_server_list_st memcached_servers_parse(const char *server_strings) {
 
       errno = 0;
       port = (in_port_t) strtoul(ptr, (char **) NULL, 10);
-      if (errno != 0) {
+      if (errno) {
         memcached_server_free(servers);
         return NULL;
       }
@@ -67,7 +67,7 @@ memcached_server_list_st memcached_servers_parse(const char *server_strings) {
         ptr2++;
         errno = 0;
         weight = uint32_t(strtoul(ptr2, (char **) NULL, 10));
-        if (errno != 0) {
+        if (errno) {
           memcached_server_free(servers);
           return NULL;
         }

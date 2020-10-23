@@ -36,7 +36,7 @@ memcached_server_list_st memcached_server_list_append_with_weight(memcached_serv
 
   /* Increment count for hosts */
   uint32_t count = 1;
-  if (ptr != NULL) {
+  if (ptr) {
     count += memcached_server_list_count(ptr);
   }
 

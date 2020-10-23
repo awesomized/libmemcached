@@ -187,7 +187,7 @@ void initialize_sockets(void) {
   /* Define the function for all platforms to avoid #ifdefs in each program */
 #if defined(_WIN32)
   WSADATA wsaData;
-  if (WSAStartup(MAKEWORD(2, 0), &wsaData) != 0) {
+  if (WSAStartup(MAKEWORD(2, 0), &wsaData)) {
     fprintf(stderr, "Socket Initialization Error. Program aborted\n");
     exit(EXIT_FAILURE);
   }

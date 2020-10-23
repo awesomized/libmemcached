@@ -122,7 +122,7 @@ SignalThread::~SignalThread()
   }
 
 #if 0
-  if (pthread_equal(thread, pthread_self()) != 0 and (pthread_kill(thread, 0) == ESRCH) == true)
+  if (pthread_equal(thread, pthread_self()) and (pthread_kill(thread, 0) == ESRCH) == true)
   {
     void *retval;
     pthread_join(thread, &retval);
@@ -211,13 +211,13 @@ bool SignalThread::setup()
   set_shutdown(SHUTDOWN_RUNNING);
 
   int error;
-  if ((error= pthread_sigmask(SIG_BLOCK, &set, NULL)) != 0)
+  if ((error= pthread_sigmask(SIG_BLOCK, &set, NULL)))
   {
     std::cerr << "pthread_sigmask() died during pthread_sigmask(" << strerror(error) << ")" << std::endl;
     return false;
   }
 
-  if ((error= pthread_create(&thread, NULL, &sig_thread, this)) != 0)
+  if ((error= pthread_create(&thread, NULL, &sig_thread, this)))
   {
     std::cerr << "pthread_create() died during pthread_create(" << strerror(error) << ")" << std::endl;
     return false;

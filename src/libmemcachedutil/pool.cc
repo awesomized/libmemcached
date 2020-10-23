@@ -62,12 +62,12 @@ struct memcached_pool_st {
     }
 
     int error;
-    if ((error = pthread_mutex_destroy(&mutex)) != 0) {
-      assert_vmsg(error != 0, "pthread_mutex_destroy() %s(%d)", strerror(error), error);
+    if ((error = pthread_mutex_destroy(&mutex))) {
+      assert_vmsg(error, "pthread_mutex_destroy() %s(%d)", strerror(error), error);
     }
 
-    if ((error = pthread_cond_destroy(&cond)) != 0) {
-      assert_vmsg(error != 0, "pthread_cond_destroy() %s", strerror(error));
+    if ((error = pthread_cond_destroy(&cond))) {
+      assert_vmsg(error, "pthread_cond_destroy() %s", strerror(error));
     }
 
     delete[] server_pool;
@@ -200,7 +200,7 @@ memcached_st *memcached_pool_st::fetch(const struct timespec &relative_time,
   rc = MEMCACHED_SUCCESS;
 
   int error;
-  if ((error = pthread_mutex_lock(&mutex)) != 0) {
+  if ((error = pthread_mutex_lock(&mutex))) {
     rc = MEMCACHED_IN_PROGRESS;
     return NULL;
   }
@@ -222,10 +222,10 @@ memcached_st *memcached_pool_st::fetch(const struct timespec &relative_time,
       time_to_wait.tv_nsec = relative_time.tv_nsec;
 
       int thread_ret;
-      if ((thread_ret = pthread_cond_timedwait(&cond, &mutex, &time_to_wait)) != 0) {
+      if ((thread_ret = pthread_cond_timedwait(&cond, &mutex, &time_to_wait))) {
         int unlock_error;
-        if ((unlock_error = pthread_mutex_unlock(&mutex)) != 0) {
-          assert_vmsg(error != 0, "pthread_mutex_unlock() %s", strerror(error));
+        if ((unlock_error = pthread_mutex_unlock(&mutex))) {
+          assert_vmsg(error, "pthread_mutex_unlock() %s", strerror(error));
         }
 
         if (thread_ret == ETIMEDOUT) {
@@ -239,16 +239,16 @@ memcached_st *memcached_pool_st::fetch(const struct timespec &relative_time,
       }
     } else if (grow_pool(this) == false) {
       int unlock_error;
-      if ((unlock_error = pthread_mutex_unlock(&mutex)) != 0) {
-        assert_vmsg(error != 0, "pthread_mutex_unlock() %s", strerror(error));
+      if ((unlock_error = pthread_mutex_unlock(&mutex))) {
+        assert_vmsg(error, "pthread_mutex_unlock() %s", strerror(error));
       }
 
       return NULL;
     }
   } while (ret == NULL);
 
-  if ((error = pthread_mutex_unlock(&mutex)) != 0) {
-    assert_vmsg(error != 0, "pthread_mutex_unlock() %s", strerror(error));
+  if ((error = pthread_mutex_unlock(&mutex))) {
+    assert_vmsg(error, "pthread_mutex_unlock() %s", strerror(error));
   }
 
   return ret;
@@ -283,12 +283,12 @@ bool memcached_pool_st::release(memcached_st *released, memcached_return_t &rc) 
 
   if (firstfree == 0 and current_size == size) {
     /* we might have people waiting for a connection.. wake them up :-) */
-    if ((error = pthread_cond_broadcast(&cond)) != 0) {
-      assert_vmsg(error != 0, "pthread_cond_broadcast() %s", strerror(error));
+    if ((error = pthread_cond_broadcast(&cond))) {
+      assert_vmsg(error, "pthread_cond_broadcast() %s", strerror(error));
     }
   }
 
-  if ((error = pthread_mutex_unlock(&mutex)) != 0) {
+  if ((error = pthread_mutex_unlock(&mutex))) {
   }
 
   return true;
@@ -362,8 +362,8 @@ memcached_return_t memcached_pool_behavior_set(memcached_pool_st *pool, memcache
   /* update the master */
   memcached_return_t rc = memcached_behavior_set(pool->master, flag, data);
   if (memcached_failed(rc)) {
-    if ((error = pthread_mutex_unlock(&pool->mutex)) != 0) {
-      assert_vmsg(error != 0, "pthread_mutex_unlock() %s", strerror(error));
+    if ((error = pthread_mutex_unlock(&pool->mutex))) {
+      assert_vmsg(error, "pthread_mutex_unlock() %s", strerror(error));
     }
     return rc;
   }
@@ -388,8 +388,8 @@ memcached_return_t memcached_pool_behavior_set(memcached_pool_st *pool, memcache
     }
   }
 
-  if ((error = pthread_mutex_unlock(&pool->mutex)) != 0) {
-    assert_vmsg(error != 0, "pthread_mutex_unlock() %s", strerror(error));
+  if ((error = pthread_mutex_unlock(&pool->mutex))) {
+    assert_vmsg(error, "pthread_mutex_unlock() %s", strerror(error));
   }
 
   return rc;
@@ -408,8 +408,8 @@ memcached_return_t memcached_pool_behavior_get(memcached_pool_st *pool, memcache
 
   *value = memcached_behavior_get(pool->master, flag);
 
-  if ((error = pthread_mutex_unlock(&pool->mutex)) != 0) {
-    assert_vmsg(error != 0, "pthread_mutex_unlock() %s", strerror(error));
+  if ((error = pthread_mutex_unlock(&pool->mutex))) {
+    assert_vmsg(error, "pthread_mutex_unlock() %s", strerror(error));
   }
 
   return MEMCACHED_SUCCESS;

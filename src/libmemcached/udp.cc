@@ -32,7 +32,7 @@ void increment_udp_message_id(memcached_instance_st *ptr) {
   int msg_num = get_msg_num_from_request_id(cur_req);
   int thread_id = get_thread_id_from_request_id(cur_req);
 
-  if (((++msg_num) & UDP_REQUEST_ID_THREAD_MASK) != 0)
+  if (((++msg_num) & UDP_REQUEST_ID_THREAD_MASK))
     msg_num = 0;
 
   header->request_id = htons((uint16_t)(thread_id | msg_num));

@@ -61,7 +61,7 @@ static memcached_return_t set_data(memcached_stat_st *memc_stat, const char *key
   } else if (strcmp("pid", key) == 0) {
     errno = 0;
     int64_t temp = strtoll(value, (char **) NULL, 10);
-    if (errno != 0) {
+    if (errno) {
       return MEMCACHED_FAILURE;
     }
 
@@ -76,13 +76,13 @@ static memcached_return_t set_data(memcached_stat_st *memc_stat, const char *key
   } else if (not strcmp("uptime", key)) {
     errno = 0;
     memc_stat->uptime = strtoul(value, (char **) NULL, 10);
-    if (errno != 0) {
+    if (errno) {
       return MEMCACHED_FAILURE;
     }
   } else if (not strcmp("time", key)) {
     errno = 0;
     memc_stat->time = strtoul(value, (char **) NULL, 10);
-    if (errno != 0) {
+    if (errno) {
       return MEMCACHED_FAILURE;
     }
   } else if (not strcmp("version", key)) {
@@ -91,7 +91,7 @@ static memcached_return_t set_data(memcached_stat_st *memc_stat, const char *key
   } else if (not strcmp("pointer_size", key)) {
     errno = 0;
     memc_stat->pointer_size = strtoul(value, (char **) NULL, 10);
-    if (errno != 0) {
+    if (errno) {
       return MEMCACHED_FAILURE;
     }
   } else if (not strcmp("rusage_user", key)) {
@@ -103,13 +103,13 @@ static memcached_return_t set_data(memcached_stat_st *memc_stat, const char *key
 
     errno = 0;
     memc_stat->rusage_user_seconds = strtoul(value, (char **) NULL, 10);
-    if (errno != 0) {
+    if (errno) {
       return MEMCACHED_FAILURE;
     }
 
     errno = 0;
     memc_stat->rusage_user_microseconds = strtoul(walk_ptr, (char **) NULL, 10);
-    if (errno != 0) {
+    if (errno) {
       return MEMCACHED_FAILURE;
     }
   } else if (not strcmp("rusage_system", key)) {
@@ -121,103 +121,103 @@ static memcached_return_t set_data(memcached_stat_st *memc_stat, const char *key
 
     errno = 0;
     memc_stat->rusage_system_seconds = strtoul(value, (char **) NULL, 10);
-    if (errno != 0) {
+    if (errno) {
       return MEMCACHED_FAILURE;
     }
 
     errno = 0;
     memc_stat->rusage_system_microseconds = strtoul(walk_ptr, (char **) NULL, 10);
-    if (errno != 0) {
+    if (errno) {
       return MEMCACHED_FAILURE;
     }
   } else if (not strcmp("curr_items", key)) {
     errno = 0;
     memc_stat->curr_items = strtoul(value, (char **) NULL, 10);
-    if (errno != 0) {
+    if (errno) {
       return MEMCACHED_FAILURE;
     }
   } else if (not strcmp("total_items", key)) {
     errno = 0;
     memc_stat->total_items = strtoul(value, (char **) NULL, 10);
-    if (errno != 0) {
+    if (errno) {
       return MEMCACHED_FAILURE;
     }
   } else if (not strcmp("bytes_read", key)) {
     errno = 0;
     memc_stat->bytes_read = strtoull(value, (char **) NULL, 10);
-    if (errno != 0) {
+    if (errno) {
       return MEMCACHED_FAILURE;
     }
   } else if (not strcmp("bytes_written", key)) {
     errno = 0;
     memc_stat->bytes_written = strtoull(value, (char **) NULL, 10);
-    if (errno != 0) {
+    if (errno) {
       return MEMCACHED_FAILURE;
     }
   } else if (not strcmp("bytes", key)) {
     errno = 0;
     memc_stat->bytes = strtoull(value, (char **) NULL, 10);
-    if (errno != 0) {
+    if (errno) {
       return MEMCACHED_FAILURE;
     }
   } else if (not strcmp("curr_connections", key)) {
     errno = 0;
     memc_stat->curr_connections = strtoull(value, (char **) NULL, 10);
-    if (errno != 0) {
+    if (errno) {
       return MEMCACHED_FAILURE;
     }
   } else if (not strcmp("total_connections", key)) {
     errno = 0;
     memc_stat->total_connections = strtoull(value, (char **) NULL, 10);
-    if (errno != 0) {
+    if (errno) {
       return MEMCACHED_FAILURE;
     }
   } else if (not strcmp("connection_structures", key)) {
     errno = 0;
     memc_stat->connection_structures = strtoul(value, (char **) NULL, 10);
-    if (errno != 0) {
+    if (errno) {
       return MEMCACHED_FAILURE;
     }
   } else if (not strcmp("cmd_get", key)) {
     errno = 0;
     memc_stat->cmd_get = strtoull(value, (char **) NULL, 10);
-    if (errno != 0) {
+    if (errno) {
       return MEMCACHED_FAILURE;
     }
   } else if (not strcmp("cmd_set", key)) {
     errno = 0;
     memc_stat->cmd_set = strtoull(value, (char **) NULL, 10);
-    if (errno != 0) {
+    if (errno) {
       return MEMCACHED_FAILURE;
     }
   } else if (not strcmp("get_hits", key)) {
     errno = 0;
     memc_stat->get_hits = strtoull(value, (char **) NULL, 10);
-    if (errno != 0) {
+    if (errno) {
       return MEMCACHED_FAILURE;
     }
   } else if (not strcmp("get_misses", key)) {
     errno = 0;
     memc_stat->get_misses = strtoull(value, (char **) NULL, 10);
-    if (errno != 0) {
+    if (errno) {
       return MEMCACHED_FAILURE;
     }
   } else if (not strcmp("evictions", key)) {
     errno = 0;
     memc_stat->evictions = strtoull(value, (char **) NULL, 10);
-    if (errno != 0) {
+    if (errno) {
       return MEMCACHED_FAILURE;
     }
   } else if (not strcmp("limit_maxbytes", key)) {
     errno = 0;
     memc_stat->limit_maxbytes = strtoull(value, (char **) NULL, 10);
-    if (errno != 0) {
+    if (errno) {
       return MEMCACHED_FAILURE;
     }
   } else if (not strcmp("threads", key)) {
     errno = 0;
     memc_stat->threads = strtoul(value, (char **) NULL, 10);
-    if (errno != 0) {
+    if (errno) {
       return MEMCACHED_FAILURE;
     }
   } else if ((strcmp("delete_misses", key) == 0 or /* New stats in the 1.3 beta */

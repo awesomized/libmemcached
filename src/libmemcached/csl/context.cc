@@ -51,7 +51,7 @@ void Context::error(const char *error_arg, config_tokentype last_token,
 
   // We now test if it is something other then a syntax error, if it  we
   // return a generic message
-  if (strcmp(error_arg, "syntax error") != 0) {
+  if (strcmp(error_arg, "syntax error")) {
     memcached_set_parser_error(*memc, MEMCACHED_AT,
                                "Error occured during parsing (%s): last_token=%s(%d)", error_arg,
                                last_token_str, last_token);

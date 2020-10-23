@@ -141,7 +141,7 @@ ascii_raw_response_handler(memcached_protocol_client_st *client, const char *tex
     return PROTOCOL_BINARY_RESPONSE_EINTERNAL;
   }
 
-  assert(client->output != NULL);
+  assert(client->output);
 #if 0
   if (client->output == NULL)
   {
@@ -285,7 +285,7 @@ static protocol_binary_response_status ascii_stat_response_handler(const void *c
                                                                    uint32_t bodylen) {
   memcached_protocol_client_st *client = (void *) cookie;
 
-  if (key != NULL) {
+  if (key) {
     ascii_raw_response_handler(client, "STAT ");
     client->root->spool(client, key, keylen);
     ascii_raw_response_handler(client, " ");
@@ -479,7 +479,7 @@ static void process_arithmetic(memcached_protocol_client_st *client, char **toke
   uint64_t result;
   errno = 0;
   uint64_t delta = strtoull(tokens[2], NULL, 10);
-  if (errno != 0) {
+  if (errno) {
     return; // Error
   }
 
@@ -558,7 +558,7 @@ static void process_flush(memcached_protocol_client_st *client, char **tokens, i
   if (ntokens == 2) {
     errno = 0;
     timeout = (uint32_t) strtoul(tokens[1], NULL, 10);
-    if (errno != 0) {
+    if (errno) {
       return; // Error
     }
   }
@@ -598,21 +598,21 @@ static inline int process_storage_command(memcached_protocol_client_st *client, 
 
   errno = 0;
   uint32_t flags = (uint32_t) strtoul(tokens[2], NULL, 10);
-  if (errno != 0) {
+  if (errno) {
     /* return error */
     ascii_raw_response_handler(client, "CLIENT_ERROR: bad key\r\n");
     return -1;
   }
 
   uint32_t timeout = (uint32_t) strtoul(tokens[3], NULL, 10);
-  if (errno != 0) {
+  if (errno) {
     /* return error */
     ascii_raw_response_handler(client, "CLIENT_ERROR: bad key\r\n");
     return -1;
   }
 
   unsigned long nbytes = strtoul(tokens[4], NULL, 10);
-  if (errno != 0) {
+  if (errno) {
     /* return error */
     ascii_raw_response_handler(client, "CLIENT_ERROR: bad key\r\n");
     return -1;
@@ -642,7 +642,7 @@ static inline int process_storage_command(memcached_protocol_client_st *client, 
   case CAS_CMD:
     errno = 0;
     cas = strtoull(tokens[5], NULL, 10);
-    if (errno != 0) {
+    if (errno) {
       /* return error */
       ascii_raw_response_handler(client, "CLIENT_ERROR: bad key\r\n");
       return -1;
@@ -810,7 +810,7 @@ memcached_ascii_protocol_process_data(memcached_protocol_client_st *client, ssiz
     client->ascii_command = ascii_to_cmd(ptr, (size_t)(*length));
 
     /* we got all data available, execute the callback! */
-    if (client->root->callback->pre_execute != NULL) {
+    if (client->root->callback->pre_execute) {
       client->root->callback->pre_execute(client, NULL);
     }
 
@@ -819,7 +819,7 @@ memcached_ascii_protocol_process_data(memcached_protocol_client_st *client, ssiz
      * just handle them immediately
      */
     if (client->ascii_command == GET_CMD || client->ascii_command == GETS_CMD) {
-      if (client->root->callback->interface.v1.get != NULL) {
+      if (client->root->callback->interface.v1.get) {
         ascii_process_gets(client, ptr, end);
       } else {
         ascii_raw_response_handler(client, "SERVER_ERROR: Command not implemented\n");
@@ -900,7 +900,7 @@ memcached_ascii_protocol_process_data(memcached_protocol_client_st *client, ssiz
         if (ntokens != 1 || client->mute) {
           send_command_usage(client);
         } else {
-          if (client->root->callback->interface.v1.quit != NULL) {
+          if (client->root->callback->interface.v1.quit) {
             client->root->callback->interface.v1.quit(client);
           }
 
@@ -934,7 +934,7 @@ memcached_ascii_protocol_process_data(memcached_protocol_client_st *client, ssiz
       }
     }
 
-    if (client->root->callback->post_execute != NULL) {
+    if (client->root->callback->post_execute) {
       client->root->callback->post_execute(client, NULL);
     }
 

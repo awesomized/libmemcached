@@ -168,7 +168,7 @@ memcached_return_t memcached_sasl_authenticate_connection(memcached_instance_st 
   }
 
   int pthread_error;
-  if ((pthread_error = pthread_once(&sasl_startup_once, sasl_startup_function)) != 0) {
+  if ((pthread_error = pthread_once(&sasl_startup_once, sasl_startup_function))) {
     return memcached_set_errno(*server, pthread_error, MEMCACHED_AT);
   }
 

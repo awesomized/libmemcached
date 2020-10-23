@@ -94,10 +94,10 @@ void *cache_alloc(cache_t *cache) {
     object = get_object(ret);
   } else {
     object = ret = malloc(cache->bufsize);
-    if (ret != NULL) {
+    if (ret) {
       object = get_object(ret);
 
-      if (cache->constructor != NULL && cache->constructor(object, NULL, 0) != 0) {
+      if (cache->constructor && cache->constructor(object, NULL, 0)) {
         free(ret);
         object = NULL;
       }
@@ -106,7 +106,7 @@ void *cache_alloc(cache_t *cache) {
   pthread_mutex_unlock(&cache->mutex);
 
 #ifndef NDEBUG
-  if (object != NULL) {
+  if (object) {
     /* add a simple form of buffer-check */
     uint64_t *pre = ret;
     *pre = redzone_pattern;
@@ -126,7 +126,7 @@ void cache_free(cache_t *cache, void *ptr) {
   /* validate redzone... */
   if (memcmp(((char *) ptr) + cache->bufsize - (2 * sizeof(redzone_pattern)), &redzone_pattern,
              sizeof(redzone_pattern))
-      != 0)
+)
   {
     raise(SIGABRT);
     cache_error = 1;

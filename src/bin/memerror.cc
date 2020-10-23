@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
     char *nptr;
     unsigned long value = strtoul(argv[optind], &nptr, 10);
 
-    if ((errno != 0) or (nptr == argv[optind] and value == 0)
+    if ((errno) or (nptr == argv[optind] and value == 0)
         or (value == ULONG_MAX and errno == ERANGE) or (value == 0 and errno == EINVAL))
     {
       std::cerr << "strtoul() was unable to parse given value" << std::endl;

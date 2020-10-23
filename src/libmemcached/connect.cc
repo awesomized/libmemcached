@@ -101,7 +101,7 @@ static memcached_return_t connect_poll(memcached_instance_st *server, const int 
         }
 
         // If Zero, my hero, we just fail to a generic MEMCACHED_TIMEOUT error
-        if (err != 0) {
+        if (err) {
           return memcached_set_errno(
               *server, err, MEMCACHED_AT,
               memcached_literal_param("getsockopt() found the error from poll() after connect() "
@@ -170,7 +170,7 @@ static memcached_return_t set_hostinfo(memcached_instance_st *server) {
   char str_port[MEMCACHED_NI_MAXSERV] = {0};
   errno = 0;
   int length = snprintf(str_port, MEMCACHED_NI_MAXSERV, "%u", uint32_t(server->port()));
-  if (length >= MEMCACHED_NI_MAXSERV or length <= 0 or errno != 0) {
+  if (length >= MEMCACHED_NI_MAXSERV or length <= 0 or errno) {
     return memcached_set_error(*server, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT,
                                memcached_literal_param("snprintf(NI_MAXSERV)"));
   }
@@ -263,7 +263,7 @@ static bool set_socket_options(memcached_instance_st *server) {
 #ifdef HAVE_FCNTL
   // If SOCK_CLOEXEC exists then we don't need to call the following
   if (SOCK_CLOEXEC == 0) {
-    if (FD_CLOEXEC != 0) {
+    if (FD_CLOEXEC) {
       int flags;
       do {
         flags = fcntl(server->fd, F_GETFD, 0);
@@ -397,11 +397,11 @@ static memcached_return_t unix_socket_connect(memcached_instance_st *server) {
 
   do {
     int type = SOCK_STREAM;
-    if (SOCK_CLOEXEC != 0) {
+    if (SOCK_CLOEXEC) {
       type |= SOCK_CLOEXEC;
     }
 
-    if (SOCK_NONBLOCK != 0) {
+    if (SOCK_NONBLOCK) {
       type |= SOCK_NONBLOCK;
     }
 
@@ -482,11 +482,11 @@ static memcached_return_t network_connect(memcached_instance_st *server) {
   /* Create the socket */
   while (server->address_info_next and server->fd == INVALID_SOCKET) {
     int type = server->address_info_next->ai_socktype;
-    if (SOCK_CLOEXEC != 0) {
+    if (SOCK_CLOEXEC) {
       type |= SOCK_CLOEXEC;
     }
 
-    if (SOCK_NONBLOCK != 0) {
+    if (SOCK_NONBLOCK) {
       type |= SOCK_NONBLOCK;
     }
 

@@ -188,7 +188,7 @@ static int ms_setup_thread(ms_thread_ctx_t *thread_ctx) {
 
   for (uint32_t i = 0; i < thread_ctx->nconns; i++) {
     ms_thread->conn[i].conn_idx = i;
-    if (ms_setup_conn(&ms_thread->conn[i]) != 0) {
+    if (ms_setup_conn(&ms_thread->conn[i])) {
       /* only output this error once */
       if (atomic_add_32_nv(&cnt, 1) == 0) {
         fprintf(stderr, "Initializing connection failed.\n");
@@ -220,7 +220,7 @@ static void *ms_worker_libevent(void *arg) {
     ms_set_thread_cpu_affinity(thread_ctx->thd_idx % ms_setting.ncpu);
   }
 
-  if (ms_setup_thread(thread_ctx) != 0) {
+  if (ms_setup_thread(thread_ctx)) {
     exit(1);
   }
 
@@ -251,7 +251,7 @@ static void ms_create_worker(void *(*func)(void *), void *arg) {
 
   pthread_attr_init(&attr);
 
-  if ((ret = pthread_create(&thread, &attr, func, arg)) != 0) {
+  if ((ret = pthread_create(&thread, &attr, func, arg))) {
     fprintf(stderr, "Can't create thread: %s.\n", strerror(ret));
     exit(1);
   }
@@ -292,7 +292,7 @@ void ms_thread_init() {
 
 /* cleanup some resource of threads when all the threads exit */
 void ms_thread_cleanup() {
-  if (ms_thread_ctx != NULL) {
+  if (ms_thread_ctx) {
     free(ms_thread_ctx);
   }
   pthread_key_delete(ms_thread_key);

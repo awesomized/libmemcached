@@ -101,7 +101,7 @@ static bool process_input_buffer(memcached_instance_st *instance) {
    ** We might be able to process some of the response messages if we
    ** have a callback set up
    */
-  if (instance->root->callbacks != NULL) {
+  if (instance->root->callbacks) {
     /*
      * We might have responses... try to read them out and fire
      * callbacks

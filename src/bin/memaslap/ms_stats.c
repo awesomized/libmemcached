@@ -98,7 +98,7 @@ void ms_record_event(ms_stat_t *stat, uint64_t total_time, int get_miss) {
   stat->dist[ms_local_log2(total_time)]++;
   stat->squares += (double) (total_time * total_time);
 
-  if (total_time != 0) {
+  if (total_time) {
     stat->log_product += log((double) total_time);
   }
 } /* ms_record_event */
@@ -133,7 +133,7 @@ void ms_dump_stats(ms_stat_t *stat) {
 
   for (uint32_t i = 0; i < array_size(stat->dist); i++) {
     events += stat->dist[i];
-    if (stat->dist[i] != 0) {
+    if (stat->dist[i]) {
       max_non_zero = (int) i;
     }
   }
@@ -156,8 +156,8 @@ void ms_dump_stats(ms_stat_t *stat) {
   printf("   Log2 Dist:");
 
   for (int i = 0; i <= max_non_zero - 4; i += 4) {
-    if ((stat->dist[i + 0] != 0) || (stat->dist[i + 1] != 0) || (stat->dist[i + 2] != 0)
-        || (stat->dist[i + 3] != 0))
+    if ((stat->dist[i + 0]) || (stat->dist[i + 1]) || (stat->dist[i + 2])
+        || (stat->dist[i + 3]))
     {
       min_non_zero = i;
       break;

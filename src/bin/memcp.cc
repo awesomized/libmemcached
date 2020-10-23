@@ -62,7 +62,7 @@ static long strtol_wrapper(const char *nptr, int base, bool *error) {
 
   /* Check for various possible errors */
 
-  if ((errno == ERANGE and (val == LONG_MAX or val == LONG_MIN)) or (errno != 0 && val == 0)) {
+  if ((errno == ERANGE and (val == LONG_MAX or val == LONG_MIN)) or (errno && val == 0)) {
     *error = true;
     return 0;
   }

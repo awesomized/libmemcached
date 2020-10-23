@@ -112,7 +112,7 @@ bool memcached_purge(memcached_instance_st *ptr) {
         break;
       }
 
-      if (ptr->root->callbacks != NULL) {
+      if (ptr->root->callbacks) {
         memcached_callback_st cb = *ptr->root->callbacks;
         if (memcached_success(rc)) {
           for (uint32_t y = 0; y < cb.number_of_callback; y++) {
