@@ -2,15 +2,18 @@
 
 #include <cerrno>
 #include <sys/poll.h>
-#include <fcntl.h>
 #include <unistd.h>
+
+#if !(HAVE_SOCK_NONBLOCK && HAVE_SOCK_CLOEXEC)
+#  include <fcntl.h>
+#  define SOCK_NONBLOCK O_NONBLOCK
+#  define SOCK_CLOEXEC O_CLOEXEC
+#endif
 
 static inline int socket_ex(int af, int so, int pf, int fl) {
 #if HAVE_SOCK_NONBLOCK && HAVE_SOCK_CLOEXEC
   return socket(af, so | fl, pf);
 #else
-# define SOCK_NONBLOCK O_NONBLOCK
-# define SOCK_CLOEXEC O_CLOEXEC
   auto sock = socket(af, so, pf);
   if (0 <= sock) {
     if (0 > fcntl(sock, F_SETFL, fl | fcntl(sock, F_GETFL))) {
@@ -186,7 +189,7 @@ bool Connection::open() {
 string Connection::error(const initializer_list<string> &args) {
   stringstream ss;
 
-  for (auto &arg : args) {
+  for (const auto &arg : args) {
     ss << arg;
   }
 

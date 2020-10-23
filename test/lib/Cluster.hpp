@@ -27,11 +27,11 @@ public:
   Cluster(const Cluster &c) = delete;
   Cluster &operator=(const Cluster &c) = delete;
 
-  Cluster(Cluster &&c)
+  Cluster(Cluster &&c) noexcept
   : proto{} {
     *this = move(c);
   };
-  Cluster &operator=(Cluster &&c) {
+  Cluster &operator=(Cluster &&c) noexcept {
     count = exchange(c.count, 0);
     proto = exchange(c.proto, Server{});
     cluster = exchange(c.cluster, {});

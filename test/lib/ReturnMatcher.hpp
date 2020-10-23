@@ -26,9 +26,6 @@ public:
 
   ReturnMatcher(const ReturnMatcher &) = default;
 
-  ReturnMatcher(ReturnMatcher &&rm);
-  ReturnMatcher &operator=(ReturnMatcher &&rm);
-
   bool match(const memcached_return_t &arg) const override;
   ReturnMatcher success();
   ReturnMatcher operator()(memcached_return_t expected_);

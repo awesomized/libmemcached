@@ -1,7 +1,6 @@
 #include "Shell.hpp"
 
 #include <cstdlib>
-#include <unistd.h>
 
 bool Shell::run(const string &command_, string &output) {
   auto command = prepareCommand(command_);
@@ -47,8 +46,8 @@ Shell::Shell(bool redirect_stderr)
   }
 }
 
-Shell::Shell(const string &prefix_, bool redirect_stderr)
-: prefix{prefix_}
+Shell::Shell(string prefix_, bool redirect_stderr)
+: prefix{move(prefix_)}
 , redirect{redirect_stderr}
 {
   if (!system(nullptr)) {

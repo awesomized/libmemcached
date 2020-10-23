@@ -1,11 +1,5 @@
 #include "ReturnMatcher.hpp"
 
-ReturnMatcher &ReturnMatcher::operator=(ReturnMatcher &&rm) {
-  memc = exchange(rm.memc, nullptr);
-  expected = rm.expected;
-  return *this;
-}
-
 bool ReturnMatcher::match(const memcached_return_t &arg) const {
   return arg == expected;
 }
@@ -23,6 +17,3 @@ string ReturnMatcher::describe() const {
          + "\n  actual: " + memcached_last_error_message(memc);
 }
 
-ReturnMatcher::ReturnMatcher(ReturnMatcher &&rm) {
-  *this = move(rm);
-}

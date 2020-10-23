@@ -35,13 +35,12 @@ public:
   MemcachedCluster(const MemcachedCluster &) = delete;
   MemcachedCluster &operator=(const MemcachedCluster &) = delete;
 
-  MemcachedCluster(MemcachedCluster &&mc);
-  MemcachedCluster &operator=(MemcachedCluster &&mc);
+  MemcachedCluster(MemcachedCluster &&mc) noexcept;
+  MemcachedCluster &operator=(MemcachedCluster &&mc) noexcept;
 
   void enableBinaryProto(bool enable = true);
   void enableBuffering(bool enable = true);
   void enableReplication();
-  void enableUdp(bool enable = true);
   void flush();
 
   static MemcachedCluster mixed();
@@ -53,7 +52,7 @@ public:
   static MemcachedCluster sasl();
 #endif
 
-  void killOneServer();
+  void killOneServer() const;
 
 private:
   behaviors_t to_set;

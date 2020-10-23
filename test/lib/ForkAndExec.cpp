@@ -1,6 +1,5 @@
 #include "ForkAndExec.hpp"
 
-#include <cerrno>
 #include <cstdio>
 
 #include <fcntl.h>

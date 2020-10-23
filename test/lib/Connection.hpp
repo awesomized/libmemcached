@@ -51,7 +51,7 @@ private:
     UNIX = sizeof(sockaddr_un),
     INET = sizeof(sockaddr_in),
     INET6 = sizeof(sockaddr_in6)
-  } size;
+  } size = NONE;
   bool connected{false};
 
   static string error(const initializer_list<string> &args);

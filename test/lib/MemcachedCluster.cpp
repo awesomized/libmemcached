@@ -46,7 +46,7 @@ void MemcachedCluster::init() {
 }
 
 MemcachedCluster::~MemcachedCluster() {
-  if (memcmp(&memc, &empty_memc, sizeof(memc))) {
+  if (!!memcmp(&memc, &empty_memc, sizeof(memc))) {
     memcached_free(&memc);
   }
 }
@@ -71,13 +71,13 @@ MemcachedCluster::MemcachedCluster(Cluster &&cluster_, behaviors_t to_set_)
   init();
 }
 
-MemcachedCluster::MemcachedCluster(MemcachedCluster &&mc)
+MemcachedCluster::MemcachedCluster(MemcachedCluster &&mc) noexcept
     : cluster{Server{}}
 {
   *this = move(mc);
 }
 
-MemcachedCluster &MemcachedCluster::operator=(MemcachedCluster &&mc) {
+MemcachedCluster &MemcachedCluster::operator=(MemcachedCluster &&mc) noexcept {
   cluster = move(mc.cluster);
   memcached_clone(&memc, &mc.memc);
   returns = ReturnMatcher{&memc};
@@ -146,7 +146,7 @@ void MemcachedCluster::enableReplication() {
       MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS, memcached_server_count(&memc) - 1));
 }
 
-void MemcachedCluster::killOneServer() {
+void MemcachedCluster::killOneServer() const {
   const auto &servers = cluster.getServers();
   const auto &victim = servers[random_num(0UL, servers.size() - 1)];
   ::kill(victim.getPid(), SIGKILL);

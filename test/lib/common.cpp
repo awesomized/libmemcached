@@ -1,5 +1,4 @@
 #include "common.hpp"
-#include "Connection.hpp"
 
 #include <cstdlib>
 

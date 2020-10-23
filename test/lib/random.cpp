@@ -4,17 +4,17 @@
 #include <unistd.h> // getpid()
 
 unsigned random_port() {
-  retry:
-  auto port = random_num(5000, 32000);
-  Connection conn(port);
+  do {
+    auto port = random_num(5000, 32000);
+    Connection conn(port);
 
-  if (!conn.open()) {
-    return port;
-  }
-  if (!conn.isOpen()) {
-    return port;
-  }
-  goto retry;
+    if (!conn.open()) {
+      return port;
+    }
+    if (!conn.isOpen()) {
+      return port;
+    }
+  } while(true);
 }
 
 string random_port_string(const string &) {

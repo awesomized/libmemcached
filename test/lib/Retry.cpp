@@ -15,7 +15,7 @@ bool Retry::operator()() {
       return true;
     }
     this_thread::sleep_for(dur);
-    dur *= 1.2;
+    dur += dur/10;
   }
 
   return false;

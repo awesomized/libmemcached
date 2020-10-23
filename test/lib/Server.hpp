@@ -36,8 +36,10 @@ public:
   Server(const Server &s);
   Server &operator=(const Server &s);
 
-  Server(Server &&s) { *this = move(s); };
-  Server &operator=(Server &&s) {
+  Server(Server &&s) noexcept {
+    *this = move(s);
+  };
+  Server &operator=(Server &&s) noexcept {
     binary = exchange(s.binary, "false");
     args = exchange(s.args, {});
     pid = exchange(s.pid, 0);
@@ -89,7 +91,7 @@ private:
   optional<string> handleArg(vector<char *> &arr, const string &arg, const arg_func_t &next_arg);
 };
 
-inline ostream &operator<<(ostream &out, const socket_or_port_t sop) {
+inline ostream &operator<<(ostream &out, const socket_or_port_t &sop) {
   if (holds_alternative<string>(sop)) {
     out << get<string>(sop);
   } else {

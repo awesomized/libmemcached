@@ -87,8 +87,8 @@ public:
     close(fd);
     unlink(fn);
   }
-  int getFd() const { return fd; }
-  const char *getFn() const { return fn; }
+  [[nodiscard]] int getFd() const { return fd; }
+  [[nodiscard]] const char *getFn() const { return fn; }
   bool put(const char *buf, size_t len) const {
     return static_cast<ssize_t>(len) == write(fd, buf, len);
   }
