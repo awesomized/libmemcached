@@ -1,89 +1,55 @@
-/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
- * 
- *  Libmemcached library
- *
- *  Copyright (C) 2012-2013 Data Differential, http://datadifferential.com/ 
- *  All rights reserved.
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions are
- *  met:
- *
- *      * Redistributions of source code must retain the above copyright
- *  notice, this list of conditions and the following disclaimer.
- *
- *      * Redistributions in binary form must reproduce the above
- *  copyright notice, this list of conditions and the following disclaimer
- *  in the documentation and/or other materials provided with the
- *  distribution.
- *
- *      * The names of its contributors may not be used to endorse or
- *  promote products derived from this software without specific prior
- *  written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- */
-
+/*
+    +--------------------------------------------------------------------+
+    | libmemcached - C/C++ Client Library for memcached                  |
+    +--------------------------------------------------------------------+
+    | Redistribution and use in source and binary forms, with or without |
+    | modification, are permitted under the terms of the BSD license.    |
+    | You should have received a copy of the license in a bundled file   |
+    | named LICENSE; in case you did not receive a copy you can review   |
+    | the terms online at: https://opensource.org/licenses/BSD-3-Clause  |
+    +--------------------------------------------------------------------+
+    | Copyright (c) 2006-2014 Brian Aker   https://datadifferential.com/ |
+    | Copyright (c) 2020 Michael Wallner   <mike@php.net>                |
+    +--------------------------------------------------------------------+
+*/
 
 #pragma once
 
 #ifndef WIN32
-# ifdef HAVE_NETDB_H
-#  include <netdb.h>
-# endif
+#  ifdef HAVE_NETDB_H
+#    include <netdb.h>
+#  endif
 #endif
 
 #ifdef NI_MAXHOST
-# define MEMCACHED_NI_MAXHOST NI_MAXHOST
+#  define MEMCACHED_NI_MAXHOST NI_MAXHOST
 #else
-# define MEMCACHED_NI_MAXHOST 1025
+#  define MEMCACHED_NI_MAXHOST 1025
 #endif
 
 #ifdef NI_MAXSERV
-# define MEMCACHED_NI_MAXSERV NI_MAXSERV
+#  define MEMCACHED_NI_MAXSERV NI_MAXSERV
 #else
-# define MEMCACHED_NI_MAXSERV 32
+#  define MEMCACHED_NI_MAXSERV 32
 #endif
 
 #include "libmemcached/string.hpp"
 
 // @todo Complete class transformation
 struct memcached_instance_st {
-  in_port_t port() const
-  {
-    return port_;
+  in_port_t port() const { return port_; }
+
+  void port(in_port_t arg) { port_ = arg; }
+
+  void mark_server_as_clean() {
+    server_failure_counter = 0;
+    server_timeout_counter = 0;
+    next_retry = 0;
   }
 
-  void port(in_port_t arg)
-  {
-    port_= arg;
-  }
+  void disable() {}
 
-  void mark_server_as_clean()
-  {
-    server_failure_counter= 0;
-    server_timeout_counter= 0;
-    next_retry= 0;
-  }
-
-  void disable()
-  {
-  }
-
-  void enable()
-  {
-  }
+  void enable() {}
 
   bool valid() const;
 
@@ -93,10 +59,7 @@ struct memcached_instance_st {
   void close_socket();
   void reset_socket();
 
-  uint32_t response_count() const
-  {
-    return cursor_active_;
-  }
+  uint32_t response_count() const { return cursor_active_; }
 
   struct {
     bool is_allocated;
@@ -109,32 +72,19 @@ struct memcached_instance_st {
   short _events;
   short _revents;
 
-  short events(void)
-  {
-    return _events;
-  }
+  short events(void) { return _events; }
 
-  short revents(void)
-  {
-    return _revents;
-  }
+  short revents(void) { return _revents; }
 
-  const char* hostname()
-  {
-    return _hostname;
-  }
+  const char *hostname() { return _hostname; }
 
-  void hostname(const memcached_string_t& hostname_)
-  {
-    if (hostname_.size)
-    {
+  void hostname(const memcached_string_t &hostname_) {
+    if (hostname_.size) {
       memcpy(_hostname, hostname_.c_str, hostname_.size);
-      _hostname[hostname_.size]= 0;
-    }
-    else
-    {
+      _hostname[hostname_.size] = 0;
+    } else {
       memcpy(_hostname, memcached_literal_param("localhost"));
-      _hostname[memcached_literal_param_size("localhost")]= 0;
+      _hostname[memcached_literal_param_size("localhost")] = 0;
     }
   }
 
@@ -176,24 +126,21 @@ struct memcached_instance_st {
   char write_buffer[MEMCACHED_MAX_BUFFER];
   char _hostname[MEMCACHED_NI_MAXHOST];
 
-  void clear_addrinfo()
-  {
-    if (address_info)
-    {
+  void clear_addrinfo() {
+    if (address_info) {
       freeaddrinfo(address_info);
-      address_info= NULL;
-      address_info_next= NULL;
+      address_info = NULL;
+      address_info_next = NULL;
     }
   }
 };
 
-memcached_instance_st* __instance_create_with(memcached_st *memc,
-                                              memcached_instance_st* self,
-                                              const memcached_string_t& _hostname,
-                                              const in_port_t port,
-                                              uint32_t weight, 
+memcached_instance_st *__instance_create_with(memcached_st *memc, memcached_instance_st *self,
+                                              const memcached_string_t &_hostname,
+                                              const in_port_t port, uint32_t weight,
                                               const memcached_connection_t type);
 
-memcached_return_t memcached_instance_push(memcached_st *ptr, const memcached_instance_st*, uint32_t);
+memcached_return_t memcached_instance_push(memcached_st *ptr, const memcached_instance_st *,
+                                           uint32_t);
 
 void __instance_free(memcached_instance_st *);
