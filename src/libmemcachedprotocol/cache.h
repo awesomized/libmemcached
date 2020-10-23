@@ -1,56 +1,34 @@
-/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
- * 
- *  Libmemcached library
- *
- *  Copyright (C) 2011 Data Differential, http://datadifferential.com/
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions are
- *  met:
- *
- *      * Redistributions of source code must retain the above copyright
- *  notice, this list of conditions and the following disclaimer.
- *
- *      * Redistributions in binary form must reproduce the above
- *  copyright notice, this list of conditions and the following disclaimer
- *  in the documentation and/or other materials provided with the
- *  distribution.
- *
- *      * The names of its contributors may not be used to endorse or
- *  promote products derived from this software without specific prior
- *  written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- */
+/*
+    +--------------------------------------------------------------------+
+    | libmemcached - C/C++ Client Library for memcached                  |
+    +--------------------------------------------------------------------+
+    | Redistribution and use in source and binary forms, with or without |
+    | modification, are permitted under the terms of the BSD license.    |
+    | You should have received a copy of the license in a bundled file   |
+    | named LICENSE; in case you did not receive a copy you can review   |
+    | the terms online at: https://opensource.org/licenses/BSD-3-Clause  |
+    +--------------------------------------------------------------------+
+    | Copyright (c) 2006-2014 Brian Aker   https://datadifferential.com/ |
+    | Copyright (c) 2020 Michael Wallner   <mike@php.net>                |
+    +--------------------------------------------------------------------+
+*/
 
-/* -*- Mode: C; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil -*- */
 #pragma once
 
 #include <pthread.h>
 
 #ifdef HAVE_UMEM_H
-# include <umem.h>
-# define cache_t umem_cache_t
-# define cache_alloc(a) umem_cache_alloc(a, UMEM_DEFAULT)
-# define cache_free(a, b) umem_cache_free(a, b)
-# define cache_create(a,b,c,d,e) umem_cache_create((char*)a, b, c, d, e, NULL, NULL, NULL, 0)
-# define cache_destroy(a) umem_cache_destroy(a);
+#  include <umem.h>
+#  define cache_t                     umem_cache_t
+#  define cache_alloc(a)              umem_cache_alloc(a, UMEM_DEFAULT)
+#  define cache_free(a, b)            umem_cache_free(a, b)
+#  define cache_create(a, b, c, d, e) umem_cache_create((char *) a, b, c, d, e, NULL, NULL, NULL, 0)
+#  define cache_destroy(a)            umem_cache_destroy(a);
 #else
-# ifndef NDEBUG
+#  ifndef NDEBUG
 /* may be used for debug purposes */
 extern int cache_error;
-# endif
+#  endif
 
 /**
  * Constructor used to initialize allocated objects
@@ -60,7 +38,7 @@ extern int cache_error;
  * @param notused2 This parameter is currently not used.
  * @return you should return 0, but currently this is not checked
  */
-typedef int cache_constructor_t(void* obj, void* notused1, int notused2);
+typedef int cache_constructor_t(void *obj, void *notused1, int notused2);
 /**
  * Destructor used to clean up allocated objects before they are
  * returned to the operating system.
@@ -70,7 +48,7 @@ typedef int cache_constructor_t(void* obj, void* notused1, int notused2);
  * @param notused2 This parameter is currently not used.
  * @return you should return 0, but currently this is not checked
  */
-typedef void cache_destructor_t(void* obj, void* notused);
+typedef void cache_destructor_t(void *obj, void *notused);
 
 /**
  * Definition of the structure to keep track of the internal details of
@@ -78,22 +56,22 @@ typedef void cache_destructor_t(void* obj, void* notused);
  * undefined behavior.
  */
 typedef struct {
-    /** Mutex to protect access to the structure */
-    pthread_mutex_t mutex;
-    /** Name of the cache objects in this cache (provided by the caller) */
-    char *name;
-    /** List of pointers to available buffers in this cache */
-    void **ptr;
-    /** The size of each element in this cache */
-    size_t bufsize;
-    /** The capacity of the list of elements */
-    size_t freetotal;
-    /** The current number of free elements */
-    size_t freecurr;
-    /** The constructor to be called each time we allocate more memory */
-    cache_constructor_t* constructor;
-    /** The destructor to be called each time before we release memory */
-    cache_destructor_t* destructor;
+  /** Mutex to protect access to the structure */
+  pthread_mutex_t mutex;
+  /** Name of the cache objects in this cache (provided by the caller) */
+  char *name;
+  /** List of pointers to available buffers in this cache */
+  void **ptr;
+  /** The size of each element in this cache */
+  size_t bufsize;
+  /** The capacity of the list of elements */
+  size_t freetotal;
+  /** The current number of free elements */
+  size_t freecurr;
+  /** The constructor to be called each time we allocate more memory */
+  cache_constructor_t *constructor;
+  /** The destructor to be called each time before we release memory */
+  cache_destructor_t *destructor;
 } cache_t;
 
 /**
@@ -114,9 +92,8 @@ typedef struct {
  *                   to the os.
  * @return a handle to an object cache if successful, NULL otherwise.
  */
-cache_t* cache_create(const char* name, size_t bufsize, size_t align,
-                      cache_constructor_t* constructor,
-                      cache_destructor_t* destructor);
+cache_t *cache_create(const char *name, size_t bufsize, size_t align,
+                      cache_constructor_t *constructor, cache_destructor_t *destructor);
 /**
  * Destroy an object cache.
  *
@@ -126,7 +103,7 @@ cache_t* cache_create(const char* name, size_t bufsize, size_t align,
  *
  * @param handle the handle to the object cache to destroy.
  */
-void cache_destroy(cache_t* handle);
+void cache_destroy(cache_t *handle);
 /**
  * Allocate an object from the cache.
  *
@@ -134,7 +111,7 @@ void cache_destroy(cache_t* handle);
  * @return a pointer to an initialized object from the cache, or NULL if
  *         the allocation cannot be satisfied.
  */
-void* cache_alloc(cache_t* handle);
+void *cache_alloc(cache_t *handle);
 /**
  * Return an object back to the cache.
  *
@@ -144,5 +121,5 @@ void* cache_alloc(cache_t* handle);
  * @param handle handle to the object cache to return the object to
  * @param ptr pointer to the object to return.
  */
-void cache_free(cache_t* handle, void* ptr);
+void cache_free(cache_t *handle, void *ptr);
 #endif //  HAVE_UMEM_H
