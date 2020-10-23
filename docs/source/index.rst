@@ -7,37 +7,19 @@ memory usage, thread safe, and provide full access to server side methods.
 
 
 .. toctree::
-    :caption: libmemcached
     :titlesonly:
 
     Introduction <libmemcached>
     libmemcached/index
+    libmemcachedutil API <libmemcachedutil/index>
+    libhashkit API <libhashkit/index>
+    bin/index
     libmemcached/index_misc
 
 .. toctree::
-    :titlesonly:
-    :caption: libmemcachedutil
-
-    Introduction <libmemcachedutil>
-    libmemcachedutil/index
-
-.. toctree::
-    :titlesonly:
-    :caption: libhashkit
-
-    Introduction <libhashkit>
-    libhashkit/index
-
-.. toctree::
     :maxdepth: 1
-    :caption: Client Applications
 
-    bin/index
-
-.. toctree::
-    :caption: Copyright
-    :hidden:
-
+    changelogs
     copyright
 
 Index

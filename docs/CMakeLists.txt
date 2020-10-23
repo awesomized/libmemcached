@@ -2,7 +2,7 @@ find_package(Sphinx)
 
 if(NOT SPHINX_EXECUTABLE)
 
-    message(WARNING "The sphinx-build command is required to build manpages.")
+    message(WARNING "The sphinx-build command is required to build documentation.")
 
 else()
 
@@ -29,13 +29,12 @@ else()
     # MAN output directory
     set(SPHINX_MAN_DIR "${SPHINX_BUILD_DIR}/man")
 
-    configure_file(
-            "${SPHINX_SOURCE_DIR}/conf.py.in"
-            "${SPHINX_BUILD_DIR}/conf.py"
-            @ONLY)
+    configure_file("conf.py.in" "conf.py" @ONLY)
+    add_subdirectory(source)
 
     if(BUILD_DOCS_HTML)
         add_custom_target(html
+                COMMAND
                 ${SPHINX_EXECUTABLE}
                 -q -b html
                 -c "${SPHINX_BUILD_DIR}"

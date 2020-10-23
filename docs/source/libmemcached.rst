@@ -130,8 +130,8 @@ UTILITY LIBRARIES
 
 .. only:: html
 
-    * :doc:`libhashkit`
-    * :doc:`libmemcachedutil`
+    * :doc:`libhashkit/index`
+    * :doc:`libmemcachedutil/index`
 
 SEE ALSO
 --------

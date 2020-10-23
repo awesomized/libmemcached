@@ -1,8 +1,8 @@
-Misc
-====
+Miscellaneous
+=============
 
 .. toctree::
-    :titlesonly:
+    :maxdepth: 1
 
     Configuration <configuration>
     Constants <constants>

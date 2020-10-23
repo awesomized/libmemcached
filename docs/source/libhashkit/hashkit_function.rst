@@ -129,7 +129,7 @@ SEE ALSO
 
 .. only:: html
 
-    * :doc:`../libhashkit`
+    * :doc:`index`
     * :doc:`hashkit_create`
     * :doc:`hashkit_functions`
 

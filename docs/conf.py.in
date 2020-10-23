@@ -13,7 +13,7 @@ import sys, os
 #needs_sphinx = '1.0'
 extensions = [@SPHINX_EXTENSIONS@]
 templates_path = ['_templates']
-source_suffix = '.rst'
+source_suffix = ['.rst']
 master_doc = 'index'
 pygments_style = 'sphinx'
 
@@ -25,6 +25,7 @@ version = '@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@'
 release = '@PROJECT_VERSION@'
 
 smartquotes = False
+m2r_parse_relative_links = True
 
 # -- Options for HTML output ---------------------------------------------------
 
@@ -36,6 +37,13 @@ html_copy_source = False
 #manpages_url = 'http://man7.org/linux/man-pages/man{section}/{page}.{section}.html'
 manpages_url = 'https://linux.die.net/man/{section}/{page}'
 
+html_context = {
+  'display_github': True,
+  'github_user': 'm6w6',
+  'github_repo': 'libmemcached',
+  'github_version': 'v1.x/docs/source/'
+}
+
 # -- Options for manual page output --------------------------------------------
 
 # Skip a separate AUTHOR section
@@ -44,7 +52,7 @@ man_authors = []
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-  ('libhashkit'                                ,'libhashkit'                              ,u'libhashkit Documentation'            ,man_authors,3),
+  ('libhashkit/index'                          ,'libhashkit'                              ,u'libhashkit Documentation'            ,man_authors,3),
   ('libhashkit/hashkit_create'                 ,'hashkit_clone'                           ,u'libhashkit Documentation'            ,man_authors,3),
   ('libhashkit/hashkit_create'                 ,'hashkit_create'                          ,u'libhashkit Documentation'            ,man_authors,3),
   ('libhashkit/hashkit_create'                 ,'hashkit_free'                            ,u'libhashkit Documentation'            ,man_authors,3),
@@ -171,7 +179,7 @@ man_pages = [
   ('libmemcached/memcached_version'            ,'memcached_lib_version'                   ,u'libmemcached Documentation'          ,man_authors,3),
   ('libmemcached/memcached_version'            ,'memcached_version'                       ,u'libmemcached Documentation'          ,man_authors,3),
 
-  ('libmemcachedutil'                          ,'libmemcachedutil'                        ,u'libmemcached Documentation'          ,man_authors,3),
+  ('libmemcachedutil/index'                    ,'libmemcachedutil'                        ,u'libmemcached Documentation'          ,man_authors,3),
   ('libmemcachedutil/memcached_pool'           ,'memcached_pool_behavior_get'             ,u'libmemcached Documentation'          ,man_authors,3),
   ('libmemcachedutil/memcached_pool'           ,'memcached_pool_behavior_set'             ,u'libmemcached Documentation'          ,man_authors,3),
   ('libmemcachedutil/memcached_pool'           ,'memcached_pool_create'                   ,u'libmemcached Documentation'          ,man_authors,3),

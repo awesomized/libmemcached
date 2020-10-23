@@ -1,7 +1,7 @@
 Copyright
 =========
 
- * | 2011-2013 Brian Aker, DataDifferential
+ * | 2006-2014 Brian Aker, DataDifferential
    | https://datadifferential.com/
  * | 2020 Michael Wallner, SmugMug Inc
    | https://smugmug.com/

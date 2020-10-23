@@ -69,6 +69,6 @@ SEE ALSO
 
 .. only:: html
 
-    * :doc:`../libhashkit`
+    * :doc:`index`
     * :doc:`hashkit_value`
     * :doc:`hashkit_function`
