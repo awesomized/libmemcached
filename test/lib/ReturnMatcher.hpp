@@ -29,6 +29,7 @@ public:
   bool match(const memcached_return_t &arg) const override;
   ReturnMatcher success();
   ReturnMatcher operator()(memcached_return_t expected_);
+  ReturnMatcher &operator=(memcached_st *memc_);
 
 protected:
   string describe() const override;

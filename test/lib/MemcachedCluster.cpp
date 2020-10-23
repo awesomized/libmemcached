@@ -80,7 +80,7 @@ MemcachedCluster::MemcachedCluster(MemcachedCluster &&mc) noexcept
 MemcachedCluster &MemcachedCluster::operator=(MemcachedCluster &&mc) noexcept {
   cluster = move(mc.cluster);
   memcached_clone(&memc, &mc.memc);
-  returns = ReturnMatcher{&memc};
+  returns = &memc;
   return *this;
 }
 
