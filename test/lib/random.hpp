@@ -1,3 +1,18 @@
+/*
+    +--------------------------------------------------------------------+
+    | libmemcached - C/C++ Client Library for memcached                  |
+    +--------------------------------------------------------------------+
+    | Redistribution and use in source and binary forms, with or without |
+    | modification, are permitted under the terms of the BSD license.    |
+    | You should have received a copy of the license in a bundled file   |
+    | named LICENSE; in case you did not receive a copy you can review   |
+    | the terms online at: https://opensource.org/licenses/BSD-3-Clause  |
+    +--------------------------------------------------------------------+
+    | Copyright (c) 2006-2014 Brian Aker   https://datadifferential.com/ |
+    | Copyright (c) 2020 Michael Wallner   <mike@php.net>                |
+    +--------------------------------------------------------------------+
+*/
+
 #pragma once
 
 #include <cstddef>
@@ -32,10 +47,10 @@ char random_binary();
 string random_binary_string(size_t len);
 char random_ascii(char min = '!', char max = '~');
 string random_ascii_string(size_t len, char min = '!', char max = '~');
-kv_pair random_ascii_pair(size_t minlen = 1<<2, size_t maxlen = 1<<10);
+kv_pair random_ascii_pair(size_t minlen = 1 << 2, size_t maxlen = 1 << 10);
 
-template<template <typename> class Container>
-auto random_ascii_pairs(size_t count, size_t minlen = 1<<2, size_t maxlen = 1<<10) {
+template<template<typename> class Container>
+auto random_ascii_pairs(size_t count, size_t minlen = 1 << 2, size_t maxlen = 1 << 10) {
   Container<kv_pair> v;
 
   v.reserve(count);

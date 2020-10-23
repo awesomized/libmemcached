@@ -1,3 +1,18 @@
+/*
+    +--------------------------------------------------------------------+
+    | libmemcached - C/C++ Client Library for memcached                  |
+    +--------------------------------------------------------------------+
+    | Redistribution and use in source and binary forms, with or without |
+    | modification, are permitted under the terms of the BSD license.    |
+    | You should have received a copy of the license in a bundled file   |
+    | named LICENSE; in case you did not receive a copy you can review   |
+    | the terms online at: https://opensource.org/licenses/BSD-3-Clause  |
+    +--------------------------------------------------------------------+
+    | Copyright (c) 2006-2014 Brian Aker   https://datadifferential.com/ |
+    | Copyright (c) 2020 Michael Wallner   <mike@php.net>                |
+    +--------------------------------------------------------------------+
+*/
+
 #pragma once
 
 #include "common.hpp"
@@ -7,7 +22,6 @@
 
 class Server {
 public:
-
   friend class Cluster;
 
   using arg_func_t = function<string(string)>;
@@ -15,18 +29,15 @@ public:
   using arg_pair_t = pair<arg_t, arg_t>;
   using argv_t = vector<variant<arg_t, arg_pair_t>>;
 
-  explicit
-  Server(string binary_ = "false", argv_t args_ = {});
+  explicit Server(string binary_ = "false", argv_t args_ = {});
 
   ~Server();
 
   Server(const Server &s);
-  Server &operator = (const Server &s);
+  Server &operator=(const Server &s);
 
-  Server(Server &&s) {
-    *this = move(s);
-  };
-  Server &operator = (Server &&s) {
+  Server(Server &&s) { *this = move(s); };
+  Server &operator=(Server &&s) {
     binary = exchange(s.binary, "false");
     args = exchange(s.args, {});
     pid = exchange(s.pid, 0);
@@ -49,9 +60,7 @@ public:
     int pipe;
     ChildProc(pid_t pid_, int pipe_)
     : pid{pid_}
-    , pipe{pipe_}
-    {
-    }
+    , pipe{pipe_} {}
   };
   optional<ChildProc> start();
   bool stop();
@@ -65,7 +74,6 @@ public:
   bool tryWait();
   string &drain();
 
-
 private:
   string binary;
   argv_t args;
@@ -77,12 +85,11 @@ private:
   socket_or_port_t socket_or_port = 11211;
   string output;
 
-  [[nodiscard]]
-  vector<char *> createArgv();
+  [[nodiscard]] vector<char *> createArgv();
   optional<string> handleArg(vector<char *> &arr, const string &arg, const arg_func_t &next_arg);
 };
 
-inline ostream &operator << (ostream &out, const socket_or_port_t sop) {
+inline ostream &operator<<(ostream &out, const socket_or_port_t sop) {
   if (holds_alternative<string>(sop)) {
     out << get<string>(sop);
   } else {
@@ -91,7 +98,8 @@ inline ostream &operator << (ostream &out, const socket_or_port_t sop) {
   return out;
 }
 
-inline ostream &operator << (ostream &out, const Server &server) {
-  out << "Server{binary=" << server.getBinary() << ",pid=" << server.getPid() << ",conn=" << server.getSocketOrPort() << "}";
+inline ostream &operator<<(ostream &out, const Server &server) {
+  out << "Server{binary=" << server.getBinary() << ",pid=" << server.getPid()
+      << ",conn=" << server.getSocketOrPort() << "}";
   return out;
 }

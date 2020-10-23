@@ -1,3 +1,18 @@
+/*
+    +--------------------------------------------------------------------+
+    | libmemcached - C/C++ Client Library for memcached                  |
+    +--------------------------------------------------------------------+
+    | Redistribution and use in source and binary forms, with or without |
+    | modification, are permitted under the terms of the BSD license.    |
+    | You should have received a copy of the license in a bundled file   |
+    | named LICENSE; in case you did not receive a copy you can review   |
+    | the terms online at: https://opensource.org/licenses/BSD-3-Clause  |
+    +--------------------------------------------------------------------+
+    | Copyright (c) 2006-2014 Brian Aker   https://datadifferential.com/ |
+    | Copyright (c) 2020 Michael Wallner   <mike@php.net>                |
+    +--------------------------------------------------------------------+
+*/
+
 #pragma once
 
 #include <chrono>
@@ -23,22 +38,25 @@ using socket_or_port_t = variant<string, int>;
 /**
  * Useful macros for testing
  */
-#define S(s) (s),strlen(s)
+#define S(s)             (s), strlen(s)
 #define DECLARE_STREQUAL static auto strequal = equal_to<string>();
 #define LOOPED_SECTION(tests) \
   for (auto &[name, test] : tests) DYNAMIC_SECTION("test " << name)
-#define REQUIRE_SUCCESS(rc) do { \
-    INFO("expected: SUCCESS");   \
+#define REQUIRE_SUCCESS(rc) \
+  do { \
+    INFO("expected: SUCCESS"); \
     REQUIRE_THAT(rc, test.returns.success()); \
-  } while(0)
-#define REQUIRE_RC(rc, call) do { \
+  } while (0)
+#define REQUIRE_RC(rc, call) \
+  do { \
     INFO("expected: " << memcached_strerror(nullptr, rc)); \
-    REQUIRE_THAT(call, test.returns(rc));                  \
-  } while(0)
+    REQUIRE_THAT(call, test.returns(rc)); \
+  } while (0)
 
 const char *getenv_else(const char *var, const char *defval);
 
-inline memcached_return_t fetch_all_results(memcached_st *memc, unsigned int &keys_returned, memcached_return_t &rc) {
+inline memcached_return_t fetch_all_results(memcached_st *memc, unsigned int &keys_returned,
+                                            memcached_return_t &rc) {
   keys_returned = 0;
 
   memcached_result_st *result = nullptr;
@@ -62,22 +80,19 @@ inline memcached_return_t fetch_all_results(memcached_st *memc, unsigned int &ke
 class Tempfile {
 public:
   explicit Tempfile(const char templ_[] = "memc.test.XXXXXX") {
-    *copy(S(templ_)+templ_, fn) = '\0';
+    *copy(S(templ_) + templ_, fn) = '\0';
     fd = mkstemp(fn);
   }
   ~Tempfile() {
     close(fd);
     unlink(fn);
   }
-  int getFd() const {
-    return fd;
-  }
-  const char *getFn() const {
-    return fn;
-  }
+  int getFd() const { return fd; }
+  const char *getFn() const { return fn; }
   bool put(const char *buf, size_t len) const {
-    return static_cast<ssize_t >(len) == write(fd, buf, len);
+    return static_cast<ssize_t>(len) == write(fd, buf, len);
   }
+
 private:
   char fn[80];
   int fd;
@@ -87,32 +102,21 @@ class MemcachedPtr {
 public:
   memcached_st *memc;
 
-  explicit
-  MemcachedPtr(memcached_st *memc_) {
-    memc = memc_;
-  }
+  explicit MemcachedPtr(memcached_st *memc_) { memc = memc_; }
   MemcachedPtr()
-  : MemcachedPtr(memcached_create(nullptr))
-  {}
-  ~MemcachedPtr() {
-    memcached_free(memc);
-  }
-  memcached_st *operator * () const {
-    return memc;
-  }
-  auto operator ->() const{
-    return memc;
-  }
+  : MemcachedPtr(memcached_create(nullptr)) {}
+  ~MemcachedPtr() { memcached_free(memc); }
+  memcached_st *operator*() const { return memc; }
+  auto operator->() const { return memc; }
 };
 
 template<class T>
 class Malloced {
   T *ptr;
+
 public:
-  explicit
-  Malloced(T *ptr_)
-  : ptr{ptr_}
-  {}
+  explicit Malloced(T *ptr_)
+  : ptr{ptr_} {}
   Malloced &operator=(T *ptr_) {
     if (ptr)
       free(ptr);
@@ -120,13 +124,9 @@ public:
     return *this;
   }
   ~Malloced() {
-    if(ptr)
+    if (ptr)
       free(ptr);
   }
-  auto operator *() {
-    return ptr;
-  }
-  auto operator ->() {
-    return ptr;
-  }
+  auto operator*() { return ptr; }
+  auto operator->() { return ptr; }
 };

@@ -1,5 +1,5 @@
 /*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
- * 
+ *
  *  Libmemcached library
  *
  *  Copyright (C) 2011-2013 Data Differential, http://datadifferential.com/
@@ -37,9 +37,6 @@
 
 #include "libmemcached/common.h"
 
-/*
-  What happens if no servers exist?
-*/
 char *memcached_get(memcached_st *ptr, const char *key,
                     size_t key_length,
                     size_t *value_length,
@@ -80,7 +77,7 @@ char *memcached_get_by_key(memcached_st *shell,
 
   /* Request the key */
   *error= __mget_by_key_real(ptr, group_key, group_key_length,
-                             (const char * const *)&key, &key_length, 
+                             (const char * const *)&key, &key_length,
                              1, false);
   if (ptr)
   {
@@ -97,7 +94,7 @@ char *memcached_get_by_key(memcached_st *shell,
       }
     }
 
-    if (value_length) 
+    if (value_length)
     {
       *value_length= 0;
     }
