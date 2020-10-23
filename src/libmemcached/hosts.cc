@@ -51,15 +51,20 @@ memcached_return_t run_distribution(Memcached *ptr) {
   case MEMCACHED_DISTRIBUTION_CONSISTENT:
   case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA:
   case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY:
-  case MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED: return update_continuum(ptr);
+  case MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED:
+    return update_continuum(ptr);
 
   case MEMCACHED_DISTRIBUTION_VIRTUAL_BUCKET:
-  case MEMCACHED_DISTRIBUTION_MODULA: break;
+  case MEMCACHED_DISTRIBUTION_MODULA:
+    break;
 
-  case MEMCACHED_DISTRIBUTION_RANDOM: srandom((uint32_t) time(NULL)); break;
+  case MEMCACHED_DISTRIBUTION_RANDOM:
+    srandom((uint32_t) time(NULL));
+    break;
 
   case MEMCACHED_DISTRIBUTION_CONSISTENT_MAX:
-  default: assert_msg(0, "Invalid distribution type passed to run_distribution()");
+  default:
+    assert_msg(0, "Invalid distribution type passed to run_distribution()");
   }
 
   return MEMCACHED_SUCCESS;

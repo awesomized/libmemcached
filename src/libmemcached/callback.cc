@@ -136,7 +136,8 @@ void *memcached_callback_get(memcached_st *shell, const memcached_callback_t fla
     return *(void **) &ptr->delete_trigger;
   }
 
-  case MEMCACHED_CALLBACK_MAX: break;
+  case MEMCACHED_CALLBACK_MAX:
+    break;
   }
 
   assert_msg(0, "Invalid callback passed to memcached_callback_get()");

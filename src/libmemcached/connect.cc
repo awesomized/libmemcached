@@ -65,7 +65,8 @@ static memcached_return_t connect_poll(memcached_instance_st *server, const int 
 #ifdef __linux__
       case ERESTART:
 #endif
-      case EINTR: continue;
+      case EINTR:
+        continue;
 
       case EFAULT:
       case ENOMEM:
@@ -422,9 +423,13 @@ static memcached_return_t unix_socket_connect(memcached_instance_st *server) {
       switch (errno) {
       case EINPROGRESS:
       case EALREADY:
-      case EAGAIN: server->events(POLLOUT); break;
+      case EAGAIN:
+        server->events(POLLOUT);
+        break;
 
-      case EINTR: server->reset_socket(); continue;
+      case EINTR:
+        server->reset_socket();
+        continue;
 
       case EISCONN: /* We were spinning waiting on connect */
       {
@@ -509,7 +514,9 @@ static memcached_return_t network_connect(memcached_instance_st *server) {
     /* An error occurred */
     int local_error = get_socket_errno();
     switch (local_error) {
-    case ETIMEDOUT: timeout_error_occured = true; break;
+    case ETIMEDOUT:
+      timeout_error_occured = true;
+      break;
 
 #if EWOULDBLOCK != EAGAIN
     case EWOULDBLOCK:
@@ -544,7 +551,9 @@ static memcached_return_t network_connect(memcached_instance_st *server) {
     case ECONNREFUSED:
       // Probably not running service
 
-    default: memcached_set_errno(*server, local_error, MEMCACHED_AT); break;
+    default:
+      memcached_set_errno(*server, local_error, MEMCACHED_AT);
+      break;
     }
 
     WATCHPOINT_ASSERT(server->fd != INVALID_SOCKET);
@@ -672,7 +681,8 @@ static memcached_return_t _memcached_connect(memcached_instance_st *server,
   /* We need to clean up the multi startup piece */
   switch (server->type) {
   case MEMCACHED_CONNECTION_UDP:
-  case MEMCACHED_CONNECTION_TCP: rc = network_connect(server);
+  case MEMCACHED_CONNECTION_TCP:
+    rc = network_connect(server);
 
 #if defined(LIBMEMCACHED_WITH_SASL_SUPPORT)
     if (LIBMEMCACHED_WITH_SASL_SUPPORT) {
@@ -687,7 +697,9 @@ static memcached_return_t _memcached_connect(memcached_instance_st *server,
 #endif
     break;
 
-  case MEMCACHED_CONNECTION_UNIX_SOCKET: rc = unix_socket_connect(server); break;
+  case MEMCACHED_CONNECTION_UNIX_SOCKET:
+    rc = unix_socket_connect(server);
+    break;
   }
 
   if (memcached_success(rc)) {

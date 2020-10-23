@@ -52,8 +52,10 @@ static uint32_t dispatch_host(const Memcached *ptr, uint32_t hash) {
       right = begin;
     return right->index;
   }
-  case MEMCACHED_DISTRIBUTION_MODULA: return hash % memcached_server_count(ptr);
-  case MEMCACHED_DISTRIBUTION_RANDOM: return (uint32_t) random() % memcached_server_count(ptr);
+  case MEMCACHED_DISTRIBUTION_MODULA:
+    return hash % memcached_server_count(ptr);
+  case MEMCACHED_DISTRIBUTION_RANDOM:
+    return (uint32_t) random() % memcached_server_count(ptr);
   case MEMCACHED_DISTRIBUTION_VIRTUAL_BUCKET: {
     return memcached_virtual_bucket_get(ptr, hash);
   }

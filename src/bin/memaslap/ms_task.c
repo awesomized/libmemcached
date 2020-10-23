@@ -793,7 +793,8 @@ static void ms_update_set_result(ms_conn_t *c, ms_task_item_t *item) {
       break;
 
     case MCD_SERVER_ERROR:
-    default: break;
+    default:
+      break;
     } /* switch */
   }
 } /* ms_update_set_result */
@@ -817,7 +818,9 @@ static void ms_update_stat_result(ms_conn_t *c) {
   pthread_mutex_lock(&ms_statistic.stat_mutex);
 
   switch (c->precmd.cmd) {
-  case CMD_SET: ms_record_event(&ms_statistic.set_stat, time_diff, false); break;
+  case CMD_SET:
+    ms_record_event(&ms_statistic.set_stat, time_diff, false);
+    break;
 
   case CMD_GET:
     if (c->curr_task.get_miss) {
@@ -826,7 +829,8 @@ static void ms_update_stat_result(ms_conn_t *c) {
     ms_record_event(&ms_statistic.get_stat, time_diff, get_miss);
     break;
 
-  default: break;
+  default:
+    break;
   } /* switch */
 
   ms_record_event(&ms_statistic.total_stat, time_diff, get_miss);

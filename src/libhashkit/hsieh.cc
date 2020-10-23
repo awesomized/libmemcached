@@ -62,7 +62,8 @@ uint32_t hashkit_hsieh(const char *key, size_t key_length, void *) {
     hash += (unsigned char) (*key);
     hash ^= hash << 10;
     hash += hash >> 1;
-  default: break;
+  default:
+    break;
   }
 
   /* Force "avalanching" of final 127 bits */

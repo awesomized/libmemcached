@@ -24,40 +24,74 @@
 static void print_ascii_command(memcached_protocol_client_st *client) {
   if (client->is_verbose) {
     switch (client->ascii_command) {
-    case SET_CMD: fprintf(stderr, "%s:%d SET_CMD\n", __FILE__, __LINE__); break;
+    case SET_CMD:
+      fprintf(stderr, "%s:%d SET_CMD\n", __FILE__, __LINE__);
+      break;
 
-    case ADD_CMD: fprintf(stderr, "%s:%d ADD_CMD\n", __FILE__, __LINE__); break;
+    case ADD_CMD:
+      fprintf(stderr, "%s:%d ADD_CMD\n", __FILE__, __LINE__);
+      break;
 
-    case REPLACE_CMD: fprintf(stderr, "%s:%d REPLACE_CMD\n", __FILE__, __LINE__); break;
+    case REPLACE_CMD:
+      fprintf(stderr, "%s:%d REPLACE_CMD\n", __FILE__, __LINE__);
+      break;
 
-    case CAS_CMD: fprintf(stderr, "%s:%d CAS_CMD\n", __FILE__, __LINE__); break;
+    case CAS_CMD:
+      fprintf(stderr, "%s:%d CAS_CMD\n", __FILE__, __LINE__);
+      break;
 
-    case APPEND_CMD: fprintf(stderr, "%s:%d APPEND_CMD\n", __FILE__, __LINE__); break;
+    case APPEND_CMD:
+      fprintf(stderr, "%s:%d APPEND_CMD\n", __FILE__, __LINE__);
+      break;
 
-    case PREPEND_CMD: fprintf(stderr, "%s:%d PREPEND_CMD\n", __FILE__, __LINE__); break;
+    case PREPEND_CMD:
+      fprintf(stderr, "%s:%d PREPEND_CMD\n", __FILE__, __LINE__);
+      break;
 
-    case DELETE_CMD: fprintf(stderr, "%s:%d DELETE_CMD\n", __FILE__, __LINE__); break;
+    case DELETE_CMD:
+      fprintf(stderr, "%s:%d DELETE_CMD\n", __FILE__, __LINE__);
+      break;
 
-    case INCR_CMD: /* FALLTHROUGH */ fprintf(stderr, "%s:%d INCR_CMD\n", __FILE__, __LINE__); break;
+    case INCR_CMD: /* FALLTHROUGH */
+      fprintf(stderr, "%s:%d INCR_CMD\n", __FILE__, __LINE__);
+      break;
 
-    case DECR_CMD: fprintf(stderr, "%s:%d DECR_CMD\n", __FILE__, __LINE__); break;
+    case DECR_CMD:
+      fprintf(stderr, "%s:%d DECR_CMD\n", __FILE__, __LINE__);
+      break;
 
-    case STATS_CMD: fprintf(stderr, "%s:%d STATS_CMD\n", __FILE__, __LINE__); break;
+    case STATS_CMD:
+      fprintf(stderr, "%s:%d STATS_CMD\n", __FILE__, __LINE__);
+      break;
 
-    case FLUSH_ALL_CMD: fprintf(stderr, "%s:%d FLUSH_ALL_CMD\n", __FILE__, __LINE__); break;
+    case FLUSH_ALL_CMD:
+      fprintf(stderr, "%s:%d FLUSH_ALL_CMD\n", __FILE__, __LINE__);
+      break;
 
-    case VERSION_CMD: fprintf(stderr, "%s:%d VERSION_CMD\n", __FILE__, __LINE__); break;
+    case VERSION_CMD:
+      fprintf(stderr, "%s:%d VERSION_CMD\n", __FILE__, __LINE__);
+      break;
 
-    case QUIT_CMD: fprintf(stderr, "%s:%d QUIT_CMD\n", __FILE__, __LINE__); break;
+    case QUIT_CMD:
+      fprintf(stderr, "%s:%d QUIT_CMD\n", __FILE__, __LINE__);
+      break;
 
-    case VERBOSITY_CMD: fprintf(stderr, "%s:%d VERBOSITY_CMD\n", __FILE__, __LINE__); break;
+    case VERBOSITY_CMD:
+      fprintf(stderr, "%s:%d VERBOSITY_CMD\n", __FILE__, __LINE__);
+      break;
 
-    case GET_CMD: fprintf(stderr, "%s:%d GET_CMD\n", __FILE__, __LINE__); break;
+    case GET_CMD:
+      fprintf(stderr, "%s:%d GET_CMD\n", __FILE__, __LINE__);
+      break;
 
-    case GETS_CMD: fprintf(stderr, "%s:%d GETS_CMD\n", __FILE__, __LINE__); break;
+    case GETS_CMD:
+      fprintf(stderr, "%s:%d GETS_CMD\n", __FILE__, __LINE__);
+      break;
 
     default:
-    case UNKNOWN_CMD: fprintf(stderr, "%s:%d UNKNOWN_CMD\n", __FILE__, __LINE__); break;
+    case UNKNOWN_CMD:
+      fprintf(stderr, "%s:%d UNKNOWN_CMD\n", __FILE__, __LINE__);
+      break;
     }
   }
 }
@@ -639,7 +673,8 @@ static inline int process_storage_command(memcached_protocol_client_st *client, 
   case QUIT_CMD:
   case VERBOSITY_CMD:
   case UNKNOWN_CMD:
-  default: abort(); /* impossible */
+  default:
+    abort(); /* impossible */
   }
 
   if (rval == PROTOCOL_BINARY_RESPONSE_SUCCESS) {
@@ -807,15 +842,21 @@ memcached_ascii_protocol_process_data(memcached_protocol_client_st *client, ssiz
 
       print_ascii_command(client);
       switch (client->ascii_command) {
-      case SET_CMD: error = process_set_command(client, tokens, ntokens, ptr, &end, *length); break;
+      case SET_CMD:
+        error = process_set_command(client, tokens, ntokens, ptr, &end, *length);
+        break;
 
-      case ADD_CMD: error = process_add_command(client, tokens, ntokens, ptr, &end, *length); break;
+      case ADD_CMD:
+        error = process_add_command(client, tokens, ntokens, ptr, &end, *length);
+        break;
 
       case REPLACE_CMD:
         error = process_replace_command(client, tokens, ntokens, ptr, &end, *length);
         break;
 
-      case CAS_CMD: error = process_cas_command(client, tokens, ntokens, ptr, &end, *length); break;
+      case CAS_CMD:
+        error = process_cas_command(client, tokens, ntokens, ptr, &end, *length);
+        break;
 
       case APPEND_CMD:
         error = process_append_command(client, tokens, ntokens, ptr, &end, *length);
@@ -825,10 +866,14 @@ memcached_ascii_protocol_process_data(memcached_protocol_client_st *client, ssiz
         error = process_prepend_command(client, tokens, ntokens, ptr, &end, *length);
         break;
 
-      case DELETE_CMD: process_delete(client, tokens, ntokens); break;
+      case DELETE_CMD:
+        process_delete(client, tokens, ntokens);
+        break;
 
       case INCR_CMD: /* FALLTHROUGH */
-      case DECR_CMD: process_arithmetic(client, tokens, ntokens); break;
+      case DECR_CMD:
+        process_arithmetic(client, tokens, ntokens);
+        break;
 
       case STATS_CMD:
         if (client->mute) {
@@ -839,7 +884,9 @@ memcached_ascii_protocol_process_data(memcached_protocol_client_st *client, ssiz
         }
         break;
 
-      case FLUSH_ALL_CMD: process_flush(client, tokens, ntokens); break;
+      case FLUSH_ALL_CMD:
+        process_flush(client, tokens, ntokens);
+        break;
 
       case VERSION_CMD:
         if (client->mute) {
@@ -869,7 +916,9 @@ memcached_ascii_protocol_process_data(memcached_protocol_client_st *client, ssiz
         }
         break;
 
-      case UNKNOWN_CMD: send_command_usage(client); break;
+      case UNKNOWN_CMD:
+        send_command_usage(client);
+        break;
 
       case GET_CMD:
       case GETS_CMD:

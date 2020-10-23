@@ -446,7 +446,9 @@ static void ms_parse_cfg_file(char *cfg_file) {
       }
       break;
 
-    default: assert(0); break;
+    default:
+      assert(0);
+      break;
     } /* switch */
   }
 
@@ -527,7 +529,8 @@ static int ms_shuffle_distr(ms_distr_t *distr, int length) {
       distr[i].value_size = tmp_size;
       break;
 
-    default: break;
+    default:
+      break;
     } /* switch */
   }
 

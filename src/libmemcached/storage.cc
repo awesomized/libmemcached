@@ -20,17 +20,23 @@ enum memcached_storage_action_t { SET_OP, REPLACE_OP, ADD_OP, PREPEND_OP, APPEND
 /* Inline this */
 static inline const char *storage_op_string(memcached_storage_action_t verb) {
   switch (verb) {
-  case REPLACE_OP: return "replace ";
+  case REPLACE_OP:
+    return "replace ";
 
-  case ADD_OP: return "add ";
+  case ADD_OP:
+    return "add ";
 
-  case PREPEND_OP: return "prepend ";
+  case PREPEND_OP:
+    return "prepend ";
 
-  case APPEND_OP: return "append ";
+  case APPEND_OP:
+    return "append ";
 
-  case CAS_OP: return "cas ";
+  case CAS_OP:
+    return "cas ";
 
-  case SET_OP: break;
+  case SET_OP:
+    break;
   }
 
   return "set ";
@@ -41,10 +47,12 @@ static inline bool can_by_encrypted(const memcached_storage_action_t verb) {
   case SET_OP:
   case ADD_OP:
   case CAS_OP:
-  case REPLACE_OP: return true;
+  case REPLACE_OP:
+    return true;
 
   case APPEND_OP:
-  case PREPEND_OP: break;
+  case PREPEND_OP:
+    break;
   }
 
   return false;
@@ -53,30 +61,40 @@ static inline bool can_by_encrypted(const memcached_storage_action_t verb) {
 static inline uint8_t get_com_code(const memcached_storage_action_t verb, const bool reply) {
   if (reply == false) {
     switch (verb) {
-    case SET_OP: return PROTOCOL_BINARY_CMD_SETQ;
+    case SET_OP:
+      return PROTOCOL_BINARY_CMD_SETQ;
 
-    case ADD_OP: return PROTOCOL_BINARY_CMD_ADDQ;
+    case ADD_OP:
+      return PROTOCOL_BINARY_CMD_ADDQ;
 
     case CAS_OP: /* FALLTHROUGH */
-    case REPLACE_OP: return PROTOCOL_BINARY_CMD_REPLACEQ;
+    case REPLACE_OP:
+      return PROTOCOL_BINARY_CMD_REPLACEQ;
 
-    case APPEND_OP: return PROTOCOL_BINARY_CMD_APPENDQ;
+    case APPEND_OP:
+      return PROTOCOL_BINARY_CMD_APPENDQ;
 
-    case PREPEND_OP: return PROTOCOL_BINARY_CMD_PREPENDQ;
+    case PREPEND_OP:
+      return PROTOCOL_BINARY_CMD_PREPENDQ;
     }
   }
 
   switch (verb) {
-  case SET_OP: break;
+  case SET_OP:
+    break;
 
-  case ADD_OP: return PROTOCOL_BINARY_CMD_ADD;
+  case ADD_OP:
+    return PROTOCOL_BINARY_CMD_ADD;
 
   case CAS_OP: /* FALLTHROUGH */
-  case REPLACE_OP: return PROTOCOL_BINARY_CMD_REPLACE;
+  case REPLACE_OP:
+    return PROTOCOL_BINARY_CMD_REPLACE;
 
-  case APPEND_OP: return PROTOCOL_BINARY_CMD_APPEND;
+  case APPEND_OP:
+    return PROTOCOL_BINARY_CMD_APPEND;
 
-  case PREPEND_OP: return PROTOCOL_BINARY_CMD_PREPEND;
+  case PREPEND_OP:
+    return PROTOCOL_BINARY_CMD_PREPEND;
   }
 
   return PROTOCOL_BINARY_CMD_SET;

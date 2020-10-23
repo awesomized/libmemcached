@@ -139,7 +139,8 @@ bool memcached_binary_protocol_pedantic_check_response(
     case PROTOCOL_BINARY_CMD_SETQ:
       /* Quiet command shouldn't return on success */
       return false;
-    default: break;
+    default:
+      break;
     }
 
     switch (opcode) {

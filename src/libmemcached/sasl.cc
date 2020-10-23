@@ -394,7 +394,8 @@ memcached_return_t memcached_clone_sasl(memcached_st *clone, const memcached_st 
     switch (source->sasl.callbacks[total].id) {
     case SASL_CB_USER:
     case SASL_CB_AUTHNAME:
-    case SASL_CB_PASS: break;
+    case SASL_CB_PASS:
+      break;
     default:
       /* I don't know how to deal with this... */
       return MEMCACHED_NOT_SUPPORTED;

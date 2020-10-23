@@ -56,7 +56,8 @@ static bool repack_input_buffer(memcached_instance_st *instance) {
           memcached_set_error(*instance, MEMCACHED_CONNECTION_FAILURE, MEMCACHED_AT);
         } else {
           switch (get_socket_errno()) {
-          case EINTR: continue;
+          case EINTR:
+            continue;
 
 #if EWOULDBLOCK != EAGAIN
           case EWOULDBLOCK:
@@ -67,7 +68,8 @@ static bool repack_input_buffer(memcached_instance_st *instance) {
 #endif
             break; // No IO is fine, we can just move on
 
-          default: memcached_set_errno(*instance, get_socket_errno(), MEMCACHED_AT);
+          default:
+            memcached_set_errno(*instance, get_socket_errno(), MEMCACHED_AT);
           }
         }
 
@@ -213,7 +215,8 @@ static memcached_return_t io_wait(memcached_instance_st *instance, const short e
 #ifdef __linux
     case ERESTART:
 #endif
-    case EINTR: continue;
+    case EINTR:
+      continue;
 
     case EFAULT:
     case ENOMEM:
@@ -293,7 +296,8 @@ static bool io_flush(memcached_instance_st *instance, const bool with_flush,
       WATCHPOINT_NUMBER(get_socket_errno());
 #endif
       switch (get_socket_errno()) {
-      case ENOBUFS: continue;
+      case ENOBUFS:
+        continue;
 
 #if EWOULDBLOCK != EAGAIN
       case EWOULDBLOCK:
@@ -515,7 +519,8 @@ memcached_return_t memcached_io_slurp(memcached_instance_st *instance) {
       case EINVAL:
       case EFAULT:
       case ECONNREFUSED:
-      default: return MEMCACHED_CONNECTION_FAILURE; // We want this!
+      default:
+        return MEMCACHED_CONNECTION_FAILURE; // We want this!
       }
     }
   } while (data_read > 0);
@@ -694,7 +699,8 @@ memcached_instance_st *memcached_io_get_readable_server(Memcached *memc, memcach
   case -1:
     memcached_set_errno(*memc, get_socket_errno(), MEMCACHED_AT);
     /* FALLTHROUGH */
-  case 0: break;
+  case 0:
+    break;
 
   default:
     for (nfds_t x = 0; x < host_index; ++x) {

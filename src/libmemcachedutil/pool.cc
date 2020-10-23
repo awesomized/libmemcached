@@ -44,7 +44,9 @@ struct memcached_pool_st {
     _timeout.tv_nsec = 0;
   }
 
-  const struct timespec &timeout() const { return _timeout; }
+  const struct timespec &timeout() const {
+    return _timeout;
+  }
 
   bool release(memcached_st *, memcached_return_t &rc);
 
@@ -74,13 +76,17 @@ struct memcached_pool_st {
     }
   }
 
-  void increment_version() { ++master->configure.version; }
+  void increment_version() {
+    ++master->configure.version;
+  }
 
   bool compare_version(const memcached_st *arg) const {
     return (arg->configure.version == version());
   }
 
-  int32_t version() const { return master->configure.version; }
+  int32_t version() const {
+    return master->configure.version;
+  }
 };
 
 /**

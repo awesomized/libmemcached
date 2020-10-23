@@ -265,7 +265,8 @@ static void print_cmd(protocol_binary_command cmd) {
   case PROTOCOL_BINARY_CMD_SCRUB:
     fprintf(stderr, "%s:%d PROTOCOL_BINARY_CMD_SCRUB\n", __FILE__, __LINE__);
     return;
-  default: abort();
+  default:
+    abort();
   }
 }
 

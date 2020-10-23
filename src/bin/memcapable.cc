@@ -302,9 +302,11 @@ static enum test_return retry_read(void *buf, size_t len) {
       verify(get_socket_errno() == EINTR || get_socket_errno() == EAGAIN);
       break;
 
-    case 0: return TEST_FAIL;
+    case 0:
+      return TEST_FAIL;
 
-    default: offset += (size_t) nr;
+    default:
+      offset += (size_t) nr;
     }
   } while (offset < len);
 
@@ -465,7 +467,8 @@ static enum test_return do_validate_response_header(response *rsp, uint8_t cc, u
     case PROTOCOL_BINARY_CMD_SETQ:
       verify("Quiet command shouldn't return on success" == NULL);
       /* fall through */
-    default: break;
+    default:
+      break;
     }
 
     switch (cc) {
@@ -1828,19 +1831,33 @@ int main(int argc, char **argv) {
       }
       break;
 
-    case 'v': verbose = true; break;
+    case 'v':
+      verbose = true;
+      break;
 
-    case 'c': do_core = true; break;
+    case 'c':
+      do_core = true;
+      break;
 
-    case 'h': hostname = optarg; break;
+    case 'h':
+      hostname = optarg;
+      break;
 
-    case 'p': port = optarg; break;
+    case 'p':
+      port = optarg;
+      break;
 
-    case 'q': close_stdio(); break;
+    case 'q':
+      close_stdio();
+      break;
 
-    case 'P': prompt = true; break;
+    case 'P':
+      prompt = true;
+      break;
 
-    case 'T': testname = optarg; break;
+    case 'T':
+      testname = optarg;
+      break;
 
     default:
       fprintf(stderr,

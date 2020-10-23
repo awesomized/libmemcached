@@ -17,19 +17,32 @@
 
 const char *libhashkit_string_hash(hashkit_hash_algorithm_t type) {
   switch (type) {
-  case HASHKIT_HASH_DEFAULT: return "DEFAULT";
-  case HASHKIT_HASH_MD5: return "MD5";
-  case HASHKIT_HASH_CRC: return "CRC";
-  case HASHKIT_HASH_FNV1_64: return "FNV1_64";
-  case HASHKIT_HASH_FNV1A_64: return "FNV1A_64";
-  case HASHKIT_HASH_FNV1_32: return "FNV1_32";
-  case HASHKIT_HASH_FNV1A_32: return "FNV1A_32";
-  case HASHKIT_HASH_HSIEH: return "HSIEH";
-  case HASHKIT_HASH_MURMUR: return "MURMUR";
-  case HASHKIT_HASH_MURMUR3: return "MURMUR3";
-  case HASHKIT_HASH_JENKINS: return "JENKINS";
-  case HASHKIT_HASH_CUSTOM: return "CUSTOM";
+  case HASHKIT_HASH_DEFAULT:
+    return "DEFAULT";
+  case HASHKIT_HASH_MD5:
+    return "MD5";
+  case HASHKIT_HASH_CRC:
+    return "CRC";
+  case HASHKIT_HASH_FNV1_64:
+    return "FNV1_64";
+  case HASHKIT_HASH_FNV1A_64:
+    return "FNV1A_64";
+  case HASHKIT_HASH_FNV1_32:
+    return "FNV1_32";
+  case HASHKIT_HASH_FNV1A_32:
+    return "FNV1A_32";
+  case HASHKIT_HASH_HSIEH:
+    return "HSIEH";
+  case HASHKIT_HASH_MURMUR:
+    return "MURMUR";
+  case HASHKIT_HASH_MURMUR3:
+    return "MURMUR3";
+  case HASHKIT_HASH_JENKINS:
+    return "JENKINS";
+  case HASHKIT_HASH_CUSTOM:
+    return "CUSTOM";
   default:
-  case HASHKIT_HASH_MAX: return "INVALID";
+  case HASHKIT_HASH_MAX:
+    return "INVALID";
   }
 }

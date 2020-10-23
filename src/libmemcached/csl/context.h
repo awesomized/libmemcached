@@ -41,7 +41,9 @@ public:
     memcached_string_create(memc, &_string_buffer, 1024);
   }
 
-  bool end() { return _end; }
+  bool end() {
+    return _end;
+  }
 
   void start();
 
@@ -52,17 +54,25 @@ public:
 
   bool set_hash(memcached_hash_t hash);
 
-  void set_server() { _is_server = true; }
+  void set_server() {
+    _is_server = true;
+  }
 
-  void unset_server() { _is_server = false; }
+  void unset_server() {
+    _is_server = false;
+  }
 
-  bool is_server() const { return _is_server; }
+  bool is_server() const {
+    return _is_server;
+  }
 
   void hostname(const char *, size_t, server_t &);
 
   bool string_buffer(const char *, size_t, memcached_string_t &);
 
-  const char *hostname() const { return _hostname; }
+  const char *hostname() const {
+    return _hostname;
+  }
 
   void abort(const char *, config_tokentype, const char *);
   void error(const char *, config_tokentype, const char *);

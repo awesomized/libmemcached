@@ -80,7 +80,9 @@ struct thread_context_st {
   , memc(NULL)
   , root(memc_arg) {}
 
-  void init() { memc = memcached_clone(NULL, root); }
+  void init() {
+    memc = memcached_clone(NULL, root);
+  }
 
   ~thread_context_st() {
     if (execute_pairs) {
@@ -143,7 +145,9 @@ static __attribute__((noreturn)) void *run_task(void *p) {
     execute_set(context->memc, context->execute_pairs, context->execute_number);
     break;
 
-  case GET_TEST: execute_get(context->memc, context->initial_pairs, context->initial_number); break;
+  case GET_TEST:
+    execute_get(context->memc, context->initial_pairs, context->initial_number);
+    break;
 
   case MGET_TEST:
     execute_mget(context->memc, (const char *const *) context->keys, context->key_lengths,
@@ -345,7 +349,8 @@ void options_parse(int argc, char *argv[]) {
       break;
 
     switch (option_rv) {
-    case 0: break;
+    case 0:
+      break;
 
     case OPT_UDP:
       if (opt_test == GET_TEST) {
@@ -357,17 +362,29 @@ void options_parse(int argc, char *argv[]) {
       opt_udp_io = true;
       break;
 
-    case OPT_BINARY: opt_binary = true; break;
+    case OPT_BINARY:
+      opt_binary = true;
+      break;
 
-    case OPT_VERBOSE: /* --verbose or -v */ opt_verbose = OPT_VERBOSE; break;
+    case OPT_VERBOSE: /* --verbose or -v */
+      opt_verbose = OPT_VERBOSE;
+      break;
 
-    case OPT_DEBUG: /* --debug or -d */ opt_verbose = OPT_DEBUG; break;
+    case OPT_DEBUG: /* --debug or -d */
+      opt_verbose = OPT_DEBUG;
+      break;
 
-    case OPT_VERSION: /* --version or -V */ opt_version = true; break;
+    case OPT_VERSION: /* --version or -V */
+      opt_version = true;
+      break;
 
-    case OPT_HELP: /* --help or -h */ opt_help = true; break;
+    case OPT_HELP: /* --help or -h */
+      opt_help = true;
+      break;
 
-    case OPT_SERVERS: /* --servers or -s */ opt_servers = strdup(optarg); break;
+    case OPT_SERVERS: /* --servers or -s */
+      opt_servers = strdup(optarg);
+      break;
 
     case OPT_SLAP_TEST:
       if (strcmp(optarg, "get") == 0) {
@@ -415,13 +432,16 @@ void options_parse(int argc, char *argv[]) {
       }
       break;
 
-    case OPT_QUIET: close_stdio(); break;
+    case OPT_QUIET:
+      close_stdio();
+      break;
 
     case '?':
       /* getopt_long already printed an error message. */
       exit(EXIT_FAILURE);
 
-    default: abort();
+    default:
+      abort();
     }
   }
 

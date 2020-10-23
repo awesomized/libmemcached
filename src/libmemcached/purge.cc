@@ -24,7 +24,9 @@ public:
     memcached_set_purging(_memc, true);
   }
 
-  ~Purge() { memcached_set_purging(_memc, false); }
+  ~Purge() {
+    memcached_set_purging(_memc, false);
+  }
 
 private:
   Memcached *_memc;
@@ -38,7 +40,9 @@ public:
     _origin = ms;
   }
 
-  ~PollTimeout() { _origin = _timeout; }
+  ~PollTimeout() {
+    _origin = _timeout;
+  }
 
 private:
   int32_t _timeout;

@@ -204,9 +204,11 @@ static const char *ms_lookup_help(ms_options_t option) {
     return "List one or more servers to connect. Servers count must be less than\n"
            "        threads count. e.g.: --servers=localhost:1234,localhost:11211";
 
-  case OPT_VERSION: return "Display the version of the application and then exit.";
+  case OPT_VERSION:
+    return "Display the version of the application and then exit.";
 
-  case OPT_HELP: return "Display this message and then exit.";
+  case OPT_HELP:
+    return "Display this message and then exit.";
 
   case OPT_EXECUTE_NUMBER:
     return "Number of operations(get and set) to execute for the\n"
@@ -215,13 +217,17 @@ static const char *ms_lookup_help(ms_options_t option) {
   case OPT_THREAD_NUMBER:
     return "Number of threads to startup, better equal to CPU numbers. Default 8.";
 
-  case OPT_CONCURRENCY: return "Number of concurrency to simulate with load. Default 128.";
+  case OPT_CONCURRENCY:
+    return "Number of concurrency to simulate with load. Default 128.";
 
-  case OPT_FIXED_LTH: return "Fixed length of value.";
+  case OPT_FIXED_LTH:
+    return "Fixed length of value.";
 
-  case OPT_VERIFY: return "The proportion of date verification, e.g.: --verify=0.01";
+  case OPT_VERIFY:
+    return "The proportion of date verification, e.g.: --verify=0.01";
 
-  case OPT_GETS_DIVISION: return "Number of keys to multi-get once. Default 1, means single get.";
+  case OPT_GETS_DIVISION:
+    return "Number of keys to multi-get once. Default 1, means single get.";
 
   case OPT_TIME:
     return "How long the test to run, suffix: s-seconds, m-minutes, h-hours,\n"
@@ -250,11 +256,14 @@ static const char *ms_lookup_help(ms_options_t option) {
     return "Frequency of dumping statistic information. suffix: s-seconds,\n"
            "        m-minutes, e.g.: --resp_freq=10s.";
 
-  case OPT_SOCK_PER_CONN: return "Number of TCP socks per concurrency. Default 1.";
+  case OPT_SOCK_PER_CONN:
+    return "Number of TCP socks per concurrency. Default 1.";
 
-  case OPT_RECONNECT: return "Reconnect support, when connection is closed it will be reconnected.";
+  case OPT_RECONNECT:
+    return "Reconnect support, when connection is closed it will be reconnected.";
 
-  case OPT_VERBOSE: return "Whether it outputs detailed information when verification fails.";
+  case OPT_VERBOSE:
+    return "Whether it outputs detailed information when verification fails.";
 
   case OPT_FACEBOOK_TEST:
     return "Whether it enables facebook test feature, set with TCP and multi-get with UDP.";
@@ -262,11 +271,14 @@ static const char *ms_lookup_help(ms_options_t option) {
   case OPT_BINARY_PROTOCOL:
     return "Whether it enables binary protocol. Default with ASCII protocol.";
 
-  case OPT_TPS: return "Expected throughput, suffix: K, e.g.: --tps=10k.";
+  case OPT_TPS:
+    return "Expected throughput, suffix: K, e.g.: --tps=10k.";
 
-  case OPT_REP_WRITE_SRV: return "The first nth servers can write data, e.g.: --rep_write=2.";
+  case OPT_REP_WRITE_SRV:
+    return "The first nth servers can write data, e.g.: --rep_write=2.";
 
-  default: return "Forgot to document this option :)";
+  default:
+    return "Forgot to document this option :)";
   } /* switch */
 } /* ms_lookup_help */
 
@@ -292,9 +304,12 @@ static int64_t ms_parse_time() {
     ret *= 60;
     /* fall through */
   case 's':
-  case 'S': break;
+  case 'S':
+    break;
 
-  default: ret = -1; break;
+  default:
+    ret = -1;
+    break;
   } /* switch */
 
   return ret;
@@ -315,15 +330,23 @@ static int64_t ms_parse_size() {
 
   switch (unit) {
   case 'k':
-  case 'K': ret *= 1024; break;
+  case 'K':
+    ret *= 1024;
+    break;
 
   case 'm':
-  case 'M': ret *= 1024 * 1024; break;
+  case 'M':
+    ret *= 1024 * 1024;
+    break;
 
   case 'g':
-  case 'G': ret *= 1024 * 1024 * 1024; break;
+  case 'G':
+    ret *= 1024 * 1024 * 1024;
+    break;
 
-  default: ret = -1; break;
+  default:
+    ret = -1;
+    break;
   } /* switch */
 
   return ret;
@@ -341,16 +364,21 @@ static void ms_options_parse(int argc, char *argv[]) {
          != -1)
   {
     switch (option_rv) {
-    case 0: break;
+    case 0:
+      break;
 
-    case OPT_VERSION: /* --version or -V */ ms_version_command(PROGRAM_NAME); break;
+    case OPT_VERSION: /* --version or -V */
+      ms_version_command(PROGRAM_NAME);
+      break;
 
     case OPT_HELP: /* --help or -h */
       ms_help_command(PROGRAM_NAME, PROGRAM_DESCRIPTION);
       exit(0);
       break;
 
-    case OPT_SERVERS: /* --servers or -s */ ms_setting.srv_str = strdup(optarg); break;
+    case OPT_SERVERS: /* --servers or -s */
+      ms_setting.srv_str = strdup(optarg);
+      break;
 
     case OPT_CONCURRENCY: /* --concurrency or -c */
       errno = 0;
@@ -425,7 +453,9 @@ static void ms_options_parse(int argc, char *argv[]) {
       }
       break;
 
-    case OPT_CONFIG_CMD: /* --cfg_cmd or -F */ ms_setting.cfg_file = strdup(optarg); break;
+    case OPT_CONFIG_CMD: /* --cfg_cmd or -F */
+      ms_setting.cfg_file = strdup(optarg);
+      break;
 
     case OPT_WINDOW_SIZE: /* --win_size or -w */
       ms_setting.win_size = (size_t) ms_parse_size();
@@ -437,7 +467,9 @@ static void ms_options_parse(int argc, char *argv[]) {
       }
       break;
 
-    case OPT_UDP: /* --udp or -U*/ ms_setting.udp = true; break;
+    case OPT_UDP: /* --udp or -U*/
+      ms_setting.udp = true;
+      break;
 
     case OPT_EXPIRE: /* --exp_verify or -e */
       ms_setting.exp_ver_per = atof(optarg);
@@ -489,13 +521,21 @@ static void ms_options_parse(int argc, char *argv[]) {
       }
       break;
 
-    case OPT_RECONNECT: /* --reconnect or -R */ ms_setting.reconnect = true; break;
+    case OPT_RECONNECT: /* --reconnect or -R */
+      ms_setting.reconnect = true;
+      break;
 
-    case OPT_VERBOSE: /* --verbose or -b */ ms_setting.verbose = true; break;
+    case OPT_VERBOSE: /* --verbose or -b */
+      ms_setting.verbose = true;
+      break;
 
-    case OPT_FACEBOOK_TEST: /* --facebook or -a */ ms_setting.facebook_test = true; break;
+    case OPT_FACEBOOK_TEST: /* --facebook or -a */
+      ms_setting.facebook_test = true;
+      break;
 
-    case OPT_BINARY_PROTOCOL: /* --binary or -B */ ms_setting.binary_prot_ = true; break;
+    case OPT_BINARY_PROTOCOL: /* --binary or -B */
+      ms_setting.binary_prot_ = true;
+      break;
 
     case OPT_TPS: /* --tps or -P */
       ms_setting.expected_tps = (int) ms_parse_size();
@@ -522,7 +562,8 @@ static void ms_options_parse(int argc, char *argv[]) {
       /* getopt_long already printed an error message. */
       exit(1);
 
-    default: abort();
+    default:
+      abort();
     } /* switch */
   }
 } /* ms_options_parse */

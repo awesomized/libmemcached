@@ -193,26 +193,48 @@ void options_parse(int argc, char *argv[]) {
     if (option_rv == -1)
       break;
     switch (option_rv) {
-    case 0: break;
-    case OPT_BINARY: opt_binary = 1; break;
-    case OPT_VERBOSE: /* --verbose or -v */ opt_verbose = OPT_VERBOSE; break;
-    case OPT_DEBUG: /* --debug or -d */ opt_verbose = OPT_DEBUG; break;
-    case OPT_VERSION: /* --version or -V */ version_command(PROGRAM_NAME); break;
+    case 0:
+      break;
+    case OPT_BINARY:
+      opt_binary = 1;
+      break;
+    case OPT_VERBOSE: /* --verbose or -v */
+      opt_verbose = OPT_VERBOSE;
+      break;
+    case OPT_DEBUG: /* --debug or -d */
+      opt_verbose = OPT_DEBUG;
+      break;
+    case OPT_VERSION: /* --version or -V */
+      version_command(PROGRAM_NAME);
+      break;
     case OPT_HELP: /* --help or -h */
       help_command(PROGRAM_NAME, PROGRAM_DESCRIPTION, long_options, help_options);
       break;
-    case OPT_SERVERS: /* --servers or -s */ opt_servers = strdup(optarg); break;
-    case OPT_HASH: opt_hash = strdup(optarg); break;
-    case OPT_USERNAME: opt_username = optarg; break;
-    case OPT_PASSWD: opt_passwd = optarg; break;
-    case OPT_FILE: opt_file = optarg; break;
+    case OPT_SERVERS: /* --servers or -s */
+      opt_servers = strdup(optarg);
+      break;
+    case OPT_HASH:
+      opt_hash = strdup(optarg);
+      break;
+    case OPT_USERNAME:
+      opt_username = optarg;
+      break;
+    case OPT_PASSWD:
+      opt_passwd = optarg;
+      break;
+    case OPT_FILE:
+      opt_file = optarg;
+      break;
 
-    case OPT_QUIET: close_stdio(); break;
+    case OPT_QUIET:
+      close_stdio();
+      break;
 
     case '?':
       /* getopt_long already printed an error message. */
       exit(EXIT_FAILURE);
-    default: abort();
+    default:
+      abort();
     }
   }
 }

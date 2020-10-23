@@ -1006,7 +1006,9 @@ static int ms_ascii_process_line(ms_conn_t *c, char *command) {
 
     break;
 
-  case 'O': /* OK */ c->currcmd.retstat = MCD_SUCCESS; break;
+  case 'O': /* OK */
+    c->currcmd.retstat = MCD_SUCCESS;
+    break;
 
   case 'S':                                    /* STORED STATS SERVER_ERROR */
     if (buffer[2] == 'A') /* STORED STATS */ { /* STATS*/
@@ -1064,7 +1066,9 @@ static int ms_ascii_process_line(ms_conn_t *c, char *command) {
     c->currcmd.retstat = MCD_CLIENT_ERROR;
     break;
 
-  default: c->currcmd.retstat = MCD_UNKNOWN_READ_FAILURE; break;
+  default:
+    c->currcmd.retstat = MCD_UNKNOWN_READ_FAILURE;
+    break;
   } /* switch */
 
   return ret;
@@ -2200,16 +2204,21 @@ static void ms_drive_machine(ms_conn_t *c) {
         stop = true;
         break;
 
-      case TRANSMIT_INCOMPLETE: c->ctnwrite = true; break; /* Continue in state machine. */
+      case TRANSMIT_INCOMPLETE:
+        c->ctnwrite = true;
+        break; /* Continue in state machine. */
 
-      case TRANSMIT_HARD_ERROR: c->ctnwrite = false; break;
+      case TRANSMIT_HARD_ERROR:
+        c->ctnwrite = false;
+        break;
 
       case TRANSMIT_SOFT_ERROR:
         c->ctnwrite = true;
         stop = true;
         break;
 
-      default: break;
+      default:
+        break;
       } /* switch */
 
       break;
@@ -2242,7 +2251,8 @@ static void ms_drive_machine(ms_conn_t *c) {
         break;
       }
 
-    default: assert(0);
+    default:
+      assert(0);
     } /* switch */
   }
 } /* ms_drive_machine */
@@ -2362,7 +2372,8 @@ static int ms_update_conn_sock_event(ms_conn_t *c) {
     }
     break;
 
-  default: break;
+  default:
+    break;
   } /* switch */
 
   if (!c->udp && (c->total_sfds > 1)) {
@@ -2692,7 +2703,9 @@ static int ms_bin_process_response(ms_conn_t *c) {
       c->currcmd.retstat = MCD_PROTOCOL_ERROR;
       break;
 
-    case PROTOCOL_BINARY_RESPONSE_KEY_EEXISTS: errstr = "Data exists for key."; break;
+    case PROTOCOL_BINARY_RESPONSE_KEY_EEXISTS:
+      errstr = "Data exists for key.";
+      break;
 
     case PROTOCOL_BINARY_RESPONSE_E2BIG:
       errstr = "Too large.";

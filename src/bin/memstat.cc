@@ -332,42 +332,64 @@ static void options_parse(int argc, char *argv[]) {
       break;
 
     switch (option_rv) {
-    case 0: break;
+    case 0:
+      break;
 
-    case OPT_VERBOSE: /* --verbose or -v */ opt_verbose = true; break;
+    case OPT_VERBOSE: /* --verbose or -v */
+      opt_verbose = true;
+      break;
 
-    case OPT_DEBUG: /* --debug or -d */ opt_verbose = true; break;
+    case OPT_DEBUG: /* --debug or -d */
+      opt_verbose = true;
+      break;
 
-    case OPT_BINARY: opt_binary = true; break;
+    case OPT_BINARY:
+      opt_binary = true;
+      break;
 
-    case OPT_SERVER_VERSION: opt_server_version = true; break;
+    case OPT_SERVER_VERSION:
+      opt_server_version = true;
+      break;
 
-    case OPT_VERSION: /* --version or -V */ opt_version = true; break;
+    case OPT_VERSION: /* --version or -V */
+      opt_version = true;
+      break;
 
-    case OPT_HELP: /* --help or -h */ opt_help = true; break;
+    case OPT_HELP: /* --help or -h */
+      opt_help = true;
+      break;
 
-    case OPT_SERVERS: /* --servers or -s */ opt_servers = strdup(optarg); break;
+    case OPT_SERVERS: /* --servers or -s */
+      opt_servers = strdup(optarg);
+      break;
 
-    case OPT_STAT_ARGS: stat_args = strdup(optarg); break;
+    case OPT_STAT_ARGS:
+      stat_args = strdup(optarg);
+      break;
 
     case OPT_ANALYZE: /* --analyze or -a */
       opt_analyze = true;
       analyze_mode = (optarg) ? strdup(optarg) : NULL;
       break;
 
-    case OPT_QUIET: close_stdio(); break;
+    case OPT_QUIET:
+      close_stdio();
+      break;
 
     case OPT_USERNAME:
       opt_username = optarg;
       opt_binary = true;
       break;
 
-    case OPT_PASSWD: opt_passwd = optarg; break;
+    case OPT_PASSWD:
+      opt_passwd = optarg;
+      break;
 
     case '?':
       /* getopt_long already printed an error message. */
       exit(1);
-    default: abort();
+    default:
+      abort();
     }
   }
 

@@ -84,17 +84,23 @@ void options_parse(int argc, char *argv[]) {
     }
 
     switch (option_rv) {
-    case 0: break;
+    case 0:
+      break;
 
-    case OPT_VERSION: /* --version or -V */ opt_version = true; break;
+    case OPT_VERSION: /* --version or -V */
+      opt_version = true;
+      break;
 
-    case OPT_HELP: /* --help or -h */ opt_help = true; break;
+    case OPT_HELP: /* --help or -h */
+      opt_help = true;
+      break;
 
     case '?':
       /* getopt_long already printed an error message. */
       exit(EXIT_FAILURE);
 
-    default: exit(EXIT_FAILURE);
+    default:
+      exit(EXIT_FAILURE);
     }
   }
 

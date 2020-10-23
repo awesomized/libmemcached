@@ -188,11 +188,14 @@ uint32_t memcached_server_response_count(const memcached_instance_st *self) {
 const char *memcached_server_type(const memcached_instance_st *ptr) {
   if (ptr) {
     switch (ptr->type) {
-    case MEMCACHED_CONNECTION_TCP: return "TCP";
+    case MEMCACHED_CONNECTION_TCP:
+      return "TCP";
 
-    case MEMCACHED_CONNECTION_UDP: return "UDP";
+    case MEMCACHED_CONNECTION_UDP:
+      return "UDP";
 
-    case MEMCACHED_CONNECTION_UNIX_SOCKET: return "SOCKET";
+    case MEMCACHED_CONNECTION_UNIX_SOCKET:
+      return "SOCKET";
     }
   }
 

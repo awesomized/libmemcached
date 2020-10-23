@@ -25,12 +25,14 @@ bool memcached_is_consistent_distribution(const Memcached *memc) {
   case MEMCACHED_DISTRIBUTION_CONSISTENT:
   case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA:
   case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY:
-  case MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED: return true;
+  case MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED:
+    return true;
 
   case MEMCACHED_DISTRIBUTION_MODULA:
   case MEMCACHED_DISTRIBUTION_RANDOM:
   case MEMCACHED_DISTRIBUTION_VIRTUAL_BUCKET:
-  case MEMCACHED_DISTRIBUTION_CONSISTENT_MAX: break;
+  case MEMCACHED_DISTRIBUTION_CONSISTENT_MAX:
+    break;
   }
 
   return false;
@@ -50,19 +52,33 @@ memcached_return_t memcached_behavior_set(memcached_st *shell, const memcached_b
   }
 
   switch (flag) {
-  case MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS: ptr->number_of_replicas = (uint32_t) data; break;
+  case MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS:
+    ptr->number_of_replicas = (uint32_t) data;
+    break;
 
-  case MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK: ptr->io_msg_watermark = (uint32_t) data; break;
+  case MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK:
+    ptr->io_msg_watermark = (uint32_t) data;
+    break;
 
-  case MEMCACHED_BEHAVIOR_IO_BYTES_WATERMARK: ptr->io_bytes_watermark = (uint32_t) data; break;
+  case MEMCACHED_BEHAVIOR_IO_BYTES_WATERMARK:
+    ptr->io_bytes_watermark = (uint32_t) data;
+    break;
 
-  case MEMCACHED_BEHAVIOR_IO_KEY_PREFETCH: ptr->io_key_prefetch = (uint32_t) data; break;
+  case MEMCACHED_BEHAVIOR_IO_KEY_PREFETCH:
+    ptr->io_key_prefetch = (uint32_t) data;
+    break;
 
-  case MEMCACHED_BEHAVIOR_SND_TIMEOUT: ptr->snd_timeout = (int32_t) data; break;
+  case MEMCACHED_BEHAVIOR_SND_TIMEOUT:
+    ptr->snd_timeout = (int32_t) data;
+    break;
 
-  case MEMCACHED_BEHAVIOR_RCV_TIMEOUT: ptr->rcv_timeout = (int32_t) data; break;
+  case MEMCACHED_BEHAVIOR_RCV_TIMEOUT:
+    ptr->rcv_timeout = (int32_t) data;
+    break;
 
-  case MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS: ptr->flags.auto_eject_hosts = bool(data); break;
+  case MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS:
+    ptr->flags.auto_eject_hosts = bool(data);
+    break;
 
   case MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT:
     if (data == 0) {
@@ -74,7 +90,9 @@ memcached_return_t memcached_behavior_set(memcached_st *shell, const memcached_b
     ptr->server_failure_limit = uint32_t(data);
     break;
 
-  case MEMCACHED_BEHAVIOR_SERVER_TIMEOUT_LIMIT: ptr->server_timeout_limit = uint32_t(data); break;
+  case MEMCACHED_BEHAVIOR_SERVER_TIMEOUT_LIMIT:
+    ptr->server_timeout_limit = uint32_t(data);
+    break;
 
   case MEMCACHED_BEHAVIOR_BINARY_PROTOCOL:
     send_quit(
@@ -85,7 +103,9 @@ memcached_return_t memcached_behavior_set(memcached_st *shell, const memcached_b
     ptr->flags.binary_protocol = bool(data);
     break;
 
-  case MEMCACHED_BEHAVIOR_SUPPORT_CAS: ptr->flags.support_cas = bool(data); break;
+  case MEMCACHED_BEHAVIOR_SUPPORT_CAS:
+    ptr->flags.support_cas = bool(data);
+    break;
 
   case MEMCACHED_BEHAVIOR_NO_BLOCK:
     ptr->flags.no_block = bool(data);
@@ -176,13 +196,21 @@ memcached_return_t memcached_behavior_set(memcached_st *shell, const memcached_b
     return run_distribution(ptr);
   }
 
-  case MEMCACHED_BEHAVIOR_POLL_TIMEOUT: ptr->poll_timeout = (int32_t) data; break;
+  case MEMCACHED_BEHAVIOR_POLL_TIMEOUT:
+    ptr->poll_timeout = (int32_t) data;
+    break;
 
-  case MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT: ptr->connect_timeout = (int32_t) data; break;
+  case MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT:
+    ptr->connect_timeout = (int32_t) data;
+    break;
 
-  case MEMCACHED_BEHAVIOR_RETRY_TIMEOUT: ptr->retry_timeout = int32_t(data); break;
+  case MEMCACHED_BEHAVIOR_RETRY_TIMEOUT:
+    ptr->retry_timeout = int32_t(data);
+    break;
 
-  case MEMCACHED_BEHAVIOR_DEAD_TIMEOUT: ptr->dead_timeout = int32_t(data); break;
+  case MEMCACHED_BEHAVIOR_DEAD_TIMEOUT:
+    ptr->dead_timeout = int32_t(data);
+    break;
 
   case MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE:
     ptr->send_size = (int32_t) data;
@@ -203,7 +231,9 @@ memcached_return_t memcached_behavior_set(memcached_st *shell, const memcached_b
     return memcached_set_error(*ptr, MEMCACHED_DEPRECATED, MEMCACHED_AT,
                                memcached_literal_param("MEMCACHED_BEHAVIOR_USER_DATA deprecated."));
 
-  case MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY: ptr->flags.hash_with_namespace = bool(data); break;
+  case MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY:
+    ptr->flags.hash_with_namespace = bool(data);
+    break;
 
   case MEMCACHED_BEHAVIOR_NOREPLY:
     if (memcached_is_udp(ptr) and bool(data) == false) {
@@ -217,7 +247,9 @@ memcached_return_t memcached_behavior_set(memcached_st *shell, const memcached_b
     ptr->flags.reply = bool(data) ? false : true;
     break;
 
-  case MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS: ptr->flags.auto_eject_hosts = bool(data); break;
+  case MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS:
+    ptr->flags.auto_eject_hosts = bool(data);
+    break;
 
   case MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ:
     srandom((uint32_t) time(NULL));
@@ -259,29 +291,41 @@ uint64_t memcached_behavior_get(memcached_st *shell, const memcached_behavior_t 
   }
 
   switch (flag) {
-  case MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS: return ptr->number_of_replicas;
+  case MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS:
+    return ptr->number_of_replicas;
 
-  case MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK: return ptr->io_msg_watermark;
+  case MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK:
+    return ptr->io_msg_watermark;
 
-  case MEMCACHED_BEHAVIOR_IO_BYTES_WATERMARK: return ptr->io_bytes_watermark;
+  case MEMCACHED_BEHAVIOR_IO_BYTES_WATERMARK:
+    return ptr->io_bytes_watermark;
 
-  case MEMCACHED_BEHAVIOR_IO_KEY_PREFETCH: return ptr->io_key_prefetch;
+  case MEMCACHED_BEHAVIOR_IO_KEY_PREFETCH:
+    return ptr->io_key_prefetch;
 
-  case MEMCACHED_BEHAVIOR_BINARY_PROTOCOL: return ptr->flags.binary_protocol;
+  case MEMCACHED_BEHAVIOR_BINARY_PROTOCOL:
+    return ptr->flags.binary_protocol;
 
-  case MEMCACHED_BEHAVIOR_SUPPORT_CAS: return ptr->flags.support_cas;
+  case MEMCACHED_BEHAVIOR_SUPPORT_CAS:
+    return ptr->flags.support_cas;
 
-  case MEMCACHED_BEHAVIOR_CACHE_LOOKUPS: return true;
+  case MEMCACHED_BEHAVIOR_CACHE_LOOKUPS:
+    return true;
 
-  case MEMCACHED_BEHAVIOR_NO_BLOCK: return ptr->flags.no_block;
+  case MEMCACHED_BEHAVIOR_NO_BLOCK:
+    return ptr->flags.no_block;
 
-  case MEMCACHED_BEHAVIOR_BUFFER_REQUESTS: return ptr->flags.buffer_requests;
+  case MEMCACHED_BEHAVIOR_BUFFER_REQUESTS:
+    return ptr->flags.buffer_requests;
 
-  case MEMCACHED_BEHAVIOR_USE_UDP: return memcached_is_udp(ptr);
+  case MEMCACHED_BEHAVIOR_USE_UDP:
+    return memcached_is_udp(ptr);
 
-  case MEMCACHED_BEHAVIOR_TCP_NODELAY: return ptr->flags.tcp_nodelay;
+  case MEMCACHED_BEHAVIOR_TCP_NODELAY:
+    return ptr->flags.tcp_nodelay;
 
-  case MEMCACHED_BEHAVIOR_VERIFY_KEY: return ptr->flags.verify_key;
+  case MEMCACHED_BEHAVIOR_VERIFY_KEY:
+    return ptr->flags.verify_key;
 
   case MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED:
     if (memcached_is_consistent_distribution(ptr)) {
@@ -289,35 +333,50 @@ uint64_t memcached_behavior_get(memcached_st *shell, const memcached_behavior_t 
     }
     return false;
 
-  case MEMCACHED_BEHAVIOR_DISTRIBUTION: return ptr->distribution;
+  case MEMCACHED_BEHAVIOR_DISTRIBUTION:
+    return ptr->distribution;
 
-  case MEMCACHED_BEHAVIOR_KETAMA: return memcached_is_consistent_distribution(ptr);
+  case MEMCACHED_BEHAVIOR_KETAMA:
+    return memcached_is_consistent_distribution(ptr);
 
-  case MEMCACHED_BEHAVIOR_HASH: return hashkit_get_function(&ptr->hashkit);
+  case MEMCACHED_BEHAVIOR_HASH:
+    return hashkit_get_function(&ptr->hashkit);
 
-  case MEMCACHED_BEHAVIOR_KETAMA_HASH: return hashkit_get_distribution_function(&ptr->hashkit);
+  case MEMCACHED_BEHAVIOR_KETAMA_HASH:
+    return hashkit_get_distribution_function(&ptr->hashkit);
 
-  case MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS: return ptr->flags.auto_eject_hosts;
+  case MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS:
+    return ptr->flags.auto_eject_hosts;
 
-  case MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT: return ptr->server_failure_limit;
+  case MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT:
+    return ptr->server_failure_limit;
 
-  case MEMCACHED_BEHAVIOR_SERVER_TIMEOUT_LIMIT: return ptr->server_timeout_limit;
+  case MEMCACHED_BEHAVIOR_SERVER_TIMEOUT_LIMIT:
+    return ptr->server_timeout_limit;
 
-  case MEMCACHED_BEHAVIOR_SORT_HOSTS: return ptr->flags.use_sort_hosts;
+  case MEMCACHED_BEHAVIOR_SORT_HOSTS:
+    return ptr->flags.use_sort_hosts;
 
-  case MEMCACHED_BEHAVIOR_POLL_TIMEOUT: return (uint64_t) ptr->poll_timeout;
+  case MEMCACHED_BEHAVIOR_POLL_TIMEOUT:
+    return (uint64_t) ptr->poll_timeout;
 
-  case MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT: return (uint64_t) ptr->connect_timeout;
+  case MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT:
+    return (uint64_t) ptr->connect_timeout;
 
-  case MEMCACHED_BEHAVIOR_RETRY_TIMEOUT: return (uint64_t) ptr->retry_timeout;
+  case MEMCACHED_BEHAVIOR_RETRY_TIMEOUT:
+    return (uint64_t) ptr->retry_timeout;
 
-  case MEMCACHED_BEHAVIOR_DEAD_TIMEOUT: return uint64_t(ptr->dead_timeout);
+  case MEMCACHED_BEHAVIOR_DEAD_TIMEOUT:
+    return uint64_t(ptr->dead_timeout);
 
-  case MEMCACHED_BEHAVIOR_SND_TIMEOUT: return (uint64_t) ptr->snd_timeout;
+  case MEMCACHED_BEHAVIOR_SND_TIMEOUT:
+    return (uint64_t) ptr->snd_timeout;
 
-  case MEMCACHED_BEHAVIOR_RCV_TIMEOUT: return (uint64_t) ptr->rcv_timeout;
+  case MEMCACHED_BEHAVIOR_RCV_TIMEOUT:
+    return (uint64_t) ptr->rcv_timeout;
 
-  case MEMCACHED_BEHAVIOR_TCP_KEEPIDLE: return (uint64_t) ptr->tcp_keepidle;
+  case MEMCACHED_BEHAVIOR_TCP_KEEPIDLE:
+    return (uint64_t) ptr->tcp_keepidle;
 
   case MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE: {
     int sock_size = 0;
@@ -387,13 +446,17 @@ uint64_t memcached_behavior_get(memcached_st *shell, const memcached_behavior_t 
                         memcached_literal_param("MEMCACHED_BEHAVIOR_USER_DATA deprecated."));
     return 0;
 
-  case MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY: return ptr->flags.hash_with_namespace;
+  case MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY:
+    return ptr->flags.hash_with_namespace;
 
-  case MEMCACHED_BEHAVIOR_NOREPLY: return ptr->flags.reply ? false : true;
+  case MEMCACHED_BEHAVIOR_NOREPLY:
+    return ptr->flags.reply ? false : true;
 
-  case MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS: return ptr->flags.auto_eject_hosts;
+  case MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS:
+    return ptr->flags.auto_eject_hosts;
 
-  case MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ: return ptr->flags.randomize_replica_read;
+  case MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ:
+    return ptr->flags.randomize_replica_read;
 
   case MEMCACHED_BEHAVIOR_CORK:
 #ifdef HAVE_MSG_MORE
@@ -402,12 +465,16 @@ uint64_t memcached_behavior_get(memcached_st *shell, const memcached_behavior_t 
     return false;
 #endif
 
-  case MEMCACHED_BEHAVIOR_TCP_KEEPALIVE: return ptr->flags.tcp_keepalive;
+  case MEMCACHED_BEHAVIOR_TCP_KEEPALIVE:
+    return ptr->flags.tcp_keepalive;
 
-  case MEMCACHED_BEHAVIOR_LOAD_FROM_FILE: return bool(memcached_parse_filename(ptr));
+  case MEMCACHED_BEHAVIOR_LOAD_FROM_FILE:
+    return bool(memcached_parse_filename(ptr));
 
   case MEMCACHED_BEHAVIOR_MAX:
-  default: assert_msg(0, "Invalid behavior passed to memcached_behavior_get()"); return 0;
+  default:
+    assert_msg(0, "Invalid behavior passed to memcached_behavior_get()");
+    return 0;
   }
 
   /* NOTREACHED */
@@ -418,20 +485,26 @@ memcached_return_t memcached_behavior_set_distribution(memcached_st *shell,
   Memcached *ptr = memcached2Memcached(shell);
   if (ptr) {
     switch (type) {
-    case MEMCACHED_DISTRIBUTION_MODULA: break;
+    case MEMCACHED_DISTRIBUTION_MODULA:
+      break;
 
     case MEMCACHED_DISTRIBUTION_CONSISTENT:
-    case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA: memcached_set_weighted_ketama(ptr, false); break;
+    case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA:
+      memcached_set_weighted_ketama(ptr, false);
+      break;
 
-    case MEMCACHED_DISTRIBUTION_RANDOM: break;
+    case MEMCACHED_DISTRIBUTION_RANDOM:
+      break;
 
-    case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY: break;
+    case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY:
+      break;
 
     case MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED:
       memcached_set_weighted_ketama(ptr, true);
       break;
 
-    case MEMCACHED_DISTRIBUTION_VIRTUAL_BUCKET: break;
+    case MEMCACHED_DISTRIBUTION_VIRTUAL_BUCKET:
+      break;
 
     default:
     case MEMCACHED_DISTRIBUTION_CONSISTENT_MAX:
@@ -507,63 +580,107 @@ memcached_hash_t memcached_behavior_get_distribution_hash(memcached_st *shell) {
 
 const char *libmemcached_string_behavior(const memcached_behavior_t flag) {
   switch (flag) {
-  case MEMCACHED_BEHAVIOR_SERVER_TIMEOUT_LIMIT: return "MEMCACHED_BEHAVIOR_SERVER_TIMEOUT_LIMIT";
-  case MEMCACHED_BEHAVIOR_NO_BLOCK: return "MEMCACHED_BEHAVIOR_NO_BLOCK";
-  case MEMCACHED_BEHAVIOR_TCP_NODELAY: return "MEMCACHED_BEHAVIOR_TCP_NODELAY";
-  case MEMCACHED_BEHAVIOR_HASH: return "MEMCACHED_BEHAVIOR_HASH";
-  case MEMCACHED_BEHAVIOR_KETAMA: return "MEMCACHED_BEHAVIOR_KETAMA";
-  case MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE: return "MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE";
-  case MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE: return "MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE";
-  case MEMCACHED_BEHAVIOR_CACHE_LOOKUPS: return "MEMCACHED_BEHAVIOR_CACHE_LOOKUPS";
-  case MEMCACHED_BEHAVIOR_SUPPORT_CAS: return "MEMCACHED_BEHAVIOR_SUPPORT_CAS";
-  case MEMCACHED_BEHAVIOR_POLL_TIMEOUT: return "MEMCACHED_BEHAVIOR_POLL_TIMEOUT";
-  case MEMCACHED_BEHAVIOR_DISTRIBUTION: return "MEMCACHED_BEHAVIOR_DISTRIBUTION";
-  case MEMCACHED_BEHAVIOR_BUFFER_REQUESTS: return "MEMCACHED_BEHAVIOR_BUFFER_REQUESTS";
-  case MEMCACHED_BEHAVIOR_USER_DATA: return "MEMCACHED_BEHAVIOR_USER_DATA";
-  case MEMCACHED_BEHAVIOR_SORT_HOSTS: return "MEMCACHED_BEHAVIOR_SORT_HOSTS";
-  case MEMCACHED_BEHAVIOR_VERIFY_KEY: return "MEMCACHED_BEHAVIOR_VERIFY_KEY";
-  case MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT: return "MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT";
-  case MEMCACHED_BEHAVIOR_RETRY_TIMEOUT: return "MEMCACHED_BEHAVIOR_RETRY_TIMEOUT";
-  case MEMCACHED_BEHAVIOR_DEAD_TIMEOUT: return "MEMCACHED_BEHAVIOR_DEAD_TIMEOUT";
-  case MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED: return "MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED";
-  case MEMCACHED_BEHAVIOR_KETAMA_HASH: return "MEMCACHED_BEHAVIOR_KETAMA_HASH";
-  case MEMCACHED_BEHAVIOR_BINARY_PROTOCOL: return "MEMCACHED_BEHAVIOR_BINARY_PROTOCOL";
-  case MEMCACHED_BEHAVIOR_SND_TIMEOUT: return "MEMCACHED_BEHAVIOR_SND_TIMEOUT";
-  case MEMCACHED_BEHAVIOR_RCV_TIMEOUT: return "MEMCACHED_BEHAVIOR_RCV_TIMEOUT";
-  case MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT: return "MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT";
-  case MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK: return "MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK";
-  case MEMCACHED_BEHAVIOR_IO_BYTES_WATERMARK: return "MEMCACHED_BEHAVIOR_IO_BYTES_WATERMARK";
-  case MEMCACHED_BEHAVIOR_IO_KEY_PREFETCH: return "MEMCACHED_BEHAVIOR_IO_KEY_PREFETCH";
-  case MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY: return "MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY";
-  case MEMCACHED_BEHAVIOR_NOREPLY: return "MEMCACHED_BEHAVIOR_NOREPLY";
-  case MEMCACHED_BEHAVIOR_USE_UDP: return "MEMCACHED_BEHAVIOR_USE_UDP";
-  case MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS: return "MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS";
-  case MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS: return "MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS";
-  case MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS: return "MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS";
+  case MEMCACHED_BEHAVIOR_SERVER_TIMEOUT_LIMIT:
+    return "MEMCACHED_BEHAVIOR_SERVER_TIMEOUT_LIMIT";
+  case MEMCACHED_BEHAVIOR_NO_BLOCK:
+    return "MEMCACHED_BEHAVIOR_NO_BLOCK";
+  case MEMCACHED_BEHAVIOR_TCP_NODELAY:
+    return "MEMCACHED_BEHAVIOR_TCP_NODELAY";
+  case MEMCACHED_BEHAVIOR_HASH:
+    return "MEMCACHED_BEHAVIOR_HASH";
+  case MEMCACHED_BEHAVIOR_KETAMA:
+    return "MEMCACHED_BEHAVIOR_KETAMA";
+  case MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE:
+    return "MEMCACHED_BEHAVIOR_SOCKET_SEND_SIZE";
+  case MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE:
+    return "MEMCACHED_BEHAVIOR_SOCKET_RECV_SIZE";
+  case MEMCACHED_BEHAVIOR_CACHE_LOOKUPS:
+    return "MEMCACHED_BEHAVIOR_CACHE_LOOKUPS";
+  case MEMCACHED_BEHAVIOR_SUPPORT_CAS:
+    return "MEMCACHED_BEHAVIOR_SUPPORT_CAS";
+  case MEMCACHED_BEHAVIOR_POLL_TIMEOUT:
+    return "MEMCACHED_BEHAVIOR_POLL_TIMEOUT";
+  case MEMCACHED_BEHAVIOR_DISTRIBUTION:
+    return "MEMCACHED_BEHAVIOR_DISTRIBUTION";
+  case MEMCACHED_BEHAVIOR_BUFFER_REQUESTS:
+    return "MEMCACHED_BEHAVIOR_BUFFER_REQUESTS";
+  case MEMCACHED_BEHAVIOR_USER_DATA:
+    return "MEMCACHED_BEHAVIOR_USER_DATA";
+  case MEMCACHED_BEHAVIOR_SORT_HOSTS:
+    return "MEMCACHED_BEHAVIOR_SORT_HOSTS";
+  case MEMCACHED_BEHAVIOR_VERIFY_KEY:
+    return "MEMCACHED_BEHAVIOR_VERIFY_KEY";
+  case MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT:
+    return "MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT";
+  case MEMCACHED_BEHAVIOR_RETRY_TIMEOUT:
+    return "MEMCACHED_BEHAVIOR_RETRY_TIMEOUT";
+  case MEMCACHED_BEHAVIOR_DEAD_TIMEOUT:
+    return "MEMCACHED_BEHAVIOR_DEAD_TIMEOUT";
+  case MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED:
+    return "MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED";
+  case MEMCACHED_BEHAVIOR_KETAMA_HASH:
+    return "MEMCACHED_BEHAVIOR_KETAMA_HASH";
+  case MEMCACHED_BEHAVIOR_BINARY_PROTOCOL:
+    return "MEMCACHED_BEHAVIOR_BINARY_PROTOCOL";
+  case MEMCACHED_BEHAVIOR_SND_TIMEOUT:
+    return "MEMCACHED_BEHAVIOR_SND_TIMEOUT";
+  case MEMCACHED_BEHAVIOR_RCV_TIMEOUT:
+    return "MEMCACHED_BEHAVIOR_RCV_TIMEOUT";
+  case MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT:
+    return "MEMCACHED_BEHAVIOR_SERVER_FAILURE_LIMIT";
+  case MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK:
+    return "MEMCACHED_BEHAVIOR_IO_MSG_WATERMARK";
+  case MEMCACHED_BEHAVIOR_IO_BYTES_WATERMARK:
+    return "MEMCACHED_BEHAVIOR_IO_BYTES_WATERMARK";
+  case MEMCACHED_BEHAVIOR_IO_KEY_PREFETCH:
+    return "MEMCACHED_BEHAVIOR_IO_KEY_PREFETCH";
+  case MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY:
+    return "MEMCACHED_BEHAVIOR_HASH_WITH_PREFIX_KEY";
+  case MEMCACHED_BEHAVIOR_NOREPLY:
+    return "MEMCACHED_BEHAVIOR_NOREPLY";
+  case MEMCACHED_BEHAVIOR_USE_UDP:
+    return "MEMCACHED_BEHAVIOR_USE_UDP";
+  case MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS:
+    return "MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS";
+  case MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS:
+    return "MEMCACHED_BEHAVIOR_REMOVE_FAILED_SERVERS";
+  case MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS:
+    return "MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS";
   case MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ:
     return "MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ";
-  case MEMCACHED_BEHAVIOR_CORK: return "MEMCACHED_BEHAVIOR_CORK";
-  case MEMCACHED_BEHAVIOR_TCP_KEEPALIVE: return "MEMCACHED_BEHAVIOR_TCP_KEEPALIVE";
-  case MEMCACHED_BEHAVIOR_TCP_KEEPIDLE: return "MEMCACHED_BEHAVIOR_TCP_KEEPIDLE";
-  case MEMCACHED_BEHAVIOR_LOAD_FROM_FILE: return "MEMCACHED_BEHAVIOR_LOAD_FROM_FILE";
+  case MEMCACHED_BEHAVIOR_CORK:
+    return "MEMCACHED_BEHAVIOR_CORK";
+  case MEMCACHED_BEHAVIOR_TCP_KEEPALIVE:
+    return "MEMCACHED_BEHAVIOR_TCP_KEEPALIVE";
+  case MEMCACHED_BEHAVIOR_TCP_KEEPIDLE:
+    return "MEMCACHED_BEHAVIOR_TCP_KEEPIDLE";
+  case MEMCACHED_BEHAVIOR_LOAD_FROM_FILE:
+    return "MEMCACHED_BEHAVIOR_LOAD_FROM_FILE";
   default:
-  case MEMCACHED_BEHAVIOR_MAX: return "INVALID memcached_behavior_t";
+  case MEMCACHED_BEHAVIOR_MAX:
+    return "INVALID memcached_behavior_t";
   }
 }
 
 const char *libmemcached_string_distribution(const memcached_server_distribution_t flag) {
   switch (flag) {
-  case MEMCACHED_DISTRIBUTION_MODULA: return "MEMCACHED_DISTRIBUTION_MODULA";
-  case MEMCACHED_DISTRIBUTION_CONSISTENT: return "MEMCACHED_DISTRIBUTION_CONSISTENT";
-  case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA: return "MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA";
-  case MEMCACHED_DISTRIBUTION_RANDOM: return "MEMCACHED_DISTRIBUTION_RANDOM";
+  case MEMCACHED_DISTRIBUTION_MODULA:
+    return "MEMCACHED_DISTRIBUTION_MODULA";
+  case MEMCACHED_DISTRIBUTION_CONSISTENT:
+    return "MEMCACHED_DISTRIBUTION_CONSISTENT";
+  case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA:
+    return "MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA";
+  case MEMCACHED_DISTRIBUTION_RANDOM:
+    return "MEMCACHED_DISTRIBUTION_RANDOM";
   case MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY:
     return "MEMCACHED_DISTRIBUTION_CONSISTENT_KETAMA_SPY";
   case MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED:
     return "MEMCACHED_DISTRIBUTION_CONSISTENT_WEIGHTED";
-  case MEMCACHED_DISTRIBUTION_VIRTUAL_BUCKET: return "MEMCACHED_DISTRIBUTION_VIRTUAL_BUCKET";
+  case MEMCACHED_DISTRIBUTION_VIRTUAL_BUCKET:
+    return "MEMCACHED_DISTRIBUTION_VIRTUAL_BUCKET";
   default:
-  case MEMCACHED_DISTRIBUTION_CONSISTENT_MAX: return "INVALID memcached_server_distribution_t";
+  case MEMCACHED_DISTRIBUTION_CONSISTENT_MAX:
+    return "INVALID memcached_server_distribution_t";
   }
 }
 

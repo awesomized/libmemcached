@@ -67,35 +67,64 @@ void close_stdio(void) {
 
 static const char *lookup_help(memcached_options option) {
   switch (option) {
-  case OPT_SERVERS: return ("List which servers you wish to connect to.");
-  case OPT_VERSION: return ("Display the version of the application and then exit.");
-  case OPT_HELP: return ("Display this message and then exit.");
-  case OPT_VERBOSE: return ("Give more details on the progression of the application.");
-  case OPT_QUIET: return ("stderr and stdin will be closed at application startup.");
-  case OPT_DEBUG: return ("Provide output only useful for debugging.");
-  case OPT_FLAG: return ("Provide flag information for storage operation.");
-  case OPT_EXPIRE: return ("Set the expire option for the object.");
-  case OPT_SET: return ("Use set command with memcached when storing.");
-  case OPT_REPLACE: return ("Use replace command with memcached when storing.");
-  case OPT_ADD: return ("Use add command with memcached when storing.");
-  case OPT_SLAP_EXECUTE_NUMBER: return ("Number of times to execute the given test.");
-  case OPT_SLAP_INITIAL_LOAD: return ("Number of key pairs to load before executing tests.");
-  case OPT_SLAP_TEST: return ("Test to run (currently \"get\" or \"set\").");
-  case OPT_SLAP_CONCURRENCY: return ("Number of users to simulate with load.");
-  case OPT_SLAP_NON_BLOCK: return ("Set TCP up to use non-blocking IO.");
-  case OPT_SLAP_TCP_NODELAY: return ("Set TCP socket up to use nodelay.");
-  case OPT_FLUSH: return ("Flush servers before running tests.");
-  case OPT_HASH: return ("Select hash type.");
-  case OPT_BINARY: return ("Switch to binary protocol.");
-  case OPT_ANALYZE: return ("Analyze the provided servers.");
-  case OPT_UDP: return ("Use UDP protocol when communicating with server.");
-  case OPT_BUFFER: return ("Enable request buffering.");
-  case OPT_USERNAME: return "Username to use for SASL authentication";
-  case OPT_PASSWD: return "Password to use for SASL authentication";
-  case OPT_FILE: return "Path to file in which to save result";
-  case OPT_STAT_ARGS: return "Argument for statistics";
-  case OPT_SERVER_VERSION: return "Memcached daemon software version";
-  default: break;
+  case OPT_SERVERS:
+    return ("List which servers you wish to connect to.");
+  case OPT_VERSION:
+    return ("Display the version of the application and then exit.");
+  case OPT_HELP:
+    return ("Display this message and then exit.");
+  case OPT_VERBOSE:
+    return ("Give more details on the progression of the application.");
+  case OPT_QUIET:
+    return ("stderr and stdin will be closed at application startup.");
+  case OPT_DEBUG:
+    return ("Provide output only useful for debugging.");
+  case OPT_FLAG:
+    return ("Provide flag information for storage operation.");
+  case OPT_EXPIRE:
+    return ("Set the expire option for the object.");
+  case OPT_SET:
+    return ("Use set command with memcached when storing.");
+  case OPT_REPLACE:
+    return ("Use replace command with memcached when storing.");
+  case OPT_ADD:
+    return ("Use add command with memcached when storing.");
+  case OPT_SLAP_EXECUTE_NUMBER:
+    return ("Number of times to execute the given test.");
+  case OPT_SLAP_INITIAL_LOAD:
+    return ("Number of key pairs to load before executing tests.");
+  case OPT_SLAP_TEST:
+    return ("Test to run (currently \"get\" or \"set\").");
+  case OPT_SLAP_CONCURRENCY:
+    return ("Number of users to simulate with load.");
+  case OPT_SLAP_NON_BLOCK:
+    return ("Set TCP up to use non-blocking IO.");
+  case OPT_SLAP_TCP_NODELAY:
+    return ("Set TCP socket up to use nodelay.");
+  case OPT_FLUSH:
+    return ("Flush servers before running tests.");
+  case OPT_HASH:
+    return ("Select hash type.");
+  case OPT_BINARY:
+    return ("Switch to binary protocol.");
+  case OPT_ANALYZE:
+    return ("Analyze the provided servers.");
+  case OPT_UDP:
+    return ("Use UDP protocol when communicating with server.");
+  case OPT_BUFFER:
+    return ("Enable request buffering.");
+  case OPT_USERNAME:
+    return "Username to use for SASL authentication";
+  case OPT_PASSWD:
+    return "Password to use for SASL authentication";
+  case OPT_FILE:
+    return "Path to file in which to save result";
+  case OPT_STAT_ARGS:
+    return "Argument for statistics";
+  case OPT_SERVER_VERSION:
+    return "Memcached daemon software version";
+  default:
+    break;
   };
 
   assert(0);

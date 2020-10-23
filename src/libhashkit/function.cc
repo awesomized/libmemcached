@@ -22,9 +22,13 @@ static hashkit_return_t _set_function(struct hashkit_st::hashkit_function_st *se
   }
 
   switch (hash_algorithm) {
-  case HASHKIT_HASH_MD5: self->function = hashkit_md5; break;
+  case HASHKIT_HASH_MD5:
+    self->function = hashkit_md5;
+    break;
 
-  case HASHKIT_HASH_CRC: self->function = hashkit_crc32; break;
+  case HASHKIT_HASH_CRC:
+    self->function = hashkit_crc32;
+    break;
 
   case HASHKIT_HASH_FNV1_64:
     if (libhashkit_has_algorithm(HASHKIT_HASH_FNV1_64)) {
@@ -40,9 +44,13 @@ static hashkit_return_t _set_function(struct hashkit_st::hashkit_function_st *se
     }
     return HASHKIT_INVALID_ARGUMENT;
 
-  case HASHKIT_HASH_FNV1_32: self->function = hashkit_fnv1_32; break;
+  case HASHKIT_HASH_FNV1_32:
+    self->function = hashkit_fnv1_32;
+    break;
 
-  case HASHKIT_HASH_FNV1A_32: self->function = hashkit_fnv1a_32; break;
+  case HASHKIT_HASH_FNV1A_32:
+    self->function = hashkit_fnv1a_32;
+    break;
 
   case HASHKIT_HASH_HSIEH:
     if (libhashkit_has_algorithm(HASHKIT_HASH_HSIEH)) {
@@ -64,13 +72,20 @@ static hashkit_return_t _set_function(struct hashkit_st::hashkit_function_st *se
     }
     return HASHKIT_INVALID_ARGUMENT;
 
-  case HASHKIT_HASH_JENKINS: self->function = hashkit_jenkins; break;
+  case HASHKIT_HASH_JENKINS:
+    self->function = hashkit_jenkins;
+    break;
 
-  case HASHKIT_HASH_CUSTOM: return HASHKIT_INVALID_ARGUMENT;
+  case HASHKIT_HASH_CUSTOM:
+    return HASHKIT_INVALID_ARGUMENT;
 
-  case HASHKIT_HASH_DEFAULT: self->function = hashkit_one_at_a_time; break;
+  case HASHKIT_HASH_DEFAULT:
+    self->function = hashkit_one_at_a_time;
+    break;
 
-  case HASHKIT_HASH_MAX: self->function = hashkit_one_at_a_time; return HASHKIT_INVALID_HASH;
+  case HASHKIT_HASH_MAX:
+    self->function = hashkit_one_at_a_time;
+    return HASHKIT_INVALID_HASH;
   }
 
   self->context = NULL;

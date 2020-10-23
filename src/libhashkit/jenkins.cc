@@ -155,12 +155,22 @@ hashkit_jenkins(const char *key, size_t length, void *) {
       b += k[1] & 0xff;
       a += k[0];
       break;
-    case 4: a += k[0]; break;
-    case 3: a += k[0] & 0xffffff; break;
-    case 2: a += k[0] & 0xffff; break;
-    case 1: a += k[0] & 0xff; break;
-    case 0: return c; /* zero length strings require no mixing */
-    default: return c;
+    case 4:
+      a += k[0];
+      break;
+    case 3:
+      a += k[0] & 0xffffff;
+      break;
+    case 2:
+      a += k[0] & 0xffff;
+      break;
+    case 1:
+      a += k[0] & 0xff;
+      break;
+    case 0:
+      return c; /* zero length strings require no mixing */
+    default:
+      return c;
     }
 
   } else if ((u.i & 0x1) == 0) {
@@ -210,14 +220,22 @@ hashkit_jenkins(const char *key, size_t length, void *) {
     case 5:
       b += k8[4];
       /* fall through */
-    case 4: a += k[0] + (((uint32_t) k[1]) << 16); break;
+    case 4:
+      a += k[0] + (((uint32_t) k[1]) << 16);
+      break;
     case 3:
       a += ((uint32_t) k8[2]) << 16;
       /* fall through */
-    case 2: a += k[0]; break;
-    case 1: a += k8[0]; break;
-    case 0: return c; /* zero length requires no mixing */
-    default: return c;
+    case 2:
+      a += k[0];
+      break;
+    case 1:
+      a += k8[0];
+      break;
+    case 0:
+      return c; /* zero length requires no mixing */
+    default:
+      return c;
     }
 
   } else { /* need to read the key one byte at a time */
@@ -278,9 +296,13 @@ hashkit_jenkins(const char *key, size_t length, void *) {
     case 2:
       a += ((uint32_t) k[1]) << 8;
       /* fall through */
-    case 1: a += k[0]; break;
-    case 0: return c;
-    default: return c;
+    case 1:
+      a += k[0];
+      break;
+    case 0:
+      return c;
+    default:
+      return c;
     }
 #if !WORDS_BIGENDIAN
   }
