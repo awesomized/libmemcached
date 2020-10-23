@@ -1,24 +1,26 @@
-/* LibMemcached
- * Copyright (C) 2011-2012 Data Differential, http://datadifferential.com/
- * Copyright (C) 2006-2009 Brian Aker
- * All rights reserved.
- *
- * Use and distribution licensed under the BSD license.  See
- * the COPYING file in the parent directory for full text.
- *
- * Summary:
- *
- */
+/*
+    +--------------------------------------------------------------------+
+    | libmemcached - C/C++ Client Library for memcached                  |
+    +--------------------------------------------------------------------+
+    | Redistribution and use in source and binary forms, with or without |
+    | modification, are permitted under the terms of the BSD license.    |
+    | You should have received a copy of the license in a bundled file   |
+    | named LICENSE; in case you did not receive a copy you can review   |
+    | the terms online at: https://opensource.org/licenses/BSD-3-Clause  |
+    +--------------------------------------------------------------------+
+    | Copyright (c) 2006-2014 Brian Aker   https://datadifferential.com/ |
+    | Copyright (c) 2020 Michael Wallner   <mike@php.net>                |
+    +--------------------------------------------------------------------+
+*/
 
-/* -*- Mode: C; tab-width: 2; c-basic-offset: 2; indent-tabs-mode: nil -*- */
 #undef NDEBUG
 
 #include "mem_config.h"
 
 #ifdef HAVE_POLL_H
-#include <poll.h>
+#  include <poll.h>
 #else
-#include "poll/poll.h"
+#  include "poll/poll.h"
 #endif
 
 #include <cassert>
@@ -49,19 +51,19 @@
  * from gcc. The conversion methods isn't the bottleneck for my app, so
  * just remove the warnings by undef'ing the optimization ..
  */
-#undef ntohs
-#undef ntohl
+#  undef ntohs
+#  undef ntohl
 #endif
 
 /* Should we generate coredumps when we enounter an error (-c) */
-static bool do_core= false;
+static bool do_core = false;
 /* connection to the server */
 static memcached_socket_t sock;
 /* Should the output from test failures be verbose or quiet? */
-static bool verbose= false;
+static bool verbose = false;
 
 /* The number of seconds to wait for an IO-operation */
-static int timeout= 2;
+static int timeout = 2;
 
 /* v1.6.x is more permissible */
 static bool v16x_or_greater = false;
@@ -75,8 +77,7 @@ static bool v16x_or_greater = false;
  * To avoid to have to do multiple writes, lets add a chunk of memory
  * to use. 1k should be more than enough for header, key and body.
  */
-typedef union
-{
+typedef union {
   protocol_binary_request_no_extras plain;
   protocol_binary_request_flush flush;
   protocol_binary_request_incr incr;
@@ -84,40 +85,31 @@ typedef union
   char bytes[1024];
 } command;
 
-typedef union
-{
+typedef union {
   protocol_binary_response_no_extras plain;
   protocol_binary_response_incr incr;
   protocol_binary_response_decr decr;
   char bytes[1024];
 } response;
 
-enum test_return
-{
-  TEST_SKIP, TEST_PASS, TEST_PASS_RECONNECT, TEST_FAIL
-};
+enum test_return { TEST_SKIP, TEST_PASS, TEST_PASS_RECONNECT, TEST_FAIL };
 
 /**
  * Try to get an addrinfo struct for a given port on a given host
  */
-static struct addrinfo *lookuphost(const char *hostname, const char *port)
-{
-  struct addrinfo *ai= 0;
+static struct addrinfo *lookuphost(const char *hostname, const char *port) {
+  struct addrinfo *ai = 0;
   struct addrinfo hints;
   memset(&hints, 0, sizeof(struct addrinfo));
-  hints.ai_family=AF_UNSPEC;
-  hints.ai_protocol=IPPROTO_TCP;
-  hints.ai_socktype=SOCK_STREAM;
+  hints.ai_family = AF_UNSPEC;
+  hints.ai_protocol = IPPROTO_TCP;
+  hints.ai_socktype = SOCK_STREAM;
 
-  int error= getaddrinfo(hostname, port, &hints, &ai);
-  if (error != 0)
-  {
-    if (error != EAI_SYSTEM)
-    {
+  int error = getaddrinfo(hostname, port, &hints, &ai);
+  if (error != 0) {
+    if (error != EAI_SYSTEM) {
       fprintf(stderr, "getaddrinfo(): %s\n", gai_strerror(error));
-    }
-    else
-    {
+    } else {
       perror("getaddrinfo()");
     }
   }
@@ -129,29 +121,24 @@ static struct addrinfo *lookuphost(const char *hostname, const char *port)
  * Set the socket in nonblocking mode
  * @return -1 if failure, the socket otherwise
  */
-static memcached_socket_t set_noblock(void)
-{
+static memcached_socket_t set_noblock(void) {
 #if defined(_WIN32)
   u_long arg = 1;
-  if (ioctlsocket(sock, FIONBIO, &arg) == SOCKET_ERROR)
-  {
+  if (ioctlsocket(sock, FIONBIO, &arg) == SOCKET_ERROR) {
     perror("Failed to set nonblocking io");
     closesocket(sock);
     return INVALID_SOCKET;
   }
 #else
-  int flags= fcntl(sock, F_GETFL, 0);
-  if (flags == -1)
-  {
+  int flags = fcntl(sock, F_GETFL, 0);
+  if (flags == -1) {
     perror("Failed to get socket flags");
     memcached_close_socket(sock);
     return INVALID_SOCKET;
   }
 
-  if ((flags & O_NONBLOCK) != O_NONBLOCK)
-  {
-    if (fcntl(sock, F_SETFL, flags | O_NONBLOCK) == -1)
-    {
+  if ((flags & O_NONBLOCK) != O_NONBLOCK) {
+    if (fcntl(sock, F_SETFL, flags | O_NONBLOCK) == -1) {
       perror("Failed to set socket to nonblocking mode");
       memcached_close_socket(sock);
       return INVALID_SOCKET;
@@ -167,29 +154,19 @@ static memcached_socket_t set_noblock(void)
  * @param port the port number (or service) to connect to
  * @return positive integer if success, -1 otherwise
  */
-static memcached_socket_t connect_server(const char *hostname, const char *port)
-{
-  struct addrinfo *ai= lookuphost(hostname, port);
-  sock= INVALID_SOCKET;
-  if (ai != NULL)
-  {
-    if ((sock= socket(ai->ai_family, ai->ai_socktype,
-                      ai->ai_protocol)) != INVALID_SOCKET)
-    {
-      if (connect(sock, ai->ai_addr, ai->ai_addrlen) == SOCKET_ERROR)
-      {
-        fprintf(stderr, "Failed to connect socket: %s\n",
-                strerror(get_socket_errno()));
+static memcached_socket_t connect_server(const char *hostname, const char *port) {
+  struct addrinfo *ai = lookuphost(hostname, port);
+  sock = INVALID_SOCKET;
+  if (ai != NULL) {
+    if ((sock = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol)) != INVALID_SOCKET) {
+      if (connect(sock, ai->ai_addr, ai->ai_addrlen) == SOCKET_ERROR) {
+        fprintf(stderr, "Failed to connect socket: %s\n", strerror(get_socket_errno()));
         closesocket(sock);
-        sock= INVALID_SOCKET;
+        sock = INVALID_SOCKET;
+      } else {
+        sock = set_noblock();
       }
-      else
-      {
-        sock= set_noblock();
-      }
-    }
-    else
-    {
+    } else {
       fprintf(stderr, "Failed to create socket: %s\n", strerror(get_socket_errno()));
     }
 
@@ -199,44 +176,31 @@ static memcached_socket_t connect_server(const char *hostname, const char *port)
   return sock;
 }
 
-static ssize_t timeout_io_op(memcached_socket_t fd, short direction, void *buf, size_t len)
-{
+static ssize_t timeout_io_op(memcached_socket_t fd, short direction, void *buf, size_t len) {
   ssize_t ret;
 
-  if (direction == POLLOUT)
-  {
-    ret= send(fd, buf, len, 0);
-  }
-  else
-  {
-    ret= recv(fd, buf, len, 0);
+  if (direction == POLLOUT) {
+    ret = send(fd, buf, len, 0);
+  } else {
+    ret = recv(fd, buf, len, 0);
   }
 
-  if (ret == SOCKET_ERROR && get_socket_errno() == EWOULDBLOCK)
-  {
+  if (ret == SOCKET_ERROR && get_socket_errno() == EWOULDBLOCK) {
     struct pollfd fds;
     memset(&fds, 0, sizeof(struct pollfd));
-    fds.events= direction;
-    fds.fd= fd;
+    fds.events = direction;
+    fds.fd = fd;
 
-    int err= poll(&fds, 1, timeout * 1000);
-    if (err == 1)
-    {
-      if (direction == POLLOUT)
-      {
-        ret= send(fd, buf, len, 0);
+    int err = poll(&fds, 1, timeout * 1000);
+    if (err == 1) {
+      if (direction == POLLOUT) {
+        ret = send(fd, buf, len, 0);
+      } else {
+        ret = recv(fd, buf, len, 0);
       }
-      else
-      {
-        ret= recv(fd, buf, len, 0);
-      }
-    }
-    else if (err == 0)
-    {
-      errno= ETIMEDOUT;
-    }
-    else
-    {
+    } else if (err == 0) {
+      errno = ETIMEDOUT;
+    } else {
       perror("Failed to poll");
       return -1;
     }
@@ -251,17 +215,13 @@ static ssize_t timeout_io_op(memcached_socket_t fd, short direction, void *buf, 
  * message is returned.
  *
  */
-static enum test_return ensure(bool val, const char *expression, const char *file, int line)
-{
-  if (!val)
-  {
-    if (verbose)
-    {
+static enum test_return ensure(bool val, const char *expression, const char *file, int line) {
+  if (!val) {
+    if (verbose) {
       fprintf(stdout, "\n%s:%d: %s", file, line, expression);
     }
 
-    if (do_core)
-    {
+    if (do_core) {
       abort();
     }
 
@@ -271,28 +231,31 @@ static enum test_return ensure(bool val, const char *expression, const char *fil
   return TEST_PASS;
 }
 
-#define verify(expression) do { if (ensure(expression, #expression, __FILE__, __LINE__) == TEST_FAIL) return TEST_FAIL; } while (0)
-#define execute(expression) do { if (ensure(expression == TEST_PASS, #expression, __FILE__, __LINE__) == TEST_FAIL) return TEST_FAIL; } while (0)
+#define verify(expression) \
+  do { \
+    if (ensure(expression, #expression, __FILE__, __LINE__) == TEST_FAIL) \
+      return TEST_FAIL; \
+  } while (0)
+#define execute(expression) \
+  do { \
+    if (ensure(expression == TEST_PASS, #expression, __FILE__, __LINE__) == TEST_FAIL) \
+      return TEST_FAIL; \
+  } while (0)
 
 /**
  * Send a chunk of memory over the socket (retry if the call is iterrupted
  */
-static enum test_return retry_write(const void* buf, size_t len)
-{
-  size_t offset= 0;
-  const char* ptr= static_cast<const char *>(buf);
+static enum test_return retry_write(const void *buf, size_t len) {
+  size_t offset = 0;
+  const char *ptr = static_cast<const char *>(buf);
 
-  do
-  {
-    size_t num_bytes= len - offset;
-    ssize_t nw= timeout_io_op(sock, POLLOUT, (void*)(ptr + offset), num_bytes);
-    if (nw == -1)
-    {
+  do {
+    size_t num_bytes = len - offset;
+    ssize_t nw = timeout_io_op(sock, POLLOUT, (void *) (ptr + offset), num_bytes);
+    if (nw == -1) {
       verify(get_socket_errno() == EINTR || get_socket_errno() == EAGAIN);
-    }
-    else
-    {
-      offset+= (size_t)nw;
+    } else {
+      offset += (size_t) nw;
     }
 
   } while (offset < len);
@@ -304,10 +267,9 @@ static enum test_return retry_write(const void* buf, size_t len)
  * Resend a packet to the server (All fields in the command header should
  * be in network byte order)
  */
-static enum test_return resend_packet(command *cmd)
-{
-  size_t length= sizeof (protocol_binary_request_no_extras) +
-    ntohl(cmd->plain.message.header.request.bodylen);
+static enum test_return resend_packet(command *cmd) {
+  size_t length =
+      sizeof(protocol_binary_request_no_extras) + ntohl(cmd->plain.message.header.request.bodylen);
 
   execute(retry_write(cmd, length));
   return TEST_PASS;
@@ -317,15 +279,11 @@ static enum test_return resend_packet(command *cmd)
  * Send a command to the server. The command header needs to be updated
  * to network byte order
  */
-static enum test_return send_packet(command *cmd)
-{
+static enum test_return send_packet(command *cmd) {
   /* Fix the byteorder of the header */
-  cmd->plain.message.header.request.keylen=
-          ntohs(cmd->plain.message.header.request.keylen);
-  cmd->plain.message.header.request.bodylen=
-          ntohl(cmd->plain.message.header.request.bodylen);
-  cmd->plain.message.header.request.cas=
-          memcached_ntohll(cmd->plain.message.header.request.cas);
+  cmd->plain.message.header.request.keylen = ntohs(cmd->plain.message.header.request.keylen);
+  cmd->plain.message.header.request.bodylen = ntohl(cmd->plain.message.header.request.bodylen);
+  cmd->plain.message.header.request.cas = memcached_ntohll(cmd->plain.message.header.request.cas);
 
   execute(resend_packet(cmd));
   return TEST_PASS;
@@ -334,23 +292,19 @@ static enum test_return send_packet(command *cmd)
 /**
  * Read a fixed length chunk of data from the server
  */
-static enum test_return retry_read(void *buf, size_t len)
-{
-  size_t offset= 0;
-  do
-  {
-    ssize_t nr= timeout_io_op(sock, POLLIN, ((char*) buf) + offset, len - offset);
+static enum test_return retry_read(void *buf, size_t len) {
+  size_t offset = 0;
+  do {
+    ssize_t nr = timeout_io_op(sock, POLLIN, ((char *) buf) + offset, len - offset);
     switch (nr) {
-    case -1 :
+    case -1:
       fprintf(stderr, "Errno: %d %s\n", get_socket_errno(), strerror(errno));
       verify(get_socket_errno() == EINTR || get_socket_errno() == EAGAIN);
       break;
 
-    case 0:
-      return TEST_FAIL;
+    case 0: return TEST_FAIL;
 
-    default:
-      offset+= (size_t)nr;
+    default: offset += (size_t) nr;
     }
   } while (offset < len);
 
@@ -361,23 +315,18 @@ static enum test_return retry_read(void *buf, size_t len)
  * Receive a response from the server and conver the fields in the header
  * to local byte order
  */
-static enum test_return recv_packet(response *rsp)
-{
+static enum test_return recv_packet(response *rsp) {
   execute(retry_read(rsp, sizeof(protocol_binary_response_no_extras)));
 
   /* Fix the byte order in the packet header */
-  rsp->plain.message.header.response.keylen=
-          ntohs(rsp->plain.message.header.response.keylen);
-  rsp->plain.message.header.response.status=
-          ntohs(rsp->plain.message.header.response.status);
-  rsp->plain.message.header.response.bodylen=
-          ntohl(rsp->plain.message.header.response.bodylen);
-  rsp->plain.message.header.response.cas=
-          memcached_ntohll(rsp->plain.message.header.response.cas);
+  rsp->plain.message.header.response.keylen = ntohs(rsp->plain.message.header.response.keylen);
+  rsp->plain.message.header.response.status = ntohs(rsp->plain.message.header.response.status);
+  rsp->plain.message.header.response.bodylen = ntohl(rsp->plain.message.header.response.bodylen);
+  rsp->plain.message.header.response.cas = memcached_ntohll(rsp->plain.message.header.response.cas);
 
-  size_t bodysz= rsp->plain.message.header.response.bodylen;
+  size_t bodysz = rsp->plain.message.header.response.bodylen;
   if (bodysz > 0)
-    execute(retry_read(rsp->bytes + sizeof (protocol_binary_response_no_extras), bodysz));
+    execute(retry_read(rsp->bytes + sizeof(protocol_binary_response_no_extras), bodysz));
 
   return TEST_PASS;
 }
@@ -394,29 +343,22 @@ static enum test_return recv_packet(response *rsp)
  * @param flags the flags to store along with the key
  * @param exptime the expiry time for the key
  */
-static void storage_command(command *cmd,
-                            uint8_t cc,
-                            const void* key,
-                            size_t keylen,
-                            const void* dta,
-                            size_t dtalen,
-                            uint32_t flags,
-                            uint32_t exptime)
-{
+static void storage_command(command *cmd, uint8_t cc, const void *key, size_t keylen,
+                            const void *dta, size_t dtalen, uint32_t flags, uint32_t exptime) {
   /* all of the storage commands use the same command layout */
-  protocol_binary_request_set *request= &cmd->set;
+  protocol_binary_request_set *request = &cmd->set;
 
-  memset(request, 0, sizeof (*request));
-  request->message.header.request.magic= PROTOCOL_BINARY_REQ;
-  request->message.header.request.opcode= cc;
-  request->message.header.request.keylen= (uint16_t)keylen;
-  request->message.header.request.extlen= 8;
-  request->message.header.request.bodylen= (uint32_t)(keylen + 8 + dtalen);
-  request->message.header.request.opaque= 0xdeadbeef;
-  request->message.body.flags= flags;
-  request->message.body.expiration= exptime;
+  memset(request, 0, sizeof(*request));
+  request->message.header.request.magic = PROTOCOL_BINARY_REQ;
+  request->message.header.request.opcode = cc;
+  request->message.header.request.keylen = (uint16_t) keylen;
+  request->message.header.request.extlen = 8;
+  request->message.header.request.bodylen = (uint32_t)(keylen + 8 + dtalen);
+  request->message.header.request.opaque = 0xdeadbeef;
+  request->message.body.flags = flags;
+  request->message.body.expiration = exptime;
 
-  off_t key_offset= sizeof (protocol_binary_request_no_extras) + 8;
+  off_t key_offset = sizeof(protocol_binary_request_no_extras) + 8;
   memcpy(cmd->bytes + key_offset, key, keylen);
   if (dta != NULL)
     memcpy(cmd->bytes + key_offset + keylen, dta, dtalen);
@@ -431,22 +373,17 @@ static void storage_command(command *cmd,
  * @param dta the data to store with the key
  * @param dtalen the length of the data to store with the key
  */
-static void raw_command(command *cmd,
-                        uint8_t cc,
-                        const void* key,
-                        size_t keylen,
-                        const void* dta,
-                        size_t dtalen)
-{
+static void raw_command(command *cmd, uint8_t cc, const void *key, size_t keylen, const void *dta,
+                        size_t dtalen) {
   /* all of the storage commands use the same command layout */
-  memset(cmd, 0, sizeof (*cmd));
-  cmd->plain.message.header.request.magic= PROTOCOL_BINARY_REQ;
-  cmd->plain.message.header.request.opcode= cc;
-  cmd->plain.message.header.request.keylen= (uint16_t)keylen;
-  cmd->plain.message.header.request.bodylen= (uint32_t)(keylen + dtalen);
-  cmd->plain.message.header.request.opaque= 0xdeadbeef;
+  memset(cmd, 0, sizeof(*cmd));
+  cmd->plain.message.header.request.magic = PROTOCOL_BINARY_REQ;
+  cmd->plain.message.header.request.opcode = cc;
+  cmd->plain.message.header.request.keylen = (uint16_t) keylen;
+  cmd->plain.message.header.request.bodylen = (uint32_t)(keylen + dtalen);
+  cmd->plain.message.header.request.opaque = 0xdeadbeef;
 
-  off_t key_offset= sizeof (protocol_binary_request_no_extras);
+  off_t key_offset = sizeof(protocol_binary_request_no_extras);
 
   if (key != NULL)
     memcpy(cmd->bytes + key_offset, key, keylen);
@@ -462,19 +399,16 @@ static void raw_command(command *cmd,
  * @param exptime when to flush
  * @param use_extra to force using of the extra field?
  */
-static void flush_command(command *cmd,
-                          uint8_t cc, uint32_t exptime, bool use_extra)
-{
-  memset(cmd, 0, sizeof (cmd->flush));
-  cmd->flush.message.header.request.magic= PROTOCOL_BINARY_REQ;
-  cmd->flush.message.header.request.opcode= cc;
-  cmd->flush.message.header.request.opaque= 0xdeadbeef;
+static void flush_command(command *cmd, uint8_t cc, uint32_t exptime, bool use_extra) {
+  memset(cmd, 0, sizeof(cmd->flush));
+  cmd->flush.message.header.request.magic = PROTOCOL_BINARY_REQ;
+  cmd->flush.message.header.request.opcode = cc;
+  cmd->flush.message.header.request.opaque = 0xdeadbeef;
 
-  if (exptime != 0 || use_extra)
-  {
-    cmd->flush.message.header.request.extlen= 4;
-    cmd->flush.message.body.expiration= htonl(exptime);
-    cmd->flush.message.header.request.bodylen= 4;
+  if (exptime != 0 || use_extra) {
+    cmd->flush.message.header.request.extlen = 4;
+    cmd->flush.message.body.expiration = htonl(exptime);
+    cmd->flush.message.header.request.bodylen = 4;
   }
 }
 
@@ -487,26 +421,20 @@ static void flush_command(command *cmd,
  * @param initial the initial value if the key doesn't exist
  * @param exptime when the key should expire if it isn't set
  */
-static void arithmetic_command(command *cmd,
-                               uint8_t cc,
-                               const void* key,
-                               size_t keylen,
-                               uint64_t delta,
-                               uint64_t initial,
-                               uint32_t exptime)
-{
-  memset(cmd, 0, sizeof (cmd->incr));
-  cmd->incr.message.header.request.magic= PROTOCOL_BINARY_REQ;
-  cmd->incr.message.header.request.opcode= cc;
-  cmd->incr.message.header.request.keylen= (uint16_t)keylen;
-  cmd->incr.message.header.request.extlen= 20;
-  cmd->incr.message.header.request.bodylen= (uint32_t)(keylen + 20);
-  cmd->incr.message.header.request.opaque= 0xdeadbeef;
-  cmd->incr.message.body.delta= memcached_htonll(delta);
-  cmd->incr.message.body.initial= memcached_htonll(initial);
-  cmd->incr.message.body.expiration= htonl(exptime);
+static void arithmetic_command(command *cmd, uint8_t cc, const void *key, size_t keylen,
+                               uint64_t delta, uint64_t initial, uint32_t exptime) {
+  memset(cmd, 0, sizeof(cmd->incr));
+  cmd->incr.message.header.request.magic = PROTOCOL_BINARY_REQ;
+  cmd->incr.message.header.request.opcode = cc;
+  cmd->incr.message.header.request.keylen = (uint16_t) keylen;
+  cmd->incr.message.header.request.extlen = 20;
+  cmd->incr.message.header.request.bodylen = (uint32_t)(keylen + 20);
+  cmd->incr.message.header.request.opaque = 0xdeadbeef;
+  cmd->incr.message.body.delta = memcached_htonll(delta);
+  cmd->incr.message.body.initial = memcached_htonll(initial);
+  cmd->incr.message.body.expiration = htonl(exptime);
 
-  off_t key_offset= sizeof (protocol_binary_request_no_extras) + 20;
+  off_t key_offset = sizeof(protocol_binary_request_no_extras) + 20;
   memcpy(cmd->bytes + key_offset, key, keylen);
 }
 
@@ -516,17 +444,14 @@ static void arithmetic_command(command *cmd,
  * @param cc the expected command
  * @param status the expected status
  */
-static enum test_return do_validate_response_header(response *rsp,
-                                                    uint8_t cc, uint16_t status)
-{
+static enum test_return do_validate_response_header(response *rsp, uint8_t cc, uint16_t status) {
   verify(rsp->plain.message.header.response.magic == PROTOCOL_BINARY_RES);
   verify(rsp->plain.message.header.response.opcode == cc);
   verify(rsp->plain.message.header.response.datatype == PROTOCOL_BINARY_RAW_BYTES);
   verify(rsp->plain.message.header.response.status == status);
   verify(rsp->plain.message.header.response.opaque == 0xdeadbeef);
 
-  if (status == PROTOCOL_BINARY_RESPONSE_SUCCESS)
-  {
+  if (status == PROTOCOL_BINARY_RESPONSE_SUCCESS) {
     switch (cc) {
     case PROTOCOL_BINARY_CMD_ADDQ:
     case PROTOCOL_BINARY_CMD_APPENDQ:
@@ -540,8 +465,7 @@ static enum test_return do_validate_response_header(response *rsp,
     case PROTOCOL_BINARY_CMD_SETQ:
       verify("Quiet command shouldn't return on success" == NULL);
       /* fall through */
-    default:
-      break;
+    default: break;
     }
 
     switch (cc) {
@@ -604,13 +528,10 @@ static enum test_return do_validate_response_header(response *rsp,
       /* Undefined command code */
       break;
     }
-  }
-  else
-  {
+  } else {
     verify(rsp->plain.message.header.response.cas == 0);
     verify(rsp->plain.message.header.response.extlen == 0);
-    if (cc != PROTOCOL_BINARY_CMD_GETK)
-    {
+    if (cc != PROTOCOL_BINARY_CMD_GETK) {
       verify(rsp->plain.message.header.response.keylen == 0);
     }
   }
@@ -623,46 +544,39 @@ static enum test_return do_validate_response_header(response *rsp,
  * an enum.... Let's just create a macro to avoid cluttering
  * the code with all of the == TEST_PASS ;-)
  */
-#define validate_response_header(a,b,c) \
-        do_validate_response_header(a,b,c) == TEST_PASS
+#define validate_response_header(a, b, c) do_validate_response_header(a, b, c) == TEST_PASS
 
-
-static enum test_return send_binary_noop(void)
-{
+static enum test_return send_binary_noop(void) {
   command cmd;
   raw_command(&cmd, PROTOCOL_BINARY_CMD_NOOP, NULL, 0, NULL, 0);
   execute(send_packet(&cmd));
   return TEST_PASS;
 }
 
-static enum test_return receive_binary_noop(void)
-{
+static enum test_return receive_binary_noop(void) {
   response rsp;
   execute(recv_packet(&rsp));
-  verify(validate_response_header(&rsp, PROTOCOL_BINARY_CMD_NOOP,
-                                  PROTOCOL_BINARY_RESPONSE_SUCCESS));
+  verify(
+      validate_response_header(&rsp, PROTOCOL_BINARY_CMD_NOOP, PROTOCOL_BINARY_RESPONSE_SUCCESS));
   return TEST_PASS;
 }
 
-static enum test_return test_binary_noop(void)
-{
+static enum test_return test_binary_noop(void) {
   execute(send_binary_noop());
   execute(receive_binary_noop());
   return TEST_PASS;
 }
 
-static enum test_return test_binary_quit_impl(uint8_t cc)
-{
+static enum test_return test_binary_quit_impl(uint8_t cc) {
   command cmd;
   response rsp;
   raw_command(&cmd, cc, NULL, 0, NULL, 0);
 
   execute(send_packet(&cmd));
-  if (cc == PROTOCOL_BINARY_CMD_QUIT)
-  {
+  if (cc == PROTOCOL_BINARY_CMD_QUIT) {
     execute(recv_packet(&rsp));
-    verify(validate_response_header(&rsp, PROTOCOL_BINARY_CMD_QUIT,
-                                    PROTOCOL_BINARY_RESPONSE_SUCCESS));
+    verify(
+        validate_response_header(&rsp, PROTOCOL_BINARY_CMD_QUIT, PROTOCOL_BINARY_RESPONSE_SUCCESS));
   }
 
   /* Socket should be closed now, read should return EXIT_SUCCESS */
@@ -671,42 +585,33 @@ static enum test_return test_binary_quit_impl(uint8_t cc)
   return TEST_PASS_RECONNECT;
 }
 
-static enum test_return test_binary_quit(void)
-{
+static enum test_return test_binary_quit(void) {
   return test_binary_quit_impl(PROTOCOL_BINARY_CMD_QUIT);
 }
 
-static enum test_return test_binary_quitq(void)
-{
+static enum test_return test_binary_quitq(void) {
   return test_binary_quit_impl(PROTOCOL_BINARY_CMD_QUITQ);
 }
 
-static enum test_return test_binary_set_impl(const char* key, uint8_t cc)
-{
+static enum test_return test_binary_set_impl(const char *key, uint8_t cc) {
   command cmd;
   response rsp;
 
-  uint64_t value= 0xdeadbeefdeadcafeULL;
-  storage_command(&cmd, cc, key, strlen(key), &value, sizeof (value), 0, 0);
+  uint64_t value = 0xdeadbeefdeadcafeULL;
+  storage_command(&cmd, cc, key, strlen(key), &value, sizeof(value), 0, 0);
 
   /* set should always work */
-  for (int ii= 0; ii < 10; ii++)
-  {
-    if (ii == 0)
-    {
+  for (int ii = 0; ii < 10; ii++) {
+    if (ii == 0) {
       execute(send_packet(&cmd));
-    }
-    else
-    {
+    } else {
       execute(resend_packet(&cmd));
     }
 
-    if (cc == PROTOCOL_BINARY_CMD_SET)
-    {
+    if (cc == PROTOCOL_BINARY_CMD_SET) {
       execute(recv_packet(&rsp));
       verify(validate_response_header(&rsp, cc, PROTOCOL_BINARY_RESPONSE_SUCCESS));
-    }
-    else
+    } else
       execute(test_binary_noop());
   }
 
@@ -714,29 +619,27 @@ static enum test_return test_binary_set_impl(const char* key, uint8_t cc)
    * We need to get the current CAS id, and at this time we haven't
    * verified that we have a working get
    */
-  if (cc == PROTOCOL_BINARY_CMD_SETQ)
-  {
-    cmd.set.message.header.request.opcode= PROTOCOL_BINARY_CMD_SET;
+  if (cc == PROTOCOL_BINARY_CMD_SETQ) {
+    cmd.set.message.header.request.opcode = PROTOCOL_BINARY_CMD_SET;
     execute(resend_packet(&cmd));
     execute(recv_packet(&rsp));
-    verify(validate_response_header(&rsp, PROTOCOL_BINARY_CMD_SET,
-                                    PROTOCOL_BINARY_RESPONSE_SUCCESS));
-    cmd.set.message.header.request.opcode= PROTOCOL_BINARY_CMD_SETQ;
+    verify(
+        validate_response_header(&rsp, PROTOCOL_BINARY_CMD_SET, PROTOCOL_BINARY_RESPONSE_SUCCESS));
+    cmd.set.message.header.request.opcode = PROTOCOL_BINARY_CMD_SETQ;
   }
 
   /* try to set with the correct CAS value */
-  cmd.plain.message.header.request.cas= memcached_htonll(rsp.plain.message.header.response.cas);
+  cmd.plain.message.header.request.cas = memcached_htonll(rsp.plain.message.header.response.cas);
   execute(resend_packet(&cmd));
-  if (cc == PROTOCOL_BINARY_CMD_SET)
-  {
+  if (cc == PROTOCOL_BINARY_CMD_SET) {
     execute(recv_packet(&rsp));
     verify(validate_response_header(&rsp, cc, PROTOCOL_BINARY_RESPONSE_SUCCESS));
-  }
-  else
+  } else
     execute(test_binary_noop());
 
   /* try to set with an incorrect CAS value */
-  cmd.plain.message.header.request.cas= memcached_htonll(rsp.plain.message.header.response.cas - 1);
+  cmd.plain.message.header.request.cas =
+      memcached_htonll(rsp.plain.message.header.response.cas - 1);
   execute(resend_packet(&cmd));
   execute(send_binary_noop());
   execute(recv_packet(&rsp));
@@ -746,105 +649,85 @@ static enum test_return test_binary_set_impl(const char* key, uint8_t cc)
   return TEST_PASS;
 }
 
-static enum test_return test_binary_set(void)
-{
+static enum test_return test_binary_set(void) {
   return test_binary_set_impl("test_binary_set", PROTOCOL_BINARY_CMD_SET);
 }
 
-static enum test_return test_binary_setq(void)
-{
+static enum test_return test_binary_setq(void) {
   return test_binary_set_impl("test_binary_setq", PROTOCOL_BINARY_CMD_SETQ);
 }
 
-static enum test_return test_binary_add_impl(const char* key, uint8_t cc)
-{
+static enum test_return test_binary_add_impl(const char *key, uint8_t cc) {
   command cmd;
   response rsp;
-  uint64_t value= 0xdeadbeefdeadcafeULL;
-  storage_command(&cmd, cc, key, strlen(key), &value, sizeof (value), 0, 0);
+  uint64_t value = 0xdeadbeefdeadcafeULL;
+  storage_command(&cmd, cc, key, strlen(key), &value, sizeof(value), 0, 0);
 
   /* first add should work, rest of them should fail (even with cas
      as wildcard */
-  for (int ii=0; ii < 10; ii++)
-  {
+  for (int ii = 0; ii < 10; ii++) {
     if (ii == 0)
       execute(send_packet(&cmd));
     else
       execute(resend_packet(&cmd));
 
-    if (cc == PROTOCOL_BINARY_CMD_ADD || ii > 0)
-    {
+    if (cc == PROTOCOL_BINARY_CMD_ADD || ii > 0) {
       uint16_t expected_result;
       if (ii == 0)
-        expected_result= PROTOCOL_BINARY_RESPONSE_SUCCESS;
+        expected_result = PROTOCOL_BINARY_RESPONSE_SUCCESS;
       else
-        expected_result= PROTOCOL_BINARY_RESPONSE_KEY_EEXISTS;
+        expected_result = PROTOCOL_BINARY_RESPONSE_KEY_EEXISTS;
 
       execute(send_binary_noop());
       execute(recv_packet(&rsp));
       execute(receive_binary_noop());
       verify(validate_response_header(&rsp, cc, expected_result));
-    }
-    else
+    } else
       execute(test_binary_noop());
   }
 
   return TEST_PASS;
 }
 
-static enum test_return test_binary_add(void)
-{
+static enum test_return test_binary_add(void) {
   return test_binary_add_impl("test_binary_add", PROTOCOL_BINARY_CMD_ADD);
 }
 
-static enum test_return test_binary_addq(void)
-{
+static enum test_return test_binary_addq(void) {
   return test_binary_add_impl("test_binary_addq", PROTOCOL_BINARY_CMD_ADDQ);
 }
 
-static enum test_return binary_set_item(const char *key, const char *value)
-{
+static enum test_return binary_set_item(const char *key, const char *value) {
   command cmd;
   response rsp;
-  storage_command(&cmd, PROTOCOL_BINARY_CMD_SET, key, strlen(key),
-                  value, strlen(value), 0, 0);
+  storage_command(&cmd, PROTOCOL_BINARY_CMD_SET, key, strlen(key), value, strlen(value), 0, 0);
   execute(send_packet(&cmd));
   execute(recv_packet(&rsp));
-  verify(validate_response_header(&rsp, PROTOCOL_BINARY_CMD_SET,
-                                  PROTOCOL_BINARY_RESPONSE_SUCCESS));
+  verify(validate_response_header(&rsp, PROTOCOL_BINARY_CMD_SET, PROTOCOL_BINARY_RESPONSE_SUCCESS));
   return TEST_PASS;
 }
 
-static enum test_return test_binary_replace_impl(const char* key, uint8_t cc)
-{
+static enum test_return test_binary_replace_impl(const char *key, uint8_t cc) {
   command cmd;
   response rsp;
-  uint64_t value= 0xdeadbeefdeadcafeULL;
-  storage_command(&cmd, cc, key, strlen(key), &value, sizeof (value), 0, 0);
+  uint64_t value = 0xdeadbeefdeadcafeULL;
+  storage_command(&cmd, cc, key, strlen(key), &value, sizeof(value), 0, 0);
 
   /* first replace should fail, successive should succeed (when the
      item is added! */
-  for (int ii= 0; ii < 10; ii++)
-  {
-    if (ii == 0)
-    {
+  for (int ii = 0; ii < 10; ii++) {
+    if (ii == 0) {
       execute(send_packet(&cmd));
-    }
-    else
-    {
+    } else {
       execute(resend_packet(&cmd));
     }
 
-    if (cc == PROTOCOL_BINARY_CMD_REPLACE || ii == 0)
-    {
+    if (cc == PROTOCOL_BINARY_CMD_REPLACE || ii == 0) {
       uint16_t expected_result;
-      if (ii == 0)
-      {
-        expected_result=PROTOCOL_BINARY_RESPONSE_KEY_ENOENT;
-      }
-      else
-      {
-        expected_result=PROTOCOL_BINARY_RESPONSE_SUCCESS;
+      if (ii == 0) {
+        expected_result = PROTOCOL_BINARY_RESPONSE_KEY_ENOENT;
+      } else {
+        expected_result = PROTOCOL_BINARY_RESPONSE_SUCCESS;
       }
 
       execute(send_binary_noop());
@@ -854,27 +737,24 @@ static enum test_return test_binary_replace_impl(const char* key, uint8_t cc)
 
       if (ii == 0)
         execute(binary_set_item(key, key));
-    }
-    else
-    {
+    } else {
       execute(test_binary_noop());
     }
   }
 
   /* verify that replace with CAS value works! */
-  cmd.plain.message.header.request.cas= memcached_htonll(rsp.plain.message.header.response.cas);
+  cmd.plain.message.header.request.cas = memcached_htonll(rsp.plain.message.header.response.cas);
   execute(resend_packet(&cmd));
 
-  if (cc == PROTOCOL_BINARY_CMD_REPLACE)
-  {
+  if (cc == PROTOCOL_BINARY_CMD_REPLACE) {
     execute(recv_packet(&rsp));
     verify(validate_response_header(&rsp, cc, PROTOCOL_BINARY_RESPONSE_SUCCESS));
-  }
-  else
+  } else
     execute(test_binary_noop());
 
   /* try to set with an incorrect CAS value */
-  cmd.plain.message.header.request.cas= memcached_htonll(rsp.plain.message.header.response.cas - 1);
+  cmd.plain.message.header.request.cas =
+      memcached_htonll(rsp.plain.message.header.response.cas - 1);
   execute(resend_packet(&cmd));
   execute(send_binary_noop());
   execute(recv_packet(&rsp));
@@ -884,18 +764,15 @@ static enum test_return test_binary_replace_impl(const char* key, uint8_t cc)
   return TEST_PASS;
 }
 
-static enum test_return test_binary_replace(void)
-{
+static enum test_return test_binary_replace(void) {
   return test_binary_replace_impl("test_binary_replace", PROTOCOL_BINARY_CMD_REPLACE);
 }
 
-static enum test_return test_binary_replaceq(void)
-{
+static enum test_return test_binary_replaceq(void) {
   return test_binary_replace_impl("test_binary_replaceq", PROTOCOL_BINARY_CMD_REPLACEQ);
 }
 
-static enum test_return test_binary_delete_impl(const char *key, uint8_t cc)
-{
+static enum test_return test_binary_delete_impl(const char *key, uint8_t cc) {
   command cmd;
   response rsp;
   raw_command(&cmd, cc, key, strlen(key), NULL, 0);
@@ -910,8 +787,7 @@ static enum test_return test_binary_delete_impl(const char *key, uint8_t cc)
 
   /* The item should be present now, resend*/
   execute(resend_packet(&cmd));
-  if (cc == PROTOCOL_BINARY_CMD_DELETE)
-  {
+  if (cc == PROTOCOL_BINARY_CMD_DELETE) {
     execute(recv_packet(&rsp));
     verify(validate_response_header(&rsp, cc, PROTOCOL_BINARY_RESPONSE_SUCCESS));
   }
@@ -921,18 +797,15 @@ static enum test_return test_binary_delete_impl(const char *key, uint8_t cc)
   return TEST_PASS;
 }
 
-static enum test_return test_binary_delete(void)
-{
+static enum test_return test_binary_delete(void) {
   return test_binary_delete_impl("test_binary_delete", PROTOCOL_BINARY_CMD_DELETE);
 }
 
-static enum test_return test_binary_deleteq(void)
-{
+static enum test_return test_binary_deleteq(void) {
   return test_binary_delete_impl("test_binary_deleteq", PROTOCOL_BINARY_CMD_DELETEQ);
 }
 
-static enum test_return test_binary_get_impl(const char *key, uint8_t cc)
-{
+static enum test_return test_binary_get_impl(const char *key, uint8_t cc) {
   command cmd;
   response rsp;
 
@@ -940,8 +813,7 @@ static enum test_return test_binary_get_impl(const char *key, uint8_t cc)
   execute(send_packet(&cmd));
   execute(send_binary_noop());
 
-  if (cc == PROTOCOL_BINARY_CMD_GET || cc == PROTOCOL_BINARY_CMD_GETK)
-  {
+  if (cc == PROTOCOL_BINARY_CMD_GET || cc == PROTOCOL_BINARY_CMD_GETK) {
     execute(recv_packet(&rsp));
     verify(validate_response_header(&rsp, cc, PROTOCOL_BINARY_RESPONSE_KEY_ENOENT));
   }
@@ -959,47 +831,39 @@ static enum test_return test_binary_get_impl(const char *key, uint8_t cc)
   return TEST_PASS;
 }
 
-static enum test_return test_binary_get(void)
-{
+static enum test_return test_binary_get(void) {
   return test_binary_get_impl("test_binary_get", PROTOCOL_BINARY_CMD_GET);
 }
 
-static enum test_return test_binary_getk(void)
-{
+static enum test_return test_binary_getk(void) {
   return test_binary_get_impl("test_binary_getk", PROTOCOL_BINARY_CMD_GETK);
 }
 
-static enum test_return test_binary_getq(void)
-{
+static enum test_return test_binary_getq(void) {
   return test_binary_get_impl("test_binary_getq", PROTOCOL_BINARY_CMD_GETQ);
 }
 
-static enum test_return test_binary_getkq(void)
-{
+static enum test_return test_binary_getkq(void) {
   return test_binary_get_impl("test_binary_getkq", PROTOCOL_BINARY_CMD_GETKQ);
 }
 
-static enum test_return test_binary_incr_impl(const char* key, uint8_t cc)
-{
+static enum test_return test_binary_incr_impl(const char *key, uint8_t cc) {
   command cmd;
   response rsp;
   arithmetic_command(&cmd, cc, key, strlen(key), 1, 0, 0);
 
   uint64_t ii;
-  for (ii= 0; ii < 10; ++ii)
-  {
+  for (ii = 0; ii < 10; ++ii) {
     if (ii == 0)
       execute(send_packet(&cmd));
     else
       execute(resend_packet(&cmd));
 
-    if (cc == PROTOCOL_BINARY_CMD_INCREMENT)
-    {
+    if (cc == PROTOCOL_BINARY_CMD_INCREMENT) {
       execute(recv_packet(&rsp));
       verify(validate_response_header(&rsp, cc, PROTOCOL_BINARY_RESPONSE_SUCCESS));
       verify(memcached_ntohll(rsp.incr.message.body.value) == ii);
-    }
-    else
+    } else
       execute(test_binary_noop());
   }
 
@@ -1007,52 +871,42 @@ static enum test_return test_binary_incr_impl(const char* key, uint8_t cc)
   return TEST_PASS;
 }
 
-static enum test_return test_binary_incr(void)
-{
+static enum test_return test_binary_incr(void) {
   return test_binary_incr_impl("test_binary_incr", PROTOCOL_BINARY_CMD_INCREMENT);
 }
 
-static enum test_return test_binary_incrq(void)
-{
+static enum test_return test_binary_incrq(void) {
   return test_binary_incr_impl("test_binary_incrq", PROTOCOL_BINARY_CMD_INCREMENTQ);
 }
 
-static enum test_return test_binary_decr_impl(const char* key, uint8_t cc)
-{
+static enum test_return test_binary_decr_impl(const char *key, uint8_t cc) {
   command cmd;
   response rsp;
   arithmetic_command(&cmd, cc, key, strlen(key), 1, 9, 0);
 
   int ii;
-  for (ii= 9; ii > -1; --ii)
-  {
+  for (ii = 9; ii > -1; --ii) {
     if (ii == 9)
       execute(send_packet(&cmd));
     else
       execute(resend_packet(&cmd));
 
-    if (cc == PROTOCOL_BINARY_CMD_DECREMENT)
-    {
+    if (cc == PROTOCOL_BINARY_CMD_DECREMENT) {
       execute(recv_packet(&rsp));
       verify(validate_response_header(&rsp, cc, PROTOCOL_BINARY_RESPONSE_SUCCESS));
-      verify(memcached_ntohll(rsp.decr.message.body.value) == (uint64_t)ii);
-    }
-    else
+      verify(memcached_ntohll(rsp.decr.message.body.value) == (uint64_t) ii);
+    } else
       execute(test_binary_noop());
   }
 
   /* decr 0 should not wrap */
   execute(resend_packet(&cmd));
-  if (cc == PROTOCOL_BINARY_CMD_DECREMENT)
-  {
+  if (cc == PROTOCOL_BINARY_CMD_DECREMENT) {
     execute(recv_packet(&rsp));
     verify(validate_response_header(&rsp, cc, PROTOCOL_BINARY_RESPONSE_SUCCESS));
     verify(memcached_ntohll(rsp.decr.message.body.value) == 0);
-  }
-  else
-  {
+  } else {
     /* @todo get the value and verify! */
-
   }
 
   /* @todo add incorrect cas */
@@ -1060,20 +914,15 @@ static enum test_return test_binary_decr_impl(const char* key, uint8_t cc)
   return TEST_PASS;
 }
 
-static enum test_return test_binary_decr(void)
-{
-  return test_binary_decr_impl("test_binary_decr",
-                               PROTOCOL_BINARY_CMD_DECREMENT);
+static enum test_return test_binary_decr(void) {
+  return test_binary_decr_impl("test_binary_decr", PROTOCOL_BINARY_CMD_DECREMENT);
 }
 
-static enum test_return test_binary_decrq(void)
-{
-  return test_binary_decr_impl("test_binary_decrq",
-                               PROTOCOL_BINARY_CMD_DECREMENTQ);
+static enum test_return test_binary_decrq(void) {
+  return test_binary_decr_impl("test_binary_decrq", PROTOCOL_BINARY_CMD_DECREMENTQ);
 }
 
-static enum test_return test_binary_version(void)
-{
+static enum test_return test_binary_version(void) {
   command cmd;
   response rsp;
   raw_command(&cmd, PROTOCOL_BINARY_CMD_VERSION, NULL, 0, NULL, 0);
@@ -1086,23 +935,19 @@ static enum test_return test_binary_version(void)
   return TEST_PASS;
 }
 
-static enum test_return test_binary_flush_impl(const char *key, uint8_t cc)
-{
+static enum test_return test_binary_flush_impl(const char *key, uint8_t cc) {
   command cmd;
   response rsp;
 
-  for (int ii= 0; ii < 2; ++ii)
-  {
+  for (int ii = 0; ii < 2; ++ii) {
     execute(binary_set_item(key, key));
     flush_command(&cmd, cc, 0, ii == 0);
     execute(send_packet(&cmd));
 
-    if (cc == PROTOCOL_BINARY_CMD_FLUSH)
-    {
+    if (cc == PROTOCOL_BINARY_CMD_FLUSH) {
       execute(recv_packet(&rsp));
       verify(validate_response_header(&rsp, cc, PROTOCOL_BINARY_RESPONSE_SUCCESS));
-    }
-    else
+    } else
       execute(test_binary_noop());
 
     raw_command(&cmd, PROTOCOL_BINARY_CMD_GET, key, strlen(key), NULL, 0);
@@ -1115,123 +960,98 @@ static enum test_return test_binary_flush_impl(const char *key, uint8_t cc)
   return TEST_PASS;
 }
 
-static enum test_return test_binary_flush(void)
-{
+static enum test_return test_binary_flush(void) {
   return test_binary_flush_impl("test_binary_flush", PROTOCOL_BINARY_CMD_FLUSH);
 }
 
-static enum test_return test_binary_flushq(void)
-{
+static enum test_return test_binary_flushq(void) {
   return test_binary_flush_impl("test_binary_flushq", PROTOCOL_BINARY_CMD_FLUSHQ);
 }
 
-static enum test_return test_binary_concat_impl(const char *key, uint8_t cc)
-{
+static enum test_return test_binary_concat_impl(const char *key, uint8_t cc) {
   command cmd;
   response rsp;
   const char *value;
 
-  if (cc == PROTOCOL_BINARY_CMD_APPEND || cc == PROTOCOL_BINARY_CMD_APPENDQ)
-  {
-    value="hello";
-  }
-  else
-  {
-    value=" world";
+  if (cc == PROTOCOL_BINARY_CMD_APPEND || cc == PROTOCOL_BINARY_CMD_APPENDQ) {
+    value = "hello";
+  } else {
+    value = " world";
   }
 
   execute(binary_set_item(key, value));
 
-  if (cc == PROTOCOL_BINARY_CMD_APPEND || cc == PROTOCOL_BINARY_CMD_APPENDQ)
-  {
-    value=" world";
-  }
-  else
-  {
-    value="hello";
+  if (cc == PROTOCOL_BINARY_CMD_APPEND || cc == PROTOCOL_BINARY_CMD_APPENDQ) {
+    value = " world";
+  } else {
+    value = "hello";
   }
 
   raw_command(&cmd, cc, key, strlen(key), value, strlen(value));
   execute(send_packet(&cmd));
-  if (cc == PROTOCOL_BINARY_CMD_APPEND || cc == PROTOCOL_BINARY_CMD_PREPEND)
-  {
+  if (cc == PROTOCOL_BINARY_CMD_APPEND || cc == PROTOCOL_BINARY_CMD_PREPEND) {
     execute(recv_packet(&rsp));
     verify(validate_response_header(&rsp, cc, PROTOCOL_BINARY_RESPONSE_SUCCESS));
-  }
-  else
-  {
+  } else {
     execute(test_binary_noop());
   }
 
   raw_command(&cmd, PROTOCOL_BINARY_CMD_GET, key, strlen(key), NULL, 0);
   execute(send_packet(&cmd));
   execute(recv_packet(&rsp));
-  verify(validate_response_header(&rsp, PROTOCOL_BINARY_CMD_GET,
-                                  PROTOCOL_BINARY_RESPONSE_SUCCESS));
+  verify(validate_response_header(&rsp, PROTOCOL_BINARY_CMD_GET, PROTOCOL_BINARY_RESPONSE_SUCCESS));
   verify(rsp.plain.message.header.response.bodylen - 4 == 11);
   verify(memcmp(rsp.bytes + 28, "hello world", 11) == 0);
 
   return TEST_PASS;
 }
 
-static enum test_return test_binary_append(void)
-{
+static enum test_return test_binary_append(void) {
   return test_binary_concat_impl("test_binary_append", PROTOCOL_BINARY_CMD_APPEND);
 }
 
-static enum test_return test_binary_prepend(void)
-{
+static enum test_return test_binary_prepend(void) {
   return test_binary_concat_impl("test_binary_prepend", PROTOCOL_BINARY_CMD_PREPEND);
 }
 
-static enum test_return test_binary_appendq(void)
-{
+static enum test_return test_binary_appendq(void) {
   return test_binary_concat_impl("test_binary_appendq", PROTOCOL_BINARY_CMD_APPENDQ);
 }
 
-static enum test_return test_binary_prependq(void)
-{
+static enum test_return test_binary_prependq(void) {
   return test_binary_concat_impl("test_binary_prependq", PROTOCOL_BINARY_CMD_PREPENDQ);
 }
 
-static enum test_return test_binary_stat(void)
-{
+static enum test_return test_binary_stat(void) {
   command cmd;
   response rsp;
 
   raw_command(&cmd, PROTOCOL_BINARY_CMD_STAT, NULL, 0, NULL, 0);
   execute(send_packet(&cmd));
 
-  do
-  {
+  do {
     execute(recv_packet(&rsp));
-    verify(validate_response_header(&rsp, PROTOCOL_BINARY_CMD_STAT,
-                                    PROTOCOL_BINARY_RESPONSE_SUCCESS));
+    verify(
+        validate_response_header(&rsp, PROTOCOL_BINARY_CMD_STAT, PROTOCOL_BINARY_RESPONSE_SUCCESS));
   } while (rsp.plain.message.header.response.keylen != 0);
 
   return TEST_PASS;
 }
 
-static enum test_return send_string(const char *cmd)
-{
+static enum test_return send_string(const char *cmd) {
   execute(retry_write(cmd, strlen(cmd)));
   return TEST_PASS;
 }
 
-static enum test_return receive_line(char *buffer, size_t size)
-{
-  size_t offset= 0;
-  while (offset < size)
-  {
+static enum test_return receive_line(char *buffer, size_t size) {
+  size_t offset = 0;
+  while (offset < size) {
     execute(retry_read(buffer + offset, 1));
-    if (buffer[offset] == '\n')
-    {
-      if (offset + 1 < size)
-      {
-        buffer[offset + 1]= '\0';
+    if (buffer[offset] == '\n') {
+      if (offset + 1 < size) {
+        buffer[offset + 1] = '\0';
         return TEST_PASS;
-      }
-      else
+      } else
         return TEST_FAIL;
     }
     ++offset;
@@ -1244,24 +1064,21 @@ static enum test_return receive_response(const char *msg) {
   char buffer[80];
   execute(receive_line(buffer, sizeof(buffer)));
   if (strcmp(msg, buffer) != 0) {
-      fprintf(stderr, "[%s]\n", buffer);
+    fprintf(stderr, "[%s]\n", buffer);
   }
   verify(strcmp(msg, buffer) == 0);
   return TEST_PASS;
 }
 
-static enum test_return receive_error_response(void)
-{
+static enum test_return receive_error_response(void) {
   char buffer[80];
   execute(receive_line(buffer, sizeof(buffer)));
-  verify(strncmp(buffer, "ERROR", 5) == 0 ||
-         strncmp(buffer, "CLIENT_ERROR", 12) == 0 ||
-         strncmp(buffer, "SERVER_ERROR", 12) == 0);
+  verify(strncmp(buffer, "ERROR", 5) == 0 || strncmp(buffer, "CLIENT_ERROR", 12) == 0
+         || strncmp(buffer, "SERVER_ERROR", 12) == 0);
   return TEST_PASS;
 }
 
-static enum test_return test_ascii_quit(void)
-{
+static enum test_return test_ascii_quit(void) {
   if (!v16x_or_greater) {
     /* Verify that quit handles unknown options */
     execute(send_string("quit foo bar\r\n"));
@@ -1279,11 +1096,9 @@ static enum test_return test_ascii_quit(void)
   char buffer[80];
   verify(timeout_io_op(sock, POLLIN, buffer, sizeof(buffer)) == 0);
   return TEST_PASS_RECONNECT;
-
 }
 
-static enum test_return test_ascii_version(void)
-{
+static enum test_return test_ascii_version(void) {
   /* Verify that version works */
   execute(send_string("version\r\n"));
   char buffer[256];
@@ -1314,8 +1129,7 @@ static enum test_return test_ascii_version(void)
   return TEST_PASS;
 }
 
-static enum test_return test_ascii_verbosity(void)
-{
+static enum test_return test_ascii_verbosity(void) {
   /* This command does not adhere to the spec! */
   execute(send_string("verbosity foo bar my\r\n"));
   execute(receive_error_response());
@@ -1338,100 +1152,86 @@ static enum test_return test_ascii_verbosity(void)
   return TEST_PASS;
 }
 
-
-
-static enum test_return test_ascii_set_impl(const char* key, bool noreply)
-{
+static enum test_return test_ascii_set_impl(const char *key, bool noreply) {
   /* @todo add tests for bogus format! */
   char buffer[1024];
   snprintf(buffer, sizeof(buffer), "set %s 0 0 5%s\r\nvalue\r\n", key, noreply ? " noreply" : "");
   execute(send_string(buffer));
 
-  if (!noreply)
-  {
+  if (!noreply) {
     execute(receive_response("STORED\r\n"));
   }
 
   return test_ascii_version();
 }
 
-static enum test_return test_ascii_set(void)
-{
+static enum test_return test_ascii_set(void) {
   return test_ascii_set_impl("test_ascii_set", false);
 }
 
-static enum test_return test_ascii_set_noreply(void)
-{
+static enum test_return test_ascii_set_noreply(void) {
   return test_ascii_set_impl("test_ascii_set_noreply", true);
 }
 
-static enum test_return test_ascii_add_impl(const char* key, bool noreply)
-{
+static enum test_return test_ascii_add_impl(const char *key, bool noreply) {
   /* @todo add tests for bogus format! */
   char buffer[1024];
   snprintf(buffer, sizeof(buffer), "add %s 0 0 5%s\r\nvalue\r\n", key, noreply ? " noreply" : "");
   execute(send_string(buffer));
 
-  if (!noreply)
-  {
+  if (!noreply) {
     execute(receive_response("STORED\r\n"));
   }
 
   execute(send_string(buffer));
 
-  if (!noreply)
-  {
+  if (!noreply) {
     execute(receive_response("NOT_STORED\r\n"));
   }
 
   return test_ascii_version();
 }
 
-static enum test_return test_ascii_add(void)
-{
+static enum test_return test_ascii_add(void) {
   return test_ascii_add_impl("test_ascii_add", false);
 }
 
-static enum test_return test_ascii_add_noreply(void)
-{
+static enum test_return test_ascii_add_noreply(void) {
   return test_ascii_add_impl("test_ascii_add_noreply", true);
 }
 
-static enum test_return ascii_get_unknown_value(char **key, char **value, ssize_t *ndata)
-{
+static enum test_return ascii_get_unknown_value(char **key, char **value, ssize_t *ndata) {
   char buffer[1024];
 
   execute(receive_line(buffer, sizeof(buffer)));
   verify(strncmp(buffer, "VALUE ", 6) == 0);
-  char *end= strchr(buffer + 6, ' ');
+  char *end = strchr(buffer + 6, ' ');
   verify(end != NULL);
-  if (end)
-  {
-    *end= '\0';
+  if (end) {
+    *end = '\0';
   }
-  *key= strdup(buffer + 6);
+  *key = strdup(buffer + 6);
   verify(*key != NULL);
-  char *ptr= end + 1;
+  char *ptr = end + 1;
 
-  errno= 0;
-  unsigned long val= strtoul(ptr, &end, 10); /* flags */
+  errno = 0;
+  unsigned long val = strtoul(ptr, &end, 10); /* flags */
   verify(errno == 0);
   verify(ptr != end);
   verify(val == 0);
   verify(end != NULL);
-  errno= 0;
-  *ndata = (ssize_t)strtoul(end, &end, 10); /* size */
+  errno = 0;
+  *ndata = (ssize_t) strtoul(end, &end, 10); /* size */
   verify(errno == 0);
   verify(ptr != end);
   verify(end != NULL);
-  while (end and *end != '\n' and isspace(*end))
-    ++end;
+  while (end and *end != '\n' and isspace(*end)) ++end;
   verify(end and *end == '\n');
 
-  *value= static_cast<char*>(malloc((size_t)*ndata));
+  *value = static_cast<char *>(malloc((size_t) *ndata));
   verify(*value != NULL);
 
-  execute(retry_read(*value, (size_t)*ndata));
+  execute(retry_read(*value, (size_t) *ndata));
 
   execute(retry_read(buffer, 2));
   verify(memcmp(buffer, "\r\n", 2) == 0);
@@ -1439,34 +1239,31 @@ static enum test_return ascii_get_unknown_value(char **key, char **value, ssize_
   return TEST_PASS;
 }
 
-static enum test_return ascii_get_value(const char *key, const char *value)
-{
-
+static enum test_return ascii_get_value(const char *key, const char *value) {
   char buffer[1024];
-  size_t datasize= strlen(value);
+  size_t datasize = strlen(value);
 
   verify(datasize < sizeof(buffer));
   execute(receive_line(buffer, sizeof(buffer)));
   verify(strncmp(buffer, "VALUE ", 6) == 0);
   verify(strncmp(buffer + 6, key, strlen(key)) == 0);
-  char *ptr= buffer + 6 + strlen(key) + 1;
+  char *ptr = buffer + 6 + strlen(key) + 1;
   char *end;
 
-  errno= 0;
-  unsigned long val= strtoul(ptr, &end, 10); /* flags */
+  errno = 0;
+  unsigned long val = strtoul(ptr, &end, 10); /* flags */
   verify(errno == 0);
   verify(ptr != end);
   verify(val == 0);
   verify(end != NULL);
 
-  errno= 0;
-  val= strtoul(end, &end, 10); /* size */
+  errno = 0;
+  val = strtoul(end, &end, 10); /* size */
   verify(errno == 0);
   verify(ptr != end);
   verify(val == datasize);
   verify(end != NULL);
-  while (end and *end != '\n' and isspace(*end))
-  {
+  while (end and *end != '\n' and isspace(*end)) {
     ++end;
   }
   verify(end and *end == '\n');
@@ -1480,22 +1277,18 @@ static enum test_return ascii_get_value(const char *key, const char *value)
   return TEST_PASS;
 }
 
-static enum test_return ascii_get_item(const char *key, const char *value,
-                                       bool exist)
-{
+static enum test_return ascii_get_item(const char *key, const char *value, bool exist) {
   char buffer[1024];
-  size_t datasize= 0;
-  if (value != NULL)
-  {
-    datasize= strlen(value);
+  size_t datasize = 0;
+  if (value != NULL) {
+    datasize = strlen(value);
   }
 
   verify(datasize < sizeof(buffer));
   snprintf(buffer, sizeof(buffer), "get %s\r\n", key);
   execute(send_string(buffer));
 
-  if (exist)
-  {
+  if (exist) {
     execute(ascii_get_value(key, value));
   }
 
@@ -1505,43 +1298,39 @@ static enum test_return ascii_get_item(const char *key, const char *value,
   return TEST_PASS;
 }
 
-static enum test_return ascii_gets_value(const char *key, const char *value,
-                                         unsigned long *cas)
-{
-
+static enum test_return ascii_gets_value(const char *key, const char *value, unsigned long *cas) {
   char buffer[1024];
-  size_t datasize= strlen(value);
+  size_t datasize = strlen(value);
 
   verify(datasize < sizeof(buffer));
   execute(receive_line(buffer, sizeof(buffer)));
   verify(strncmp(buffer, "VALUE ", 6) == 0);
   verify(strncmp(buffer + 6, key, strlen(key)) == 0);
-  char *ptr= buffer + 6 + strlen(key) + 1;
+  char *ptr = buffer + 6 + strlen(key) + 1;
   char *end;
 
-  errno= 0;
-  unsigned long val= strtoul(ptr, &end, 10); /* flags */
+  errno = 0;
+  unsigned long val = strtoul(ptr, &end, 10); /* flags */
   verify(errno == 0);
   verify(ptr != end);
   verify(val == 0);
   verify(end != NULL);
 
-  errno= 0;
-  val= strtoul(end, &end, 10); /* size */
+  errno = 0;
+  val = strtoul(end, &end, 10); /* size */
   verify(errno == 0);
   verify(ptr != end);
   verify(val == datasize);
   verify(end != NULL);
 
-  errno= 0;
-  *cas= strtoul(end, &end, 10); /* cas */
+  errno = 0;
+  *cas = strtoul(end, &end, 10); /* cas */
   verify(errno == 0);
   verify(ptr != end);
   verify(val == datasize);
   verify(end != NULL);
 
-  while (end and *end != '\n' and isspace(*end))
-  {
+  while (end and *end != '\n' and isspace(*end)) {
     ++end;
   }
   verify(end and *end == '\n');
@@ -1555,14 +1344,12 @@ static enum test_return ascii_gets_value(const char *key, const char *value,
   return TEST_PASS;
 }
 
-static enum test_return ascii_gets_item(const char *key, const char *value,
-                                        bool exist, unsigned long *cas)
-{
+static enum test_return ascii_gets_item(const char *key, const char *value, bool exist,
+                                        unsigned long *cas) {
   char buffer[1024];
-  size_t datasize= 0;
-  if (value != NULL)
-  {
-    datasize= strlen(value);
+  size_t datasize = 0;
+  if (value != NULL) {
+    datasize = strlen(value);
   }
 
   verify(datasize < sizeof(buffer));
@@ -1578,11 +1365,10 @@ static enum test_return ascii_gets_item(const char *key, const char *value,
   return TEST_PASS;
 }
 
-static enum test_return ascii_set_item(const char *key, const char *value)
-{
+static enum test_return ascii_set_item(const char *key, const char *value) {
   char buffer[300];
-  size_t len= strlen(value);
-  snprintf(buffer, sizeof(buffer), "set %s 0 0 %u\r\n", key, (unsigned int)len);
+  size_t len = strlen(value);
+  snprintf(buffer, sizeof(buffer), "set %s 0 0 %u\r\n", key, (unsigned int) len);
   execute(send_string(buffer));
   execute(retry_write(value, len));
   execute(send_string("\r\n"));
@@ -1590,25 +1376,21 @@ static enum test_return ascii_set_item(const char *key, const char *value)
   return TEST_PASS;
 }
 
-static enum test_return test_ascii_replace_impl(const char* key, bool noreply)
-{
+static enum test_return test_ascii_replace_impl(const char *key, bool noreply) {
   char buffer[1024];
-  snprintf(buffer, sizeof(buffer), "replace %s 0 0 5%s\r\nvalue\r\n", key, noreply ? " noreply" : "");
+  snprintf(buffer, sizeof(buffer), "replace %s 0 0 5%s\r\nvalue\r\n", key,
+           noreply ? " noreply" : "");
   execute(send_string(buffer));
 
-  if (noreply)
-  {
+  if (noreply) {
     execute(test_ascii_version());
-  }
-  else
-  {
+  } else {
     execute(receive_response("NOT_STORED\r\n"));
   }
 
   execute(ascii_set_item(key, "value"));
   execute(ascii_get_item(key, "value", true));
 
-
   execute(send_string(buffer));
 
   if (noreply)
@@ -1619,63 +1401,52 @@ static enum test_return test_ascii_replace_impl(const char* key, bool noreply)
   return test_ascii_version();
 }
 
-static enum test_return test_ascii_replace(void)
-{
+static enum test_return test_ascii_replace(void) {
   return test_ascii_replace_impl("test_ascii_replace", false);
 }
 
-static enum test_return test_ascii_replace_noreply(void)
-{
+static enum test_return test_ascii_replace_noreply(void) {
   return test_ascii_replace_impl("test_ascii_replace_noreply", true);
 }
 
-static enum test_return test_ascii_cas_impl(const char* key, bool noreply)
-{
+static enum test_return test_ascii_cas_impl(const char *key, bool noreply) {
   char buffer[1024];
   unsigned long cas;
 
   execute(ascii_set_item(key, "value"));
   execute(ascii_gets_item(key, "value", true, &cas));
 
-  snprintf(buffer, sizeof(buffer), "cas %s 0 0 6 %lu%s\r\nvalue2\r\n", key, cas, noreply ? " noreply" : "");
+  snprintf(buffer, sizeof(buffer), "cas %s 0 0 6 %lu%s\r\nvalue2\r\n", key, cas,
+           noreply ? " noreply" : "");
   execute(send_string(buffer));
 
-  if (noreply)
-  {
+  if (noreply) {
     execute(test_ascii_version());
-  }
-  else
-  {
+  } else {
     execute(receive_response("STORED\r\n"));
   }
 
   /* reexecute the same command should fail due to illegal cas */
   execute(send_string(buffer));
 
-  if (noreply)
-  {
+  if (noreply) {
     execute(test_ascii_version());
-  }
-  else
-  {
+  } else {
     execute(receive_response("EXISTS\r\n"));
   }
 
   return test_ascii_version();
 }
 
-static enum test_return test_ascii_cas(void)
-{
+static enum test_return test_ascii_cas(void) {
   return test_ascii_cas_impl("test_ascii_cas", false);
 }
 
-static enum test_return test_ascii_cas_noreply(void)
-{
+static enum test_return test_ascii_cas_noreply(void) {
   return test_ascii_cas_impl("test_ascii_cas_noreply", true);
 }
 
-static enum test_return test_ascii_delete_impl(const char *key, bool noreply)
-{
+static enum test_return test_ascii_delete_impl(const char *key, bool noreply) {
   execute(ascii_set_item(key, "value"));
 
   execute(send_string("delete\r\n"));
@@ -1703,18 +1474,15 @@ static enum test_return test_ascii_delete_impl(const char *key, bool noreply)
   return TEST_PASS;
 }
 
-static enum test_return test_ascii_delete(void)
-{
+static enum test_return test_ascii_delete(void) {
   return test_ascii_delete_impl("test_ascii_delete", false);
 }
 
-static enum test_return test_ascii_delete_noreply(void)
-{
+static enum test_return test_ascii_delete_noreply(void) {
   return test_ascii_delete_impl("test_ascii_delete_noreply", true);
 }
 
-static enum test_return test_ascii_get(void)
-{
+static enum test_return test_ascii_get(void) {
   execute(ascii_set_item("test_ascii_get", "value"));
 
   execute(send_string("get\r\n"));
@@ -1725,8 +1493,7 @@ static enum test_return test_ascii_get(void)
   return TEST_PASS;
 }
 
-static enum test_return test_ascii_gets(void)
-{
+static enum test_return test_ascii_gets(void) {
   execute(ascii_set_item("test_ascii_gets", "value"));
 
   execute(send_string("gets\r\n"));
@@ -1738,20 +1505,13 @@ static enum test_return test_ascii_gets(void)
   return TEST_PASS;
 }
 
-static enum test_return test_ascii_mget(void)
-{
-  const uint32_t nkeys= 5;
-  const char * const keys[]= {
-    "test_ascii_mget1",
-    "test_ascii_mget2",
-    /* test_ascii_mget_3 does not exist :) */
-    "test_ascii_mget4",
-    "test_ascii_mget5",
-    "test_ascii_mget6"
-  };
+static enum test_return test_ascii_mget(void) {
+  const uint32_t nkeys = 5;
+  const char *const keys[] = {"test_ascii_mget1", "test_ascii_mget2",
+                              /* test_ascii_mget_3 does not exist :) */
+                              "test_ascii_mget4", "test_ascii_mget5", "test_ascii_mget6"};
 
-  for (uint32_t x= 0; x < nkeys; ++x)
-  {
+  for (uint32_t x = 0; x < nkeys; ++x) {
     execute(ascii_set_item(keys[x], "value"));
   }
 
@@ -1763,10 +1523,9 @@ static enum test_return test_ascii_mget(void)
   std::vector<char *> returned;
   returned.resize(nkeys);
 
-  for (uint32_t x= 0; x < nkeys; ++x)
-  {
+  for (uint32_t x = 0; x < nkeys; ++x) {
     ssize_t nbytes = 0;
-    char *v= NULL;
+    char *v = NULL;
     execute(ascii_get_unknown_value(&returned[x], &v, &nbytes));
     verify(nbytes == 5);
     verify(memcmp(v, "value", 5) == 0);
@@ -1778,13 +1537,10 @@ static enum test_return test_ascii_mget(void)
   verify(memcmp(buffer, "END\r\n", 5) == 0);
 
   /* verify that we got all the keys we expected */
-  for (uint32_t x= 0; x < nkeys; ++x)
-  {
-    bool found= false;
-    for (uint32_t y= 0; y < nkeys; ++y)
-    {
-      if (strcmp(keys[x], returned[y]) == 0)
-      {
+  for (uint32_t x = 0; x < nkeys; ++x) {
+    bool found = false;
+    for (uint32_t y = 0; y < nkeys; ++y) {
+      if (strcmp(keys[x], returned[y]) == 0) {
         found = true;
         break;
       }
@@ -1792,31 +1548,27 @@ static enum test_return test_ascii_mget(void)
     verify(found);
   }
 
-  for (uint32_t x= 0; x < nkeys; ++x)
-  {
+  for (uint32_t x = 0; x < nkeys; ++x) {
     free(returned[x]);
   }
 
   return TEST_PASS;
 }
 
-static enum test_return test_ascii_incr_impl(const char* key, bool noreply)
-{
+static enum test_return test_ascii_incr_impl(const char *key, bool noreply) {
   char cmd[300];
   snprintf(cmd, sizeof(cmd), "incr %s 1%s\r\n", key, noreply ? " noreply" : "");
 
   execute(ascii_set_item(key, "0"));
-  for (int x= 1; x < 11; ++x)
-  {
+  for (int x = 1; x < 11; ++x) {
     execute(send_string(cmd));
 
     if (noreply)
       execute(test_ascii_version());
-    else
-    {
+    else {
       char buffer[80];
       execute(receive_line(buffer, sizeof(buffer)));
-      int val= atoi(buffer);
+      int val = atoi(buffer);
       verify(val == x);
     }
   }
@@ -1826,35 +1578,28 @@ static enum test_return test_ascii_incr_impl(const char* key, bool noreply)
   return TEST_PASS;
 }
 
-static enum test_return test_ascii_incr(void)
-{
+static enum test_return test_ascii_incr(void) {
   return test_ascii_incr_impl("test_ascii_incr", false);
 }
 
-static enum test_return test_ascii_incr_noreply(void)
-{
+static enum test_return test_ascii_incr_noreply(void) {
   return test_ascii_incr_impl("test_ascii_incr_noreply", true);
 }
 
-static enum test_return test_ascii_decr_impl(const char* key, bool noreply)
-{
+static enum test_return test_ascii_decr_impl(const char *key, bool noreply) {
   char cmd[300];
   snprintf(cmd, sizeof(cmd), "decr %s 1%s\r\n", key, noreply ? " noreply" : "");
 
   execute(ascii_set_item(key, "9"));
-  for (int x= 8; x > -1; --x)
-  {
+  for (int x = 8; x > -1; --x) {
     execute(send_string(cmd));
 
-    if (noreply)
-    {
+    if (noreply) {
       execute(test_ascii_version());
-    }
-    else
-    {
+    } else {
       char buffer[80];
       execute(receive_line(buffer, sizeof(buffer)));
-      int val= atoi(buffer);
+      int val = atoi(buffer);
       verify(val == x);
     }
   }
@@ -1863,12 +1608,9 @@ static enum test_return test_ascii_decr_impl(const char* key, bool noreply)
 
   /* verify that it doesn't wrap */
   execute(send_string(cmd));
-  if (noreply)
-  {
+  if (noreply) {
     execute(test_ascii_version());
-  }
-  else
-  {
+  } else {
     char buffer[80];
     execute(receive_line(buffer, sizeof(buffer)));
   }
@@ -1877,19 +1619,15 @@ static enum test_return test_ascii_decr_impl(const char* key, bool noreply)
   return TEST_PASS;
 }
 
-static enum test_return test_ascii_decr(void)
-{
+static enum test_return test_ascii_decr(void) {
   return test_ascii_decr_impl("test_ascii_decr", false);
 }
 
-static enum test_return test_ascii_decr_noreply(void)
-{
+static enum test_return test_ascii_decr_noreply(void) {
   return test_ascii_decr_impl("test_ascii_decr_noreply", true);
 }
 
-
-static enum test_return test_ascii_flush_impl(const char *key, bool noreply)
-{
+static enum test_return test_ascii_flush_impl(const char *key, bool noreply) {
 #if 0
   /* Verify that the flush_all command handles unknown options */
   /* Bug in the current memcached server! */
@@ -1900,13 +1638,10 @@ static enum test_return test_ascii_flush_impl(const char *key, bool noreply)
   execute(ascii_set_item(key, key));
   execute(ascii_get_item(key, key, true));
 
-  if (noreply)
-  {
+  if (noreply) {
     execute(send_string("flush_all noreply\r\n"));
     execute(test_ascii_version());
-  }
-  else
-  {
+  } else {
     execute(send_string("flush_all\r\n"));
     execute(receive_response("OK\r\n"));
   }
@@ -1916,96 +1651,73 @@ static enum test_return test_ascii_flush_impl(const char *key, bool noreply)
   return TEST_PASS;
 }
 
-static enum test_return test_ascii_flush(void)
-{
+static enum test_return test_ascii_flush(void) {
   return test_ascii_flush_impl("test_ascii_flush", false);
 }
 
-static enum test_return test_ascii_flush_noreply(void)
-{
+static enum test_return test_ascii_flush_noreply(void) {
   return test_ascii_flush_impl("test_ascii_flush_noreply", true);
 }
 
-static enum test_return test_ascii_concat_impl(const char *key,
-                                               bool append,
-                                               bool noreply)
-{
+static enum test_return test_ascii_concat_impl(const char *key, bool append, bool noreply) {
   const char *value;
 
   if (append)
-    value="hello";
+    value = "hello";
   else
-    value=" world";
+    value = " world";
 
   execute(ascii_set_item(key, value));
 
-  if (append)
-  {
-    value=" world";
-  }
-  else
-  {
-    value="hello";
+  if (append) {
+    value = " world";
+  } else {
+    value = "hello";
   }
 
   char cmd[400];
-  snprintf(cmd, sizeof(cmd), "%s %s 0 0 %u%s\r\n%s\r\n",
-           append ? "append" : "prepend",
-           key, (unsigned int)strlen(value), noreply ? " noreply" : "",
-           value);
+  snprintf(cmd, sizeof(cmd), "%s %s 0 0 %u%s\r\n%s\r\n", append ? "append" : "prepend", key,
+           (unsigned int) strlen(value), noreply ? " noreply" : "", value);
   execute(send_string(cmd));
 
-  if (noreply)
-  {
+  if (noreply) {
     execute(test_ascii_version());
-  }
-  else
-  {
+  } else {
     execute(receive_response("STORED\r\n"));
   }
 
   execute(ascii_get_item(key, "hello world", true));
 
-  snprintf(cmd, sizeof(cmd), "%s %s_notfound 0 0 %u%s\r\n%s\r\n",
-           append ? "append" : "prepend",
-           key, (unsigned int)strlen(value), noreply ? " noreply" : "",
-           value);
+  snprintf(cmd, sizeof(cmd), "%s %s_notfound 0 0 %u%s\r\n%s\r\n", append ? "append" : "prepend",
+           key, (unsigned int) strlen(value), noreply ? " noreply" : "", value);
   execute(send_string(cmd));
 
-  if (noreply)
-  {
+  if (noreply) {
     execute(test_ascii_version());
-  }
-  else
-  {
+  } else {
     execute(receive_response("NOT_STORED\r\n"));
   }
 
   return TEST_PASS;
 }
 
-static enum test_return test_ascii_append(void)
-{
+static enum test_return test_ascii_append(void) {
   return test_ascii_concat_impl("test_ascii_append", true, false);
 }
 
-static enum test_return test_ascii_prepend(void)
-{
+static enum test_return test_ascii_prepend(void) {
   return test_ascii_concat_impl("test_ascii_prepend", false, false);
 }
 
-static enum test_return test_ascii_append_noreply(void)
-{
+static enum test_return test_ascii_append_noreply(void) {
   return test_ascii_concat_impl("test_ascii_append_noreply", true, true);
 }
 
-static enum test_return test_ascii_prepend_noreply(void)
-{
+static enum test_return test_ascii_prepend_noreply(void) {
   return test_ascii_concat_impl("test_ascii_prepend_noreply", false, true);
 }
 
-static enum test_return test_ascii_stat(void)
-{
+static enum test_return test_ascii_stat(void) {
   execute(send_string("stats noreply\r\n"));
   execute(receive_error_response());
   execute(send_string("stats\r\n"));
@@ -2017,138 +1729,122 @@ static enum test_return test_ascii_stat(void)
   return TEST_PASS_RECONNECT;
 }
 
-typedef enum test_return(*TEST_FUNC)(void);
+typedef enum test_return (*TEST_FUNC)(void);
 
-struct testcase
-{
+struct testcase {
   const char *description;
   TEST_FUNC function;
 };
 
-struct testcase testcases[]= {
-  { "ascii version", test_ascii_version },
-  { "ascii quit", test_ascii_quit },
-  { "ascii verbosity", test_ascii_verbosity },
-  { "ascii set", test_ascii_set },
-  { "ascii set noreply", test_ascii_set_noreply },
-  { "ascii get", test_ascii_get },
-  { "ascii gets", test_ascii_gets },
-  { "ascii mget", test_ascii_mget },
-  { "ascii flush", test_ascii_flush },
-  { "ascii flush noreply", test_ascii_flush_noreply },
-  { "ascii add", test_ascii_add },
-  { "ascii add noreply", test_ascii_add_noreply },
-  { "ascii replace", test_ascii_replace },
-  { "ascii replace noreply", test_ascii_replace_noreply },
-  { "ascii cas", test_ascii_cas },
-  { "ascii cas noreply", test_ascii_cas_noreply },
-  { "ascii delete", test_ascii_delete },
-  { "ascii delete noreply", test_ascii_delete_noreply },
-  { "ascii incr", test_ascii_incr },
-  { "ascii incr noreply", test_ascii_incr_noreply },
-  { "ascii decr", test_ascii_decr },
-  { "ascii decr noreply", test_ascii_decr_noreply },
-  { "ascii append", test_ascii_append },
-  { "ascii append noreply", test_ascii_append_noreply },
-  { "ascii prepend", test_ascii_prepend },
-  { "ascii prepend noreply", test_ascii_prepend_noreply },
-  { "ascii stat", test_ascii_stat },
-  { "binary noop", test_binary_noop },
-  { "binary quit", test_binary_quit },
-  { "binary quitq", test_binary_quitq },
-  { "binary set", test_binary_set },
-  { "binary setq", test_binary_setq },
-  { "binary flush", test_binary_flush },
-  { "binary flushq", test_binary_flushq },
-  { "binary add", test_binary_add },
-  { "binary addq", test_binary_addq },
-  { "binary replace", test_binary_replace },
-  { "binary replaceq", test_binary_replaceq },
-  { "binary delete", test_binary_delete },
-  { "binary deleteq", test_binary_deleteq },
-  { "binary get", test_binary_get },
-  { "binary getq", test_binary_getq },
-  { "binary getk", test_binary_getk },
-  { "binary getkq", test_binary_getkq },
-  { "binary incr", test_binary_incr },
-  { "binary incrq", test_binary_incrq },
-  { "binary decr", test_binary_decr },
-  { "binary decrq", test_binary_decrq },
-  { "binary version", test_binary_version },
-  { "binary append", test_binary_append },
-  { "binary appendq", test_binary_appendq },
-  { "binary prepend", test_binary_prepend },
-  { "binary prependq", test_binary_prependq },
-  { "binary stat", test_binary_stat },
-  { NULL, NULL}
-};
+struct testcase testcases[] = {{"ascii version", test_ascii_version},
+                               {"ascii quit", test_ascii_quit},
+                               {"ascii verbosity", test_ascii_verbosity},
+                               {"ascii set", test_ascii_set},
+                               {"ascii set noreply", test_ascii_set_noreply},
+                               {"ascii get", test_ascii_get},
+                               {"ascii gets", test_ascii_gets},
+                               {"ascii mget", test_ascii_mget},
+                               {"ascii flush", test_ascii_flush},
+                               {"ascii flush noreply", test_ascii_flush_noreply},
+                               {"ascii add", test_ascii_add},
+                               {"ascii add noreply", test_ascii_add_noreply},
+                               {"ascii replace", test_ascii_replace},
+                               {"ascii replace noreply", test_ascii_replace_noreply},
+                               {"ascii cas", test_ascii_cas},
+                               {"ascii cas noreply", test_ascii_cas_noreply},
+                               {"ascii delete", test_ascii_delete},
+                               {"ascii delete noreply", test_ascii_delete_noreply},
+                               {"ascii incr", test_ascii_incr},
+                               {"ascii incr noreply", test_ascii_incr_noreply},
+                               {"ascii decr", test_ascii_decr},
+                               {"ascii decr noreply", test_ascii_decr_noreply},
+                               {"ascii append", test_ascii_append},
+                               {"ascii append noreply", test_ascii_append_noreply},
+                               {"ascii prepend", test_ascii_prepend},
+                               {"ascii prepend noreply", test_ascii_prepend_noreply},
+                               {"ascii stat", test_ascii_stat},
+                               {"binary noop", test_binary_noop},
+                               {"binary quit", test_binary_quit},
+                               {"binary quitq", test_binary_quitq},
+                               {"binary set", test_binary_set},
+                               {"binary setq", test_binary_setq},
+                               {"binary flush", test_binary_flush},
+                               {"binary flushq", test_binary_flushq},
+                               {"binary add", test_binary_add},
+                               {"binary addq", test_binary_addq},
+                               {"binary replace", test_binary_replace},
+                               {"binary replaceq", test_binary_replaceq},
+                               {"binary delete", test_binary_delete},
+                               {"binary deleteq", test_binary_deleteq},
+                               {"binary get", test_binary_get},
+                               {"binary getq", test_binary_getq},
+                               {"binary getk", test_binary_getk},
+                               {"binary getkq", test_binary_getkq},
+                               {"binary incr", test_binary_incr},
+                               {"binary incrq", test_binary_incrq},
+                               {"binary decr", test_binary_decr},
+                               {"binary decrq", test_binary_decrq},
+                               {"binary version", test_binary_version},
+                               {"binary append", test_binary_append},
+                               {"binary appendq", test_binary_appendq},
+                               {"binary prepend", test_binary_prepend},
+                               {"binary prependq", test_binary_prependq},
+                               {"binary stat", test_binary_stat},
+                               {NULL, NULL}};
 
-struct test_type_st
-{
+struct test_type_st {
   bool ascii;
   bool binary;
 };
 
-int main(int argc, char **argv)
-{
-  static const char * const status_msg[]= {"[skip]", "[pass]", "[pass]", "[FAIL]"};
-  struct test_type_st tests= { true, true };
-  int total= 0;
-  int failed= 0;
-  const char *hostname= NULL;
-  const char *port= MEMCACHED_DEFAULT_PORT_STRING;
+int main(int argc, char **argv) {
+  static const char *const status_msg[] = {"[skip]", "[pass]", "[pass]", "[FAIL]"};
+  struct test_type_st tests = {true, true};
+  int total = 0;
+  int failed = 0;
+  const char *hostname = NULL;
+  const char *port = MEMCACHED_DEFAULT_PORT_STRING;
   int cmd;
-  bool prompt= false;
-  const char *testname= NULL;
+  bool prompt = false;
+  const char *testname = NULL;
 
-
-
-  while ((cmd= getopt(argc, argv, "qt:vch:p:PT:?ab")) != EOF)
-  {
+  while ((cmd = getopt(argc, argv, "qt:vch:p:PT:?ab")) != EOF) {
     switch (cmd) {
     case 'a':
-      tests.ascii= true;
-      tests.binary= false;
+      tests.ascii = true;
+      tests.binary = false;
       break;
 
     case 'b':
-      tests.ascii= false;
-      tests.binary= true;
+      tests.ascii = false;
+      tests.binary = true;
       break;
 
     case 't':
-      timeout= atoi(optarg);
-      if (timeout == 0)
-      {
+      timeout = atoi(optarg);
+      if (timeout == 0) {
         fprintf(stderr, "Invalid timeout. Please specify a number for -t\n");
         return EXIT_FAILURE;
       }
       break;
 
-    case 'v': verbose= true;
-      break;
+    case 'v': verbose = true; break;
 
-    case 'c': do_core= true;
-      break;
+    case 'c': do_core = true; break;
 
-    case 'h': hostname= optarg;
-      break;
+    case 'h': hostname = optarg; break;
 
-    case 'p': port= optarg;
-      break;
+    case 'p': port = optarg; break;
 
-    case 'q':
-      close_stdio();
-      break;
+    case 'q': close_stdio(); break;
 
-    case 'P': prompt= true;
-      break;
+    case 'P': prompt = true; break;
 
-    case 'T': testname= optarg;
-       break;
+    case 'T': testname = optarg; break;
 
     default:
-      fprintf(stderr, "Usage: %s [-h hostname] [-p port] [-c] [-v] [-t n] [-P] [-T testname]'\n"
+      fprintf(stderr,
+              "Usage: %s [-h hostname] [-p port] [-c] [-v] [-t n] [-P] [-T testname]'\n"
               "\t-c\tGenerate coredump if a test fails\n"
               "\t-v\tVerbose test output (print out the assertion)\n"
               "\t-t n\tSet the timeout for io-operations to n seconds\n"
@@ -2164,30 +1860,26 @@ int main(int argc, char **argv)
     }
   }
 
-  if (!hostname)
-  {
+  if (!hostname) {
     fprintf(stderr, "No hostname was provided.\n");
     return EXIT_FAILURE;
   }
 
   initialize_sockets();
-  sock= connect_server(hostname, port);
-  if (sock == INVALID_SOCKET)
-  {
-    fprintf(stderr, "Failed to connect to <%s:%s>: %s\n",
-            hostname?:"(null)", port?:"(null)", strerror(get_socket_errno()));
+  sock = connect_server(hostname, port);
+  if (sock == INVALID_SOCKET) {
+    fprintf(stderr, "Failed to connect to <%s:%s>: %s\n", hostname ?: "(null)", port ?: "(null)",
+            strerror(get_socket_errno()));
     return EXIT_FAILURE;
   }
 
-  for (int ii= 0; testcases[ii].description != NULL; ++ii)
-  {
-    if (testname != NULL && strcmp(testcases[ii].description, testname) != 0)
-    {
+  for (int ii = 0; testcases[ii].description != NULL; ++ii) {
+    if (testname != NULL && strcmp(testcases[ii].description, testname) != 0) {
       continue;
     }
 
-    if ((testcases[ii].description[0] == 'a' && (tests.ascii) == 0) ||
-        (testcases[ii].description[0] == 'b' && (tests.binary) == 0))
+    if ((testcases[ii].description[0] == 'a' && (tests.ascii) == 0)
+        || (testcases[ii].description[0] == 'b' && (tests.binary) == 0))
     {
       continue;
     }
@@ -2195,20 +1887,16 @@ int main(int argc, char **argv)
     fprintf(stdout, "%-40s", testcases[ii].description);
     fflush(stdout);
 
-    if (prompt)
-    {
+    if (prompt) {
       fprintf(stdout, "\nPress <return> when you are ready? ");
       char buffer[80] = {0};
       if (fgets(buffer, sizeof(buffer), stdin) != NULL) {
-        if (strncmp(buffer, "skip", 4) == 0)
-        {
-          fprintf(stdout, "%-40s%s\n", testcases[ii].description,
-                  status_msg[TEST_SKIP]);
+        if (strncmp(buffer, "skip", 4) == 0) {
+          fprintf(stdout, "%-40s%s\n", testcases[ii].description, status_msg[TEST_SKIP]);
           fflush(stdout);
           continue;
         }
-        if (strncmp(buffer, "quit", 4) == 0)
-        {
+        if (strncmp(buffer, "quit", 4) == 0) {
           exit(EXIT_SUCCESS);
         }
       }
@@ -2217,37 +1905,29 @@ int main(int argc, char **argv)
       fflush(stdout);
     }
 
-    bool reconnect= false;
-    enum test_return ret= testcases[ii].function();
-    if (ret == TEST_FAIL)
-    {
-      reconnect= true;
+    bool reconnect = false;
+    enum test_return ret = testcases[ii].function();
+    if (ret == TEST_FAIL) {
+      reconnect = true;
       ++failed;
-      if (verbose)
-      {
+      if (verbose) {
         fprintf(stderr, "\n");
       }
-    }
-    else if (ret == TEST_PASS_RECONNECT)
-    {
-      reconnect= true;
+    } else if (ret == TEST_PASS_RECONNECT) {
+      reconnect = true;
     }
 
-    if (ret == TEST_FAIL)
-    {
+    if (ret == TEST_FAIL) {
       fprintf(stderr, "%s\n", status_msg[ret]);
-    }
-    else
-    {
+    } else {
       fprintf(stdout, "%s\n", status_msg[ret]);
     }
 
-    if (reconnect)
-    {
+    if (reconnect) {
       closesocket(sock);
-      if ((sock= connect_server(hostname, port)) == INVALID_SOCKET)
-      {
-        fprintf(stderr, "Failed to connect to <%s:%s>: %s\n", hostname?:"(null)", port?:"(null)", strerror(get_socket_errno()));
+      if ((sock = connect_server(hostname, port)) == INVALID_SOCKET) {
+        fprintf(stderr, "Failed to connect to <%s:%s>: %s\n", hostname ?: "(null)",
+                port ?: "(null)", strerror(get_socket_errno()));
         fprintf(stderr, "%d of %d tests failed\n", failed, total);
         return EXIT_FAILURE;
       }
@@ -2255,12 +1935,9 @@ int main(int argc, char **argv)
   }
 
   closesocket(sock);
-  if (failed == 0)
-  {
+  if (failed == 0) {
     fprintf(stdout, "All tests passed\n");
-  }
-  else
-  {
+  } else {
     fprintf(stderr, "%d of %d tests failed\n", failed, total);
   }
 

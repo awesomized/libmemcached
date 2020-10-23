@@ -1,13 +1,18 @@
 /*
- * File:   ms_stats.h
- * Author: Mingqiang Zhuang
- *
- * Created on March 25, 2009
- *
- * (c) Copyright 2009, Schooner Information Technology, Inc.
- * http://www.schoonerinfotech.com/
- *
- */
+    +--------------------------------------------------------------------+
+    | libmemcached - C/C++ Client Library for memcached                  |
+    +--------------------------------------------------------------------+
+    | Redistribution and use in source and binary forms, with or without |
+    | modification, are permitted under the terms of the BSD license.    |
+    | You should have received a copy of the license in a bundled file   |
+    | named LICENSE; in case you did not receive a copy you can review   |
+    | the terms online at: https://opensource.org/licenses/BSD-3-Clause  |
+    +--------------------------------------------------------------------+
+    | Copyright (c) 2006-2014 Brian Aker   https://datadifferential.com/ |
+    | Copyright (c) 2020 Michael Wallner   <mike@php.net>                |
+    +--------------------------------------------------------------------+
+*/
+
 #ifndef MS_STAT_H
 #define MS_STAT_H
 
@@ -23,8 +28,7 @@ extern "C" {
 #endif
 
 /* statistic structure of response time */
-typedef struct
-{
+typedef struct {
   char *name;
   uint64_t total_time;
   uint64_t min_time;
@@ -46,24 +50,17 @@ typedef struct
 /* initialize statistic */
 void ms_init_stats(ms_stat_t *stat, const char *name);
 
-
 /* record one event */
 void ms_record_event(ms_stat_t *stat, uint64_t time, int get_miss);
-
 
 /* dump the statistics */
 void ms_dump_stats(ms_stat_t *stat);
 
-
 /* dump the format statistics */
-void ms_dump_format_stats(ms_stat_t *stat,
-                          int run_time,
-                          int freq,
-                          int obj_size);
-
+void ms_dump_format_stats(ms_stat_t *stat, int run_time, int freq, int obj_size);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif  /* MS_STAT_H */
+#endif /* MS_STAT_H */
