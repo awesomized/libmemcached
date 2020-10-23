@@ -1,3 +1,18 @@
+/*
+    +--------------------------------------------------------------------+
+    | libmemcached - C/C++ Client Library for memcached                  |
+    +--------------------------------------------------------------------+
+    | Redistribution and use in source and binary forms, with or without |
+    | modification, are permitted under the terms of the BSD license.    |
+    | You should have received a copy of the license in a bundled file   |
+    | named LICENSE; in case you did not receive a copy you can review   |
+    | the terms online at: https://opensource.org/licenses/BSD-3-Clause  |
+    +--------------------------------------------------------------------+
+    | Copyright (c) 2006-2014 Brian Aker   https://datadifferential.com/ |
+    | Copyright (c) 2020 Michael Wallner   <mike@php.net>                |
+    +--------------------------------------------------------------------+
+*/
+
 #pragma once
 
 #cmakedefine01 LIBMEMCACHED_WITH_SASL_SUPPORT
@@ -62,22 +77,22 @@
 #cmakedefine HAVE_CINTTYPES 1
 #cmakedefine HAVE_CSTDINT 1
 #if defined(__cplusplus)
-# if defined HAVE_CINTTYPES
-#  include <cinttypes>
-# elif defined HAVE_CSTDINT
-#  include <cstdint>
-# endif
+#  if defined HAVE_CINTTYPES
+#    include <cinttypes>
+#  elif defined HAVE_CSTDINT
+#    include <cstdint>
+#  endif
 #else
 #  include <inttypes.h>
 #endif
 
 #if HAVE_BACKTRACE
-# define BACKTRACE_HEADER <@Backtrace_HEADER@>
+#  define BACKTRACE_HEADER <@Backtrace_HEADER@>
 #endif
 
 #if HAVE_BYTESWAP
-# define BYTESWAP_32 @BYTESWAP_32@
-# cmakedefine BYTESWAP_HEADER <@BYTESWAP_HEADER@>
+#  define BYTESWAP_32 @BYTESWAP_32@
+#  cmakedefine BYTESWAP_HEADER <@BYTESWAP_HEADER@>
 #endif
 
 #define HAVE_LIBMEMCACHED 1

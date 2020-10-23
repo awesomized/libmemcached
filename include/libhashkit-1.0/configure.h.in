@@ -17,11 +17,3 @@
 
 #define LIBHASHKIT_VERSION_STRING "@LIBHASHKIT_VERSION@"
 #define LIBHASHKIT_VERSION_HEX    @LIBHASHKIT_VERSION_HEX@
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#ifdef __cplusplus
-}
-#endif
