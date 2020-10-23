@@ -1,8 +1,6 @@
 #include "test/lib/common.hpp"
 #include "test/lib/MemcachedCluster.hpp"
 
-DECLARE_STREQUAL;
-
 TEST_CASE("memcached_append") {
   pair<string, MemcachedCluster> tests[] = {
       {"bin_mixed", MemcachedCluster::mixed()},
@@ -33,7 +31,7 @@ TEST_CASE("memcached_append") {
         uint32_t flags;
         Malloced got(memcached_get(memc, S(key), &len, &flags, &rc));
 
-        REQUIRE(strequal(cmp, *got));
+        REQUIRE(cmp == *got);
         REQUIRE_SUCCESS(rc);
       }
     }
@@ -56,7 +54,7 @@ TEST_CASE("memcached_append") {
         Malloced got(memcached_get(memc, S(__func__), &len, &flags, &rc));
 
         REQUIRE(len == raw_len);
-        REQUIRE(strequal({raw_ptr, raw_len}, string{*got, len}));
+        REQUIRE(string{raw_ptr, raw_len} == string{*got, len});
         REQUIRE_SUCCESS(rc);
     }
   }

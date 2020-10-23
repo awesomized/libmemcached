@@ -28,6 +28,7 @@
 
 #include "test/conf.h"
 #include "test/lib/catch.hpp"
+#include "test/lib/env.hpp"
 #include "test/lib/random.hpp"
 
 #include "libmemcached/memcached.h"
@@ -38,8 +39,7 @@ using socket_or_port_t = variant<string, int>;
 /**
  * Useful macros for testing
  */
-#define S(s)             (s), strlen(s)
-#define DECLARE_STREQUAL static auto strequal = equal_to<string>();
+#define S(s) (s), strlen(s)
 #define LOOPED_SECTION(tests) \
   for (auto &[name, test] : tests) DYNAMIC_SECTION("test " << name)
 #define REQUIRE_SUCCESS(rc) \
@@ -52,8 +52,6 @@ using socket_or_port_t = variant<string, int>;
     INFO("expected: " << memcached_strerror(nullptr, rc)); \
     REQUIRE_THAT(call, test.returns(rc)); \
   } while (0)
-
-const char *getenv_else(const char *var, const char *defval);
 
 inline memcached_return_t fetch_all_results(memcached_st *memc, unsigned int &keys_returned,
                                             memcached_return_t &rc) {
@@ -102,12 +100,20 @@ class MemcachedPtr {
 public:
   memcached_st *memc;
 
-  explicit MemcachedPtr(memcached_st *memc_) { memc = memc_; }
+  explicit MemcachedPtr(memcached_st *memc_) {
+    memc = memc_;
+  }
   MemcachedPtr()
   : MemcachedPtr(memcached_create(nullptr)) {}
-  ~MemcachedPtr() { memcached_free(memc); }
-  memcached_st *operator*() const { return memc; }
-  auto operator->() const { return memc; }
+  ~MemcachedPtr() {
+    memcached_free(memc);
+  }
+  memcached_st *operator*() const {
+    return memc;
+  }
+  auto operator->() const {
+    return memc;
+  }
 };
 
 template<class T>
@@ -127,6 +133,6 @@ public:
     if (ptr)
       free(ptr);
   }
-  auto operator*() { return ptr; }
-  auto operator->() { return ptr; }
+  auto operator*() const { return ptr; }
+  auto operator->() const { return ptr; }
 };

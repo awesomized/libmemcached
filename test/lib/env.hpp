@@ -33,3 +33,11 @@
 
 #define SET_ENV(symbolic_name, literal_env_var, literal_env_val) \
   SET_ENV_EX(symbolic_name, literal_env_var, literal_env_val, true)
+
+static inline const char *getenv_else(const char *var, const char *defval) {
+  auto val = getenv(var);
+  if (val && *val) {
+    return val;
+  }
+  return defval;
+}

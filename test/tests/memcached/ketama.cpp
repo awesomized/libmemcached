@@ -6,8 +6,6 @@
 #include "libmemcached/continuum.hpp"
 #include "libmemcached/instance.hpp"
 
-DECLARE_STREQUAL;
-
 TEST_CASE("memcached_ketama_compat") {
   auto test = MemcachedCluster::network();
   auto memc = &test.memc;
@@ -27,13 +25,13 @@ TEST_CASE("memcached_ketama_compat") {
 
     /* verify that the server list was parsed okay. */
     REQUIRE(8U == memcached_server_count(memc));
-    REQUIRE(strequal(server_pool[0].hostname, "10.0.1.1"));
+    REQUIRE(server_pool[0].hostname == "10.0.1.1"s);
     REQUIRE(in_port_t(11211) == server_pool[0].port);
     REQUIRE(600U == server_pool[0].weight);
-    REQUIRE(strequal(server_pool[2].hostname, "10.0.1.3"));
+    REQUIRE(server_pool[2].hostname == "10.0.1.3"s);
     REQUIRE(in_port_t(11211) == server_pool[2].port);
     REQUIRE(200U == server_pool[2].weight);
-    REQUIRE(strequal(server_pool[7].hostname, "10.0.1.8"));
+    REQUIRE(server_pool[7].hostname == "10.0.1.8"s);
     REQUIRE(in_port_t(11211) == server_pool[7].port);
     REQUIRE(100U == server_pool[7].weight);
 
@@ -49,7 +47,7 @@ TEST_CASE("memcached_ketama_compat") {
           memcached_server_instance_by_position(memc, server_idx);
       const char *hostname = memcached_server_name(instance);
 
-      REQUIRE(strequal(hostname, ketama_test_cases[x].server));
+      REQUIRE(string{hostname} == ketama_test_cases[x].server);
     }
 
     memcached_server_list_free(server_pool);
@@ -68,13 +66,13 @@ TEST_CASE("memcached_ketama_compat") {
 
     /* verify that the server list was parsed okay. */
     REQUIRE(memcached_server_count(memc) == 8);
-    REQUIRE(strequal(server_pool[0].hostname, "10.0.1.1"));
+    REQUIRE(server_pool[0].hostname == "10.0.1.1"s);
     REQUIRE(server_pool[0].port == 11211);
     REQUIRE(server_pool[0].weight == 600);
-    REQUIRE(strequal(server_pool[2].hostname, "10.0.1.3"));
+    REQUIRE(server_pool[2].hostname == "10.0.1.3"s);
     REQUIRE(server_pool[2].port == 11211);
     REQUIRE(server_pool[2].weight == 200);
-    REQUIRE(strequal(server_pool[7].hostname, "10.0.1.8"));
+    REQUIRE(server_pool[7].hostname == "10.0.1.8"s);
     REQUIRE(server_pool[7].port == 11211);
     REQUIRE(server_pool[7].weight == 100);
 
@@ -91,7 +89,7 @@ TEST_CASE("memcached_ketama_compat") {
           memcached_server_instance_by_position(memc, server_idx);
 
       const char *hostname = memcached_server_name(instance);
-      REQUIRE(strequal(hostname, ketama_test_cases[x].server));
+      REQUIRE(string{hostname} == ketama_test_cases[x].server);
     }
 
     memcached_server_list_free(server_pool);
@@ -116,13 +114,13 @@ TEST_CASE("memcached_ketama_compat") {
 
     /* verify that the server list was parsed okay. */
     REQUIRE(memcached_server_count(memc) == 8);
-    REQUIRE(strequal(server_pool[0].hostname, "10.0.1.1"));
+    REQUIRE(server_pool[0].hostname == "10.0.1.1"s);
     REQUIRE(server_pool[0].port == 11211);
     REQUIRE(server_pool[0].weight == 600);
-    REQUIRE(strequal(server_pool[2].hostname, "10.0.1.3"));
+    REQUIRE(server_pool[2].hostname == "10.0.1.3"s);
     REQUIRE(server_pool[2].port == 11211);
     REQUIRE(server_pool[2].weight == 200);
-    REQUIRE(strequal(server_pool[7].hostname, "10.0.1.8"));
+    REQUIRE(server_pool[7].hostname == "10.0.1.8"s);
     REQUIRE(server_pool[7].port == 11211);
     REQUIRE(server_pool[7].weight == 100);
 
@@ -149,7 +147,7 @@ TEST_CASE("memcached_ketama_compat") {
       // We re-use instance from above.
       instance = memcached_server_instance_by_position(memc, server_idx);
       const char *hostname = memcached_server_name(instance);
-      REQUIRE(strequal(hostname, ketama_test_cases[x].server));
+      REQUIRE(string{hostname} == ketama_test_cases[x].server);
     }
 
     memcached_server_list_free(server_pool);
@@ -168,13 +166,13 @@ TEST_CASE("memcached_ketama_compat") {
 
     /* verify that the server list was parsed okay. */
     REQUIRE(8U == memcached_server_count(memc));
-    REQUIRE(strequal(server_pool[0].hostname, "10.0.1.1"));
+    REQUIRE(server_pool[0].hostname == "10.0.1.1"s);
     REQUIRE(in_port_t(11211) == server_pool[0].port);
     REQUIRE(600U == server_pool[0].weight);
-    REQUIRE(strequal(server_pool[2].hostname, "10.0.1.3"));
+    REQUIRE(server_pool[2].hostname == "10.0.1.3"s);
     REQUIRE(in_port_t(11211) == server_pool[2].port);
     REQUIRE(200U == server_pool[2].weight);
-    REQUIRE(strequal(server_pool[7].hostname, "10.0.1.8"));
+    REQUIRE(server_pool[7].hostname == "10.0.1.8"s);
     REQUIRE(in_port_t(11211) == server_pool[7].port);
     REQUIRE(100U == server_pool[7].weight);
 
@@ -192,7 +190,7 @@ TEST_CASE("memcached_ketama_compat") {
           memcached_server_instance_by_position(memc, server_idx);
 
       const char *hostname = memcached_server_name(instance);
-      REQUIRE(strequal(hostname, ketama_test_cases_spy[x].server));
+      REQUIRE(string{hostname} == ketama_test_cases_spy[x].server);
     }
 
     memcached_server_list_free(server_pool);
