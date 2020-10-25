@@ -57,8 +57,8 @@ Additional project metrics:
 
 ## ChangeLog
 
-Check out the latest [releases](./releases) or the bundled
-[ChangeLog](./ChangeLog.md) for a comprehensive list of changes.
+Check out the latest [releases](https://github.com/m6w6/libmemcached/releases)
+or the bundled [ChangeLog](./ChangeLog.md) for a comprehensive list of changes.
 
 ## License
 
