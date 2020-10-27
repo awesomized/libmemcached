@@ -49,7 +49,7 @@ static memcached_return_t connect_poll(memcached_instance_st *server, const int 
 
   size_t loop_max = 5;
 
-  if (server->root->poll_timeout == 0) {
+  if (server->root->connect_timeout == 0) {
     return memcached_set_error(
         *server, MEMCACHED_TIMEOUT, MEMCACHED_AT,
         memcached_literal_param("The time to wait for a connection to be established was set to "
