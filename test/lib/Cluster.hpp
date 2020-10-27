@@ -46,6 +46,7 @@ public:
   bool isStopped();
   bool isListening();
   void wait();
+  bool restart();
 
 private:
   size_t count;

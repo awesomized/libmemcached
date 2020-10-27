@@ -112,3 +112,9 @@ void Cluster::wait() {
     }
   }
 }
+
+bool Cluster::restart() {
+  stop();
+  wait();
+  return start();
+}

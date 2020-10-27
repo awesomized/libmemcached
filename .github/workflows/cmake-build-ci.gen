@@ -271,8 +271,12 @@ jobs:
     name: dbg-mac (<?=DEF["macOS"]?>, <?=DEF[DEF["macOS"]]?>, <?=DEF[DEF[DEF["macOS"]]]["ver"]?>)
     runs-on: <?=DEF["macOS"]?> #
     env:
-      CFLAGS: -O0 --coverage
+      CFLAGS:   -O0 --coverage
       CXXFLAGS: -O0 --coverage
+      OS_VND:   macOS
+      OS_VER:   <?=DEF["macOS"]?> #
+      CC_VND:   <?=DEF[DEF["macOS"]]?> #
+      CC_VER:   <?=DEF[DEF[DEF["macOS"]]]["ver"]?> #
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2

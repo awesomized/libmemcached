@@ -107,7 +107,7 @@ void ForkAndExec::closePipe(int &fd) {
 }
 
 void ForkAndExec::pollExecReadyPipe() {
-#if __APPLE__
+#if __APPLE__ || __FreeBSD__
   char c, n = 50;
   do {
     if (0 == read(ready[mode::READ], &c, 1)) {

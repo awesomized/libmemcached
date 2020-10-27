@@ -6,13 +6,8 @@ const memcached_st MemcachedCluster::empty_memc{};
 void MemcachedCluster::init() {
   REQUIRE(cluster.start());
 
-  Retry cluster_is_listening([this]() {
-    return cluster.isListening();
-  });
-  while (!cluster_is_listening()) {
-    cluster.stop();
-    cluster.wait();
-    cluster.start();
+  while (!isListening()) {
+    cluster.restart();
   }
 
   if (auto br = getenv_else("MEMCACHED_BREAK", "0")) {
@@ -150,4 +145,8 @@ void MemcachedCluster::killOneServer() const {
   const auto &servers = cluster.getServers();
   const auto &victim = servers[random_num(0UL, servers.size() - 1)];
   ::kill(victim.getPid(), SIGKILL);
+}
+
+bool MemcachedCluster::isListening() {
+  return Retry{[this]() {return cluster.isListening();}}();
 }

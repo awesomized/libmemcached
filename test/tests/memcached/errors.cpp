@@ -41,10 +41,7 @@ TEST_CASE("memcached_errors") {
       REQUIRE_RC(MEMCACHED_SERVER_TEMPORARILY_DISABLED, memcached_set(memc, S("foo"), nullptr, 0, 0, 0));
 
       REQUIRE(test.cluster.start());
-      Retry cluster_is_listening{[&cluster = test.cluster] {
-        return cluster.isListening();
-      }};
-      REQUIRE(cluster_is_listening());
+      REQUIRE(test.isListening());
 
       Retry recovers{[memc]{
         return MEMCACHED_SUCCESS == memcached_set(memc, S("foo"), nullptr, 0, 0, 0);
