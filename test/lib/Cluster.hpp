@@ -42,7 +42,7 @@ public:
   const vector<Server> &getServers() const;
 
   bool start();
-  void stop();
+  void stop(bool graceful = false);
   bool isStopped();
   bool isListening();
   void wait();

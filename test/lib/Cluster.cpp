@@ -46,11 +46,15 @@ bool Cluster::start() {
   return started;
 }
 
-void Cluster::stop() {
+void Cluster::stop(bool graceful) {
   for (auto &server : cluster) {
     server.drain();
-    // no cookies for memcached; TERM is just too slow
-    server.signal(SIGKILL);
+    if (graceful) {
+      server.stop();
+    } else {
+      // no cookies for memcached; TERM is just too slow
+      server.signal(SIGKILL);
+    }
   }
 }
 

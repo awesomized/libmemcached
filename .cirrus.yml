@@ -44,6 +44,7 @@ task:
   build_script: |
     sudo -E -u nobody make -C build -j2 all
   test_script: |
+    sysctl net.inet.tcp.msl=500
     sudo -E -u nobody make -C build -j2 test/fast
   install_script: |
     sudo -E -u nobody make -C build install DESTDIR=/tmp

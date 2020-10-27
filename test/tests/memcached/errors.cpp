@@ -23,7 +23,11 @@ TEST_CASE("memcached_errors") {
     REQUIRE_SUCCESS(memcached_set(memc, S("foo"), nullptr, 0, 0, 0));
     memcached_quit(memc);
 
-    test.cluster.stop();
+    test.cluster.stop(
+#if __FreeBSD__
+        true // graceful
+#endif
+        );
     Retry cluster_is_stopped{[&cluster = test.cluster]{
       return cluster.isStopped();
     }};
