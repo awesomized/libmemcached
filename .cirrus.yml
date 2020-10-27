@@ -14,6 +14,18 @@ task:
     ports: RELEASE_12_1_0
   freebsd_instance:
     image_family: freebsd-12-1-snap
+  discover_script: |
+    pw user mod nobody -s /bin/sh -d $(pwd)/build
+    ulimit -a
+    sudo -u nobody ulimit -a
+    cat /etc/hosts
+    cat /etc/host.conf
+    cat /etc/resolv.conf
+    ifconfig
+    netstat
+    sysctl -a
+    dmesg
+    exit 1
   dependencies_script: |
     pkg update
     pkg upgrade -y
