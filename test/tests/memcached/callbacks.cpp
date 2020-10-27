@@ -48,56 +48,55 @@ TEST_CASE("memcached_callbacks") {
       REQUIRE(string("updated by read through trigger") == string(*val, len));
       REQUIRE_FALSE((*val)[len]);
     }
+  }
+  SECTION("clone callback") {
+    void *cptr = reinterpret_cast<void *>(reinterpret_cast<intptr_t>(&clone_callback));
 
-    SECTION("clone callback") {
-      void *cptr = reinterpret_cast<void *>(reinterpret_cast<intptr_t>(&clone_callback));
+    REQUIRE_SUCCESS(memcached_callback_set(memc, MEMCACHED_CALLBACK_CLONE_FUNCTION, cptr));
+    REQUIRE(cptr == memcached_callback_get(memc, MEMCACHED_CALLBACK_CLONE_FUNCTION, &rc));
+    REQUIRE_SUCCESS(rc);
+  }
 
-      REQUIRE_SUCCESS(memcached_callback_set(memc, MEMCACHED_CALLBACK_CLONE_FUNCTION, cptr));
-      REQUIRE(cptr == memcached_callback_get(memc, MEMCACHED_CALLBACK_CLONE_FUNCTION, &rc));
-      REQUIRE_SUCCESS(rc);
+  SECTION("cleanup callback") {
+    void *cptr = reinterpret_cast<void *>(reinterpret_cast<intptr_t>(cleanup_callback));
+
+    REQUIRE_SUCCESS(memcached_callback_set(memc, MEMCACHED_CALLBACK_CLEANUP_FUNCTION, cptr));
+    REQUIRE(cptr == memcached_callback_get(memc, MEMCACHED_CALLBACK_CLEANUP_FUNCTION, &rc));
+    REQUIRE_SUCCESS(rc);
+  }
+
+  SECTION("namespace") {
+    void *ns;
+
+    REQUIRE_SUCCESS(memcached_callback_set(memc, MEMCACHED_CALLBACK_NAMESPACE, "ns"));
+    ns = memcached_callback_get(memc, MEMCACHED_CALLBACK_NAMESPACE, &rc);
+    REQUIRE_SUCCESS(rc);
+    REQUIRE("ns"s == static_cast<char *>(ns));
+
+    REQUIRE_SUCCESS(memcached_callback_set(memc, MEMCACHED_CALLBACK_NAMESPACE, nullptr));
+    ns = memcached_callback_get(memc, MEMCACHED_CALLBACK_NAMESPACE, &rc);
+    REQUIRE_SUCCESS(rc);
+    REQUIRE(nullptr == ns);
+
+
+    uint64_t binary = GENERATE(0, 1);
+    REQUIRE_SUCCESS(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, binary));
+
+    DYNAMIC_SECTION("too long (binary=" << binary << ")") {
+      string blob;
+
+      blob = random_ascii_string(MEMCACHED_MAX_NAMESPACE-1, '@', 'Z');
+      REQUIRE_SUCCESS(memcached_callback_set(memc, MEMCACHED_CALLBACK_NAMESPACE, blob.c_str()));
+
+      blob = random_ascii_string(MEMCACHED_MAX_NAMESPACE, '@', 'Z');
+      REQUIRE_RC(MEMCACHED_KEY_TOO_BIG,memcached_callback_set(memc, MEMCACHED_CALLBACK_NAMESPACE, blob.c_str()));
     }
 
-    SECTION("cleanup callback") {
-      void *cptr = reinterpret_cast<void *>(reinterpret_cast<intptr_t>(cleanup_callback));
-
-      REQUIRE_SUCCESS(memcached_callback_set(memc, MEMCACHED_CALLBACK_CLEANUP_FUNCTION, cptr));
-      REQUIRE(cptr == memcached_callback_get(memc, MEMCACHED_CALLBACK_CLEANUP_FUNCTION, &rc));
-      REQUIRE_SUCCESS(rc);
-    }
-
-    SECTION("namespace") {
-      void *ns;
-
-      REQUIRE_SUCCESS(memcached_callback_set(memc, MEMCACHED_CALLBACK_NAMESPACE, "ns"));
-      ns = memcached_callback_get(memc, MEMCACHED_CALLBACK_NAMESPACE, &rc);
-      REQUIRE_SUCCESS(rc);
-      REQUIRE("ns"s == static_cast<char *>(ns));
-
-      REQUIRE_SUCCESS(memcached_callback_set(memc, MEMCACHED_CALLBACK_NAMESPACE, nullptr));
-      ns = memcached_callback_get(memc, MEMCACHED_CALLBACK_NAMESPACE, &rc);
-      REQUIRE_SUCCESS(rc);
-      REQUIRE(nullptr == ns);
-
-
-      uint64_t binary = GENERATE(0, 1);
-      REQUIRE_SUCCESS(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, binary));
-
-      DYNAMIC_SECTION("too long (binary=" << binary << ")") {
-        string blob;
-
-        blob = random_ascii_string(MEMCACHED_MAX_NAMESPACE-1, '@', 'Z');
-        REQUIRE_SUCCESS(memcached_callback_set(memc, MEMCACHED_CALLBACK_NAMESPACE, blob.c_str()));
-
-        blob = random_ascii_string(MEMCACHED_MAX_NAMESPACE, '@', 'Z');
-        REQUIRE_RC(MEMCACHED_KEY_TOO_BIG,memcached_callback_set(memc, MEMCACHED_CALLBACK_NAMESPACE, blob.c_str()));
-      }
-
-      DYNAMIC_SECTION("verify key (binary=" << binary << ")") {
-        REQUIRE_RC(binary ? MEMCACHED_INVALID_ARGUMENTS : MEMCACHED_SUCCESS,
-            memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_VERIFY_KEY, 1));
-        REQUIRE_RC(binary ? MEMCACHED_SUCCESS : MEMCACHED_BAD_KEY_PROVIDED,
-            memcached_callback_set(memc, MEMCACHED_CALLBACK_NAMESPACE, "with spaces"));
-      }
+    DYNAMIC_SECTION("verify key (binary=" << binary << ")") {
+      REQUIRE_RC(binary ? MEMCACHED_INVALID_ARGUMENTS : MEMCACHED_SUCCESS,
+          memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_VERIFY_KEY, 1));
+      REQUIRE_RC(binary ? MEMCACHED_SUCCESS : MEMCACHED_BAD_KEY_PROVIDED,
+          memcached_callback_set(memc, MEMCACHED_CALLBACK_NAMESPACE, "with spaces"));
     }
   }
 }
