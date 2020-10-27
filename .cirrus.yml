@@ -13,7 +13,7 @@ task:
     gitter: ENCRYPTED[92e34815ac1a27681bf868c8299bfa37f3cb98c7d88156884c85dfb33e786bd3124c5d624721fb13735d23f7c57ead4b]
     ports: RELEASE_12_1_0
   freebsd_instance:
-    image_family: freebsd-12-1
+    image_family: freebsd-12-1-snap
   dependencies_script: |
     pkg update
     pkg upgrade -y
@@ -53,12 +53,12 @@ task:
     gitter_success_script: |
       curl -sS "${gitter}" \
         --data-urlencode "level=info" \
-        --data-urlencode "message=Cirrus [${CIRRUS_REPO_FULL_NAME}](https://github.com/${CIRRUS_REPO_FULL_NAME}/compare/${CIRRUS_LAST_GREEN_CHANGE}...${CIRRUS_CHANGE_IN_REPO}) (${CIRRUS_BRANCH}) [success](https://cirrus-ci.org/task/${CIRRUS_TASK_ID}) (${CIRRUS_OS})"
+        --data-urlencode "message=Cirrus [${CIRRUS_REPO_FULL_NAME}](https://github.com/${CIRRUS_REPO_FULL_NAME}/compare/${CIRRUS_LAST_GREEN_CHANGE}...${CIRRUS_CHANGE_IN_REPO}) (${CIRRUS_BRANCH}) [success](https://cirrus-ci.com/task/${CIRRUS_TASK_ID}) (${CIRRUS_OS})"
   on_failure:
     gitter_failure_script: |
       curl -sS "${gitter}" \
         --data-urlencode "level=error" \
-        --data-urlencode "message=Cirrus [${CIRRUS_REPO_FULL_NAME}](https://github.com/${CIRRUS_REPO_FULL_NAME}/compare/${CIRRUS_LAST_GREEN_CHANGE}...${CIRRUS_CHANGE_IN_REPO}) (${CIRRUS_BRANCH}) [failure](https://cirrus-ci.org/task/${CIRRUS_TASK_ID}) (${CIRRUS_OS})"
+        --data-urlencode "message=Cirrus [${CIRRUS_REPO_FULL_NAME}](https://github.com/${CIRRUS_REPO_FULL_NAME}/compare/${CIRRUS_LAST_GREEN_CHANGE}...${CIRRUS_CHANGE_IN_REPO}) (${CIRRUS_BRANCH}) [failure](https://cirrus-ci.com/task/${CIRRUS_TASK_ID}) (${CIRRUS_OS})"
     testlog_artifacts:
       path: build/Testing/Temporary/LastTest.log
       type: text/plain
