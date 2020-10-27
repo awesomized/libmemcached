@@ -98,8 +98,12 @@ char *memcached_get_by_key(memcached_st *shell, const char *group_key, size_t gr
 
         if (rc == MEMCACHED_SUCCESS or rc == MEMCACHED_BUFFERED) {
           *error = rc;
-          *value_length = memcached_result_length(result_ptr);
-          *flags = memcached_result_flags(result_ptr);
+          if (value_length) {
+            *value_length = memcached_result_length(result_ptr);
+          }
+          if (flags) {
+            *flags = memcached_result_flags(result_ptr);
+          }
           char *result_value = memcached_string_take_value(&result_ptr->value);
           memcached_result_free(result_ptr);
 
@@ -178,7 +182,7 @@ static memcached_return_t __mget_by_key_real(memcached_st *ptr, const char *grou
     if (instance->response_count()) {
       char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
 
-      if (ptr->flags.no_block) {
+      if (ptr->flags.no_block || ptr->flags.buffer_requests) {
         memcached_io_write(instance);
       }
 

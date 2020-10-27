@@ -49,7 +49,7 @@ static inline memcached_return_t delete_trigger(memcached_st *, const char *, si
   return MEMCACHED_SUCCESS;
 }
 
-static inline memcached_return_t read_through_trigger(memcached_st *, char *, size_t,
+static inline memcached_return_t get_failure(memcached_st *, char *, size_t,
                                                       memcached_result_st *result) {
   return memcached_result_set_value(result, S("updated by read through trigger"));
 }

@@ -1,7 +1,13 @@
 #include "ReturnMatcher.hpp"
 
 bool ReturnMatcher::match(const memcached_return_t &arg) const {
-  return arg == expected;
+  if (arg != expected) {
+    if (expected == MEMCACHED_SUCCESS && arg == MEMCACHED_BUFFERED && memc) {
+      return memcached_behavior_get(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS);
+    }
+    return false;
+  }
+  return true;
 }
 
 ReturnMatcher ReturnMatcher::success() {

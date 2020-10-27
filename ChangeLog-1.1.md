@@ -100,6 +100,8 @@ was incremented due to the following changes:
   [gh #64](https://github.com/m6w6/libmemcached/issues/64) and
   [gh #21](https://github.com/m6w6/libmemcached/issues/21):
   clarify documentation on replication.
+* Fix [gh #95](https://github.com/m6w6/libmemcached/issues/95):
+  MEMCACHED_CALLBACK_GET_FAILURE and MEMCACHED_BEHAVIOR_BUFFER_REQUESTS
 
 ---
 

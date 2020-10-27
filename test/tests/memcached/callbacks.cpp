@@ -30,25 +30,37 @@ TEST_CASE("memcached_callbacks") {
   }
 
   SECTION("get_failure callback") {
-    void *gptr = reinterpret_cast<void *>(reinterpret_cast<intptr_t>(&read_through_trigger));
+    void *gptr = reinterpret_cast<void *>(reinterpret_cast<intptr_t>(&get_failure));
     Malloced empty(memcached_get(memc, S(__func__), nullptr, nullptr, &rc));
     REQUIRE_FALSE(*empty);
     REQUIRE_RC(MEMCACHED_NOTFOUND, rc);
 
-    REQUIRE_SUCCESS(memcached_callback_set(memc, MEMCACHED_CALLBACK_GET_FAILURE, gptr));
-    REQUIRE(gptr == memcached_callback_get(memc, MEMCACHED_CALLBACK_GET_FAILURE, &rc));
-    REQUIRE_SUCCESS(rc);
+    uint64_t buffering = GENERATE(0, 1);
 
-    for (int twice = 0; twice < 2; ++twice) {
-      uint32_t flags;
-      size_t len;
-      Malloced val(memcached_get(memc, S(__func__), &len, &flags, &rc));
-
+    DYNAMIC_SECTION("buffering: " << buffering) {
+      REQUIRE_SUCCESS(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BUFFER_REQUESTS, buffering));
+      REQUIRE_SUCCESS(memcached_callback_set(memc, MEMCACHED_CALLBACK_GET_FAILURE, gptr));
+      REQUIRE(gptr == memcached_callback_get(memc, MEMCACHED_CALLBACK_GET_FAILURE, &rc));
       REQUIRE_SUCCESS(rc);
-      REQUIRE(string("updated by read through trigger") == string(*val, len));
-      REQUIRE_FALSE((*val)[len]);
+
+      for (int twice = 0; twice < 2; ++twice) {
+        uint32_t flags;
+        size_t len;
+        Malloced val(memcached_get(memc, S(__func__), &len, &flags, &rc));
+
+        REQUIRE_SUCCESS(rc);
+        REQUIRE(string("updated by read through trigger") == string(*val, len));
+        REQUIRE_FALSE((*val)[len]);
+      }
+
+      REQUIRE_SUCCESS(memcached_set(memc, S(__func__), S("changed"), 0, 0));
+      memcached_quit(memc);
+      Malloced val(memcached_get(memc, S(__func__), nullptr, nullptr, &rc));
+      REQUIRE_SUCCESS(rc);
+      REQUIRE("changed"s == *val);
     }
   }
+
   SECTION("clone callback") {
     void *cptr = reinterpret_cast<void *>(reinterpret_cast<intptr_t>(&clone_callback));
 

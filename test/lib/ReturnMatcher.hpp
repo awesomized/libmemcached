@@ -19,7 +19,7 @@
 
 class ReturnMatcher : public Catch::MatcherBase<memcached_return_t> {
 public:
-  explicit ReturnMatcher(const memcached_st *memc_,
+  explicit ReturnMatcher(memcached_st *memc_,
                          memcached_return_t expected_ = MEMCACHED_SUCCESS)
   : memc{memc_}
   , expected{expected_} {}
@@ -35,13 +35,13 @@ protected:
   string describe() const override;
 
 private:
-  const memcached_st *memc;
+  memcached_st *memc;
   memcached_return_t expected{MEMCACHED_SUCCESS};
 };
 
 class LoneReturnMatcher {
 public:
   ReturnMatcher returns;
-  explicit LoneReturnMatcher(const memcached_st *memc)
+  explicit LoneReturnMatcher(memcached_st *memc)
   : returns{memc} {}
 };
