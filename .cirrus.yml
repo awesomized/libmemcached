@@ -15,8 +15,6 @@ task:
   freebsd_instance:
     image_family: freebsd-12-1-snap
   discover_script: |
-    pw user mod nobody -s /bin/sh -d $(pwd)/build
-    ulimit -a
     sudo -u nobody ulimit -a
     cat /etc/hosts
     cat /etc/host.conf
@@ -25,7 +23,6 @@ task:
     netstat
     sysctl -a
     dmesg
-    exit 1
   dependencies_script: |
     pkg update
     pkg upgrade -y
@@ -57,6 +54,8 @@ task:
     sudo -E -u nobody make -C build -j2 all
   test_script: |
     sysctl net.inet.tcp.msl=500
+    sysctl net.inet.tcp.blackhole=0
+    sysctl net.inet.udp.blackhole=0
     sudo -E -u nobody make -C build -j2 test/fast
   install_script: |
     sudo -E -u nobody make -C build install DESTDIR=/tmp
