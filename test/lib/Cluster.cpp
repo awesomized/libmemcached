@@ -13,7 +13,16 @@ Cluster::Cluster(Server serv, uint16_t cnt)
   if (!count) {
     count = 1;
   }
-  reset();
+  for (int i = 0; i < count; ++i) {
+    cluster.push_back(proto);
+  }
+}
+
+Cluster::Cluster(vector<Server> servers)
+: count{servers.size()}
+, cluster{move(servers)}
+{
+
 }
 
 Cluster::~Cluster() {
@@ -23,14 +32,6 @@ Cluster::~Cluster() {
 
 const vector<Server> &Cluster::getServers() const {
   return cluster;
-}
-
-void Cluster::reset() {
-  pids.clear();
-  cluster.clear();
-  for (int i = 0; i < count; ++i) {
-    cluster.push_back(proto);
-  }
 }
 
 bool Cluster::start() {

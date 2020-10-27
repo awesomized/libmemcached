@@ -193,6 +193,5 @@ string Connection::error(const initializer_list<string> &args) {
     ss << arg;
   }
 
-  cerr << ss.str() << endl;
   return ss.str();
 }
