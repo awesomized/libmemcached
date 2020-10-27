@@ -13,7 +13,7 @@ task:
     gitter: ENCRYPTED[92e34815ac1a27681bf868c8299bfa37f3cb98c7d88156884c85dfb33e786bd3124c5d624721fb13735d23f7c57ead4b]
     ports: RELEASE_12_1_0
   freebsd_instance:
-    image_family: freebsd-12-1-snap
+    image_family: freebsd-12-1
   discover_script: |
     sudo -u nobody ulimit -a
     cat /etc/hosts
