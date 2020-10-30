@@ -7,20 +7,20 @@ arch:
 language: cpp
 
 addons:
- apt:
-  packages:
-   - libevent-dev
-   - libsasl2-dev
+  apt:
+    packages:
+      - libevent-dev
+      - libsasl2-dev
 
 env:
- - CMAKE_BUILD_TYPE=Debug BUILD_TESTING=true ENABLE_SASL=true ENABLE_HASH_HSIEH=true CFLAGS="-O0 --coverage" CXXFLAGS="-O0 --coverage"
+  - CMAKE_BUILD_TYPE=Debug BUILD_TESTING=true ENABLE_SASL=true ENABLE_HASH_HSIEH=true CFLAGS="-O0 --coverage" CXXFLAGS="-O0 --coverage"
 
 install:
- - |
-   git clone --depth 1 -b 1.6.7 https://github.com/memcached/memcached
-   cd memcached
-   ./autogen.sh
-   CFLAGS="-O2 -pipe" ./configure \
+  - |
+    git clone --depth 1 -b 1.6.7 https://github.com/memcached/memcached
+    cd memcached
+    ./autogen.sh
+    CFLAGS="-O2 -pipe" ./configure \
      --prefix=/opt \
      --disable-coverage \
      --disable-docs \
@@ -28,25 +28,25 @@ install:
      --enable-sasl \
      --enable-sasl-pwdb \
      ;
-   make -j2
-   make install
-   cd ..
+    make -j2
+    make install
+    cd ..
 
 before_script:
- - mkdir build
+  - mkdir build
 
 script:
- - cd build
- - cmake -DMEMCACHED_BINARY=/opt/bin/memcached ..
- - make -j2 VERBOSE=1
- - make test VERBOSE=1
- - make install DESTDIR=/tmp
+  - cd build
+  - cmake -DMEMCACHED_BINARY=/opt/bin/memcached ..
+  - make -j2 VERBOSE=1
+  - make test VERBOSE=1
+  - make install DESTDIR=/tmp
 
 after_failure:
- - cat Testing/Temporary/LastTest.log || true
+  - cat Testing/Temporary/LastTest.log || true
 
 after_success:
- - bash <(curl -s https://codecov.io/bash)
+  - bash <(curl -s https://codecov.io/bash)
 
 notifications:
   webhooks:
