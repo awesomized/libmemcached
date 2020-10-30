@@ -22,22 +22,21 @@
 #include <string>
 #include <type_traits>
 #include <utility>
+#include <mutex>
 
 using namespace std;
 
 using kv_pair = pair<string, string>;
 
+extern mt19937_64 rnd_eng;
+extern mutex rnd_mtx;
+
+void random_setup();
+
 template<typename T>
 enable_if_t<is_integral_v<T>, T> random_num(T min, T max) {
-  using namespace chrono;
-  using rnd = mt19937_64;
-  using dst = uniform_int_distribution<uintmax_t>;
-
-  static auto time = duration_cast<nanoseconds>(system_clock::now().time_since_epoch());
-  static auto seed = static_cast<rnd::result_type>(time.count());
-  static auto rgen = rnd{seed};
-
-  return dst(min, max)(rgen);
+  lock_guard m{rnd_mtx};
+  return uniform_int_distribution<T>(min, max)(rnd_eng);
 }
 
 unsigned random_port();

@@ -3,6 +3,16 @@
 
 #include <unistd.h> // getpid()
 
+mt19937_64 rnd_eng;
+mutex rnd_mtx;
+
+void random_setup() {
+  using namespace chrono;
+
+  auto time = duration_cast<nanoseconds>(system_clock::now().time_since_epoch());
+  rnd_eng.seed(static_cast<mt19937_64::result_type>(time.count()));
+}
+
 unsigned random_port() {
   do {
     auto port = random_num(5000, 32000);

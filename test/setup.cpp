@@ -1,5 +1,6 @@
 #include "mem_config.h"
 #include "test/lib/env.hpp"
+#include "test/lib/random.hpp"
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
@@ -78,6 +79,8 @@ static inline void setup_sasl() {
 #endif
 
 int setup(int &, char ***argv) {
+  random_setup();
+
   setup_signals();
   setup_asan(*argv);
   setup_sasl();
