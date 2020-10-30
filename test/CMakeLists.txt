@@ -9,10 +9,16 @@ if(NOT MEMCACHED_BINARY)
     set(ENV{INVALID_CONFIGURATION} 1)
 endif()
 
-
 check_decl(pipe2 unistd.h)
 check_decl(SOCK_NONBLOCK sys/socket.h)
 check_decl(SOCK_CLOEXEC sys/socket.h)
+
+check_header(execution)
+
+# TBBConfig only sets TBB_FOUND to FALSE
+set(TBB_FOUND TRUE)
+set(TBB_FIND_RELEASE_ONLY TRUE)
+find_package(TBB)
 
 file(GLOB_RECURSE TESTING_SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
 set(TESTING_ROOT ${CMAKE_CURRENT_BINARY_DIR})
@@ -26,6 +32,11 @@ target_include_directories(runtests PRIVATE
         ${CMAKE_SOURCE_DIR}/src
         ${CMAKE_BINARY_DIR}/src)
 target_link_libraries(runtests PRIVATE libhashkit libmemcachedinternal libmemcachedutil)
+if(TBB_FOUND AND HAVE_EXECUTION)
+    target_link_libraries(runtests PRIVATE TBB::tbb)
+else()
+    set(HAVE_EXECUTION 0)
+endif()
 add_dependencies(runtests ${CLIENTS})
 if(HAVE_MEMASLAP)
     add_dependencies(runtests memaslap)

@@ -117,7 +117,7 @@ optional<Server::ChildProc> Server::start() {
   return ChildProc{pid, pipe};
 }
 
-bool Server::isListening() {
+bool Server::isListening() const {
   MemcachedPtr memc;
 
   if (holds_alternative<string>(socket_or_port)) {
@@ -149,11 +149,16 @@ bool Server::isListening() {
 }
 
 bool Server::ensureListening() {
+  if (!start()) {
+    return false;
+  }
   return Retry{[this] {
     again:
     start();
     if (!isListening()) {
-      if (tryWait()){
+      auto old = pid;
+      if (tryWait()) {
+        cerr << "Collected zombie " << *this << "(old pid=" << old << ")\n";
         goto again;
       }
     }
@@ -186,7 +191,8 @@ bool Server::check() {
 
 bool Server::wait(int flags) {
   if (pid && pid == waitpid(pid, &status, flags)) {
-    if (drain().length() && output != "Signal handled: Terminated.\n") {
+    if (drain().length() &&
+        output.rfind("Signal handled: Terminated", 0) != 0) {
       cerr << "Output of " << *this << ":\n";
 
       istringstream iss{output};

@@ -69,7 +69,7 @@ public:
 
   bool signal(int signo = SIGTERM);
   bool check();
-  bool isListening();
+  bool isListening() const;
   bool ensureListening();
 
   bool wait(int flags = 0);

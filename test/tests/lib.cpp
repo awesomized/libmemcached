@@ -13,11 +13,9 @@ TEST_CASE("lib/Server") {
   SECTION("starts and listens") {
 
     REQUIRE(server.start().has_value());
-
-    Retry server_is_listening{[&server] {
-      return server.isListening();
-    }};
-    REQUIRE(server_is_listening());
+    REQUIRE(server.ensureListening());
+    REQUIRE(server.isListening());
+    REQUIRE(server.check());
 
     SECTION("stops") {
 
@@ -30,6 +28,7 @@ TEST_CASE("lib/Server") {
         SECTION("stopped") {
 
           REQUIRE_FALSE(server.check());
+          REQUIRE_FALSE(server.isListening());
         }
       }
     }
@@ -44,11 +43,8 @@ TEST_CASE("lib/Cluster") {
   SECTION("starts and listens") {
 
     REQUIRE(cluster.start());
-
-    Retry cluster_is_listening{[&cluster] {
-      return cluster.isListening();
-    }};
-    REQUIRE(cluster_is_listening());
+    REQUIRE(cluster.ensureListening());
+    REQUIRE(cluster.isListening());
 
     SECTION("stops") {
 
@@ -58,6 +54,7 @@ TEST_CASE("lib/Cluster") {
       SECTION("stopped") {
 
         REQUIRE(cluster.isStopped());
+        REQUIRE_FALSE(cluster.isListening());
       }
     }
   }
