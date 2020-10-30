@@ -123,6 +123,7 @@ function steps_getdeps() {
           sudo apt-get install \
             libevent-dev \
             libsasl2-dev \
+            libtbb-dev \
             ${INSTALL_MEMCACHED} \
             ${INSTALL_CC} ${INSTALL_CXX}
           sudo systemctl stop memcached || true

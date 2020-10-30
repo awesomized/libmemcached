@@ -35,7 +35,8 @@ task:
       libevent \
       pkgconf \
       subversion \
-      sudo
+      sudo \
+      tbb
   memcached_script: |
     svn co https://svn.freebsd.org/ports/tags/${ports}/databases/memcached memcached
     svn co https://svn.freebsd.org/ports/tags/${ports}/Mk /usr/ports/Mk

@@ -16,6 +16,7 @@ addons:
     packages:
       - libevent-dev
       - libsasl2-dev
+      - libtbb-dev
 
 env:
   - CMAKE_BUILD_TYPE=Debug BUILD_TESTING=true ENABLE_SASL=true ENABLE_HASH_HSIEH=true CFLAGS="-O0 --coverage" CXXFLAGS="-O0 --coverage"
