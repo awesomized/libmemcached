@@ -32,6 +32,7 @@ TEST_CASE("memcached_value_flags") {
       REQUIRE(len == size);
       REQUIRE_FALSE(memcmp(rv, blob.get(), len));
       REQUIRE(flag == flg);
+      free(rv);
     }
     REQUIRE_RC(MEMCACHED_END, rc);
   }
