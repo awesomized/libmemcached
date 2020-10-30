@@ -90,7 +90,7 @@ set_target_properties(libmemcached PROPERTIES
         SOVERSION ${LIBMEMCACHED_SO_VERSION}
         VERSION v${LIBMEMCACHED_VERSION})
 target_compile_definitions(libmemcached PRIVATE -DBUILDING_LIBMEMCACHED)
-target_link_libraries(libmemcached PUBLIC libhashkit Threads::Threads ${LIBSASL_LIBRARIES} ${CMAKE_DL_LIBS} ${Backtrace_LIBRARIES})
+target_link_libraries(libmemcached PUBLIC libhashkit Threads::Threads ${CMAKE_DL_LIBS} ${Backtrace_LIBRARIES})
 if(LIBSASL_FOUND)
     if(PKG_CONFIG_FOUND)
         target_link_libraries(libmemcached PUBLIC PkgConfig::LIBSASL)
