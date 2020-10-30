@@ -61,7 +61,6 @@ if(BUILD_TESTING)
         find_package(Memcached)
         set(MEMCACHED_BINARY ${MEMCACHED_EXECUTABLE})
     endif()
-    check_dependency(LIBUUID uuid uuid/uuid.h)
 endif()
 
 ## sasl

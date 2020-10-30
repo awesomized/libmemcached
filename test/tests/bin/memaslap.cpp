@@ -37,7 +37,7 @@ TEST_CASE("bin/memaslap") {
         " -T 2 -c 8 -t 2s -v 0.2 -e 0.05 -b",
         " -T 2 -c 8 -t 2s -w 40k -o 0.2",
         " -T 2 -c 8 -t 2s -d 20 -P 40k",
-#if __amd64__
+#if 0
         " -T 2 -c 8 -t 2s -d 50 -a -n 10",
 #endif
     };

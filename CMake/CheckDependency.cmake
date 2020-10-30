@@ -35,7 +35,7 @@ endfunction()
 
 function(check_dependency NAME LIB HEADER)
     if(PKG_CONFIG_FOUND)
-        pkg_check_modules(${NAME} lib${LIB}${ARGN})
+        pkg_check_modules(${NAME} lib${LIB}${ARGN} IMPORTED_TARGET)
         if(NOT ${NAME}_FOUND)
             pkg_check_modules(${NAME} ${LIB}${ARGN})
         endif()

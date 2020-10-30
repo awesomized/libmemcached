@@ -40,7 +40,7 @@ static void ms_clock_handler(const int fd, const short which, void *arg);
 static uint32_t ms_set_thread_cpu_affinity(uint32_t cpu);
 static int ms_setup_thread(ms_thread_ctx_t *thread_ctx);
 static void *ms_worker_libevent(void *arg);
-static void ms_create_worker(void *(*func)(void *), void *arg);
+static void ms_create_worker(void *(*func)(void *), ms_thread_ctx_t *arg);
 
 /**
  *  time-sensitive callers can call it by hand with this,
@@ -167,7 +167,7 @@ static int ms_setup_thread(ms_thread_ctx_t *thread_ctx) {
 
   gettimeofday(&ms_thread->startup_time, NULL);
 
-  ms_thread->base = event_init();
+  ms_thread->base = event_base_new();
   if (ms_thread->base == NULL) {
     if (atomic_add_32_nv(&cnt, 1) == 0) {
       fprintf(stderr, "Can't allocate event base.\n");
@@ -234,6 +234,8 @@ static void *ms_worker_libevent(void *arg) {
 
   ms_thread = pthread_getspecific(ms_thread_key);
   event_base_loop(ms_thread->base, 0);
+  event_base_free(ms_thread->base);
+  free(ms_thread);
 
   return NULL;
 } /* ms_worker_libevent */
@@ -244,14 +246,13 @@ static void *ms_worker_libevent(void *arg) {
  * @param func, the callback function
  * @param arg, the argument to pass to the callback function
  */
-static void ms_create_worker(void *(*func)(void *), void *arg) {
-  pthread_t thread;
+static void ms_create_worker(void *(*func)(void *), ms_thread_ctx_t *arg) {
   pthread_attr_t attr;
   int ret;
 
   pthread_attr_init(&attr);
 
-  if ((ret = pthread_create(&thread, &attr, func, arg))) {
+  if ((ret = pthread_create(&arg->pth_id, &attr, func, arg))) {
     fprintf(stderr, "Can't create thread: %s.\n", strerror(ret));
     exit(1);
   }
@@ -286,12 +287,15 @@ void ms_thread_init() {
   }
   /* Create threads after we've done all the epoll setup. */
   for (uint32_t i = 0; i < ms_setting.nthreads; i++) {
-    ms_create_worker(ms_worker_libevent, (void *) &ms_thread_ctx[i]);
+    ms_create_worker(ms_worker_libevent, &ms_thread_ctx[i]);
   }
 } /* ms_thread_init */
 
 /* cleanup some resource of threads when all the threads exit */
 void ms_thread_cleanup() {
+  for (uint32_t i = 0; i < ms_setting.nthreads; i++) {
+    pthread_join(ms_thread_ctx[i].pth_id, NULL);
+  }
   if (ms_thread_ctx) {
     free(ms_thread_ctx);
   }

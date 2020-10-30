@@ -91,12 +91,17 @@ set_target_properties(libmemcached PROPERTIES
         VERSION v${LIBMEMCACHED_VERSION})
 target_compile_definitions(libmemcached PRIVATE -DBUILDING_LIBMEMCACHED)
 target_link_libraries(libmemcached PUBLIC libhashkit Threads::Threads ${LIBSASL_LIBRARIES} ${CMAKE_DL_LIBS} ${Backtrace_LIBRARIES})
+if(PKG_CONFIG_FOUND)
+    target_link_libraries(libmemcached PUBLIC libhashkit PkgConfig::LIBSASL)
+else()
+    target_link_libraries(libmemcached PUBLIC ${LIBSASL_LIBRARIES})
+    target_include_directories(libmemcached PUBLIC ${LIBSASL_INCLUDEDIR})
+endif()
 target_include_directories(libmemcached PRIVATE ${Backtrace_INCLUDE_DIR})
 target_include_directories(libmemcached PRIVATE
         ${CMAKE_SOURCE_DIR}/src
         ${CMAKE_BINARY_DIR}/src
         ${CMAKE_BINARY_DIR})
-target_include_directories(libmemcached PUBLIC ${LIBSASL_INCLUDEDIR})
 target_include_directories(libmemcached PUBLIC
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>

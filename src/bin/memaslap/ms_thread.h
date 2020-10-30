@@ -33,6 +33,7 @@ typedef struct thread_ctx {
   uint32_t srv_idx;         /* index of the thread */
   int tps_perconn;          /* expected throughput per connection */
   int64_t exec_num_perconn; /* execute number per connection */
+  pthread_t pth_id;
 } ms_thread_ctx_t;
 
 /* Used to store the private variables of each thread */

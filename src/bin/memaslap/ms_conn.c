@@ -605,7 +605,7 @@ static void ms_conn_close(ms_conn_t *c) {
   }
 
   if (ms_thread->nactive_conn == 0) {
-    pthread_exit(NULL);
+    event_base_loopbreak(ms_thread->base);
   }
 } /* ms_conn_close */
 

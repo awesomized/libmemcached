@@ -42,7 +42,10 @@ task:
     svn co https://svn.freebsd.org/ports/tags/${ports}/Templates /usr/ports/Templates
     cd memcached
     echo bin/memcached > pkg-plist
-    make all install SASLPWDB_CONFIGURE_ENABLE=sasl-pwdb OPTIONS_SET="SASL SASLPWDB" OPTIONS_DEFINE="SASL SASLPWDB"
+    make all install \
+      SASLPWDB_CONFIGURE_ENABLE=sasl-pwdb \
+      OPTIONS_SET="SASL SASLPWDB" \
+      OPTIONS_DEFINE="SASL SASLPWDB"
     cd ..
   prepare_script: |
     mkdir build

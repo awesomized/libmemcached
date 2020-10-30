@@ -32,8 +32,14 @@ if(HAVE_MEMASLAP)
             memaslap/ms_stats.c
             memaslap/ms_task.c
             memaslap/ms_thread.c)
-    target_include_directories(memaslap PRIVATE memaslap ${LIBEVENT_INCLUDEDIR})
-    target_link_libraries(memaslap PRIVATE libclient_common ${LIBEVENT_LIBRARIES} Threads::Threads)
+    target_include_directories(memaslap PRIVATE memaslap)
+    target_link_libraries(memaslap PRIVATE libclient_common Threads::Threads)
+    if(PKG_CONFIG_FOUND)
+        target_link_libraries(memaslap PRIVATE PkgConfig::LIBEVENT)
+    else()
+        target_include_directories(memaslap PRIVATE ${LIBEVENT_INCLUDEDIR})
+        target_link_libraries(memaslap PRIVATE ${LIBEVENT_LIBRARIES})
+    endif()
     if(CMAKE_INSTALL_RPATH)
         set_target_properties(${CLIENT} PROPERTIES
                 INSTALL_RPATH ${CMAKE_INSTALL_RPATH}/../${CMAKE_INSTALL_LIBDIR})
