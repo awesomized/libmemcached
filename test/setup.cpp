@@ -31,14 +31,17 @@ static void sigchld(int, siginfo_t *si, void *) {
 }
 
 static inline void setup_signals() {
-  struct sigaction sa;
+  cout << " - Setting up signals ... ";
 
+  struct sigaction sa;
   memset(&sa, 0, sizeof(sa));
   sa.sa_flags = SA_NOCLDSTOP | SA_RESTART | SA_SIGINFO | SA_NODEFER;
 
   sa.sa_sigaction = sigchld;
   if (0 > sigaction(SIGCHLD, &sa, nullptr)) {
     perror("sigaction(CHLD)");
+  } else {
+    cout << "done\n";
   }
 }
 
@@ -59,11 +62,15 @@ static inline void setup_signals() {
 static inline void setup_asan(char **argv) {
   const auto set = getenv("ASAN_OPTIONS");
 
+  cout << " - Setting up ASAN ... ";
+
   if (!set || !*set) {
     SET_ENV_EX(asan, "ASAN_OPTIONS", ASAN_OPTIONS, 0);
+    cout << "re-exec\n";
     execvp(argv[0], argv);
     perror("exec()");
   }
+  cout << "done\n";
 }
 #else
 # define setup_asan(a) (void) a
@@ -71,17 +78,30 @@ static inline void setup_asan(char **argv) {
 
 #if LIBMEMCACHED_WITH_SASL_SUPPORT
 static inline void setup_sasl() {
+  cout << " - Setting up SASL ... ";
+
   SET_ENV_EX(sasl_pwdb, "MEMCACHED_SASL_PWDB", LIBMEMCACHED_WITH_SASL_PWDB, 0);
   SET_ENV_EX(sasl_conf, "SASL_CONF_PATH", LIBMEMCACHED_WITH_SASL_CONF, 0);
+
+  cout << "done\n";
 }
 #else
 # define setup_sasl()
 #endif
 
-int setup(int &, char ***argv) {
+static inline void setup_random() {
+  cout << " - Setting up RNG ... ";
+
   random_setup();
 
+  cout << "done\n";
+}
+
+int setup(int &, char ***argv) {
+  cout << "Starting " << **argv << " (pid=" << getpid() << ") ... \n";
+
   setup_signals();
+  setup_random();
   setup_asan(*argv);
   setup_sasl();
 

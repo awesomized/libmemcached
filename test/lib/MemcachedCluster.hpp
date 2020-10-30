@@ -42,7 +42,6 @@ public:
   void enableBuffering(bool enable = true);
   void enableReplication();
   void flush();
-  bool isListening();
 
   static MemcachedCluster mixed();
   static MemcachedCluster network();

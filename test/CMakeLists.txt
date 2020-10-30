@@ -9,10 +9,10 @@ if(NOT MEMCACHED_BINARY)
     set(ENV{INVALID_CONFIGURATION} 1)
 endif()
 
-
 check_decl(pipe2 unistd.h)
 check_decl(SOCK_NONBLOCK sys/socket.h)
 check_decl(SOCK_CLOEXEC sys/socket.h)
+check_header(execution)
 
 file(GLOB_RECURSE TESTING_SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
 set(TESTING_ROOT ${CMAKE_CURRENT_BINARY_DIR})

@@ -20,7 +20,7 @@
 
 class Cluster {
 public:
-  explicit Cluster(Server serv, uint16_t cnt = 3);
+  explicit Cluster(Server serv, size_t cnt = 3);
   ~Cluster();
 
   Cluster(const Cluster &c) = delete;
@@ -43,7 +43,8 @@ public:
   bool start();
   void stop(bool graceful = false);
   bool isStopped();
-  bool isListening();
+  bool isListening() const;
+  bool ensureListening();
   void wait();
   bool restart();
 
@@ -52,6 +53,4 @@ private:
   Server proto;
   vector<Server> cluster;
   map<pid_t, Server *> pids;
-
-  bool startServer(Server &server);
 };
