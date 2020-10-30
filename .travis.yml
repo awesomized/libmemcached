@@ -6,6 +6,11 @@ arch:
   - s390x
 language: cpp
 
+branches:
+  only:
+    - v1.x
+    - travis
+
 addons:
   apt:
     packages:
