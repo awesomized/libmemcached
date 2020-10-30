@@ -2,6 +2,9 @@
 #include "Retry.hpp"
 
 #include <algorithm>
+#if HAVE_EXECUTION
+#  include <execution>
+#endif
 #include <sys/wait.h>
 
 Cluster::Cluster(Server serv, size_t cnt)
@@ -66,7 +69,7 @@ bool Cluster::isListening() const {
 #if HAVE_EXECUTION
     execution::par,
 #endif
-      cluster.cbegin(), cluster.cend(), [](const Server &s) {
+      cluster.begin(), cluster.end(), [](const Server &s) {
     return s.isListening();
   });
 }
