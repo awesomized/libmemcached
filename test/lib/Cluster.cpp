@@ -7,22 +7,12 @@ Cluster::Cluster(Server serv, uint16_t cnt)
 : count{cnt}
 , proto{move(serv)}
 {
-  if (count < 4) {
-      count = stoi(getenv_else("MEMCACHED_CLUSTER", "4"));
-  }
   if (!count) {
     count = 1;
   }
   for (int i = 0; i < count; ++i) {
     cluster.push_back(proto);
   }
-}
-
-Cluster::Cluster(vector<Server> servers)
-: count{servers.size()}
-, cluster{move(servers)}
-{
-
 }
 
 Cluster::~Cluster() {

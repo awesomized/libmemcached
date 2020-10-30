@@ -17,7 +17,7 @@ TEST_CASE("memcached_errors") {
   }
 
   SECTION("dead servers") {
-    MemcachedCluster test{Cluster{vector<Server>{Server{MEMCACHED_BINARY, {"-p", random_port_string("-p")}}}}};
+    MemcachedCluster test{Cluster{Server{MEMCACHED_BINARY, {"-p", random_port_string("-p")}}, 1}};
     auto memc = &test.memc;
 
     REQUIRE_SUCCESS(memcached_set(memc, S("foo"), nullptr, 0, 0, 0));

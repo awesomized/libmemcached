@@ -20,8 +20,7 @@
 
 class Cluster {
 public:
-  explicit Cluster(Server serv, uint16_t cnt = 0);
-  explicit Cluster(vector<Server> servers);
+  explicit Cluster(Server serv, uint16_t cnt = 3);
   ~Cluster();
 
   Cluster(const Cluster &c) = delete;
