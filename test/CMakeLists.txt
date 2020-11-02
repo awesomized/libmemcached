@@ -30,7 +30,6 @@ target_link_libraries(runtests PRIVATE libhashkit libmemcachedinternal libmemcac
 
 check_tbb()
 if(HAVE_TBB)
-    message("HAVE TBB")
     target_link_libraries(runtests PRIVATE ${LIBTBB})
 endif()
 
