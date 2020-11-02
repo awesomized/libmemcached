@@ -34,7 +34,7 @@ if(HAVE_MEMASLAP)
             memaslap/ms_task.c
             memaslap/ms_thread.c)
     target_include_directories(memaslap PRIVATE memaslap)
-    target_link_libraries(memaslap PRIVATE libclient_common Threads::Threads LIBEVENT)
+    target_link_libraries(memaslap PRIVATE libclient_common Threads::Threads ${LIBEVENT})
     if(CMAKE_INSTALL_RPATH)
         set_target_properties(${CLIENT} PROPERTIES
                 INSTALL_RPATH ${CMAKE_INSTALL_RPATH}/../${CMAKE_INSTALL_LIBDIR})

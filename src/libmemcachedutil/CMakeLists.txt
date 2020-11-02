@@ -23,7 +23,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL AppleClang)
 endif()
 target_link_libraries(libmemcachedutil PUBLIC Threads::Threads)
 if(HAVE_LIBSASL)
-    target_link_libraries(libmemcachedutil PUBLIC LIBSASL)
+    target_link_libraries(libmemcachedutil PUBLIC ${LIBSASL})
 endif()
 target_include_directories(libmemcachedutil PRIVATE
         ${CMAKE_SOURCE_DIR}/src

@@ -128,6 +128,7 @@ check_decl(abi::__cxa_demangle cxxabi.h)
 find_package(Backtrace)
 if(Backtrace_FOUND)
     set(HAVE_BACKTRACE 1)
+    set(BACKTRACE BACKTRACE)
     add_library(BACKTRACE INTERFACE IMPORTED)
     set_target_properties(BACKTRACE PROPERTIES
             INTERFACE_LINK_LIBRARIES "${Backtrace_LIBRARIES}"
