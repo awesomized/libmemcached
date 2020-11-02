@@ -93,7 +93,7 @@ set_target_properties(libmemcached PROPERTIES
 target_compile_definitions(libmemcached PRIVATE -DBUILDING_LIBMEMCACHED)
 target_link_libraries(libmemcached PUBLIC libhashkit Threads::Threads ${CMAKE_DL_LIBS})
 if(HAVE_BACKTRACE)
-    target_link_libraries(libmemcached PRIVATE ${BACKTRACE})
+    target_link_libraries(libmemcached PUBLIC ${BACKTRACE})
 endif()
 if(HAVE_LIBSASL)
     target_link_libraries(libmemcached PUBLIC ${LIBSASL})
@@ -132,7 +132,7 @@ if(HAVE_LIBSASL)
     target_link_libraries(libmemcachedinternal PUBLIC ${LIBSASL})
 endif()
 if(HAVE_BACKTRACE)
-    target_link_libraries(libmemcachedinternal PRIVATE ${BACKTRACE})
+    target_link_libraries(libmemcachedinternal PUBLIC ${BACKTRACE})
 endif()
 target_include_directories(libmemcachedinternal PRIVATE
         ${CMAKE_SOURCE_DIR}/src
