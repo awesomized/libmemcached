@@ -26,6 +26,7 @@ public:
   bool operator()();
 
 private:
+  const unsigned growth = 3;
   unsigned max;
   chrono::milliseconds sleep_for;
   predicate pred;

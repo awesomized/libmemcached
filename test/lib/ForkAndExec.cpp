@@ -5,6 +5,7 @@
 #include <fcntl.h>
 #include <sys/poll.h>
 #include <unistd.h>
+#include <spawn.h>
 
 #if !HAVE_PIPE2
 static inline int setfl(int fd, int newflags) {
