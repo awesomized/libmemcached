@@ -85,21 +85,19 @@ add_library(libmemcached SHARED
         ${LIBMEMCACHED_SOURCES})
 add_library(memcached ALIAS libmemcached)
 set_target_properties(libmemcached PROPERTIES
+        CXX_STANDARD ${CXX_STANDARD}
         LIBRARY_OUTPUT_NAME memcached
         LIBRARY_OUTPUT_NAME_DEBUG memcached-dbg
         SOVERSION ${LIBMEMCACHED_SO_VERSION}
         VERSION v${LIBMEMCACHED_VERSION})
 target_compile_definitions(libmemcached PRIVATE -DBUILDING_LIBMEMCACHED)
-target_link_libraries(libmemcached PUBLIC libhashkit Threads::Threads ${CMAKE_DL_LIBS} ${Backtrace_LIBRARIES})
-if(LIBSASL_FOUND)
-    if(PKG_CONFIG_FOUND)
-        target_link_libraries(libmemcached PUBLIC PkgConfig::LIBSASL)
-    else()
-        target_link_libraries(libmemcached PUBLIC ${LIBSASL_LIBRARIES})
-        target_include_directories(libmemcached PUBLIC ${LIBSASL_INCLUDEDIR})
-    endif()
+target_link_libraries(libmemcached PUBLIC libhashkit Threads::Threads ${CMAKE_DL_LIBS})
+if(HAVE_BACKTRACE)
+    target_link_libraries(libmemcached PRIVATE BACKTRACE)
 endif()
-target_include_directories(libmemcached PRIVATE ${Backtrace_INCLUDE_DIR})
+if(HAVE_LIBSASL)
+    target_link_libraries(libmemcached PUBLIC LIBSASL)
+endif()
 target_include_directories(libmemcached PRIVATE
         ${CMAKE_SOURCE_DIR}/src
         ${CMAKE_BINARY_DIR}/src
@@ -127,15 +125,17 @@ install_public_headers(
 add_library(libmemcachedinternal STATIC
         ${LIBMEMCACHED_SOURCES})
 add_library(memcachedinternal ALIAS libmemcachedinternal)
-set_target_properties(libmemcachedinternal PROPERTIES LIBRARY_OUTPUT_NAME memcachedinternal)
+set_target_properties(libmemcachedinternal PROPERTIES CXX_STANDARD ${CXX_STANDARD} LIBRARY_OUTPUT_NAME memcachedinternal)
 target_compile_definitions(libmemcachedinternal PRIVATE -DBUILDING_LIBMEMCACHEDINTERNAL)
-target_link_libraries(libmemcachedinternal PUBLIC libhashkit Threads::Threads ${LIBSASL_LIBRARIES} ${CMAKE_DL_LIBS} ${Backtrace_LIBRARIES})
+target_link_libraries(libmemcachedinternal PUBLIC libhashkit Threads::Threads ${CMAKE_DL_LIBS} ${Backtrace_LIBRARIES})
+if(HAVE_LIBSASL)
+    target_link_libraries(libmemcachedinternal PUBLIC LIBSASL)
+endif()
 target_include_directories(libmemcachedinternal PRIVATE ${Backtrace_INCLUDE_DIR})
 target_include_directories(libmemcachedinternal PRIVATE
         ${CMAKE_SOURCE_DIR}/src
         ${CMAKE_BINARY_DIR}/src
         ${CMAKE_BINARY_DIR})
-target_include_directories(libmemcachedinternal PUBLIC ${LIBSASL_INCLUDEDIR})
 target_include_directories(libmemcachedinternal PUBLIC
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>

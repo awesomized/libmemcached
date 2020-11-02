@@ -2,7 +2,9 @@ if(NOT BUILD_TESTING OR NOT CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     return()
 endif()
 
-include(CMake/Catch.cmake)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
+include(Catch)
+include(CheckTbb)
 
 if(NOT MEMCACHED_BINARY)
     message(SEND_ERROR "Could not find memcached(1) binary")
@@ -12,13 +14,6 @@ endif()
 check_decl(pipe2 unistd.h)
 check_decl(SOCK_NONBLOCK sys/socket.h)
 check_decl(SOCK_CLOEXEC sys/socket.h)
-
-check_header(execution)
-
-# TBBConfig only sets TBB_FOUND to FALSE
-set(TBB_FOUND TRUE)
-set(TBB_FIND_RELEASE_ONLY TRUE)
-find_package(TBB)
 
 file(GLOB_RECURSE TESTING_SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
 set(TESTING_ROOT ${CMAKE_CURRENT_BINARY_DIR})
@@ -32,11 +27,13 @@ target_include_directories(runtests PRIVATE
         ${CMAKE_SOURCE_DIR}/src
         ${CMAKE_BINARY_DIR}/src)
 target_link_libraries(runtests PRIVATE libhashkit libmemcachedinternal libmemcachedutil)
-if(TBB_FOUND AND HAVE_EXECUTION)
-    target_link_libraries(runtests PRIVATE TBB::tbb)
-else()
-    set(HAVE_EXECUTION 0)
+
+check_tbb()
+if(HAVE_TBB)
+    message("HAVE TBB")
+    target_link_libraries(runtests PRIVATE LIBTBB)
 endif()
+
 add_dependencies(runtests ${CLIENTS})
 if(HAVE_MEMASLAP)
     add_dependencies(runtests memaslap)

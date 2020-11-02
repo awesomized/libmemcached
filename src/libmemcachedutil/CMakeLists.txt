@@ -10,6 +10,7 @@ add_library(libmemcachedutil SHARED
         )
 add_library(memcachedutil ALIAS libmemcachedutil)
 set_target_properties(libmemcachedutil PROPERTIES
+        CXX_STANDARD ${CXX_STANDARD}
         LIBRARY_OUTPUT_NAME memcachedutil
         LIBRARY_OUTPUT_NAME_DEBUG memcachedutil-dbg
         SOVERSION ${LIBMEMCACHEDUTIL_SO_VERSION}
@@ -21,11 +22,13 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL AppleClang)
 		)
 endif()
 target_link_libraries(libmemcachedutil PUBLIC Threads::Threads)
+if(HAVE_LIBSASL)
+    target_link_libraries(libmemcachedutil PUBLIC LIBSASL)
+endif()
 target_include_directories(libmemcachedutil PRIVATE
         ${CMAKE_SOURCE_DIR}/src
         ${CMAKE_BINARY_DIR}/src
         ${CMAKE_BINARY_DIR})
-target_include_directories(libmemcachedutil PUBLIC ${LIBSASL_INCLUDEDIR})
 target_include_directories(libmemcachedutil PUBLIC
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>

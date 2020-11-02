@@ -78,7 +78,7 @@ set(HAVE_GCC_BUILTIN_ATOMIC 1)
 
 # modules
 
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake")
 
 if(NOT BUILD_DOCSONLY)
     include(CMake/_Include.cmake)

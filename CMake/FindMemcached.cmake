@@ -1,7 +1,7 @@
 find_program(MEMCACHED_EXECUTABLE NAMES memcached
         HINTS $ENV{MEMCACHED_DIR}
         PATH_SUFFIXES bin
-        DOC "memcached(), Memcached daemon"
+        DOC "memcached(1), Memcached daemon"
         )
 
 include(FindPackageHandleStandardArgs)

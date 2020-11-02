@@ -30,6 +30,7 @@ add_library(libhashkit SHARED
         )
 add_library(hashkit ALIAS libhashkit)
 set_target_properties(libhashkit PROPERTIES
+        CXX_STANDARD ${CXX_STANDARD}
         LIBRARY_OUTPUT_NAME hashkit
         LIBRARY_OUTPUT_NAME_DEBUG hashkit-dbg
         SOVERSION ${LIBHASHKIT_SO_VERSION}

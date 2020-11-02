@@ -11,8 +11,7 @@ project(libmemcached
         DESCRIPTION "libmemcached https://github.com/m6w6/libmemcached"
         )
 
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CXX_STANDARD 11)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 include(CMakeConfig.txt)

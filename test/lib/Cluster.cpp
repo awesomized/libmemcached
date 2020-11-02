@@ -2,7 +2,7 @@
 #include "Retry.hpp"
 
 #include <algorithm>
-#if HAVE_EXECUTION
+#if HAVE_EXECUTION && HAVE_TBB
 #  include <execution>
 #endif
 #include <sys/wait.h>
@@ -56,7 +56,7 @@ void Cluster::stop(bool graceful) {
 
 bool Cluster::isStopped() {
   return none_of(
-#if HAVE_EXECUTION
+#if HAVE_EXECUTION && HAVE_TBB
     execution::par,
 #endif
       cluster.begin(), cluster.end(), [](Server &s) {
@@ -66,7 +66,7 @@ bool Cluster::isStopped() {
 
 bool Cluster::isListening() const {
   return all_of(
-#if HAVE_EXECUTION
+#if HAVE_EXECUTION && HAVE_TBB
     execution::par,
 #endif
       cluster.begin(), cluster.end(), [](const Server &s) {
@@ -79,7 +79,7 @@ bool Cluster::ensureListening() {
     return false;
   }
   auto listening = all_of(
-#if HAVE_EXECUTION
+#if HAVE_EXECUTION && HAVE_TBB
     execution::par,
 #endif
   cluster.begin(), cluster.end(), [](Server &s) {
