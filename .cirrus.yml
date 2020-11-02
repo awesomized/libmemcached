@@ -14,7 +14,7 @@ task:
     ports: RELEASE_12_1_0
   freebsd_instance:
     image_family: freebsd-12-1
-    cpu: 8
+    cpu: 4
     memory: 8G
   discover_script: |
     sudo -u nobody ulimit -a
