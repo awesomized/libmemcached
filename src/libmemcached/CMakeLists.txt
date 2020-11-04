@@ -88,8 +88,7 @@ set_target_properties(libmemcached PROPERTIES
         CXX_STANDARD ${CXX_STANDARD}
         LIBRARY_OUTPUT_NAME memcached
         LIBRARY_OUTPUT_NAME_DEBUG memcached-dbg
-        SOVERSION ${LIBMEMCACHED_SO_VERSION}
-        VERSION v${LIBMEMCACHED_VERSION})
+        SOVERSION ${LIBMEMCACHED_SO_VERSION})
 target_compile_definitions(libmemcached PRIVATE -DBUILDING_LIBMEMCACHED)
 target_link_libraries(libmemcached PUBLIC libhashkit Threads::Threads ${CMAKE_DL_LIBS})
 if(HAVE_BACKTRACE)

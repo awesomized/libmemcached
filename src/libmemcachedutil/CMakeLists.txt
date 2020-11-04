@@ -13,8 +13,7 @@ set_target_properties(libmemcachedutil PROPERTIES
         CXX_STANDARD ${CXX_STANDARD}
         LIBRARY_OUTPUT_NAME memcachedutil
         LIBRARY_OUTPUT_NAME_DEBUG memcachedutil-dbg
-        SOVERSION ${LIBMEMCACHEDUTIL_SO_VERSION}
-        VERSION v${LIBMEMCACHEDUTIL_VERSION})
+        SOVERSION ${LIBMEMCACHEDUTIL_SO_VERSION})
 target_compile_definitions(libmemcachedutil PRIVATE -DBUILDING_LIBMEMCACHED)
 if(CMAKE_CXX_COMPILER_ID STREQUAL AppleClang)
 	set_target_properties(libmemcachedutil PROPERTIES
