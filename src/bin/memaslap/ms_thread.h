@@ -16,6 +16,7 @@
 #ifndef MS_THREAD_H
 #define MS_THREAD_H
 
+#include <pthread.h>
 #include <sched.h>
 #include "ms_conn.h"
 
