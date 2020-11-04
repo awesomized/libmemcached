@@ -98,6 +98,7 @@ void Cluster::wait() {
   siginfo_t inf;
 
   while (!isStopped()) {
+#if HAVE_WAITID_NOWAIT
     if (waitid(P_ALL, 0, &inf, WEXITED | WNOWAIT)) {
       perror("Cluster::wait waitid()");
       return;
@@ -107,6 +108,9 @@ void Cluster::wait() {
     if (server != pids.end()) {
       server->second->wait();
     }
+#else
+    this_thread::sleep_for(100ms);
+#endif
   }
 }
 
