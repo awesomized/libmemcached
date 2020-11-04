@@ -1,9 +1,3 @@
-if(HAVE_HSIEH_HASH)
-    set(HSIEH_CC hsieh.cc)
-else()
-    set(HSIEH_CC nohsieh.cc)
-endif()
-
 add_library(libhashkit SHARED
         aes.cc
         algorithm.cc
@@ -16,7 +10,7 @@ add_library(libhashkit SHARED
         function.cc
         has.cc
         hashkit.cc
-        ${HSIEH_CC}
+        hsieh.cc
         jenkins.cc
         md5.cc
         murmur.cc
