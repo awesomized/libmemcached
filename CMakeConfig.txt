@@ -14,7 +14,7 @@ if(APPLE)
         CACHE STRING "set relative rpath")
 elseif(UNIX)
     # FIXME
-    set(CMAKE_INSTALL_RPATH $ORIGIN
+    set(CMAKE_INSTALL_RPATH "\$ORIGIN"
         CACHE STRING "set relative rpath")
 endif()
 
@@ -31,21 +31,29 @@ option(BUILD_DOCS_MAN       "build manpages"
 option(BUILD_DOCS_MANGZ     "gzip manpages"
         ${BUILD_DOCS_MAN})
 
-option(ENABLE_DTRACE        "enable dtrace support"
-        $ENV{ENABLE_DTRACE})
-option(ENABLE_HASH_FNV64    "enable fnv64 hash support"
-        ON)
-option(ENABLE_HASH_MURMUR   "enable murmur hash support"
-        ON)
-option(ENABLE_HASH_HSIEH    "enable hsieh hash support"
-        $ENV{ENABLE_HASH_HSIEH})
-option(ENABLE_MEMASLAP      "enable memaslap client"
-        ON)
+set(ENABLE_SANITIZERS "$ENV{ENABLE_SANITIZERS}"
+        CACHE STRING "sanitizers to enable (e.g. address undefined ...)")
 option(ENABLE_SASL          "enable SASL support"
         $ENV{ENABLE_SASL})
-
-set(ENABLE_SANITIZERS "$ENV{ENABLE_SANITIZERS}"
-    CACHE STRING "sanitizers to enable (e.g. address undefined ...)")
+option(ENABLE_DTRACE        "enable dtrace support"
+        $ENV{ENABLE_DTRACE})
+option(ENABLE_HASH_HSIEH    "enable hsieh hash support"
+        $ENV{ENABLE_HASH_HSIEH})
+if(NOT DEFINED ENV{ENABLE_HASH_FNV64})
+    set(ENV{ENABLE_HASH_FNV64} ON)
+endif()
+option(ENABLE_HASH_FNV64    "enable fnv64 hash support"
+        $ENV{ENABLE_HASH_FNV64})
+if(NOT DEFINED ENV{ENABLE_HASH_MURMUR})
+    set(ENV{ENABLE_HASH_MURMUR} ON)
+endif()
+option(ENABLE_HASH_MURMUR   "enable murmur hash support"
+        $ENV{ENABLE_HASH_MURMUR})
+if(NOT DEFINED ENV{ENABLE_MEMASLAP})
+    set(ENV{ENABLE_MEMASLAP} ON)
+endif()
+option(ENABLE_MEMASLAP      "enable memaslap client"
+       $ENV{ENABLE_MEMASLAP})
 
 if(BUILD_TESTING)
     set(MEMCACHED_BINARY "$ENV{MEMCACHED_BINARY}"

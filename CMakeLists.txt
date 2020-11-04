@@ -36,8 +36,8 @@ if(NOT BUILD_DOCSONLY)
             memtouch
             )
 
-    add_subdirectory(include)
     add_subdirectory(src)
+    add_subdirectory(include)
     add_subdirectory(support)
     add_subdirectory(test)
 
