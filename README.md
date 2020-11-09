@@ -42,11 +42,11 @@ Enable the `BUILD_TESTING` setting for a build and run `make test`.
 
 CI/Test results are available at:
 
-| Provider     | Status              | OS           | Compiler   | Arch                  |
-|--------------|---------------------|--------------|------------|-----------------------|
-| [Travis CI]  | ![Travis CI Badge]  | Linux        | GNU        | arm64, ppc64le, s390x |
-| [Cirrus CI]  | ![Cirrus CI Badge]  | FreeBSD      | Clang      | amd64                 |
-| [GH Actions] | ![GH Actions Badge] | Linux, MacOS | GNU, Clang | amd64                 |
+| Provider       | Status                | OS               | Compiler   | Arch                  |
+|----------------|-----------------------|------------------|------------|-----------------------|
+| [Travis CI]    | ![Travis CI Badge]    | Linux            | GNU        | arm64, ppc64le, s390x |
+| [Builds.sr.ht] | ![Builds.sr.ht Badge] | FreeBSD, OpenBSD | Clang      | amd64                 |
+| [GH Actions]   | ![GH Actions Badge]   | Linux, MacOS     | GNU, Clang | amd64                 |
 
 Additional project metrics:
 
@@ -74,22 +74,22 @@ A list of known permanent issues is maintained in [BUGS](./BUGS.md).
 All forms of contribution are welcome! Please see the bundled
 [CONTRIBUTING](./CONTRIBUTING.md) note for the general principles followed.
 
-The list of past and current contributors is maintained in [THANKS](./THANKS).
-
-The list of current maintainers is available in [AUTHORS](./AUTHORS).
+The list of current and past maintainers and contributors is available in [AUTHORS](./AUTHORS).
 
 ### Building and updating docs
 
-See [gh-pages/publish](./docs/gh-pages/publish.sh) script, which automates
-pushing updated documentation to github pages.
+See [gh-pages/publish](./docs/gh-pages/publish.sh) script and the 
+[docs-publish-pages](./.github/workflows/docs-publish-pages.yml) workflow, 
+which automate pushing updated documentation to github pages.
 
-[Travis CI]:        https://travis-ci.org/github/m6w6/libmemcached "Travis CI Build Status"
-[Travis CI Badge]:  https://api.travis-ci.org/m6w6/libmemcached.svg?branch=v1.x "Travis CI Build Status"
-[Cirrus CI]:        https://cirrus-ci.com/github/m6w6/libmemcached "Cirrus CI Build Status"
-[Cirrus CI Badge]:  https://api.cirrus-ci.com/github/m6w6/libmemcached.svg?branch=v1.x "Cirrus CI Build Status"
-[GH Actions]:       https://github.com/m6w6/libmemcached/actions?query=workflow%3Acmake-build-ci "GH Actions Build Status"
-[GH Actions Badge]: https://img.shields.io/github/workflow/status/m6w6/libmemcached/cmake-build-ci?style=flat "GH Actions Build Status"
+[Travis CI]:            https://travis-ci.org/github/m6w6/libmemcached
+[Travis CI Badge]:      https://api.travis-ci.org/m6w6/libmemcached.svg?branch=v1.x
+[Cirrus CI]:            https://cirrus-ci.com/github/m6w6/libmemcached
+[Cirrus CI Badge]:      https://api.cirrus-ci.com/github/m6w6/libmemcached.svg?branch=v1.x
+[GH Actions]:           https://github.com/m6w6/libmemcached/actions?query=workflow%3Acmake-build-ci
+[GH Actions Badge]:     https://github.com/m6w6/libmemcached/workflows/cmake-build-ci/badge.svg?branch=v1.x
+[Builds.sr.ht]:         https://builds.sr.ht/~m6w6/libmemcached
+[Builds.sr.ht Badge]:   https://builds.sr.ht/~m6w6/libmemcached/commits.svg
 
-
-[Codecov]:          https://codecov.io/gh/m6w6/libmemcached "Codecov Code Coverage"
-[Codecov Badge]:    https://codecov.io/gh/m6w6/libmemcached/branch/v1.x/graph/badge.svg "Codecov Code Coverage"
+[Codecov]:          https://codecov.io/gh/m6w6/libmemcached
+[Codecov Badge]:    https://codecov.io/gh/m6w6/libmemcached/branch/v1.x/graph/badge.svg

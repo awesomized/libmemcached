@@ -1,1 +1,22 @@
-Michael Wallner <mike@php.net>
+Andre Cruz - Help with getting the CRC Hash function to match other connectors
+Brian Aker - Original work, Client Library, Tools
+Brian Pontz - Hsieh hash
+Cal Heldenbrand - Awesome feedback on performance
+Dustin Sallings - Insight into protocol
+Eirik A. Nygaard - IO Patch
+Eric Lambert - UDP work
+Kevin Dalley - Bug Fixes
+Marcelo Fernandez - TCP/IP timeout pieces
+Mark Atwood - Tools, Docs
+Michael Wallner - CMake build, Catch2 tests, Resurrection
+Mingqiang Zhuang - Rewrite of memslap
+Monty Taylor - Debian Packages, Cleanup work for configure, Build Releated (Pandora)
+Padraig O'Sullivan - C++ Interface
+Patrick Galbraith - work on C++ interface
+Ross McFarland - Idea for sorting servers
+Tim Bunce - Docs, Perl Driver work and feedback on API
+Tobias Luetke - Performance Feedback
+Toru Maesaka - Stats analysis
+Trond Norbye - Binary protocol, Misc
+Yin Chen - Ketama support/weighted support
+
