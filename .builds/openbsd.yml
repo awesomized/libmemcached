@@ -1,0 +1,29 @@
+image: openbsd/latest
+packages:
+  - bison
+  - cmake
+  - cyrus-sasl--
+  - libevent
+  - memcached--
+  - pkgconf
+  - sudo--
+  - tbb
+sources:
+  - https://github.com/m6w6/libmemcached
+environment:
+  CMAKE_BUILD_TYPE:   Debug
+  BUILD_TESTING:      "ON"
+  ENABLE_HASH_HSIEH:  "ON"
+  ENABLE_MEMASLAP:    "OFF"
+  VERBOSE:            "ON"
+  MEMCACHED_BINARY:   "memcached"
+tasks:
+  - configure: |
+      cmake -S libmemcached -B build
+  - build: |
+      make -C build -j2 all
+  - test: |
+      make -C build -j2 test/fast
+  - install: |
+      make -C build install DESTDIR=/tmp
+

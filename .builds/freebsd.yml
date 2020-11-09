@@ -1,0 +1,41 @@
+image: freebsd/latest
+packages:
+  - autotools
+  - bison
+  - cmake
+  - cyrus-sasl
+  - flex
+  - libevent
+  - pkgconf
+  - tbb
+sources:
+  - https://github.com/m6w6/libmemcached
+environment:
+  CMAKE_BUILD_TYPE:   Debug
+  BUILD_TESTING:      "ON"
+  ENABLE_HASH_HSIEH:  "ON"
+  ENABLE_MEMASLAP:    "ON"
+  ENABLE_SASL:        "ON"
+  VERBOSE:            "ON"
+  MEMCACHED_BINARY:   "/home/build/memcached/work/stage/home/build/bin/memcached"
+tasks:
+  - memcached: |
+      ln -s /usr/ports/Mk .
+      ln -s /usr/ports/Templates .
+      cp -R /usr/ports/databases/memcached .
+      cd memcached
+      echo bin/memcached > pkg-plist
+      make all install PREFIX=/home/build \
+        INSTALL_AS_USER=1 NO_PKG_REGISTER=1 \
+        SASLPWDB_CONFIGURE_ENABLE=sasl-pwdb \
+        OPTIONS_SET="SASL SASLPWDB" \
+        OPTIONS_DEFINE="SASL SASLPWDB"
+  - configure: |
+      cmake -S libmemcached -B build
+  - build: |
+      make -C build -j2 all
+  - test: |
+      make -C build -j2 test/fast
+  - install: |
+      make -C build install DESTDIR=/tmp
+
