@@ -77,6 +77,10 @@ TEST_CASE("bin/memcp") {
         REQUIRE(output == "");
         REQUIRE(ok);
 
+        if (udp_buffer) {
+          memcached_quit(*memc);
+        }
+
         size_t len;
         memcached_return_t rc;
         Malloced val(memcached_get(*memc, S(temp.getFn()), &len, nullptr, &rc));
