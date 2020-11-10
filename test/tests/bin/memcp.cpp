@@ -77,8 +77,9 @@ TEST_CASE("bin/memcp") {
         REQUIRE(output == "");
         REQUIRE(ok);
 
-        if (udp_buffer) {
+        if (udp_buffer == 1) {
           memcached_quit(*memc);
+          this_thread::sleep_for(500ms);
         }
 
         size_t len;
