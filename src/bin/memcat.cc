@@ -133,7 +133,6 @@ int main(int argc, char *argv[]) {
           std::cout.write(string, string_length);
           std::cout << std::endl;
         }
-        free(string);
       }
     } else if (rc != MEMCACHED_NOTFOUND) {
       std::cerr << "error on " << argv[optind] << "(" << memcached_strerror(memc, rc) << ")";
@@ -152,6 +151,11 @@ int main(int argc, char *argv[]) {
       return_code = EXIT_FAILURE;
     }
     optind++;
+    free(string);
+    string = nullptr;
+  }
+  if (string) {
+    free(string);
   }
 
   memcached_free(memc);
