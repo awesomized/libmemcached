@@ -1,7 +1,10 @@
 # libmemcached
 
-[![Gitter Chat](https://badges.gitter.im/m6w6/libmemcached.svg)](https://gitter.im/m6w6/libmemcached?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![BSD 3-Clause License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+[![Gitter Badge]](https://gitter.im/m6w6/libmemcached)
+[![License Badge]](https://opensource.org/licenses/BSD-3-Clause)
+
+[Gitter Badge]:     https://badges.gitter.im/m6w6/libmemcached.svg "Gitter Chat"
+[License Badge]:    https://img.shields.io/badge/License-BSD%203--Clause-blue.svg "BSD 3-Clause"
 
 libmemcached is an open source C/C++ client library and tools for the
 memcached server (http://memcached.org/). It has been designed to be
@@ -15,12 +18,26 @@ side methods.
 
 ## Documentation
 
+[![Docs Actions Badge]](
+    https://github.com/m6w6/libmemcached/actions?query=workflow%3Adocs-publish-pages)
+
+[Docs Actions Badge]:
+    https://github.com/m6w6/libmemcached/workflows/docs-publish-pages/badge.svg?branch=v1.x
+    "Github Docs Action"
+
 See https://m6w6.github.io/libmemcached
+
+### Building and updating docs
+
+See [gh-pages/publish](./docs/gh-pages/publish.sh) script and the
+[docs-publish-pages](./.github/workflows/docs-publish-pages.yml) workflow,
+which automate pushing updated documentation to github pages.
 
 ## Installing
 
-libmemcached uses `CMake`. Please see/edit `CMakeConfig.txt` or use
-`ccmake(1)` to set any preferred options.
+libmemcached uses `CMake`.
+Please see/edit [`CMakeConfig.txt`](./CMakeConfig.txt) or use `ccmake(1)` to
+set any preferred options.
 
 ### From source
 
@@ -33,6 +50,12 @@ libmemcached uses `CMake`. Please see/edit `CMakeConfig.txt` or use
 
 ## Testing
 
+[![Codecov Badge]](https://codecov.io/gh/m6w6/libmemcached)
+
+[Codecov Badge]:
+    https://codecov.io/gh/m6w6/libmemcached/branch/v1.x/graph/badge.svg
+    "Code coverage"
+
 Enable the `BUILD_TESTING` setting for a build and run `make test`.
 
     cmake -DBUILD_TESTING=ON ../libmemcached
@@ -40,20 +63,30 @@ Enable the `BUILD_TESTING` setting for a build and run `make test`.
 
 ### Continuous integration
 
-CI/Test results are available at:
+[![Travis Badge]](https://travis-ci.org/github/m6w6/libmemcached)
+[![Actions Badge]](https://github.com/m6w6/libmemcached/actions?query=workflow%3Acmake-build-ci)
+[![Sourcehut Badge]](https://builds.sr.ht/~m6w6/libmemcached)
 
-| Provider       | Status                | OS               | Compiler   | Arch                  |
-|----------------|-----------------------|------------------|------------|-----------------------|
-| [Travis CI]    | ![Travis CI Badge]    | Linux            | GNU        | arm64, ppc64le, s390x |
-| [Builds.sr.ht] | ![Builds.sr.ht Badge] | FreeBSD, OpenBSD | Clang      | amd64                 |
-| [GH Actions]   | ![GH Actions Badge]   | Linux, MacOS     | GNU, Clang | amd64                 |
+[Travis Badge]:
+    https://api.travis-ci.org/m6w6/libmemcached.svg?branch=v1.x
+    "Travis CI"
+[Actions Badge]:
+    https://github.com/m6w6/libmemcached/workflows/cmake-build-ci/badge.svg?branch=v1.x
+    "Github Actions"
+[Sourcehut Badge]:
+    https://builds.sr.ht/~m6w6/libmemcached/commits.svg
+    "Sourcehut Builds"
 
-Additional project metrics:
+CI/Test results are performed on the follwing system matrix:
 
-| Provider  | Type          | Status           |
-|-----------|---------------|------------------|
-| [Codecov] | Code coverage | ![Codecov Badge] |
+| OS               | Compiler                     | Arch                  |
+|------------------|------------------------------|-----------------------|
+| Linux            | GNU 9                        | arm64, ppc64le, s390x |
+| Linux            | GNU 7/8/9/10, Clang 6/8/9/10 | amd64                 |
+| MacOS            | Clang 12 (apple)             | amd64                 |
+| FreeBSD, OpenBSD | Clang 8                      | amd64                 |
 
+libmemcached has been tested against [memcached](https://github.com/memcached/memcached) v1.5 and v1.6.
 
 ## ChangeLog
 
@@ -76,20 +109,3 @@ All forms of contribution are welcome! Please see the bundled
 
 The list of current and past maintainers and contributors is available in [AUTHORS](./AUTHORS).
 
-### Building and updating docs
-
-See [gh-pages/publish](./docs/gh-pages/publish.sh) script and the 
-[docs-publish-pages](./.github/workflows/docs-publish-pages.yml) workflow, 
-which automate pushing updated documentation to github pages.
-
-[Travis CI]:            https://travis-ci.org/github/m6w6/libmemcached
-[Travis CI Badge]:      https://api.travis-ci.org/m6w6/libmemcached.svg?branch=v1.x
-[Cirrus CI]:            https://cirrus-ci.com/github/m6w6/libmemcached
-[Cirrus CI Badge]:      https://api.cirrus-ci.com/github/m6w6/libmemcached.svg?branch=v1.x
-[GH Actions]:           https://github.com/m6w6/libmemcached/actions?query=workflow%3Acmake-build-ci
-[GH Actions Badge]:     https://github.com/m6w6/libmemcached/workflows/cmake-build-ci/badge.svg?branch=v1.x
-[Builds.sr.ht]:         https://builds.sr.ht/~m6w6/libmemcached
-[Builds.sr.ht Badge]:   https://builds.sr.ht/~m6w6/libmemcached/commits.svg
-
-[Codecov]:          https://codecov.io/gh/m6w6/libmemcached
-[Codecov Badge]:    https://codecov.io/gh/m6w6/libmemcached/branch/v1.x/graph/badge.svg

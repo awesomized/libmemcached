@@ -1,8 +1,8 @@
 # ChangeLog v1.1
 
-## v 1.1.0 
+## v 1.1.0
 
-**NOTE:**  
+**NOTE:**
 This is a bug fix release, not a feature release. The minor version number
 was incremented due to the following changes:
 
@@ -10,14 +10,14 @@ was incremented due to the following changes:
 * Ported test suite to Catch2.
 * Build requires C++11 compiler support.
 * Tests require C++17 compiler support.
-* Moved the project from launchpad to github: 
+* Moved the project from launchpad to github:
     * Source: https://github.com/m6w6/libmemcached
     * Documentation: https://m6w6.github.io/libmemcached
     * Continuous Integration:
         * Github: https://github.com/m6w6/libmemcached/actions (Linux, MacOS **·** amd64)
         * Travis: https://travis-ci.org/m6w6/libmemcached (Linux **·** arm64, ppc64le, s390x)
-        * Cirrus: https://cirrus-ci.com/m6w6/libmemcached (FreeBSD **·** amd64)
-  
+        * Sourcehut: https://builds.sr.ht/~m6w6/libmemcached (FreeBSD, OpenBSD **·** amd64)
+
 > released YYYY-MM-DD
 
 * Fix build failure due to comparison of incompatible types in bin/memflush and bin/memstat.
@@ -45,7 +45,7 @@ was incremented due to the following changes:
 * Fix [gh #62](https://github.com/m6w6/libmemcached/issues/62):
   uint32_t overflow cause busy loop.
 * Removed restriction of UDP+IPv6.
-* Fix SERVER_ERROR_MEMORY_ALLOCATION_FAILURE: 
+* Fix SERVER_ERROR_MEMORY_ALLOCATION_FAILURE:
   recognize more strings returned by the server.
 * Fix [gh #13](https://github.com/m6w6/libmemcached/issues/13):
   reset continuum counter after freeing them.
