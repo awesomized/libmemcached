@@ -232,7 +232,7 @@ int main(int argc, char *argv[]) {
     }
 
     if (memcached_failed(rc)) {
-      std::cerr << "Error occrrured during memcached_set(): " << memcached_last_error_message(memc)
+      std::cerr << "Error occurred during memcached_set(): " << memcached_last_error_message(memc)
                 << std::endl;
       exit_code = EXIT_FAILURE;
     }

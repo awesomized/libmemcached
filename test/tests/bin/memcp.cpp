@@ -28,7 +28,7 @@ TEST_CASE("bin/memcp") {
   }
 
   SECTION("with server") {
-    Server server{MEMCACHED_BINARY, {"-p", random_port_string}};
+    Server server{MEMCACHED_BINARY, {"-U", random_port_string}};
     MemcachedPtr memc;
     LoneReturnMatcher test{*memc};
 
@@ -39,20 +39,52 @@ TEST_CASE("bin/memcp") {
     REQUIRE_SUCCESS(memcached_server_add(*memc, "localhost", port));
 
     SECTION("okay") {
-      Tempfile temp;
-      temp.put(S("123"));
+      auto udp_buffer = GENERATE(0,1,2);
+      auto binary = GENERATE(0,1);
+      auto set_add_replace = GENERATE(0,1,2);
+      auto expire = GENERATE(0, random_num(10,12345));
+      string set_add_replace_s[3] = {
+          "set", "add", "replace"
+      };
 
-      string output;
-      REQUIRE(sh.run(comm + temp.getFn(), output));
-      REQUIRE(output == "");
+      DYNAMIC_SECTION("udp=" << (udp_buffer==1) <<" buffer=" << (udp_buffer==2) << " binary=" << binary <<  " mode=" << set_add_replace_s[set_add_replace] << " expire=" << expire) {
+        Tempfile temp;
+        temp.put(S("123"));
 
-      size_t len;
-      memcached_return_t rc;
-      Malloced val(memcached_get(*memc, S(temp.getFn()), &len, nullptr, &rc));
+        if (udp_buffer == 1) {
+          comm += " --udp ";
+        } else if (udp_buffer == 2) {
+          comm += " --buffer ";
+        }
+        if(binary) {
+          comm += " --binary ";
+        }
+        if (expire) {
+          comm += " --expire " + to_string(expire) + " ";
+        }
+        switch (set_add_replace) {
+        case 2:
+          comm += " --replace ";
+          REQUIRE_SUCCESS(memcached_set(*memc, S(temp.getFn()), S("foo"), 0, 0));
+          break;
+        case 1:
+          comm += " --add ";
+        }
 
-      REQUIRE(*val);
-      REQUIRE_SUCCESS(rc);
-      REQUIRE(string(*val, len) == "123");
+        INFO(comm);
+        string output;
+        auto ok = sh.run(comm + temp.getFn(), output);
+        REQUIRE(output == "");
+        REQUIRE(ok);
+
+        size_t len;
+        memcached_return_t rc;
+        Malloced val(memcached_get(*memc, S(temp.getFn()), &len, nullptr, &rc));
+
+        REQUIRE(*val);
+        REQUIRE_SUCCESS(rc);
+        REQUIRE(string(*val, len) == "123");
+      }
     }
 
     SECTION("connection failure") {
