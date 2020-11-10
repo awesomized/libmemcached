@@ -90,6 +90,17 @@ public:
   bool put(const char *buf, size_t len) const {
     return static_cast<ssize_t>(len) == write(fd, buf, len);
   }
+  string get() const {
+    string all;
+    char buf[200];
+    ssize_t len;
+
+    lseek(fd, 0, SEEK_SET);
+    while (0 < (len = read(fd, buf, sizeof(buf)))) {
+      all.append(buf, len);
+    }
+    return all;
+  }
 
 private:
   char fn[80];

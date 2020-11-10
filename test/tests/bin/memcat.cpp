@@ -15,6 +15,12 @@ TEST_CASE("bin/memcat") {
     REQUIRE(output == "No servers provided\n");
   }
 
+  SECTION("connection failure") {
+    string output;
+    CHECK_FALSE(sh.run("memcat --servers=localhost:" + random_port_string("-p") + " memcat", output));
+    REQUIRE_THAT(output, Contains("CONNECTION FAILURE"));
+  }
+
   SECTION("--help") {
     string output;
     REQUIRE(sh.run("memcat --help", output));
@@ -38,14 +44,6 @@ TEST_CASE("bin/memcat") {
 
     REQUIRE_SUCCESS(memcached_server_add(*memc, "localhost", port));
 
-    SECTION("found") {
-      REQUIRE_SUCCESS(memcached_set(*memc, S("memcat"), S("MEMCAT-SET"), 0, 0));
-
-      string output;
-      REQUIRE(sh.run(comm + "memcat", output));
-      REQUIRE(output == "MEMCAT-SET\n");
-    }
-
     SECTION("not found") {
       memcached_delete(*memc, S("memcat"), 0);
 
@@ -53,6 +51,28 @@ TEST_CASE("bin/memcat") {
       REQUIRE_FALSE(sh.run(comm + "memcat", output));
       REQUIRE_THAT(output, !Contains("MEMCAT-SET"));
       REQUIRE_THAT(output, Contains("NOT FOUND"));
+    }
+    SECTION("found") {
+      string output;
+      REQUIRE_SUCCESS(memcached_set(*memc, S("memcat"), S("MEMCAT-SET"), 0, 123));
+
+      SECTION("default") {
+        REQUIRE(sh.run(comm + "memcat", output));
+        REQUIRE(output == "MEMCAT-SET\n");
+      }
+      SECTION("flags") {
+        REQUIRE(sh.run(comm + "--flag memcat", output));
+        REQUIRE(output == "123\n");
+        output.clear();
+        REQUIRE(sh.run(comm + "--flag -v memcat", output));
+        REQUIRE(output == "key: memcat\nflags: 123\n");
+      }
+      SECTION("file") {
+        Tempfile temp;
+        REQUIRE(sh.run(comm + "--file " + temp.getFn() + " memcat", output));
+        REQUIRE(output.empty());
+        REQUIRE(temp.get() == "MEMCAT-SET");
+      }
     }
   }
 }

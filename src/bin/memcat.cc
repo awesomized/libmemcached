@@ -97,8 +97,9 @@ int main(int argc, char *argv[]) {
     if (rc == MEMCACHED_SUCCESS) {
       if (opt_displayflag) {
         if (opt_verbose) {
-          std::cout << "key: " << argv[optind] << std::endl << "flags: " << flags << std::endl;
+          std::cout << "key: " << argv[optind] << std::endl << "flags: ";
         }
+        std::cout << flags << std::endl;
       } else {
         if (opt_verbose) {
           std::cout << "key: " << argv[optind] << std::endl
