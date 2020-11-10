@@ -77,18 +77,14 @@ TEST_CASE("bin/memcp") {
         REQUIRE(output == "");
         REQUIRE(ok);
 
-        if (udp_buffer == 1) {
-          memcached_quit(*memc);
-          this_thread::sleep_for(500ms);
-        }
+        Retry settled{[&memc, &temp]{
+          size_t len;
+          memcached_return_t rc;
+          Malloced val(memcached_get(*memc, S(temp.getFn()), &len, nullptr, &rc));
 
-        size_t len;
-        memcached_return_t rc;
-        Malloced val(memcached_get(*memc, S(temp.getFn()), &len, nullptr, &rc));
-
-        REQUIRE(*val);
-        REQUIRE_SUCCESS(rc);
-        REQUIRE(string(*val, len) == "123");
+          return MEMCACHED_SUCCESS == rc && *val && string(*val, len) == "123";
+        }};
+        REQUIRE(settled());
       }
     }
 
