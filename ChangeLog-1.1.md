@@ -90,7 +90,7 @@ was incremented due to the following changes:
 * Fix memaslap: build fails with newer compiler versions.
 * Fix usage of strerror_r() implementations returning pointer to char.
 * Fix pipelining commands with memcached >= 1.6.
-* Fixed memcached_stat_get_value(): buffer overflow.
+* Fix memcached_stat_get_value(): buffer overflow.
 * Fix memcached_stat(): undefined behavior due to unintialized memcached_return_t.
 * Fix SASL tests: requires SASL_PWDB_CONF.
 * Fix bin/memaslap to idnentify itself as memaslap instead of memslap.
