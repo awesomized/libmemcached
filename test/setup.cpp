@@ -1,4 +1,5 @@
 #include "mem_config.h"
+#include "test/conf.h"
 #include "test/lib/env.hpp"
 #include "test/lib/random.hpp"
 #include <cstdlib>
@@ -55,6 +56,9 @@ static inline void setup_signals() {
     "verify_asan_link_order=1," \
     "abort_on_error=0," \
     ""
+# define LSAN_OPTIONS \
+  "suppressions=" SOURCES_ROOT "/test/LeakSanitizer.suppressions," \
+  ""
 static inline void setup_asan(char **argv) {
   const auto set = getenv("ASAN_OPTIONS");
 
@@ -64,8 +68,18 @@ static inline void setup_asan(char **argv) {
     perror("exec()");
   }
 }
+static inline void setup_lsan(char **argv) {
+  const auto set = getenv("LSAN_OPTIONS");
+
+  if (!set || !*set) {
+    SET_ENV_EX(lsan, "LSAN_OPTIONS", LSAN_OPTIONS, 0);
+    execvp(argv[0], argv);
+    perror("exec()");
+  }
+}
 #else
 # define setup_asan(a) (void) a
+# define setup_lsan(a) (void) a
 #endif
 
 #if LIBMEMCACHED_WITH_SASL_SUPPORT
@@ -85,6 +99,7 @@ int setup(int &, char ***argv) {
   setup_signals();
   setup_random();
   setup_asan(*argv);
+  setup_lsan(*argv);
   setup_sasl();
 
   return 0;

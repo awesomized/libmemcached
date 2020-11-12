@@ -23,5 +23,6 @@
 #cmakedefine HAVE_TBB 1
 #cmakedefine HAVE_WAITID_NOWAIT 1
 
+#cmakedefine SOURCES_ROOT "@SOURCES_ROOT@"
 #cmakedefine TESTING_ROOT "@TESTING_ROOT@"
 #cmakedefine MEMCACHED_BINARY getenv_else("MEMCACHED_BINARY", "@MEMCACHED_BINARY@")

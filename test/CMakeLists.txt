@@ -21,6 +21,7 @@ endif()
 
 file(GLOB_RECURSE TESTING_SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
 set(TESTING_ROOT ${CMAKE_CURRENT_BINARY_DIR})
+set(SOURCES_ROOT ${CMAKE_SOURCE_DIR})
 set_source_files_properties(main.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
 configure_file(conf.h.in conf.h @ONLY)
 add_executable(runtests ${TESTING_SRC})
