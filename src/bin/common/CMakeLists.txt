@@ -1,4 +1,4 @@
-add_library(libclient_common STATIC utilities.cc generator.cc execute.cc)
+add_library(libclient_common STATIC utilities.cc generator.cc)
 add_library(client_common ALIAS libclient_common)
 target_link_libraries(libclient_common PUBLIC libmemcached)
 target_include_directories(libclient_common PUBLIC
