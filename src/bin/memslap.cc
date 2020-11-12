@@ -45,7 +45,7 @@
 #define VALUE_BYTES 4096
 
 #define PROGRAM_NAME        "memslap"
-#define PROGRAM_DESCRIPTION "Generates a load against a memcached custer of servers."
+#define PROGRAM_DESCRIPTION "Generates a load against a memcached cluster of servers."
 
 /* Global Thread counter */
 volatile unsigned int master_wakeup;
