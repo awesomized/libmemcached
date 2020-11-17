@@ -52,6 +52,7 @@ int main(int argc, char *argv[]) {
     exit(EXIT_FAILURE);
   }
 
+  auto exit_code = EXIT_SUCCESS;
   for (auto arg = argp; *arg; ++arg) {
     auto code = std::stoul(*arg);
     auto rc = static_cast<memcached_return_t>(code);
@@ -60,8 +61,13 @@ int main(int argc, char *argv[]) {
       std::cout << "code: " << code << "\n";
       std::cout << "name: ";
     }
-    std::cout << memcached_strerror(nullptr, rc) << std::endl;
+    if (rc >= MEMCACHED_MAXIMUM_RETURN) {
+      exit_code = EXIT_FAILURE;
+      std::cerr << memcached_strerror(nullptr, rc) << std::endl;
+    } else {
+      std::cout << memcached_strerror(nullptr, rc) << std::endl;
+    }
   }
 
-  exit(EXIT_SUCCESS);
+  exit(exit_code);
 }

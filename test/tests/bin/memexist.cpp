@@ -12,19 +12,20 @@ TEST_CASE("bin/memexist") {
   SECTION("no servers provided") {
     string output;
     REQUIRE_FALSE(sh.run("memexist", output));
-    REQUIRE(output == "No Servers provided\n");
+    REQUIRE(output == "No servers provided.\n");
   }
 
   SECTION("--help") {
     string output;
     REQUIRE(sh.run("memexist --help", output));
-    REQUIRE_THAT(output, Contains("memexist"));
-    REQUIRE_THAT(output, Contains("v1"));
-    REQUIRE_THAT(output, Contains("help"));
-    REQUIRE_THAT(output, Contains("version"));
-    REQUIRE_THAT(output, Contains("option"));
-    REQUIRE_THAT(output, Contains("--"));
-    REQUIRE_THAT(output, Contains("="));
+    REQUIRE_THAT(output, Contains("memexist v1"));
+    REQUIRE_THAT(output, Contains("Usage:"));
+    REQUIRE_THAT(output, Contains("key [key ...]"));
+    REQUIRE_THAT(output, Contains("Options:"));
+    REQUIRE_THAT(output, Contains("-h|--help"));
+    REQUIRE_THAT(output, Contains("-V|--version"));
+    REQUIRE_THAT(output, Contains("Environment:"));
+    REQUIRE_THAT(output, Contains("MEMCACHED_SERVERS"));
   }
 
   SECTION("with server") {
