@@ -18,6 +18,8 @@
 #include "options.hpp"
 #include "libmemcached/common.h"
 
+#include <cerrno>
+#include <cstring>
 #include <fstream>
 
 bool check_buffering(const client_options &opt, memcached_st &memc) {
@@ -76,12 +78,32 @@ std::ostream *check_ostream(const client_options &opt, const char *file, std::of
     if (opt.isset("debug")) {
       std::cerr << "Opening '" << file << "' for writing.\n";
     }
-    stream.open(file);
+    errno = 0;
+    stream.open(file, std::ios::binary | std::ios::out);
     if (stream.is_open()) {
       return &stream;
     } else if (!opt.isset("quiet")) {
-      std::cerr << "Failed to open '" << file << "' for writing.\n";
+      std::cerr << "Failed to open '" << file << "' for writing: " << strerror(errno) << ".\n";
     }
   }
   return &std::cout;
+}
+
+std::istream *check_istream(const client_options &opt, const char *file, std::ifstream &stream) {
+  if (file && *file) {
+    if (file[0] != '-' || file[1] != 0) {
+      if (opt.isset("debug")) {
+        std::cerr << "Opening '" << file << "' for reading.\n";
+      }
+      errno = 0;
+      stream.open(file, std::ios::binary | std::ios::in);
+      if (stream.is_open()) {
+        return &stream;
+      } else if (!opt.isset("quiet")) {
+        std::cerr << "Failed to open '" << file << "' for reading: " << strerror(errno) << ".\n";
+      }
+      return nullptr;
+    }
+  }
+  return &std::cin;
 }

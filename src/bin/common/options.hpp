@@ -34,7 +34,7 @@ public:
     std::string help;
     std::function<bool(client_options &, extended_option &)> parse;
     std::function<bool(const client_options &, const extended_option &, memcached_st *)> apply;
-    const char *arg;
+    char *arg;
     bool set;
   };
 
@@ -256,71 +256,71 @@ public:
 
   extended_option &get(const std::string &name) {
     // UB if not found
-    return *std::find_if(options.begin(), options.end(), [&name](extended_option &ext) {
-      return ext.opt.name && ext.opt.name == name;
-    });
+    return *find(name);
   }
   extended_option &get(int c) {
     // UB if not found
-    return *std::find_if(options.begin(), options.end(), [c](extended_option &ext) {
-      return ext.opt.val == c || (c == 1 && ext.opt.val == '-');
-    });
+    return *find(c);
   }
 
   const extended_option &get(const std::string &name) const {
-    for (const auto &ext_opt : options) {
-      if (ext_opt.opt.name && ext_opt.opt.name == name) {
-        return ext_opt;
-      }
-    }
-    return null_ext_opt;
+    // UB if not found
+    return *find(name);
   }
   const extended_option &get(int c) const {
-    for (const auto &ext_opt : options) {
-      if (ext_opt.opt.val == c) {
-        return ext_opt;
-      } else if (c == 1 && ext_opt.opt.val == '-') {
-        // GNU argv extension
-        return ext_opt;
-      }
-    }
-    return null_ext_opt;
+    // UB if not found
+    return *find(c);
+  }
+
+  bool has(const std::string &name) const {
+    auto found = find(name);
+    return found != options.cend();
+  }
+  bool has(int c) const {
+    auto found = find(c);
+    return found != options.cend();
   }
 
   bool isset(const std::string &name) const {
-    return get(name).set;
+    return has(name) && get(name).set;
   }
   bool isset(int c) const {
-    return get(c).set;
+    return has(c) && get(c).set;
   }
 
   void unset(const std::string &name) {
-    auto &opt = get(name);
-    opt.set = false;
-    opt.arg = nullptr;
+    set(name, false);
   }
   void unset(int c) {
-    auto &opt = get(c);
-    opt.set = false;
-    opt.arg = nullptr;
+    set(c, false);
   }
 
-  void set(const std::string &name, bool set_ = true, const char *optarg_ = nullptr) {
-    auto &opt = get(name);
-    opt.set = set_;
-    opt.arg = optarg_;
+  void set(const std::string &name, bool set_ = true, char *optarg_ = nullptr) {
+    if (has(name)) {
+      auto &opt = get(name);
+      opt.set = set_;
+      opt.arg = optarg_;
+    }
   }
-  void set(int c, bool set_ = true, const char *optarg_ = nullptr) {
-    auto &opt = get(c);
-    opt.set = set_;
-    opt.arg = optarg_;
+  void set(int c, bool set_ = true, char *optarg_ = nullptr) {
+    if (has(c)) {
+      auto &opt = get(c);
+      opt.set = set_;
+      opt.arg = optarg_;
+    }
   }
 
   const char *argof(const std::string &name) const {
-    return get(name).arg;
+    if (has(name)) {
+      return get(name).arg;
+    }
+    return nullptr;
   }
   const char *argof(int c) const {
-    return get(c).arg;
+    if (has(c)) {
+      return get(c).arg;
+    }
+    return nullptr;
   }
 
   const extended_option &operator[](const std::string &name) const {
@@ -337,6 +337,38 @@ public:
   bool apply(memcached_st *memc);
 
 private:
+  using iterator = std::vector<extended_option>::iterator;
+  using const_iterator = std::vector<extended_option>::const_iterator;
+  using predicate = std::function<bool(const extended_option &ext)>;
+
   static option null_opt;
   static const extended_option null_ext_opt;
+
+  const_iterator find(const predicate &pred) const {
+    return std::find_if(options.cbegin(), options.cend(), pred);
+  }
+  const_iterator find(const std::string &name) const {
+    return find([&name](const extended_option &ext) {
+      return ext.opt.name && ext.opt.name == name;
+    });
+  }
+  const_iterator find(int c) const {
+    return find([c](const extended_option &ext) {
+      return ext.opt.val == c || (c == 1 && ext.opt.val == '-');
+    });
+  }
+
+  iterator find(const predicate &pred) {
+    return std::find_if(options.begin(), options.end(), pred);
+  }
+  iterator find(const std::string &name) {
+    return find([&name](const extended_option &ext) {
+      return ext.opt.name && ext.opt.name == name;
+    });
+  }
+  iterator find(int c) {
+    return find([c](const extended_option &ext) {
+      return ext.opt.val == c || (c == 1 && ext.opt.val == '-');
+    });
+  }
 };

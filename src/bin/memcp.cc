@@ -22,6 +22,7 @@
 #include "common/options.hpp"
 #include "common/checks.hpp"
 
+#include <cerrno>
 #include <climits>
 #include <cstdlib>
 #include <libgen.h>
@@ -39,12 +40,51 @@ struct memcp_file {
     ADD,
     REPLACE
   } op;
-  const char *path;
+  char *path;
   uint32_t flags;
   time_t expire;
 };
 
-static void add_file(std::vector<memcp_file> &files, const client_options &opt, const char *file) {
+static inline std::string stream2string(const std::istream &istream) {
+  return dynamic_cast<std::ostringstream &>(std::ostringstream{} << istream.rdbuf()).str();
+}
+
+static memcached_return_t memcp(const client_options &opt, memcached_st &memc, const char *key,
+                  const memcp_file &file) {
+  std::ifstream fstream{};
+  std::istream *istream = check_istream(opt, file.path, fstream);
+
+  if (!istream){
+    return MEMCACHED_ERROR;
+  }
+
+  const char *mode;
+  memcached_return_t rc;
+  auto data = stream2string(*istream);
+  if (file.op == memcp_file::mode::REPLACE) {
+    mode = "replace";
+    rc = memcached_replace(&memc, key, strlen(key), data.c_str(), data.length(),
+        file.expire, file.flags);
+  } else if (file.op == memcp_file::mode::ADD) {
+    mode = "add";
+    rc = memcached_add(&memc, key, strlen(key), data.c_str(), data.length(),
+        file.expire, file.flags);
+  } else {
+    mode = "set";
+    rc = memcached_set(&memc, key, strlen(key), data.c_str(), data.length(),
+        file.expire, file.flags);
+  }
+
+  if (!memcached_success(rc)) {
+    auto error = memcached_last_error(&memc)
+                 ? memcached_last_error_message(&memc)
+                 : memcached_strerror(&memc, rc);
+    std::cerr << "Error occurred during memcached_" << mode <<"('" << key << "'): " << error << "\n";
+  }
+  return rc;
+}
+
+static void add_file(std::vector<memcp_file> &files, const client_options &opt, char *file) {
   memcp_file::type type = memcp_file::type::basename;
   memcp_file::mode mode = memcp_file::mode::SET;
   uint32_t flags = 0;
@@ -77,9 +117,30 @@ static void add_file(std::vector<memcp_file> &files, const client_options &opt, 
   files.emplace_back(memcp_file{type, mode, file, flags, expire});
 }
 
+static bool path2key(const client_options &opt, memcp_file &file, char **path) {
+  static char rpath[PATH_MAX + 1];
+  if (file.key == memcp_file::type::absolute) {
+    *path = realpath(file.path, rpath);
+    if (!*path) {
+      if (!opt.isset("quiet")) {
+        perror(file.path);
+      }
+      return false;
+    }
+  } else if (file.key == memcp_file::type::relative) {
+    *path = file.path;
+  } else {
+    *path = basename((file.path));
+  }
+  return true;
+}
+
 int main(int argc, char *argv[]) {
   std::vector<memcp_file> files{};
-  client_options opt{PROGRAM_NAME, PROGRAM_VERSION, PROGRAM_DESCRIPTION, "file [file ...]"};
+  client_options opt{PROGRAM_NAME, PROGRAM_VERSION, PROGRAM_DESCRIPTION,
+                     "file [file ...]"
+                     "\n\t\t\t# NOTE: order of flags and positional"
+                     "\n\t\t\t#       arguments matters on GNU systems)"};
 
   opt.add(nullptr, '-', no_argument, "GNU argv extension")
       .parse = [&files](client_options &opt_, client_options::extended_option &ext) {
@@ -156,67 +217,20 @@ int main(int argc, char *argv[]) {
   }
 
   auto exit_code = EXIT_SUCCESS;
-  for (const auto &file : files) {
-    auto filename = file.path;
-    std::ifstream filestream{filename, std::ios::in|std::ios::binary};
-
-    if (!filestream) {
-      if (!opt.isset("quiet")) {
-        std::cerr << "Could not open file '" << filename << "'.\n";
-      }
+  for (auto &file : files) {
+    char *path = nullptr;
+    if (!path2key(opt, file, &path)) {
       exit_code = EXIT_FAILURE;
-      // continue;
-    } else {
-      const char *path;
-      char rpath[PATH_MAX+1];
+      continue;
+    }
 
-      if (file.key == memcp_file::type::relative) {
-        path = filename;
-      } else if (file.key == memcp_file::type::absolute) {
-        path = realpath(filename, rpath);
-        if (!path) {
-          if (!opt.isset("quiet")) {
-            perror(filename);
-          }
-          exit_code = EXIT_FAILURE;
-          continue;
-        }
-      } else {
-        path = basename(const_cast<char *>(filename));
-      }
-
-      std::ostringstream data{};
-      data << filestream.rdbuf();
-
-      memcached_return_t rc;
-      const char *mode;
-      if (file.op == memcp_file::mode::REPLACE) {
-        mode = "replace";
-        rc = memcached_replace(&memc, path, strlen(path), data.str().c_str(), data.str().length(),
-                               file.expire, file.flags);
-      } else if (file.op == memcp_file::mode::ADD) {
-        mode = "add";
-        rc = memcached_add(&memc, path, strlen(path), data.str().c_str(), data.str().length(),
-                           file.expire, file.flags);
-      } else {
-        mode = "set";
-        rc = memcached_set(&memc, path, strlen(path), data.str().c_str(), data.str().length(),
-                           file.expire, file.flags);
-      }
-
-      if (!memcached_success(rc)) {
-        exit_code = EXIT_FAILURE;
-
-        auto error = memcached_last_error(&memc)
-            ? memcached_last_error_message(&memc)
-            : memcached_strerror(&memc, rc);
-        std::cerr << "Error occurred during memcached_" << mode <<"('" << path << "'): " << error << "\n";
-        break;
-      }
-
+    auto rc = memcp(opt, memc, path, file);
+    if (memcached_success(rc)) {
       if (opt.isset("verbose")) {
         std::cout << path << "\n";
       }
+    } else {
+      exit_code = EXIT_FAILURE;
     }
   }
 

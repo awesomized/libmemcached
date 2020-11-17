@@ -153,11 +153,22 @@ bool client_options::apply(memcached_st *memc) {
   }
 #endif // _WIN32
 
+  extended_option *servers = nullptr;
   for (auto &opt : options) {
     if (opt.apply) {
+      // servers should be applied last, so they take up any behaviors previously set
+      if (opt.opt.val == 's' && opt.opt.name == std::string("servers")) {
+        servers = &opt;
+        continue;
+      }
       if (!opt.apply(*this, opt, memc)) {
         return false;
       }
+    }
+  }
+  if (servers) {
+    if (!servers->apply(*this, *servers, memc)) {
+      return false;
     }
   }
   return true;
