@@ -12,19 +12,20 @@ TEST_CASE("bin/memtouch") {
   SECTION("no servers provided") {
     string output;
     REQUIRE_FALSE(sh.run("memtouch", output));
-    REQUIRE(output == "No Servers provided\n");
+    REQUIRE(output == "No servers provided.\n");
   }
 
   SECTION("--help") {
     string output;
     REQUIRE(sh.run("memtouch --help", output));
-    REQUIRE_THAT(output, Contains("memtouch"));
-    REQUIRE_THAT(output, Contains("v1"));
-    REQUIRE_THAT(output, Contains("help"));
-    REQUIRE_THAT(output, Contains("version"));
-    REQUIRE_THAT(output, Contains("option"));
-    REQUIRE_THAT(output, Contains("--"));
-    REQUIRE_THAT(output, Contains("="));
+    REQUIRE_THAT(output, Contains("memtouch v1"));
+    REQUIRE_THAT(output, Contains("Usage:"));
+    REQUIRE_THAT(output, Contains("key [key ...]"));
+    REQUIRE_THAT(output, Contains("Options:"));
+    REQUIRE_THAT(output, Contains("-h|--help"));
+    REQUIRE_THAT(output, Contains("-V|--version"));
+    REQUIRE_THAT(output, Contains("Environment:"));
+    REQUIRE_THAT(output, Contains("MEMCACHED_SERVERS"));
   }
 
   SECTION("with server") {
@@ -57,7 +58,10 @@ TEST_CASE("bin/memtouch") {
     SECTION("expires") {
       REQUIRE_SUCCESS(memcached_set(*memc, S("memtouch"), S("memtouch"), 60, 0));
       REQUIRE_SUCCESS(memcached_exist(*memc, S("memtouch")));
-      REQUIRE(sh.run(comm + "--expire=" + to_string(time(nullptr) - 2) + " memtouch"));
+      string output;
+      bool ok = sh.run(comm + " -v --expire=" + to_string(time(nullptr) - 2) + " memtouch", output);
+      REQUIRE(output == "");
+      REQUIRE(ok);
       REQUIRE_RC(MEMCACHED_NOTFOUND, memcached_exist(*memc, S("memtouch")));
     }
   }

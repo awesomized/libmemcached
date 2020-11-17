@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
     opt.add(def);
   }
 
-  opt.add("expiration", 'e', no_argument, "Expiration time in seconds or unix timestamp.");
+  opt.add("expire", 'e', required_argument, "Expiration time in seconds or unix timestamp.");
 
   char **argp = nullptr;
   if (!opt.parse(argc, argv, &argp)) {
