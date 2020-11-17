@@ -20,44 +20,46 @@
 #define PROGRAM_VERSION     "1.1"
 
 #include "common/options.hpp"
+#include "common/checks.hpp"
 
 #include <climits>
 #include <cstdlib>
+#include <libgen.h>
 #include <fstream>
 #include <sstream>
 
 struct memcp_file {
-  enum key {
+  enum class type {
     basename,
     relative,
     absolute
-  } type;
-  enum op {
+  } key;
+  enum class mode {
     SET,
     ADD,
     REPLACE
-  } mode;
+  } op;
   const char *path;
   uint32_t flags;
   time_t expire;
 };
 
 static void add_file(std::vector<memcp_file> &files, const client_options &opt, const char *file) {
-  memcp_file::key type = memcp_file::basename;
-  memcp_file::op mode = memcp_file::SET;
+  memcp_file::type type = memcp_file::type::basename;
+  memcp_file::mode mode = memcp_file::mode::SET;
   uint32_t flags = 0;
   time_t expire = 0;
 
   if (opt.isset("absolute")) {
-    type = memcp_file::absolute;
+    type = memcp_file::type::absolute;
   } else if (opt.isset("relative")) {
-    type = memcp_file::relative;
+    type = memcp_file::type::relative;
   }
 
   if (opt.isset("replace")) {
-    mode = memcp_file::REPLACE;
+    mode = memcp_file::mode::REPLACE;
   } else if (opt.isset("add")) {
-    mode = memcp_file::ADD;
+    mode = memcp_file::mode::ADD;
   }
 
   if (auto flags_str = opt.argof("flags")) {
@@ -68,7 +70,7 @@ static void add_file(std::vector<memcp_file> &files, const client_options &opt, 
   }
 
   if (opt.isset("debug")) {
-    auto mode_str = mode == memcp_file::REPLACE ? "REPLACE" : mode == memcp_file::ADD ? "ADD" : "SET";
+    auto mode_str = mode == memcp_file::mode::REPLACE ? "REPLACE" : mode == memcp_file::mode::ADD ? "ADD" : "SET";
     std::cerr << "Scheduling " << mode_str << " '" << file << "' (expire=" << expire << ", flags=" << flags << ").\n";
   }
 
@@ -76,7 +78,6 @@ static void add_file(std::vector<memcp_file> &files, const client_options &opt, 
 }
 
 int main(int argc, char *argv[]) {
-  memcached_st memc;
   std::vector<memcp_file> files{};
   client_options opt{PROGRAM_NAME, PROGRAM_VERSION, PROGRAM_DESCRIPTION, "file [file ...]"};
 
@@ -135,10 +136,8 @@ int main(int argc, char *argv[]) {
     exit(EXIT_FAILURE);
   }
 
-  if (!memcached_create(&memc)) {
-    if (!opt.isset("quiet")) {
-      std::cerr << "Failed to initialize memcached client.\n";
-    }
+  memcached_st memc;
+  if (!check_memcached(opt, memc)) {
     exit(EXIT_FAILURE);
   }
 
@@ -147,10 +146,7 @@ int main(int argc, char *argv[]) {
   }
 
   if (files.empty()) {
-    if (!*argp) {
-      if (!opt.isset("quiet")) {
-        std::cerr << "No file(s) provided.\n";
-      }
+    if (!check_argp(opt, argp, "No file(s) provided.")) {
       memcached_free(&memc);
       exit(EXIT_FAILURE);
     }
@@ -174,9 +170,9 @@ int main(int argc, char *argv[]) {
       const char *path;
       char rpath[PATH_MAX+1];
 
-      if (file.type == memcp_file::relative) {
+      if (file.key == memcp_file::type::relative) {
         path = filename;
-      } else if (file.type == memcp_file::absolute) {
+      } else if (file.key == memcp_file::type::absolute) {
         path = realpath(filename, rpath);
         if (!path) {
           if (!opt.isset("quiet")) {
@@ -186,7 +182,7 @@ int main(int argc, char *argv[]) {
           continue;
         }
       } else {
-        path = basename(filename);
+        path = basename(const_cast<char *>(filename));
       }
 
       std::ostringstream data{};
@@ -194,11 +190,11 @@ int main(int argc, char *argv[]) {
 
       memcached_return_t rc;
       const char *mode;
-      if (file.mode == memcp_file::REPLACE) {
+      if (file.op == memcp_file::mode::REPLACE) {
         mode = "replace";
         rc = memcached_replace(&memc, path, strlen(path), data.str().c_str(), data.str().length(),
                                file.expire, file.flags);
-      } else if (file.mode == memcp_file::ADD) {
+      } else if (file.op == memcp_file::mode::ADD) {
         mode = "add";
         rc = memcached_add(&memc, path, strlen(path), data.str().c_str(), data.str().length(),
                            file.expire, file.flags);
@@ -208,7 +204,7 @@ int main(int argc, char *argv[]) {
                            file.expire, file.flags);
       }
 
-      if (MEMCACHED_SUCCESS != rc) {
+      if (!memcached_success(rc)) {
         exit_code = EXIT_FAILURE;
 
         auto error = memcached_last_error(&memc)
@@ -219,9 +215,13 @@ int main(int argc, char *argv[]) {
       }
 
       if (opt.isset("verbose")) {
-        std::cerr << path << "\n";
+        std::cout << path << "\n";
       }
     }
+  }
+
+  if (!check_buffering(opt, memc)) {
+    exit_code = EXIT_FAILURE;
   }
 
   memcached_free(&memc);

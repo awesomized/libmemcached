@@ -1,5 +1,6 @@
-add_library(libclient_common STATIC utilities.cc generator.cc options.cpp)
+add_library(libclient_common STATIC utilities.cc generator.cc options.cpp checks.hpp)
 add_library(client_common ALIAS libclient_common)
+set_target_properties(libclient_common PROPERTIES CXX_STANDARD ${CXX_STANDARD})
 target_link_libraries(libclient_common PUBLIC libmemcached)
 target_include_directories(libclient_common PUBLIC
         .

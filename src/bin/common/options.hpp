@@ -96,15 +96,19 @@ public:
       if (auto username = ext.arg) {
         if (!LIBMEMCACHED_WITH_SASL_SUPPORT) {
           if (!opt.isset("quiet")) {
-            std::cerr << "SASL username was supplied, but binary was not built with SASL support.\n";
+            std::cerr
+                << "SASL username was supplied, but binary was not built with SASL support.\n";
             return false;
           }
         }
-        if (MEMCACHED_SUCCESS != memcached_set_sasl_auth_data(memc, username, opt.argof("password"))) {
-          if (!opt.isset("quiet")) {
-            std::cerr << memcached_last_error_message(memc);
+        if (memc) {
+          if (MEMCACHED_SUCCESS
+              != memcached_set_sasl_auth_data(memc, username, opt.argof("password"))) {
+            if (!opt.isset("quiet")) {
+              std::cerr << memcached_last_error_message(memc);
+            }
+            return false;
           }
-          return false;
         }
       }
       return true;

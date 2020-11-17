@@ -20,28 +20,29 @@
 #define PROGRAM_VERSION     "1.1"
 
 #include "common/options.hpp"
+#include "common/checks.hpp"
 
 #include <iostream>
 #include <fstream>
 
-memcached_return_t memcat(const client_options &opt, memcached_st *memc, const char *key, std::ostream &ref) {
+memcached_return_t memcat(const client_options &opt, memcached_st *memc, const char *key, std::ostream *ref) {
   memcached_return_t rc;
   uint32_t flags;
   size_t len;
   auto val = memcached_get(memc, key, strlen(key), &len, &flags, &rc);
+  auto verbose = opt.isset("verbose");
 
   if (MEMCACHED_SUCCESS == rc) {
-    if (opt.isset("verbose")) {
-      ref << "key: " << key << "\n";
+    if (verbose) {
+      *ref << "key: " << key << "\n";
     }
     if (opt.isset("flags")) {
-      ref << "flags: " << flags << "\n";
+      *ref << "flags: " << flags << "\n";
     }
-    if (opt.isset("verbose")) {
-      ref << "value: ";
+    if (verbose) {
+      *ref << "value: ";
     }
-    ref.write(val, len);
-    ref << std::endl;
+    ref->write(val, len) << std::endl;
   }
 
   if (val) {
@@ -51,8 +52,6 @@ memcached_return_t memcat(const client_options &opt, memcached_st *memc, const c
 }
 
 int main(int argc, char *argv[]) {
-  char **argp = nullptr;
-  memcached_st memc;
   client_options opt{PROGRAM_NAME, PROGRAM_VERSION, PROGRAM_DESCRIPTION, "key [ key ... ]"};
 
   for (const auto &def : opt.defaults) {
@@ -61,6 +60,7 @@ int main(int argc, char *argv[]) {
   opt.add("flags", 'F', no_argument, "Display key flags, too.");
   opt.add("file", 'f', required_argument, "Output to file instead of standard output.");
 
+  char **argp = nullptr;
   if (!opt.parse(argc, argv, &argp)) {
     exit(EXIT_FAILURE);
   }
@@ -70,10 +70,8 @@ int main(int argc, char *argv[]) {
     exit(EXIT_FAILURE);
   }
 
-  if (!memcached_create(&memc)) {
-    if (!opt.isset("quiet")) {
-      std::cerr << "Failed to initialize memcached client.\n";
-    }
+  memcached_st memc;
+  if (!check_memcached(opt, memc)) {
     exit(EXIT_FAILURE);
   }
 
@@ -82,10 +80,7 @@ int main(int argc, char *argv[]) {
     exit(EXIT_FAILURE);
   }
 
-  if (!*argp) {
-    if (!opt.isset("quiet")) {
-      std::cerr << "No key(s) provided.\n";
-    }
+  if (!check_argp(opt, argp, "No key(s) provided.")) {
     memcached_free(&memc);
     exit(EXIT_FAILURE);
   }
@@ -94,28 +89,25 @@ int main(int argc, char *argv[]) {
   for (auto arg = argp; *arg; ++arg) {
     auto key = *arg;
     if (*key) {
-      memcached_return_t rc;
+
+      std::ofstream fstream{};
+      std::ostream *ostream = check_ostream(opt, opt.argof("file"), fstream);
+
       auto file = opt.argof("file");
       if (file && *file) {
-        std::ofstream stream{file, std::ios::binary};
-        rc = memcat(opt, &memc, key, stream);
-      } else {
-        rc = memcat(opt, &memc, key, std::cout);
-      }
-      if (MEMCACHED_SUCCESS != rc) {
-        exit_code = EXIT_FAILURE;
-
-        if (MEMCACHED_NOTFOUND == rc) {
-          if (opt.isset("verbose")) {
-            std::cerr << "not found: " << key << "\n";
-          }
-          // continue;
-        } else {
+        fstream.open(file, std::ios::binary | std::ios::out);
+        if (!fstream.is_open()) {
+          exit_code = EXIT_FAILURE;
           if (!opt.isset("quiet")) {
-            std::cerr << memcached_last_error_message(&memc) << "\n";
+            std::cerr << "Failed to open " << file << " for writing.\n";
           }
-          break;
+          continue;
         }
+        ostream = &fstream;
+      }
+
+      if (!check_return(opt, memc, key, memcat(opt, &memc, key, ostream))) {
+        exit_code = EXIT_FAILURE;
       }
     }
   }

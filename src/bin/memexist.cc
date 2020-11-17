@@ -20,6 +20,7 @@
 #define PROGRAM_VERSION     "1.1"
 
 #include "common/options.hpp"
+#include "common/checks.hpp"
 
 int main(int argc, char *argv[]) {
   client_options opt{PROGRAM_NAME, PROGRAM_VERSION, PROGRAM_DESCRIPTION, "key [key ...]"};
@@ -34,10 +35,7 @@ int main(int argc, char *argv[]) {
   }
 
   memcached_st memc;
-  if (!memcached_create(&memc)) {
-    if (!opt.isset("quiet")) {
-      std::cerr << "Failed to initialize memcached client.\n";
-    }
+  if (!check_memcached(opt, memc)) {
     exit(EXIT_FAILURE);
   }
 
@@ -46,31 +44,21 @@ int main(int argc, char *argv[]) {
     exit(EXIT_FAILURE);
   }
 
-  if (!*argp) {
-    if (!opt.isset("quiet")) {
-      std::cerr << "No key(s) provided.\n";
-    }
+  if (!check_argp(opt, argp, "No key(s) provided.")) {
     memcached_free(&memc);
     exit(EXIT_FAILURE);
   }
 
   auto exit_code = EXIT_SUCCESS;
   for (auto arg = argp; *arg; ++arg) {
-    auto rc = memcached_exist(&memc, *arg, strlen(*arg));
-
-    if (MEMCACHED_SUCCESS == rc) {
-      if (opt.isset("verbose")) {
-        std::cerr << "Found key '" << *arg << "'.\n";
-      }
-    } else {
-      exit_code = EXIT_FAILURE;
-      if (opt.isset("verbose")) {
-        if (rc == MEMCACHED_NOTFOUND) {
-          std::cerr << "Could not find key '" << *arg << "'.\n";
-        } else {
-          std::cerr << "Fatal error for key '" << *arg << "': "
-                    << memcached_last_error_message(&memc) << "\n";
+    auto key = *arg;
+    if (*key) {
+      if (check_return(opt, memc, key, memcached_exist(&memc, *arg, strlen(*arg)))) {
+        if (opt.isset("verbose")) {
+          std::cerr << "Found key '" << *arg << "'.\n";
         }
+      } else {
+        exit_code = EXIT_FAILURE;
       }
     }
   }

@@ -20,6 +20,7 @@
 #define PROGRAM_VERSION     "1.1"
 
 #include "common/options.hpp"
+#include "common/checks.hpp"
 
 int main(int argc, char *argv[]) {
   client_options opt{PROGRAM_NAME, PROGRAM_VERSION, PROGRAM_DESCRIPTION, "code [code ...]"};
@@ -30,6 +31,7 @@ int main(int argc, char *argv[]) {
     case 'V': // --version
     case 'v': // --verbose
     case 'd': // --debug
+    case 'q': // --quiet
       opt.add(def);
       break;
     default:
@@ -42,10 +44,11 @@ int main(int argc, char *argv[]) {
     exit(EXIT_FAILURE);
   }
 
-  opt.apply(nullptr);
+  if (!opt.apply(nullptr)) {
+    exit(EXIT_FAILURE);
+  }
 
-  if (!*argp) {
-    std::cerr << "No error codes provided.\n";
+  if (!check_argp(opt, argp, "No error code(s) provided.")) {
     exit(EXIT_FAILURE);
   }
 
@@ -55,10 +58,9 @@ int main(int argc, char *argv[]) {
 
     if (opt.isset("verbose")) {
       std::cout << "code: " << code << "\n";
-      std::cout << "name: " << memcached_strerror(nullptr, rc) << "\n";
-    } else {
-      std::cout << memcached_strerror(nullptr, rc) << "\n";
+      std::cout << "name: ";
     }
+    std::cout << memcached_strerror(nullptr, rc) << std::endl;
   }
 
   exit(EXIT_SUCCESS);

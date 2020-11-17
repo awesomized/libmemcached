@@ -2,7 +2,7 @@ add_subdirectory(common)
 
 foreach(CLIENT IN LISTS CLIENTS)
     add_executable(${CLIENT} ${CLIENT}.cc)
-    set_target_properties(${CLIENT} PROPERTIES CXX_STANDARD ${CXX_STANDARD})
+    set_property(TARGET ${CLIENT} PROPERTY CXX_STANDARD ${CXX_STANDARD})
     target_include_directories(${CLIENT} PRIVATE ..)
     target_link_libraries(${CLIENT} PRIVATE libclient_common)
     if(CMAKE_INSTALL_RPATH)

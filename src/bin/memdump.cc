@@ -21,6 +21,7 @@
 #define PROGRAM_VERSION     "1.1"
 
 #include "common/options.hpp"
+#include "common/checks.hpp"
 
 static memcached_return_t print(const memcached_st *, const char *k, size_t l, void *ctx) {
   auto out = static_cast<std::ostream *>(ctx);
@@ -54,10 +55,7 @@ int main(int argc, char *argv[]) {
   }
 
   memcached_st memc;
-  if (!memcached_create(&memc)) {
-    if (!opt.isset("quiet")) {
-      std::cerr << "Failed to initialize memcached client.\n";
-    }
+  if (!check_memcached(opt, memc)) {
     exit(EXIT_FAILURE);
   }
 
@@ -66,23 +64,8 @@ int main(int argc, char *argv[]) {
   }
 
   memcached_dump_fn cb[1] = {&print};
-  std::ostream *outstream = &std::cout;
   std::ofstream outfile{};
-
-  if (auto filename = opt.argof("file")) {
-    if (opt.isset("debug")) {
-      std::cerr << "Opening " << filename << " for output.\n";
-    }
-    outfile.open(filename, std::ios::binary | std::ios::out);
-    if (!outfile.is_open()) {
-      if (!opt.isset("quiet")) {
-        std::cerr << "Failed to open " << filename << " for writing.\n";
-      }
-      memcached_free(&memc);
-      exit(EXIT_FAILURE);
-    }
-    outstream = &outfile;
-  }
+  std::ostream *outstream = check_ostream(opt, opt.argof("file"), outfile);
 
   auto rc = memcached_dump(&memc, cb, outstream, 1);
 
