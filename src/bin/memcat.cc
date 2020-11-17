@@ -37,12 +37,22 @@ memcached_return_t memcat(const client_options &opt, memcached_st *memc, const c
       *ref << "key: " << key << "\n";
     }
     if (opt.isset("flags")) {
-      *ref << "flags: " << flags << "\n";
+      if (verbose) {
+      *ref << "flags: ";
+      }
+      *ref << flags << "\n";
     }
     if (verbose) {
       *ref << "value: ";
     }
-    ref->write(val, len) << std::endl;
+    
+    ref->write(val, len);
+
+    if (verbose || !opt.isset("file")) {
+      *ref << std::endl;
+    }
+
+    ref->flush();
   }
 
   if (val) {
@@ -52,7 +62,7 @@ memcached_return_t memcat(const client_options &opt, memcached_st *memc, const c
 }
 
 int main(int argc, char *argv[]) {
-  client_options opt{PROGRAM_NAME, PROGRAM_VERSION, PROGRAM_DESCRIPTION, "key [ key ... ]"};
+  client_options opt{PROGRAM_NAME, PROGRAM_VERSION, PROGRAM_DESCRIPTION, "key [key ...]"};
 
   for (const auto &def : opt.defaults) {
     opt.add(def);
@@ -89,22 +99,8 @@ int main(int argc, char *argv[]) {
   for (auto arg = argp; *arg; ++arg) {
     auto key = *arg;
     if (*key) {
-
       std::ofstream fstream{};
       std::ostream *ostream = check_ostream(opt, opt.argof("file"), fstream);
-
-      auto file = opt.argof("file");
-      if (file && *file) {
-        fstream.open(file, std::ios::binary | std::ios::out);
-        if (!fstream.is_open()) {
-          exit_code = EXIT_FAILURE;
-          if (!opt.isset("quiet")) {
-            std::cerr << "Failed to open " << file << " for writing.\n";
-          }
-          continue;
-        }
-        ostream = &fstream;
-      }
 
       if (!check_return(opt, memc, key, memcat(opt, &memc, key, ostream))) {
         exit_code = EXIT_FAILURE;

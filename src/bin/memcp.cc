@@ -111,9 +111,9 @@ int main(int argc, char *argv[]) {
   };
 
   opt.add("udp", 'U', no_argument, "Use UDP.")
-      .apply = [](const client_options &opt, const client_options::extended_option &ext, memcached_st *memc) {
+      .apply = [](const client_options &opt_, const client_options::extended_option &ext, memcached_st *memc) {
     if (MEMCACHED_SUCCESS != memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_USE_UDP, ext.set)) {
-      if (!opt.isset("quiet")) {
+      if (!opt_.isset("quiet")) {
         std::cerr << memcached_last_error_message(memc) << "\n";
       }
       return false;

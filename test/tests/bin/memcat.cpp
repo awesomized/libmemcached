@@ -12,7 +12,7 @@ TEST_CASE("bin/memcat") {
   SECTION("no servers provided") {
     string output;
     REQUIRE_FALSE(sh.run("memcat", output));
-    REQUIRE(output == "No servers provided\n");
+    REQUIRE(output == "No servers provided.\n");
   }
 
   SECTION("connection failure") {
@@ -24,13 +24,14 @@ TEST_CASE("bin/memcat") {
   SECTION("--help") {
     string output;
     REQUIRE(sh.run("memcat --help", output));
-    REQUIRE_THAT(output, Contains("memcat"));
-    REQUIRE_THAT(output, Contains("v1"));
-    REQUIRE_THAT(output, Contains("help"));
-    REQUIRE_THAT(output, Contains("version"));
-    REQUIRE_THAT(output, Contains("option"));
-    REQUIRE_THAT(output, Contains("--"));
-    REQUIRE_THAT(output, Contains("="));
+    REQUIRE_THAT(output, Contains("memcat v1"));
+    REQUIRE_THAT(output, Contains("Usage:"));
+    REQUIRE_THAT(output, Contains("key [key ...]"));
+    REQUIRE_THAT(output, Contains("Options:"));
+    REQUIRE_THAT(output, Contains("-h|--help"));
+    REQUIRE_THAT(output, Contains("-V|--version"));
+    REQUIRE_THAT(output, Contains("Environment:"));
+    REQUIRE_THAT(output, Contains("MEMCACHED_SERVERS"));
   }
 
   SECTION("with server") {
@@ -49,6 +50,13 @@ TEST_CASE("bin/memcat") {
 
       string output;
       REQUIRE_FALSE(sh.run(comm + "memcat", output));
+      REQUIRE(output.empty());
+    }
+    SECTION("not found --verbose") {
+      memcached_delete(*memc, S("memcat"), 0);
+
+      string output;
+      REQUIRE_FALSE(sh.run(comm + " -v memcat", output));
       REQUIRE_THAT(output, !Contains("MEMCAT-SET"));
       REQUIRE_THAT(output, Contains("NOT FOUND"));
     }
@@ -62,10 +70,10 @@ TEST_CASE("bin/memcat") {
       }
       SECTION("flags") {
         REQUIRE(sh.run(comm + "--flag memcat", output));
-        REQUIRE(output == "123\n");
+        REQUIRE(output == "123\nMEMCAT-SET\n");
         output.clear();
         REQUIRE(sh.run(comm + "--flag -v memcat", output));
-        REQUIRE(output == "key: memcat\nflags: 123\n");
+        REQUIRE(output == "key: memcat\nflags: 123\nvalue: MEMCAT-SET\n");
       }
       SECTION("file") {
         Tempfile temp;

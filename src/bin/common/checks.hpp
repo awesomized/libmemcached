@@ -58,7 +58,8 @@ bool check_return(const client_options &opt, memcached_st &memc, const char *key
     if (!opt.isset("quiet")) {
       if (MEMCACHED_NOTFOUND == rc) {
         if (opt.isset("verbose")) {
-          std::cerr << "Could not find key '" << key << "'.\n";
+          std::cerr << "Could not find key '" << key
+                    << "': " << memcached_strerror(&memc, rc) << "\n";;
         }
       } else {
         std::cerr << "Fatal error for key '" << key
