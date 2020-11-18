@@ -88,16 +88,17 @@ using time_point = std::chrono::time_point<time_clock>;
 using time_format = std::chrono::duration<double, std::ratio<1,1>>;
 using time_format_ms = std::chrono::duration<double, std::ratio<1,1000>>;
 
-static void latency_test(uint32_t iterations, std::vector<memcached_st> servers) {
+static void latency_test(uint32_t iterations, std::vector<memcached_st> &servers) {
   const char *test_key = "libmemcached_test_key";
   size_t test_key_len = strlen(test_key);
   const memcached_instance_st *slowest_server = nullptr;
   time_point::duration slowest_time{};
+  std::vector<const memcached_instance_st *> failed_servers{};
 
   std::cout << "Network Latency Test:\n\n" << std::showpoint << std::fixed << std::setprecision(3);
 
   for (auto &memc : servers) {
-    memcached_return_t rc;
+    memcached_return_t rc = memcached_last_error(&memc);
 
     auto start = time_clock::now();
     for (auto i = 0u; i < iterations; ++i) {
@@ -114,6 +115,7 @@ static void latency_test(uint32_t iterations, std::vector<memcached_st> servers)
 
     if (memcached_fatal(rc)) {
       std::cout << "  => failed to reach the server\n";
+      failed_servers.push_back(inst);
     } else {
       std::cout << "  => "
                 << time_format(elapsed/iterations).count() << " seconds ("
@@ -133,20 +135,33 @@ static void latency_test(uint32_t iterations, std::vector<memcached_st> servers)
               << time_format(slowest_time/iterations).count() << " seconds ("
               << time_format_ms(slowest_time/iterations).count() << "ms)\n";
   }
+  if (!failed_servers.empty()) {
+    for (const auto inst : failed_servers) {
+      std::cout << "Failed Server:  " << memcached_server_name(inst)
+                << " (" << memcached_server_port(inst)
+                << ") => " << memcached_strerror(inst->root, memcached_server_error_return(inst))
+                << "\n";
+    }
+  }
 }
 
 static bool analyze_latency(client_options &opt, memcached_st *root) {
-  uint32_t num_of_tests = 32;
+  uint32_t num_of_tests = 100;
+
+  if (auto iter_str = opt.argof("iterations")) {
+    num_of_tests = std::stoul(iter_str);
+  }
 
   std::vector<memcached_st> servers{memcached_server_count(root)};
 
   uint32_t i = 0;
   for (auto &memc : servers) {
-    if (!check_memcached(opt, memc)) {
-      return false;
-    }
+    memcached_clone(&memc, root);
+    memcached_servers_reset(&memc);
     auto instance = memcached_server_instance_by_position(root, i++);
     memcached_server_add(&memc, memcached_server_name(instance), memcached_server_port(instance));
+    //pre-connect
+    memcached_version(&memc);
   }
 
   latency_test(num_of_tests, servers);
@@ -207,6 +222,7 @@ int main(int argc, char *argv[]) {
   opt.add("args", 'A', required_argument, "Stat args. DEPRECATED: use positional arguments.");
   opt.add("server-version", 'S', no_argument, "Print server version.");
   opt.add("analyze", 'a', optional_argument, "Analyze server characteristics (options: default, latency).");
+  opt.add("iterations", 0, required_argument, "Iteration count of GETs sent by the latency test (default: 1000).");
 
   char **argp = nullptr;
   if (!opt.parse(argc, argv, &argp)) {
