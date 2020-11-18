@@ -14,13 +14,6 @@
 */
 
 #include "options.hpp"
-#include <array>
-
-option client_options::null_opt{};
-const client_options::extended_option client_options::null_ext_opt{
-    client_options::null_opt,
-    {}, {}, {},nullptr, false
-};
 
 void client_options::print_version() const {
   std::cout << prog_name << " v" << prog_vers << " (libmemcached v" << LIBMEMCACHED_VERSION_STRING << ")"
@@ -84,8 +77,7 @@ void client_options::print_help() const {
     std::cout << "\n\t\t" << ext.help << "\n";
   }
 
-  const auto &servers = get("servers");
-  if (&servers != &null_ext_opt) {
+  if (has("servers")) {
     std::cout << "\nEnvironment:\n";
     std::cout << "\tMEMCACHED_SERVERS=\n";
     std::cout << "\t\tList of servers to use if `-s|--servers` was not provided.\n";
@@ -95,7 +87,7 @@ void client_options::print_help() const {
 
 bool client_options::parse(int argc, char **argv, char ***argp) {
   /* extern */ optind = 1;
-  auto &debug = get("debug");
+  auto debug = has("debug") ? &get("debug") : nullptr;
   std::string short_opts{};
   std::vector<option> long_opts{};
 
@@ -118,7 +110,7 @@ bool client_options::parse(int argc, char **argv, char ***argp) {
   while (true) {
     auto opt = getopt_long(argc, argv, short_opts.c_str(), long_opts.data(), nullptr);
 
-    if (debug.set && opt > 0) {
+    if (debug->set && opt > 0) {
       std::cerr << "Processing option '" << (char) opt << "' (" << opt << ")\n";
     }
     if (opt == '?') {
@@ -132,6 +124,16 @@ bool client_options::parse(int argc, char **argv, char ***argp) {
     }
 
     auto &ext_opt = get(opt);
+
+    // grab optional argument
+    if (ext_opt.opt.has_arg == optional_argument && !optarg) {
+      auto next_arg = argv[optind];
+
+      if (next_arg && *next_arg && *next_arg != '-') {
+        optarg = next_arg;
+        ++optind;
+      }
+    }
 
     ext_opt.set = true;
     ext_opt.arg = optarg;

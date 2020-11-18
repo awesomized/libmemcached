@@ -15,76 +15,20 @@
 
 #include "mem_config.h"
 
-#include <cstdio>
-#include <cstring>
-#include <ctime>
-#include <iostream>
-#include <fcntl.h>
-#include <getopt.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <sys/types.h>
-
-#include "libmemcached-1.0/memcached.h"
-
-#include "client_options.h"
-#include "utilities.h"
-
 #define PROGRAM_NAME        "memstat"
-#define PROGRAM_DESCRIPTION "Output the state of a memcached cluster."
+#define PROGRAM_DESCRIPTION "Print stats/version of or analyze a memcached cluster."
+#define PROGRAM_VERSION     "1.1"
 
-/* Prototypes */
-static void options_parse(int argc, char *argv[]);
-static void run_analyzer(memcached_st *memc, memcached_stat_st *memc_stat);
-static void print_analysis_report(memcached_st *memc, memcached_analysis_st *report);
+#include "common/options.hpp"
+#include "common/checks.hpp"
+#include "common/utilities.h"
 
-static bool opt_binary = false;
-static bool opt_verbose = false;
-static bool opt_server_version = false;
-static bool opt_analyze = false;
-static char *opt_servers = NULL;
-static char *stat_args = NULL;
-static char *analyze_mode = NULL;
-static char *opt_username;
-static char *opt_passwd;
+#include <cstdio>
+#include <chrono>
+#include <iomanip>
 
-static struct option long_options[] = {
-    {(OPTIONSTRING) "args", required_argument, NULL, OPT_STAT_ARGS},
-    {(OPTIONSTRING) "version", no_argument, NULL, OPT_VERSION},
-    {(OPTIONSTRING) "help", no_argument, NULL, OPT_HELP},
-    {(OPTIONSTRING) "quiet", no_argument, NULL, OPT_QUIET},
-    {(OPTIONSTRING) "verbose", no_argument, NULL, OPT_VERBOSE},
-    {(OPTIONSTRING) "binary", no_argument, NULL, OPT_BINARY},
-    {(OPTIONSTRING) "debug", no_argument, NULL, OPT_DEBUG},
-    {(OPTIONSTRING) "server-version", no_argument, NULL, OPT_SERVER_VERSION},
-    {(OPTIONSTRING) "servers", required_argument, NULL, OPT_SERVERS},
-    {(OPTIONSTRING) "analyze", optional_argument, NULL, OPT_ANALYZE},
-    {(OPTIONSTRING) "username", required_argument, NULL, OPT_USERNAME},
-    {(OPTIONSTRING) "password", required_argument, NULL, OPT_PASSWD},
-    {0, 0, 0, 0},
-};
-
-static memcached_return_t stat_printer(const memcached_instance_st *instance, const char *key,
-                                       size_t key_length, const char *value, size_t value_length,
-                                       void *context) {
-  static const memcached_instance_st *last = NULL;
-  (void) context;
-
-  if (last != instance) {
-    printf("Server: %s (%u)\n", memcached_server_name(instance),
-           (uint32_t) memcached_server_port(instance));
-    last = instance;
-  }
-
-  printf("\t %.*s: %.*s\n", (int) key_length, key, (int) value_length, value);
-
-  return MEMCACHED_SUCCESS;
-}
-
-static memcached_return_t server_print_callback(const memcached_st *,
-                                                const memcached_instance_st *instance, void *) {
+static memcached_return_t print_server_version(const memcached_st *,
+                                               const memcached_instance_st *instance, void *) {
   std::cerr << memcached_server_name(instance) << ":" << memcached_server_port(instance) << " "
             << int(memcached_server_major_version(instance)) << "."
             << int(memcached_server_minor_version(instance)) << "."
@@ -93,205 +37,13 @@ static memcached_return_t server_print_callback(const memcached_st *,
   return MEMCACHED_SUCCESS;
 }
 
-int main(int argc, char *argv[]) {
-  options_parse(argc, argv);
-  initialize_sockets();
-
-  if (opt_servers == NULL) {
-    char *temp;
-    if ((temp = getenv("MEMCACHED_SERVERS"))) {
-      opt_servers = strdup(temp);
-    }
-
-    if (opt_servers == NULL) {
-      std::cerr << "No Servers provided" << std::endl;
-      return EXIT_FAILURE;
-    }
-  }
-
-  memcached_server_st *servers = memcached_servers_parse(opt_servers);
-  if (servers == NULL or memcached_server_list_count(servers) == 0) {
-    std::cerr << "Invalid server list provided:" << opt_servers << std::endl;
-    return EXIT_FAILURE;
-  }
-
-  if (opt_servers) {
-    free(opt_servers);
-  }
-
-  memcached_st *memc = memcached_create(NULL);
-  memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, opt_binary);
-
-  memcached_return_t rc = memcached_server_push(memc, servers);
-  memcached_server_list_free(servers);
-
-  if (opt_username and LIBMEMCACHED_WITH_SASL_SUPPORT == 0) {
-    memcached_free(memc);
-    std::cerr << "--username was supplied, but binary was not built with SASL support."
-              << std::endl;
-    return EXIT_FAILURE;
-  }
-
-  if (opt_username) {
-    memcached_return_t ret;
-    if (memcached_failed(ret = memcached_set_sasl_auth_data(memc, opt_username, opt_passwd))) {
-      std::cerr << memcached_last_error_message(memc) << std::endl;
-      memcached_free(memc);
-      return EXIT_FAILURE;
-    }
-  }
-
-  if (rc != MEMCACHED_SUCCESS and rc != MEMCACHED_SOME_ERRORS) {
-    printf("Failure to communicate with servers (%s)\n", memcached_strerror(memc, rc));
-    exit(EXIT_FAILURE);
-  }
-
-  if (opt_server_version) {
-    if (memcached_failed(memcached_version(memc))) {
-      std::cerr << "Unable to obtain server version" << std::endl;
-      exit(EXIT_FAILURE);
-    }
-
-    memcached_server_fn callbacks[1];
-    callbacks[0] = server_print_callback;
-    memcached_server_cursor(memc, callbacks, NULL, 1);
-  } else if (opt_analyze) {
-    memcached_stat_st *memc_stat = memcached_stat(memc, NULL, &rc);
-
-    if (memc_stat == NULL || rc != MEMCACHED_SUCCESS) {
-      std::cerr << memcached_last_error_message(memc) << std::endl;
-      exit(EXIT_FAILURE);
-    }
-
-    run_analyzer(memc, memc_stat);
-
-    memcached_stat_free(memc, memc_stat);
-  } else {
-    rc = memcached_stat_execute(memc, stat_args, stat_printer, NULL);
-  }
-
-  memcached_free(memc);
-
-  return rc == MEMCACHED_SUCCESS ? EXIT_SUCCESS : EXIT_FAILURE;
-}
-
-static void run_analyzer(memcached_st *memc, memcached_stat_st *memc_stat) {
-  memcached_return_t rc;
-
-  if (analyze_mode == NULL) {
-    memcached_analysis_st *report;
-    report = memcached_analyze(memc, memc_stat, &rc);
-    if (rc != MEMCACHED_SUCCESS || report == NULL) {
-      printf("Failure to analyze servers (%s)\n", memcached_strerror(memc, rc));
-      exit(1);
-    }
-    print_analysis_report(memc, report);
-    free(report);
-  } else if (strcmp(analyze_mode, "latency") == 0) {
-    uint32_t flags, server_count = memcached_server_count(memc);
-    uint32_t num_of_tests = 32;
-    const char *test_key = "libmemcached_test_key";
-
-    memcached_st **servers =
-        static_cast<memcached_st **>(malloc(sizeof(memcached_st *) * server_count));
-    if (servers == NULL) {
-      fprintf(stderr, "Failed to allocate memory\n");
-      return;
-    }
-
-    for (uint32_t x = 0; x < server_count; x++) {
-      const memcached_instance_st *instance = memcached_server_instance_by_position(memc, x);
-
-      if ((servers[x] = memcached_create(NULL)) == NULL) {
-        fprintf(stderr, "Failed to memcached_create()\n");
-        if (x > 0) {
-          memcached_free(servers[0]);
-        }
-        x--;
-
-        for (; x > 0; x--) {
-          memcached_free(servers[x]);
-        }
-
-        free(servers);
-
-        return;
-      }
-      memcached_server_add(servers[x], memcached_server_name(instance),
-                           memcached_server_port(instance));
-    }
-
-    printf("Network Latency Test:\n\n");
-    struct timeval start_time, end_time;
-    uint32_t slowest_server = 0;
-    long elapsed_time, slowest_time = 0;
-
-    for (uint32_t x = 0; x < server_count; x++) {
-      const memcached_instance_st *instance = memcached_server_instance_by_position(memc, x);
-      gettimeofday(&start_time, NULL);
-
-      for (uint32_t y = 0; y < num_of_tests; y++) {
-        size_t vlen;
-        char *val = memcached_get(servers[x], test_key, strlen(test_key), &vlen, &flags, &rc);
-        if (rc != MEMCACHED_NOTFOUND and rc != MEMCACHED_SUCCESS) {
-          break;
-        }
-        free(val);
-      }
-      gettimeofday(&end_time, NULL);
-
-      elapsed_time = (long) timedif(end_time, start_time);
-      elapsed_time /= (long) num_of_tests;
-
-      if (elapsed_time > slowest_time) {
-        slowest_server = x;
-        slowest_time = elapsed_time;
-      }
-
-      if (rc != MEMCACHED_NOTFOUND && rc != MEMCACHED_SUCCESS) {
-        printf("\t %s (%d)  =>  failed to reach the server\n", memcached_server_name(instance),
-               memcached_server_port(instance));
-      } else {
-        printf("\t %s (%d)  =>  %ld.%ld seconds\n", memcached_server_name(instance),
-               memcached_server_port(instance), elapsed_time / 1000, elapsed_time % 1000);
-      }
-    }
-
-    if (server_count > 1 && slowest_time > 0) {
-      const memcached_instance_st *slowest =
-          memcached_server_instance_by_position(memc, slowest_server);
-
-      printf("---\n");
-      printf("Slowest Server: %s (%d) => %ld.%ld seconds\n", memcached_server_name(slowest),
-             memcached_server_port(slowest), slowest_time / 1000, slowest_time % 1000);
-    }
-    printf("\n");
-
-    for (uint32_t x = 0; x < server_count; x++) {
-      memcached_free(servers[x]);
-    }
-
-    free(servers);
-    free(analyze_mode);
-  } else {
-    fprintf(stderr, "Invalid Analyzer Option provided\n");
-    free(analyze_mode);
-  }
-}
-
-static void print_analysis_report(memcached_st *memc, memcached_analysis_st *report)
-
-{
+static void print_report(memcached_st *memc, memcached_analysis_st *report) {
   uint32_t server_count = memcached_server_count(memc);
-  const memcached_instance_st *most_consumed_server =
-      memcached_server_instance_by_position(memc, report->most_consumed_server);
-  const memcached_instance_st *least_free_server =
-      memcached_server_instance_by_position(memc, report->least_free_server);
-  const memcached_instance_st *oldest_server =
-      memcached_server_instance_by_position(memc, report->oldest_server);
+  auto most_consumed_server = memcached_server_instance_by_position(memc, report->most_consumed_server);
+  auto least_free_server = memcached_server_instance_by_position(memc, report->least_free_server);
+  auto oldest_server = memcached_server_instance_by_position(memc, report->oldest_server);
 
   printf("Memcached Cluster Analysis Report\n\n");
-
   printf("\tNumber of Servers Analyzed         : %u\n", server_count);
   printf("\tAverage Item Size (incl/overhead)  : %u bytes\n", report->average_item_size);
 
@@ -302,104 +54,229 @@ static void print_analysis_report(memcached_st *memc, memcached_analysis_st *rep
 
   printf("\n");
   printf("\tNode with most memory consumption  : %s:%u (%llu bytes)\n",
-         memcached_server_name(most_consumed_server),
-         (uint32_t) memcached_server_port(most_consumed_server),
-         (unsigned long long) report->most_used_bytes);
+      memcached_server_name(most_consumed_server),
+      (uint32_t) memcached_server_port(most_consumed_server),
+      (unsigned long long) report->most_used_bytes);
   printf("\tNode with least free space         : %s:%u (%llu bytes remaining)\n",
-         memcached_server_name(least_free_server),
-         (uint32_t) memcached_server_port(least_free_server),
-         (unsigned long long) report->least_remaining_bytes);
+      memcached_server_name(least_free_server),
+      (uint32_t) memcached_server_port(least_free_server),
+      (unsigned long long) report->least_remaining_bytes);
   printf("\tNode with longest uptime           : %s:%u (%us)\n",
-         memcached_server_name(oldest_server), (uint32_t) memcached_server_port(oldest_server),
-         report->longest_uptime);
+      memcached_server_name(oldest_server), (uint32_t) memcached_server_port(oldest_server),
+      report->longest_uptime);
   printf("\tPool-wide Hit Ratio                : %1.f%%\n", report->pool_hit_ratio);
   printf("\n");
 }
 
-static void options_parse(int argc, char *argv[]) {
-  memcached_programs_help_st help_options[] = {
-      {0},
-  };
+static bool analyze_stat(const client_options &opt, memcached_st *memc, memcached_stat_st *stat) {
+  memcached_return_t rc;
+  auto report = memcached_analyze(memc, stat, &rc);
 
-  int option_index = 0;
+  if (rc != MEMCACHED_SUCCESS || !report) {
+    if (!opt.isset("quiet")) {
+      std::cerr << "Failure to analyze servers:" << memcached_strerror(memc, rc) << ".\n";
+    }
+    return false;
+  }
+  print_report(memc, report);
+  free(report);
+  return true;
+}
 
-  bool opt_version = false;
-  bool opt_help = false;
-  while (1) {
-    int option_rv = getopt_long(argc, argv, "Vhvds:a", long_options, &option_index);
+using time_clock = std::chrono::high_resolution_clock;
+using time_point = std::chrono::time_point<time_clock>;
+using time_format = std::chrono::duration<double, std::ratio<1,1>>;
+using time_format_ms = std::chrono::duration<double, std::ratio<1,1000>>;
 
-    if (option_rv == -1)
-      break;
+static void latency_test(uint32_t iterations, std::vector<memcached_st> servers) {
+  const char *test_key = "libmemcached_test_key";
+  size_t test_key_len = strlen(test_key);
+  const memcached_instance_st *slowest_server = nullptr;
+  time_point::duration slowest_time{};
 
-    switch (option_rv) {
-    case 0:
-      break;
+  std::cout << "Network Latency Test:\n\n" << std::showpoint << std::fixed << std::setprecision(3);
 
-    case OPT_VERBOSE: /* --verbose or -v */
-      opt_verbose = true;
-      break;
+  for (auto &memc : servers) {
+    memcached_return_t rc;
 
-    case OPT_DEBUG: /* --debug or -d */
-      opt_verbose = true;
-      break;
+    auto start = time_clock::now();
+    for (auto i = 0u; i < iterations; ++i) {
+      free(memcached_get(&memc, test_key, test_key_len, nullptr, nullptr, &rc));
+      if (memcached_fatal(rc)) {
+        break;
+      }
+    }
+    auto elapsed = time_clock::now() - start;
 
-    case OPT_BINARY:
-      opt_binary = true;
-      break;
+    auto inst = memcached_server_instance_by_position(&memc, 0);
+    std::cout << "\t " << memcached_server_name(inst)
+              << " (" << memcached_server_port(inst) << ") ";
 
-    case OPT_SERVER_VERSION:
-      opt_server_version = true;
-      break;
-
-    case OPT_VERSION: /* --version or -V */
-      opt_version = true;
-      break;
-
-    case OPT_HELP: /* --help or -h */
-      opt_help = true;
-      break;
-
-    case OPT_SERVERS: /* --servers or -s */
-      opt_servers = strdup(optarg);
-      break;
-
-    case OPT_STAT_ARGS:
-      stat_args = strdup(optarg);
-      break;
-
-    case OPT_ANALYZE: /* --analyze or -a */
-      opt_analyze = true;
-      analyze_mode = (optarg) ? strdup(optarg) : NULL;
-      break;
-
-    case OPT_QUIET:
-      close_stdio();
-      break;
-
-    case OPT_USERNAME:
-      opt_username = optarg;
-      opt_binary = true;
-      break;
-
-    case OPT_PASSWD:
-      opt_passwd = optarg;
-      break;
-
-    case '?':
-      /* getopt_long already printed an error message. */
-      exit(1);
-    default:
-      abort();
+    if (memcached_fatal(rc)) {
+      std::cout << "  => failed to reach the server\n";
+    } else {
+      std::cout << "  => "
+                << time_format(elapsed/iterations).count() << " seconds ("
+                << time_format_ms(elapsed/iterations).count() << "ms)\n";
+      if (slowest_time == time_point::duration::zero() || slowest_time < elapsed) {
+        slowest_time = elapsed;
+        slowest_server = inst;
+      }
     }
   }
 
-  if (opt_version) {
-    version_command(PROGRAM_NAME);
-    exit(EXIT_SUCCESS);
+  if (servers.size() > 1 && slowest_server) {
+    std::cout << "\n---\n\nSlowest Server: "
+              << memcached_server_name(slowest_server) << "("
+              << memcached_server_port(slowest_server) << ")"
+              << " => "
+              << time_format(slowest_time/iterations).count() << " seconds ("
+              << time_format_ms(slowest_time/iterations).count() << "ms)\n";
+  }
+}
+
+static bool analyze_latency(client_options &opt, memcached_st *root) {
+  uint32_t num_of_tests = 32;
+
+  std::vector<memcached_st> servers{memcached_server_count(root)};
+
+  uint32_t i = 0;
+  for (auto &memc : servers) {
+    if (!check_memcached(opt, memc)) {
+      return false;
+    }
+    auto instance = memcached_server_instance_by_position(root, i++);
+    memcached_server_add(&memc, memcached_server_name(instance), memcached_server_port(instance));
   }
 
-  if (opt_help) {
-    help_command(PROGRAM_NAME, PROGRAM_DESCRIPTION, long_options, help_options);
-    exit(EXIT_SUCCESS);
+  latency_test(num_of_tests, servers);
+
+  for (auto &memc : servers) {
+    memcached_free(&memc);
   }
+
+  return true;
+}
+
+static memcached_return_t print_stat(const memcached_instance_st *server,
+                                     const char *key, size_t key_length,
+                                     const char *value, size_t value_length, void *context) {
+  auto instance = static_cast<const memcached_instance_st **>(context);
+
+  if (*instance != server) {
+    *instance = server;
+
+    std::cout << "Server: " << memcached_server_name(server)
+              << " (" << memcached_server_port(server) << ")\n";
+  }
+
+  std::cout << "\t";
+  std::cout.write(key, key_length) << ": ";
+  std::cout.write(value, value_length) << "\n";
+
+  return MEMCACHED_SUCCESS;
+}
+
+static bool memstat(const client_options &opt, memcached_st &memc, const char *arg) {
+  memcached_instance_st *context = nullptr;
+  auto rc = memcached_stat_execute(&memc, arg, print_stat, &context);
+  if (memcached_success(rc)) {
+    return true;
+  }
+  if (!opt.isset("quiet")) {
+    std::cerr << "Failed to 'STAT " << (arg ? arg : "") << "': ";
+    if (memcached_last_error(&memc)) {
+      std::cerr << memcached_last_error_message(&memc) << "\n";
+    } else {
+      std::cerr << memcached_strerror(&memc, rc) << "\n";
+    }
+  }
+  return false;
+}
+
+int main(int argc, char *argv[]) {
+  client_options opt{PROGRAM_NAME, PROGRAM_VERSION, PROGRAM_DESCRIPTION, "[stat ...]"};
+
+  for (const auto &def : opt.defaults) {
+    if (def.opt.val != 'H') {
+      // no need for --hash
+      opt.add(def);
+    }
+  }
+
+  opt.add("args", 'A', required_argument, "Stat args. DEPRECATED: use positional arguments.");
+  opt.add("server-version", 'S', no_argument, "Print server version.");
+  opt.add("analyze", 'a', optional_argument, "Analyze server characteristics (options: default, latency).");
+
+  char **argp = nullptr;
+  if (!opt.parse(argc, argv, &argp)) {
+    exit(EXIT_FAILURE);
+  }
+
+  memcached_st memc;
+  if (!check_memcached(opt, memc)) {
+    exit(EXIT_FAILURE);
+  }
+
+  if (!opt.apply(&memc)) {
+    memcached_free(&memc);
+    exit(EXIT_FAILURE);
+  }
+
+  auto exit_code = EXIT_SUCCESS;
+  if (opt.isset('S')) {
+    if (opt.isset("verbose")) {
+      std::cout << "Server versions:\n";
+    }
+    if (MEMCACHED_SUCCESS != memcached_version(&memc)) {
+      exit_code = EXIT_FAILURE;
+    }
+    memcached_server_fn cb[] = {&print_server_version};
+    memcached_server_cursor(&memc, cb, nullptr, 1);
+    goto done;
+  }
+
+  if (opt.isset("analyze")) {
+    const char *analyze = opt.argof("analyze");
+    if (analyze && strcmp(analyze, "default")) {
+      if (!strcmp(analyze, "latency")) {
+        if (!analyze_latency(opt, &memc)) {
+          exit_code = EXIT_FAILURE;
+        }
+        goto done;
+      }
+
+      if (!opt.isset("quiet")) {
+        std::cerr << "Unknown --analyze mode: '" << analyze << "'.\n";
+      }
+    }
+
+    memcached_return_t rc;
+    auto stat = memcached_stat(&memc, nullptr, &rc);
+    if (!memcached_success(rc)) {
+      exit_code = EXIT_FAILURE;
+      if (!opt.isset("quiet")) {
+        std::cerr << memcached_last_error_message(&memc) << "\n";
+      }
+    } else if (!analyze_stat(opt, &memc, stat)) {
+      exit_code = EXIT_FAILURE;
+    }
+    memcached_stat_free(&memc, stat);
+    goto done;
+  }
+
+  if (!*argp || opt.isset('A')) {
+    if (!memstat(opt, memc, opt.argof('A'))) {
+      exit_code = EXIT_FAILURE;
+    }
+  }
+  for (auto arg = argp; *arg; ++arg) {
+    if (!memstat(opt, memc, *arg)) {
+      exit_code = EXIT_FAILURE;
+    }
+  }
+
+done:
+  memcached_free(&memc);
+  exit(exit_code);
 }

@@ -310,13 +310,13 @@ public:
     }
   }
 
-  const char *argof(const std::string &name) const {
+  char *argof(const std::string &name) const {
     if (has(name)) {
       return get(name).arg;
     }
     return nullptr;
   }
-  const char *argof(int c) const {
+  char *argof(int c) const {
     if (has(c)) {
       return get(c).arg;
     }
@@ -340,9 +340,6 @@ private:
   using iterator = std::vector<extended_option>::iterator;
   using const_iterator = std::vector<extended_option>::const_iterator;
   using predicate = std::function<bool(const extended_option &ext)>;
-
-  static option null_opt;
-  static const extended_option null_ext_opt;
 
   const_iterator find(const predicate &pred) const {
     return std::find_if(options.cbegin(), options.cend(), pred);

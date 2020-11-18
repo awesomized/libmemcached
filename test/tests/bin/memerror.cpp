@@ -18,8 +18,6 @@ TEST_CASE("bin/memerror") {
     REQUIRE_THAT(output, Contains("Options:"));
     REQUIRE_THAT(output, Contains("-h|--help"));
     REQUIRE_THAT(output, Contains("-V|--version"));
-    REQUIRE_THAT(output, Contains("Environment:"));
-    REQUIRE_THAT(output, Contains("MEMCACHED_SERVERS"));
   }
 
   SECTION("valid error codes") {
