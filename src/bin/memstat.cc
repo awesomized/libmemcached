@@ -19,12 +19,14 @@
 #define PROGRAM_DESCRIPTION "Print stats/version of or analyze a memcached cluster."
 #define PROGRAM_VERSION     "1.1"
 
+#define DEFAULT_LATENCY_ITERATIONS 100 // update help string, if changed
+
 #include "common/options.hpp"
 #include "common/checks.hpp"
+#include "common/time.hpp"
 #include "common/utilities.h"
 
 #include <cstdio>
-#include <chrono>
 #include <iomanip>
 
 static memcached_return_t print_server_version(const memcached_st *,
@@ -82,11 +84,6 @@ static bool analyze_stat(const client_options &opt, memcached_st *memc, memcache
   free(report);
   return true;
 }
-
-using time_clock = std::chrono::high_resolution_clock;
-using time_point = std::chrono::time_point<time_clock>;
-using time_format = std::chrono::duration<double, std::ratio<1,1>>;
-using time_format_ms = std::chrono::duration<double, std::ratio<1,1000>>;
 
 static void latency_test(uint32_t iterations, std::vector<memcached_st> &servers) {
   const char *test_key = "libmemcached_test_key";
@@ -146,7 +143,7 @@ static void latency_test(uint32_t iterations, std::vector<memcached_st> &servers
 }
 
 static bool analyze_latency(client_options &opt, memcached_st *root) {
-  uint32_t num_of_tests = 100;
+  uint32_t num_of_tests = DEFAULT_LATENCY_ITERATIONS;
 
   if (auto iter_str = opt.argof("iterations")) {
     num_of_tests = std::stoul(iter_str);

@@ -59,6 +59,7 @@ static inline void setup_signals() {
 # define LSAN_OPTIONS \
   "suppressions=" SOURCES_ROOT "/test/LeakSanitizer.suppressions," \
   ""
+
 static inline void setup_asan(char **argv) {
   const auto set = getenv("ASAN_OPTIONS");
 
@@ -82,6 +83,24 @@ static inline void setup_lsan(char **argv) {
 # define setup_lsan(a) (void) a
 #endif
 
+#if HAVE_TSAN
+# define TSAN_OPTIONS \
+    "abort_on_error=0," \
+    "halt_on_error=0" \
+    ""
+static inline void setup_tsan(char **argv) {
+  const auto set = getenv("TSAN_OPTIONS");
+
+  if (!set || !*set) {
+    SET_ENV_EX(tsan, "TSAN_OPTIONS", TSAN_OPTIONS, 0);
+    execvp(argv[0], argv);
+    perror("exec()");
+  }
+}
+#else
+# define setup_tsan(a) (void) a
+#endif
+
 #if LIBMEMCACHED_WITH_SASL_SUPPORT
 static inline void setup_sasl() {
   SET_ENV_EX(sasl_pwdb, "MEMCACHED_SASL_PWDB", LIBMEMCACHED_WITH_SASL_PWDB, 0);
@@ -100,6 +119,7 @@ int setup(int &, char ***argv) {
   setup_random();
   setup_asan(*argv);
   setup_lsan(*argv);
+  setup_tsan(*argv);
   setup_sasl();
 
   return 0;

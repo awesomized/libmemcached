@@ -10,26 +10,27 @@ TEST_CASE("bin/memslap") {
   SECTION("no servers provided") {
     string output;
     REQUIRE_FALSE(sh.run("memslap", output));
-    REQUIRE(output == "No servers provided\n");
+    REQUIRE(output == "No servers provided.\n");
   }
 
   SECTION("--help") {
     string output;
 
     REQUIRE(sh.run("memslap --help", output));
-    REQUIRE_THAT(output, Contains("memslap"));
-    REQUIRE_THAT(output, Contains("v1"));
-    REQUIRE_THAT(output, Contains("help"));
-    REQUIRE_THAT(output, Contains("version"));
-    REQUIRE_THAT(output, Contains("option"));
-    REQUIRE_THAT(output, Contains("--"));
-    REQUIRE_THAT(output, Contains("="));
+    REQUIRE_THAT(output, Contains("memslap v1"));
+    REQUIRE_THAT(output, Contains("Usage:"));
+    REQUIRE_THAT(output, Contains("Options:"));
+    REQUIRE_THAT(output, Contains("-h|--help"));
+    REQUIRE_THAT(output, Contains("-V|--version"));
+    REQUIRE_THAT(output, Contains("--concurrency"));
+    REQUIRE_THAT(output, Contains("Environment:"));
+    REQUIRE_THAT(output, Contains("MEMCACHED_SERVERS"));
   }
 
   SECTION("with servers") {
     auto test = MemcachedCluster::udp();
     auto flags = {"--binary", "--udp", "--flush", "--test=mget", "--test=get", "--tcp-nodelay",
-                  "--non-blocking", "--initial-load=1000"};
+                  "--non-blocking", "--execute-number=1000"};
     string servers{"--servers="};
 
     for (const auto &server : test.cluster.getServers()) {

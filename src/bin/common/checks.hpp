@@ -54,6 +54,22 @@ bool check_memcached(const client_options &opt, memcached_st &memc) {
   return true;
 }
 
+bool check_return(const client_options &opt, memcached_st &memc, memcached_return_t rc) {
+  if (!memcached_success(rc)) {
+    if (!opt.isset("quiet")) {
+      if (!memcached_fatal(rc)) {
+        if (opt.isset("verbose")) {
+          std::cerr << "Failed: " << memcached_strerror(&memc, rc) << "\n";;
+        }
+      } else {
+        std::cerr << "Fatal error: " << memcached_last_error_message(&memc) << "\n";
+      }
+    }
+    return false;
+  }
+  return true;
+}
+
 bool check_return(const client_options &opt, memcached_st &memc, const char *key,
                   memcached_return_t rc) {
   if (!memcached_success(rc)) {
