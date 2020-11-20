@@ -46,7 +46,7 @@ struct memcp_file {
 };
 
 static inline std::string stream2string(const std::istream &istream) {
-  return dynamic_cast<std::ostringstream &>(std::ostringstream{} << istream.rdbuf()).str();
+  return dynamic_cast<std::ostringstream &&>(std::ostringstream{} << istream.rdbuf()).str();
 }
 
 static memcached_return_t memcp(const client_options &opt, memcached_st &memc, const char *key,
