@@ -267,6 +267,17 @@ jobs:
       - uses: actions/checkout@v2
 <?php steps(); ?>
 
+  # thread sanitizer build
+  dbg-tsan:
+    name: dbg-tsan (<?=defaults()?>)
+    runs-on: <?=DEF[DEF["os"]]?> #
+    env:
+      ENABLE_SANITIZERS:  "thread"
+      ENABLE_MEMASLAP:    "OFF"
+    steps:
+      - uses: actions/checkout@v2
+<?php steps(); ?>
+
   # mac build
   dbg-mac:
     name: dbg-mac (<?=DEF["macOS"]?>, <?=DEF[DEF["macOS"]]?>, <?=DEF[DEF[DEF["macOS"]]]["ver"]?>)

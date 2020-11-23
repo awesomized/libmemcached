@@ -33,9 +33,11 @@ target_include_directories(runtests PRIVATE
         ${CMAKE_BINARY_DIR}/src)
 target_link_libraries(runtests PRIVATE libhashkit libmemcachedinternal libmemcachedutil)
 
-check_tbb()
-if(HAVE_TBB)
-    target_link_libraries(runtests PRIVATE ${LIBTBB})
+if(NOT (thread IN_LIST ENABLE_SANITIZERS))
+    check_tbb()
+    if(HAVE_TBB)
+        target_link_libraries(runtests PRIVATE ${LIBTBB})
+    endif()
 endif()
 
 add_dependencies(runtests ${CLIENTS})

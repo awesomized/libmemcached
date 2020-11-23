@@ -32,7 +32,7 @@ option(BUILD_DOCS_MANGZ     "gzip manpages"
         ${BUILD_DOCS_MAN})
 
 set(ENABLE_SANITIZERS "$ENV{ENABLE_SANITIZERS}"
-        CACHE STRING "sanitizers to enable (e.g. address undefined ...)")
+        CACHE STRING "sanitizers to enable (e.g. address;undefined ...)")
 option(ENABLE_SASL          "enable SASL support"
         $ENV{ENABLE_SASL})
 option(ENABLE_DTRACE        "enable dtrace support"

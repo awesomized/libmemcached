@@ -192,6 +192,83 @@ jobs:
             --data-urlencode "level=error" \
             --data-urlencode "message=Github [${GITHUB_REPOSITORY}](https://github.com/${GITHUB_REPOSITORY}/commits/${REF}) (${REF}) [failure](https://github.com/m6w6/libmemcached/actions/runs/${GITHUB_RUN_ID}) (${ImageOS}/${CC:-${CC_VND}-${CC_VER}})"
 
+  # thread sanitizer build
+  dbg-tsan:
+    name: dbg-tsan (ubuntu-20.04, gnu, cur)
+    runs-on: ubuntu-20.04 #
+    env:
+      ENABLE_SANITIZERS:  "thread"
+      ENABLE_MEMASLAP:    "OFF"
+    steps:
+      - uses: actions/checkout@v2
+      - name: Prepare environment (for cur gnu on ubuntu-20.04)
+        if: (env.OS_VER=='ubuntu-20.04') && (env.CC_VND=='gnu') && (env.CC_VER=='cur')
+        run: |
+          echo CC="gcc-9" >> ${GITHUB_ENV}
+          echo CXX="g++-9" >> ${GITHUB_ENV}
+      - name: Install dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install \
+            libevent-dev \
+            libsasl2-dev \
+            libtbb-dev \
+            ${INSTALL_MEMCACHED} \
+            ${INSTALL_CC} ${INSTALL_CXX}
+          sudo systemctl stop memcached || true
+      - name: Install dependencies (Mac)
+        if: runner.os == 'macOS'
+        run: |
+          brew install bison flex ${INSTALL_MEMCACHED}
+          brew services stop memcached || true
+          echo MEMCACHED_BINARY="/usr/local/bin/memcached" >> ${GITHUB_ENV}
+      - name: Build memcached
+        run: |
+          if test -d memcached
+          then
+            cd memcached
+            ./autogen.sh
+            ./configure CFLAGS="-O2 -pipe" \
+              --prefix=${MEMCACHED_PREFIX} \
+              --enable-sasl \
+              --enable-sasl-pwdb \
+              --disable-coverage \
+              --disable-dependency-tracking \
+              --disable-docs \
+              --disable-extstore \
+              --disable-option-checking \
+              ;
+            make -j2
+            make install
+            cd ..
+            echo MEMCACHED_BINARY="${MEMCACHED_PREFIX}/bin/memcached" >> ${GITHUB_ENV}
+          fi
+      - name: Generate build tree (${{ env.CMAKE_BUILD_TYPE }})
+        run: cmake -S . -B build
+      - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
+        run: make -C build -j2 all
+      - name: Test
+        run: make -C build -j2 test
+      - name: Install
+        run: make -C build -j2 install DESTDIR=/tmp
+      - name: Failed tests log
+        if: ${{ failure() }}
+        run: cat build/Testing/Temporary/LastTest.log || true
+      - name: Notify Gitter (success)
+        if: ${{ success() }}
+        run: |
+          REF=$(basename ${GITHUB_REF})
+          curl -sS "${{ secrets.GITTER }}" \
+            --data-urlencode "level=info" \
+            --data-urlencode "message=Github [${GITHUB_REPOSITORY}](https://github.com/${GITHUB_REPOSITORY}/commits/${REF}) (${REF}) [success](https://github.com/m6w6/libmemcached/actions/runs/${GITHUB_RUN_ID}) (${ImageOS}/${CC:-${CC_VND}-${CC_VER}})"
+      - name: Notify Gitter (failure)
+        if: ${{ failure() }}
+        run: |
+          REF=$(basename ${GITHUB_REF})
+          curl -sS "${{ secrets.GITTER }}" \
+            --data-urlencode "level=error" \
+            --data-urlencode "message=Github [${GITHUB_REPOSITORY}](https://github.com/${GITHUB_REPOSITORY}/commits/${REF}) (${REF}) [failure](https://github.com/m6w6/libmemcached/actions/runs/${GITHUB_RUN_ID}) (${ImageOS}/${CC:-${CC_VND}-${CC_VER}})"
+
   # mac build
   dbg-mac:
     name: dbg-mac (macos-10.15, clang, apple)
