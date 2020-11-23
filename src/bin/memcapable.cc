@@ -41,7 +41,6 @@
 #include "libmemcached/socket.hpp"
 #include "libmemcachedprotocol-0.0/binary.h"
 #include "libmemcached/byteorder.h"
-#include "utilities.h"
 
 #include <vector>
 
@@ -1848,7 +1847,7 @@ int main(int argc, char **argv) {
       break;
 
     case 'q':
-      close_stdio();
+      //close_stdio();
       break;
 
     case 'P':
@@ -1882,7 +1881,7 @@ int main(int argc, char **argv) {
     return EXIT_FAILURE;
   }
 
-  initialize_sockets();
+  //initialize_sockets();
   sock = connect_server(hostname, port);
   if (sock == INVALID_SOCKET) {
     fprintf(stderr, "Failed to connect to <%s:%s>: %s\n", hostname ?: "(null)", port ?: "(null)",

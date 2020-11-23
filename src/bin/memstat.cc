@@ -24,7 +24,6 @@
 #include "common/options.hpp"
 #include "common/checks.hpp"
 #include "common/time.hpp"
-#include "common/utilities.h"
 
 #include <cstdio>
 #include <iomanip>
