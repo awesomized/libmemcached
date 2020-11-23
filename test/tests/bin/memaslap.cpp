@@ -7,7 +7,7 @@
 using Catch::Matchers::Contains;
 
 TEST_CASE("bin/memaslap") {
-  Shell sh{string{TESTING_ROOT "/../src/bin"}};
+  Shell sh{string{TESTING_ROOT "/../src/bin/contrib"}};
 
   SECTION("no servers provided") {
     string output;
