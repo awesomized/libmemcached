@@ -15,7 +15,9 @@
 
 #include "mem_config.h"
 
+#include <errno.h>
 #include <stdlib.h>
+#include <string.h>
 #include <getopt.h>
 #include <limits.h>
 
