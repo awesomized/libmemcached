@@ -210,6 +210,10 @@ static opt_apply wrap_stoul(unsigned long &ul) {
   };
 }
 
+static std::ostream &align(std::ostream &io) {
+  return io << std::right << std::setw(8);
+}
+
 int main(int argc, char *argv[]) {
   client_options opt{PROGRAM_NAME, PROGRAM_VERSION, PROGRAM_DESCRIPTION};
   auto concurrency = DEFAULT_CONCURRENCY;
@@ -269,10 +273,6 @@ int main(int argc, char *argv[]) {
 
   auto total_start = time_clock::now();
   std::cout << std::fixed << std::setprecision(3);
-
-  auto align = [](std::ostream &io) -> std::ostream &{
-    return io << std::right << std::setw(8);
-  };
 
   if (opt.isset("flush")) {
     if (opt.isset("verbose")) {

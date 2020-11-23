@@ -29,16 +29,25 @@ TEST_CASE("bin/memslap") {
 
   SECTION("with servers") {
     auto test = MemcachedCluster::udp();
-    auto flags = {"--binary", "--udp", "--flush", "--test=mget", "--test=get", "--tcp-nodelay",
-                  "--non-blocking", "--execute-number=1000"};
+    auto flags = {"--binary", "--udp", "--flush", "--test=mget", "--test=get", "--test=set",
+                  "--tcp-nodelay", "--non-blocking", "--execute-number=1000"};
     string servers{"--servers="};
+    auto verbosity = GENERATE(as<string>(), " --verbose ", " --quiet ");
 
     for (const auto &server : test.cluster.getServers()) {
       servers += "localhost:" + to_string(get<int>(server.getSocketOrPort())) + ", ";
     }
 
     for (const auto flag : flags) {
-      REQUIRE(sh.run("memslap --quiet --concurrency=2 " + servers + flag));
+      string output;
+      REQUIRE(sh.run("memslap --concurrency=2 " + servers + verbosity + flag, output));
+      if (verbosity != " --quiet ") {
+        REQUIRE_THAT(output, Contains("Starting"));
+        REQUIRE_THAT(output, Contains("Time to"));
+        REQUIRE_THAT(output, Contains("seconds"));
+      } else {
+        REQUIRE(output.empty());
+      }
     }
   }
 }

@@ -41,6 +41,12 @@ TEST_CASE("bin/memstat") {
     REQUIRE_SUCCESS(memcached_server_add(*memc, "localhost", port));
 
     SECTION("okay") {
+      SECTION("stat") {
+        string output;
+        REQUIRE(sh.run(comm, output));
+        REQUIRE_THAT(output, Contains("Server:"));
+        REQUIRE_THAT(output, Contains("pid:"));
+      }
       SECTION("version") {
         REQUIRE_SUCCESS(memcached_version(*memc));
         auto inst = memcached_server_instance_by_position(*memc, 0);
