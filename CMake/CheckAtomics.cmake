@@ -26,7 +26,7 @@ function(check_atomics)
     foreach(BUILTIN_ATOMIC_PREFIX IN ITEMS _ __c11)
         check_c_source_runs("
                 int main() {
-                    long l = 0;
+                    long l = -1;
                     return ${BUILTIN_ATOMIC_PREFIX}_atomic_add_fetch(&l,1,__ATOMIC_RELAXED);
                 }"
                 HAVE_BUILTIN_ATOMIC${BUILTIN_ATOMIC_PREFIX})
@@ -37,7 +37,7 @@ function(check_atomics)
     endforeach()
     check_c_source_runs("
             int main() {
-                long l = 0;
+                long l = -1;
                 return __sync_add_and_fetch(&l,1);
             }"
             HAVE_BUILTIN_SYNC)
@@ -45,7 +45,7 @@ function(check_atomics)
             #include <atomic.h>
             int main() {
                 volatile uint_t i = 0;
-                return atomic_add_int_nv(&i, 1);
+                return atomic_add_int_nv(&i, 1) == 1 ? 0 : -1;
             }"
             HAVE_ATOMIC_ADD_NV)
     if (        HAVE_CXX_STDATOMIC
