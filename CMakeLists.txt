@@ -37,6 +37,7 @@ if(NOT BUILD_DOCSONLY)
             )
 
     add_subdirectory(src)
+    add_subdirectory(contrib)
     add_subdirectory(include)
     add_subdirectory(support)
     add_subdirectory(test)

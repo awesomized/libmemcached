@@ -23,7 +23,6 @@ file(GLOB_RECURSE TESTING_SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
 set(TESTING_ROOT ${CMAKE_CURRENT_BINARY_DIR})
 set(SOURCES_ROOT ${CMAKE_SOURCE_DIR})
 set_source_files_properties(main.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
-configure_file(conf.h.in conf.h @ONLY)
 add_executable(runtests ${TESTING_SRC})
 set_target_properties(runtests PROPERTIES CXX_STANDARD 17)
 target_include_directories(runtests PRIVATE
@@ -41,9 +40,12 @@ if(NOT (thread IN_LIST ENABLE_SANITIZERS))
 endif()
 
 add_dependencies(runtests ${CLIENTS})
-if(HAVE_MEMASLAP)
+if(TARGET memaslap)
+    set(HAVE_MEMASLAP 1)
     add_dependencies(runtests memaslap)
 endif()
+
+configure_file(conf.h.in conf.h @ONLY)
 
 catch_discover_tests(runtests
         TEST_SPEC "lib*")

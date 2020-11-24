@@ -25,7 +25,6 @@ include(CheckDependency)
 include(CheckHeader)
 include(CheckCompiles)
 include(CheckType)
-include(CheckAtomics)
 include(TestBigEndian)
 include(CheckByteswap)
 
@@ -33,16 +32,6 @@ include(CheckByteswap)
 
 ## debug
 check_debug()
-
-## memaslap
-if(ENABLE_MEMASLAP)
-    check_atomics()
-    check_dependency(LIBEVENT event event.h)
-    check_decl(getline stdio.h)
-    if(HAVE_LIBEVENT AND HAVE_C_STDATOMIC)
-        set(HAVE_MEMASLAP 1)
-    endif()
-endif()
 
 ## dtrace
 include(EnableDtrace)
