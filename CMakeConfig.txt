@@ -85,7 +85,6 @@ endif()
 
 set(HAVE_VISIBILITY 1)
 set(HAVE_SHARED_ENABLED 1)
-set(HAVE_GCC_BUILTIN_ATOMIC 1)
 
 # modules
 

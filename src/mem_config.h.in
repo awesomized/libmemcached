@@ -22,8 +22,13 @@
 
 #cmakedefine WORDS_BIGENDIAN 1
 
+#cmakedefine HAVE_ATOMIC_ADD_NV 1
+#cmakedefine HAVE_BUILTIN_SYNC 1
+#cmakedefine HAVE_BUILTIN_ATOMIC 1
+#cmakedefine BUILTIN_ATOMIC_PREFIX
 #cmakedefine HAVE_C_STDATOMIC 1
 #cmakedefine HAVE_CXX_STDATOMIC 1
+#cmakedefine HAVE_ATOMICS 1
 
 #cmakedefine HAVE_ABI____CXA_DEMANGLE 1
 #cmakedefine HAVE_BACKTRACE 1
@@ -74,15 +79,16 @@
 #cmakedefine HAVE_WINSOCK2_H 1
 #cmakedefine HAVE_WS2TCPIP_H 1
 
+#cmakedefine HAVE_INTTYPES_H 1
 #cmakedefine HAVE_CINTTYPES 1
 #cmakedefine HAVE_CSTDINT 1
-#if defined(__cplusplus)
+#if defined __cplusplus
 #  if defined HAVE_CINTTYPES
 #    include <cinttypes>
 #  elif defined HAVE_CSTDINT
 #    include <cstdint>
 #  endif
-#else
+#elif defined HAVE_INTTYPES_H
 #  include <inttypes.h>
 #endif
 

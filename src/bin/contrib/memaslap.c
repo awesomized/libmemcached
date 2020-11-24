@@ -29,6 +29,7 @@
 #  include <time.h>
 #endif
 
+#include "ms_atomic.h"
 #include "ms_sigsegv.h"
 #include "ms_setting.h"
 #include "ms_thread.h"
