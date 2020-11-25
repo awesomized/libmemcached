@@ -1,8 +1,11 @@
 if(ENABLE_MEMASLAP)
     include(CheckAtomics)
+    add_definitions(-D_GNU_SOURCE)
     check_atomics()
     check_dependency(LIBEVENT event event.h)
     check_decl(getline stdio.h)
+    check_decl(_SC_NPROCESSORS_ONLN unistd.h)
+    check_type(cpu_set_t sched.h)
 
     if(HAVE_LIBEVENT AND HAVE_ATOMICS)
         add_executable(memaslap

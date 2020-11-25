@@ -1,3 +1,4 @@
+check_header(umem.h)
 
 add_library(libmemcachedprotocol SHARED
         ascii_handler.c

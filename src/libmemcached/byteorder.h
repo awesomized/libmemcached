@@ -19,6 +19,8 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
+
 uint64_t memcached_ntohll(uint64_t);
 
 uint64_t memcached_htonll(uint64_t);

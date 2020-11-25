@@ -44,14 +44,6 @@ if(ENABLE_DTRACE)
     endif()
 endif()
 
-## uuid
-if(BUILD_TESTING)
-    if(NOT MEMCACHED_BINARY)
-        find_package(Memcached)
-        set(MEMCACHED_BINARY ${MEMCACHED_EXECUTABLE})
-    endif()
-endif()
-
 ## sasl
 if(ENABLE_SASL)
     check_dependency(LIBSASL sasl2 sasl/sasl.h)
@@ -76,29 +68,25 @@ endif()
 test_big_endian(WORDS_BIGENDIAN)
 check_byteswap()
 
-check_header(alloca.h)
+# most of the following checks are due to mingw or msvc; see gnulib
 check_header(arpa/inet.h)
 check_header(dlfcn.h)
-check_header(errno.h)
-check_header(fcntl.h)
-check_header(io.h)
-check_header(limits.h)
 check_header(netdb.h)
 check_header(poll.h)
-check_header(stddef.h)
-check_header(stdlib.h)
 check_header(strings.h)
 check_header(sys/socket.h)
 check_header(sys/time.h)
-check_header(sys/types.h)
 check_header(sys/un.h)
-check_header(sys/wait.h)
 check_header(time.h)
-check_header(umem.h)
 check_header(unistd.h)
-check_header(winsock2.h)
-check_header(ws2tcpip.h)
 
+if(WIN32)
+    check_header(io.h)
+    check_header(winsock2.h)
+    check_header(ws2tcpip.h)
+endif()
+
+check_decl(abi::__cxa_demangle cxxabi.h)
 check_decl(fcntl fcntl.h)
 check_decl(htonll arpa/inet.h)
 check_decl(MSG_DONTWAIT sys/socket.h)
@@ -110,9 +98,12 @@ check_decl(setenv stdlib.h)
 check_decl(strerror string.h)
 check_decl(strerror_r string.h)
 
-check_compiles(HAVE_STRERROR_R_CHAR_P "char x, y = *strerror_r(0,&x,1);" string.h)
+check_type(in_port_t netinet/in.h)
 
-check_decl(abi::__cxa_demangle cxxabi.h)
+check_compiles(HAVE_STRERROR_R_CHAR_P "
+        char x, y = *strerror_r(0,&x,1);"
+        string.h)
+
 
 find_package(Backtrace)
 if(Backtrace_FOUND)
@@ -124,8 +115,3 @@ if(Backtrace_FOUND)
             INTERFACE_INCLUDE_DIRECTORIES "${Backtrace_INCLUDE_DIR}")
 endif()
 
-check_type(in_port_t netinet/in.h)
-
-check_header(cstdint)
-check_header(cinttypes)
-check_header(inttypes.h)

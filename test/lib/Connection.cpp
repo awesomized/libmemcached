@@ -2,7 +2,9 @@
 
 #include <cerrno>
 #include <sys/poll.h>
-#include <unistd.h>
+#if HAVE_UNISTD_H
+#  include <unistd.h>
+#endif
 
 #if !(HAVE_SOCK_NONBLOCK && HAVE_SOCK_CLOEXEC)
 #  include <fcntl.h>

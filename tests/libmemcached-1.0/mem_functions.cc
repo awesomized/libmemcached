@@ -60,10 +60,14 @@
 #include <semaphore.h>
 #include <signal.h>
 #include <sys/stat.h>
-#include <sys/time.h>
+#ifdef HAVE_SYS_TIME_H
+#  include <sys/time.h>
+#endif
+#include <time.h>
 #include <sys/types.h>
-#include <unistd.h>
-
+#if HAVE_UNISTD_H
+#  include <unistd.h>
+#endif
 #include <iostream>
 
 #include "libtest/server.h"

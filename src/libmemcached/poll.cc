@@ -17,9 +17,13 @@
 
 #if defined(_WIN32)
 #  include "libmemcached/poll.h"
-
-#  include <sys/time.h>
-#  include <strings.h>
+#  if HAVE_SYS_TIME_H
+#    include <sys/time.h>
+#  endif
+#  include <time.h>
+#  if HAVE_STRINGS_H
+#    include <strings.h>
+#  endif
 
 int poll(struct pollfd fds[], nfds_t nfds, int tmo) {
   fd_set readfds, writefds, errorfds;

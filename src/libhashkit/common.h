@@ -17,11 +17,11 @@
 
 #include "libhashkit/hashkitcon.h"
 
-#include <assert.h>
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
+#include <cassert>
+#include <cerrno>
+#include <cstdio>
+#include <cstdlib>
+#include <cmath>
 
 #ifndef __WORDSIZE
 #  ifdef __MINGW32__

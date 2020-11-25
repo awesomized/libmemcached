@@ -6,17 +6,35 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
 include(Catch)
 include(CheckTbb)
 
-if(NOT MEMCACHED_BINARY)
-    message(SEND_ERROR "Could not find memcached(1) binary")
-    set(ENV{INVALID_CONFIGURATION} 1)
-endif()
-
 check_decl(pipe2 unistd.h)
 check_decl(SOCK_NONBLOCK sys/socket.h)
 check_decl(SOCK_CLOEXEC sys/socket.h)
+check_header(sys/wait.h)
 check_decl(waitid sys/wait.h)
 if(HAVE_WAITID)
-    check_compiles(HAVE_WAITID_NOWAIT "siginfo_t s; waitid(P_ALL, 0, &s, WNOWAIT|WEXITED);" sys/types.h sys/wait.h)
+    check_compiles(HAVE_WAITID_NOWAIT "
+            siginfo_t s;
+            waitid(P_ALL, 0, &s, WNOWAIT|WEXITED);"
+            sys/types.h sys/wait.h)
+endif()
+if(NOT HAVE_SYS_WAIT_H)
+    message(SEND_ERROR "Could not find header <sys/wait.h>")
+    set(ENV{INVALID_CONFIGURATION} 1)
+endif()
+
+# parallelism
+if(NOT (thread IN_LIST ENABLE_SANITIZERS))
+    check_tbb()
+endif()
+
+# memcached(1)
+if(NOT MEMCACHED_BINARY)
+    find_package(Memcached)
+    set(MEMCACHED_BINARY ${MEMCACHED_EXECUTABLE})
+endif()
+if(NOT MEMCACHED_BINARY)
+    message(SEND_ERROR "Could not find memcached(1) binary")
+    set(ENV{INVALID_CONFIGURATION} 1)
 endif()
 
 file(GLOB_RECURSE TESTING_SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
@@ -32,11 +50,8 @@ target_include_directories(runtests PRIVATE
         ${CMAKE_BINARY_DIR}/src)
 target_link_libraries(runtests PRIVATE libhashkit libmemcachedinternal libmemcachedutil)
 
-if(NOT (thread IN_LIST ENABLE_SANITIZERS))
-    check_tbb()
-    if(HAVE_TBB)
-        target_link_libraries(runtests PRIVATE ${LIBTBB})
-    endif()
+if(HAVE_TBB)
+    target_link_libraries(runtests PRIVATE ${LIBTBB})
 endif()
 
 add_dependencies(runtests ${CLIENTS})

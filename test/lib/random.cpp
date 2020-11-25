@@ -1,8 +1,9 @@
 #include "test/lib/random.hpp"
 #include "test/lib/Connection.hpp"
 
-#include <unistd.h> // getpid()
-
+#if HAVE_UNISTD_H
+#  include <unistd.h> // getpid()
+#endif
 mt19937_64 rnd_eng;
 mutex rnd_mtx;
 

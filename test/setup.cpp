@@ -8,7 +8,9 @@
 #include <csignal>
 #include <iostream>
 #include <string>
-#include <unistd.h>
+#if HAVE_UNISTD_H
+#  include <unistd.h>
+#endif
 
 static void sigchld(int, siginfo_t *si, void *) {
   switch (si->si_code) {

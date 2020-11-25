@@ -28,14 +28,15 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <ctype.h>
+#include <cctype>
 #include <fcntl.h>
-#include <inttypes.h>
+#include <cinttypes>
 #include <pthread.h>
-#include <signal.h>
+#include <csignal>
 #include <sys/types.h>
-#include <unistd.h>
-
+#if HAVE_UNISTD_H
+#  include <unistd.h>
+#endif
 #include "libmemcached-1.0/memcached.h"
 
 #include "libmemcached/socket.hpp"

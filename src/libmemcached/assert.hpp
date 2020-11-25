@@ -32,8 +32,6 @@
 
 #  ifdef _WIN32
 #    include <malloc.h>
-#  elif HAVE_ALLOCA_H
-#    include <alloca.h>
 #  endif
 
 #  ifdef __cplusplus

@@ -21,9 +21,13 @@
 #include <inttypes.h>
 #include <limits.h>
 #include <pwd.h>
-#include <strings.h>
+#if HAVE_STRINGS_H
+#  include <strings.h>
+#endif
 #include <sys/types.h>
-#include <unistd.h>
+#if HAVE_UNISTD_H
+#  include <unistd.h>
+#endif
 
 #include "ms_setting.h"
 #include "ms_conn.h"

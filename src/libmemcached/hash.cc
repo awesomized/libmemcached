@@ -15,7 +15,10 @@
 
 #include "libmemcached/common.h"
 
-#include <sys/time.h>
+#if HAVE_SYS_TIME_H
+#  include <sys/time.h>
+#endif
+#include <time.h>
 
 #include "libmemcached/virtual_bucket.h"
 

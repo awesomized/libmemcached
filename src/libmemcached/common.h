@@ -27,25 +27,13 @@
 #  include <cerrno>
 #  include <climits>
 #else
-#  ifdef HAVE_STDDEF_H
-#    include <stddef.h>
-#  endif
-#  ifdef HAVE_STDLIB_H
-#    include <stdio.h>
-#  endif
-#  ifdef HAVE_STDLIB_H
-#    include <stdlib.h>
-#  endif
+#  include <stddef.h>
+#  include <stdio.h>
+#  include <stdlib.h>
 #  include <string.h>
-#  ifdef HAVE_TIME_H
-#    include <time.h>
-#  endif
-#  ifdef HAVE_ERRNO_H
-#    include <errno.h>
-#  endif
-#  ifdef HAVE_LIMITS_H
-#    include <limits.h>
-#  endif
+#  include <time.h>
+#  include <errno.h>
+#  include <limits.h>
 #endif
 
 #ifdef HAVE_SYS_UN_H
@@ -56,13 +44,8 @@
 #  include <sys/time.h>
 #endif
 
-#ifdef HAVE_FCNTL_H
-#  include <fcntl.h>
-#endif
-
-#ifdef HAVE_SYS_TYPES_H
-#  include <sys/types.h>
-#endif
+#include <fcntl.h>
+#include <sys/types.h>
 
 #ifdef HAVE_UNISTD_H
 #  include <unistd.h>

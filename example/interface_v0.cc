@@ -10,7 +10,9 @@
 #include <cassert>
 #include <sys/types.h>
 #include <cstdio>
-#include <unistd.h>
+#if HAVE_UNISTD_H
+#  include <unistd.h>
+#endif
 #include <fcntl.h>
 #include <cerrno>
 #include <cstdlib>

@@ -3,7 +3,9 @@
 #include "ForkAndExec.hpp"
 
 #include <sys/wait.h>
-#include <unistd.h>
+#if HAVE_UNISTD_H
+#  include <unistd.h>
+#endif
 
 Server::Server(string binary_, Server::argv_t args_)
     : binary{move(binary_)}

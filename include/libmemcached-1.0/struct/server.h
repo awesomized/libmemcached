@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "libmemcached-1.0/configure.h"
+
 #ifdef HAVE_NETDB_H
 #  include <netdb.h>
 #endif

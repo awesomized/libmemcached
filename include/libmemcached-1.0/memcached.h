@@ -22,11 +22,7 @@
 #endif
 
 #ifdef __cplusplus
-#  if __cplusplus >= 201103L
-#    include <cinttypes>
-#  else
-#    include <inttypes.h>
-#  endif
+#  include <cinttypes>
 #  include <cstddef>
 #  include <cstdlib>
 #else

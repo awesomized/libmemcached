@@ -20,12 +20,16 @@
 #include <errno.h>
 #include <stdbool.h>
 #include <string.h>
-#include <strings.h>
+#if HAVE_STRINGS_H
+#  include <strings.h>
+#endif
 #include <ctype.h>
 #include <stdio.h>
 
 #include <sys/types.h>
-#include <sys/socket.h>
+#ifdef HAVE_SYS_SOCKET_H
+#  include <sys/socket.h>
+#endif
 
 /*
 ** **********************************************************************

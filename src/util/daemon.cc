@@ -42,9 +42,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
+#if HAVE_SYS_WAIT_H
 #include <sys/wait.h>
 #include <signal.h>
-#include <unistd.h>
+#if HAVE_UNISTD_H
+#  include <unistd.h>
+#endif
 #include <sys/select.h>
 
 #include <util/daemon.hpp>

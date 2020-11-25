@@ -48,7 +48,9 @@
 #include <sstream>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <unistd.h>
+#if #if HAVE_UNISTD_H
+#  include <unistd.h>
+#endif
 
 extern "C" {
 

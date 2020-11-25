@@ -48,8 +48,9 @@ using namespace datadifferential;
 #include <getopt.h>
 #include <iostream>
 #include <sys/types.h>
-#include <unistd.h>
-
+#if HAVE_UNISTD_H
+#  include <unistd.h>
+#endif
 extern memcached_binary_protocol_callback_st interface_v0_impl;
 extern memcached_binary_protocol_callback_st interface_v1_impl;
 

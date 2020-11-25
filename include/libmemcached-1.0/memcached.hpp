@@ -20,8 +20,7 @@
 #  include "libmemcached/exception.hpp"
 #endif
 
-#include <string.h>
-
+#include <cstring>
 #include <sstream>
 #include <string>
 #include <vector>

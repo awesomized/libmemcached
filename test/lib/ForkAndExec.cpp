@@ -4,7 +4,9 @@
 
 #include <fcntl.h>
 #include <sys/poll.h>
-#include <unistd.h>
+#if HAVE_UNISTD_H
+#  include <unistd.h>
+#endif
 #include <spawn.h>
 
 #if !HAVE_PIPE2

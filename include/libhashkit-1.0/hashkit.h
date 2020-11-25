@@ -17,8 +17,10 @@
 
 #if !defined(__cplusplus)
 #  include <stdbool.h>
+#  include <inttypes.h>
+#else
+#  include <cinttypes>
 #endif
-#include <inttypes.h>
 #include <sys/types.h>
 
 #include <libhashkit-1.0/visibility.h>
