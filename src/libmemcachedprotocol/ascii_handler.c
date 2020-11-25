@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <inttypes.h>
 
 static void print_ascii_command(memcached_protocol_client_st *client) {
   if (client->is_verbose) {
