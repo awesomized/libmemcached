@@ -115,7 +115,7 @@ configure_set(HAVE_FNV64_HASH ${ENABLE_HASH_FNV64})
 configure_set(HAVE_MURMUR_HASH ${ENABLE_HASH_MURMUR})
 configure_set(HAVE_HSIEH_HASH ${ENABLE_HASH_HSIEH})
 
-# most of the following checks are due to mingw or msvc; see gnulib
+check_include(alloca.h)
 check_include(arpa/inet.h)
 check_include(dlfcn.h)
 check_include(netdb.h)

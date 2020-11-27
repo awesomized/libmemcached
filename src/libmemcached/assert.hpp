@@ -36,10 +36,16 @@
 
 #  ifdef __cplusplus
 #    include <cstdarg>
+#    include <cstdlib>
 #    include <cstdio>
 #  else
 #    include <stdarg.h>
+#    include <stdlib.h>
 #    include <stdio.h>
+#  endif
+
+#  ifdef HAVE_ALLOCA_H
+#    include <alloca.h>
 #  endif
 
 #  include "libmemcached/backtrace.hpp"
