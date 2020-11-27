@@ -1,27 +1,8 @@
-/*
-    +--------------------------------------------------------------------+
-    | libmemcached - C/C++ Client Library for memcached                  |
-    +--------------------------------------------------------------------+
-    | Redistribution and use in source and binary forms, with or without |
-    | modification, are permitted under the terms of the BSD license.    |
-    | You should have received a copy of the license in a bundled file   |
-    | named LICENSE; in case you did not receive a copy you can review   |
-    | the terms online at: https://opensource.org/licenses/BSD-3-Clause  |
-    +--------------------------------------------------------------------+
-    | Copyright (c) 2006-2014 Brian Aker   https://datadifferential.com/ |
-    | Copyright (c) 2020 Michael Wallner   <mike@php.net>                |
-    +--------------------------------------------------------------------+
-*/
-
 #pragma once
-
 #cmakedefine01 LIBMEMCACHED_WITH_SASL_SUPPORT
-
 #define LIBMEMCACHED_WITH_SASL_PWDB "@LIBMEMCACHED_WITH_SASL_PWDB@"
 #define LIBMEMCACHED_WITH_SASL_CONF "@LIBMEMCACHED_WITH_SASL_CONF@"
-
 #cmakedefine WORDS_BIGENDIAN 1
-
 #cmakedefine HAVE_ATOMIC_ADD_NV 1
 #cmakedefine HAVE_BUILTIN_SYNC 1
 #cmakedefine HAVE_BUILTIN_ATOMIC 1
@@ -29,7 +10,6 @@
 #cmakedefine HAVE_C_STDATOMIC 1
 #cmakedefine HAVE_CXX_STDATOMIC 1
 #cmakedefine HAVE_ATOMICS 1
-
 #cmakedefine HAVE__SC_NPROCESSORS_ONLN 1
 #cmakedefine HAVE_ABI____CXA_DEMANGLE 1
 #cmakedefine HAVE_BACKTRACE 1
@@ -69,14 +49,7 @@
 #cmakedefine HAVE_VISIBILITY 1
 #cmakedefine HAVE_WINSOCK2_H 1
 #cmakedefine HAVE_WS2TCPIP_H 1
-
-#if HAVE_BACKTRACE
 #  define BACKTRACE_HEADER <@Backtrace_HEADER@>
-#endif
-
-#if HAVE_BYTESWAP
 #  define BYTESWAP_32 @BYTESWAP_32@
-#  cmakedefine BYTESWAP_HEADER <@BYTESWAP_HEADER@>
-#endif
-
+#cmakedefine BYTESWAP_HEADER <@BYTESWAP_HEADER@>
 #define HAVE_LIBMEMCACHED 1

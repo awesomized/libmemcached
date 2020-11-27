@@ -97,6 +97,10 @@ endif()
 if(HAVE_LIBSASL)
     target_link_libraries(libmemcached PUBLIC ${LIBSASL})
 endif()
+if(CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
+    # see https://docs.oracle.com/cd/E77782_01/html/E77789/bkamq.html#OSSCPgrxeu
+    target_link_libraries(libmemcached INTERFACE stdc++ gcc_s CrunG3 c)
+endif()
 target_include_directories(libmemcached PRIVATE
         ${CMAKE_SOURCE_DIR}/src
         ${CMAKE_BINARY_DIR}/src

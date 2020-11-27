@@ -15,8 +15,10 @@
 
 #include "libmemcachedutil/common.h"
 
+#include <alloca.h>
 #include <cassert>
 #include <cerrno>
+#include <cstring>
 #include <pthread.h>
 #include <memory>
 

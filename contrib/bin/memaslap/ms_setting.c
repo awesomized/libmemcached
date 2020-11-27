@@ -183,32 +183,28 @@ static void ms_get_serverlist(char *str) {
 /**
  * used to get the CPU count of the current system
  *
- * @return return the cpu count if get, else return EXIT_FAILURE
+ * @return return the cpu count if possible, else return 1
  */
 static uint32_t ms_get_cpu_count() {
-#ifdef HAVE__SC_NPROCESSORS_ONLN
-  return sysconf(_SC_NPROCESSORS_CONF);
-
-#else
-#  ifdef HAVE_CPU_SET_T
-  int cpu_count = 0;
+#ifdef HAVE_CPU_SET_T
+  unsigned cpu_count = 0;
   cpu_set_t cpu_set;
 
   sched_getaffinity(0, sizeof(cpu_set_t), &cpu_set);
 
-  for (int i = 0; i < (sizeof(cpu_set_t) * 8); i++) {
+  for (unsigned i = 0; i < (sizeof(cpu_set_t) * 8); i++) {
     if (CPU_ISSET(i, &cpu_set)) {
       cpu_count++;
     }
   }
 
   return cpu_count;
-
-#  endif
+#elif defined HAVE__SC_NPROCESSORS_ONLN
+  return sysconf(_SC_NPROCESSORS_CONF);
 #endif
 
   /* the system with one cpu at least */
-  return EXIT_FAILURE;
+  return 1;
 } /* ms_get_cpu_count */
 
 /**

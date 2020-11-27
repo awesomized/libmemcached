@@ -13,6 +13,8 @@
     +--------------------------------------------------------------------+
 */
 
+#pragma once
+
 #define MAX_UDP_DATAGRAM_LENGTH           1400
 #define UDP_DATAGRAM_HEADER_LENGTH        8
 #define UDP_REQUEST_ID_MSG_SIG_DIGITS     10

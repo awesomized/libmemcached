@@ -1885,7 +1885,7 @@ int main(int argc, char **argv) {
   //initialize_sockets();
   sock = connect_server(hostname, port);
   if (sock == INVALID_SOCKET) {
-    fprintf(stderr, "Failed to connect to <%s:%s>: %s\n", hostname ?: "(null)", port ?: "(null)",
+    fprintf(stderr, "Failed to connect to <%s:%s>: %s\n", hostname, port,
             strerror(get_socket_errno()));
     return EXIT_FAILURE;
   }
@@ -1943,8 +1943,8 @@ int main(int argc, char **argv) {
     if (reconnect) {
       closesocket(sock);
       if ((sock = connect_server(hostname, port)) == INVALID_SOCKET) {
-        fprintf(stderr, "Failed to connect to <%s:%s>: %s\n", hostname ?: "(null)",
-                port ?: "(null)", strerror(get_socket_errno()));
+        fprintf(stderr, "Failed to connect to <%s:%s>: %s\n", hostname,
+                port, strerror(get_socket_errno()));
         fprintf(stderr, "%d of %d tests failed\n", failed, total);
         return EXIT_FAILURE;
       }

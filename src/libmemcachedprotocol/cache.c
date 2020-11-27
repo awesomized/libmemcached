@@ -19,16 +19,17 @@
 #include <string.h>
 #include <inttypes.h>
 
-#ifndef NDEBUG
-#  include <signal.h>
-#endif
-
 #include "libmemcachedprotocol/common.h"
 
-#ifndef NDEBUG
+#ifndef HAVE_UMEM_H
+
+#  ifndef NDEBUG
+#    include <signal.h>
+
 const uint64_t redzone_pattern = 0xdeadbeefcafebabe;
 int cache_error = 0;
-#endif
+
+#  endif
 
 const size_t initial_pool_size = 64;
 
@@ -52,11 +53,11 @@ cache_t *cache_create(const char *name, size_t bufsize, size_t align,
   ret->constructor = constructor;
   ret->destructor = destructor;
 
-#ifndef NDEBUG
+#  ifndef NDEBUG
   ret->bufsize = bufsize + 2 * sizeof(redzone_pattern);
-#else
+#  else
   ret->bufsize = bufsize;
-#endif
+#  endif
 
   (void) align;
 
@@ -64,12 +65,12 @@ cache_t *cache_create(const char *name, size_t bufsize, size_t align,
 }
 
 static inline void *get_object(void *ptr) {
-#ifndef NDEBUG
+#  ifndef NDEBUG
   uint64_t *pre = ptr;
   return pre + 1;
-#else
+#  else
   return ptr;
-#endif
+#  endif
 }
 
 void cache_destroy(cache_t *cache) {
@@ -105,7 +106,7 @@ void *cache_alloc(cache_t *cache) {
   }
   pthread_mutex_unlock(&cache->mutex);
 
-#ifndef NDEBUG
+#  ifndef NDEBUG
   if (object) {
     /* add a simple form of buffer-check */
     uint64_t *pre = ret;
@@ -114,7 +115,7 @@ void *cache_alloc(cache_t *cache) {
     memcpy(((char *) ret) + cache->bufsize - (2 * sizeof(redzone_pattern)), &redzone_pattern,
            sizeof(redzone_pattern));
   }
-#endif
+#  endif
 
   return object;
 }
@@ -122,7 +123,7 @@ void *cache_alloc(cache_t *cache) {
 void cache_free(cache_t *cache, void *ptr) {
   pthread_mutex_lock(&cache->mutex);
 
-#ifndef NDEBUG
+#  ifndef NDEBUG
   /* validate redzone... */
   if (memcmp(((char *) ptr) + cache->bufsize - (2 * sizeof(redzone_pattern)), &redzone_pattern,
              sizeof(redzone_pattern))
@@ -142,7 +143,7 @@ void cache_free(cache_t *cache, void *ptr) {
     return;
   }
   ptr = pre;
-#endif
+#  endif
   if (cache->freecurr < cache->freetotal) {
     cache->ptr[cache->freecurr++] = ptr;
   } else {
@@ -162,3 +163,5 @@ void cache_free(cache_t *cache, void *ptr) {
   }
   pthread_mutex_unlock(&cache->mutex);
 }
+
+#endif // HAVE_UMEM_H

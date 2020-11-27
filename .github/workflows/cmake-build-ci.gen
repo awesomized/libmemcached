@@ -273,7 +273,6 @@ jobs:
     runs-on: <?=DEF[DEF["os"]]?> #
     env:
       ENABLE_SANITIZERS:  "thread"
-      ENABLE_MEMASLAP:    "OFF"
     steps:
       - uses: actions/checkout@v2
 <?php steps(); ?>

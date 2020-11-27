@@ -15,4 +15,4 @@
 
 #pragma once
 
-#include "@AUTOHEADER_FILE@"
+#include "@CONFIGURE_FILE_OUT@"

@@ -94,13 +94,13 @@ public:
     def("username", 'u', required_argument, "SASL username.")
         .apply = [](const client_options &opt, const extended_option &ext, memcached_st *memc) {
       if (auto username = ext.arg) {
-        if (!LIBMEMCACHED_WITH_SASL_SUPPORT) {
+#if !LIBMEMCACHED_WITH_SASL_SUPPORT
           if (!opt.isset("quiet")) {
             std::cerr
                 << "SASL username was supplied, but binary was not built with SASL support.\n";
-            return false;
           }
-        }
+          return false;
+#else
         if (memc) {
           if (MEMCACHED_SUCCESS
               != memcached_set_sasl_auth_data(memc, username, opt.argof("password"))) {
@@ -110,6 +110,7 @@ public:
             return false;
           }
         }
+#endif
       }
       return true;
     };

@@ -110,6 +110,9 @@ void ms_record_event(ms_stat_t *stat, uint64_t total_time, int get_miss) {
  *
  * @return total events recorded
  */
+#if HAVE_TSAN
+__attribute__ (( no_sanitize_thread, no_sanitize("thread")))
+#endif
 static uint64_t ms_get_events(ms_stat_t *stat) {
   uint64_t events = 0;
 
@@ -182,6 +185,9 @@ void ms_dump_stats(ms_stat_t *stat) {
  * @param freq, statistic frequency
  * @param obj_size, average object size
  */
+#if HAVE_TSAN
+__attribute__ (( no_sanitize_thread, no_sanitize("thread")))
+#endif
 void ms_dump_format_stats(ms_stat_t *stat, int run_time, int freq, int obj_size) {
   uint64_t events = 0;
   double global_average = 0;

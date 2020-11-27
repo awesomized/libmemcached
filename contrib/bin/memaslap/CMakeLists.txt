@@ -1,11 +1,13 @@
 if(ENABLE_MEMASLAP)
-    include(CheckAtomics)
     add_definitions(-D_GNU_SOURCE)
-    check_atomics()
-    check_dependency(LIBEVENT event event.h)
-    check_decl(getline stdio.h)
-    check_decl(_SC_NPROCESSORS_ONLN unistd.h)
+
+    include(CheckAtomics)
+
     check_type(cpu_set_t sched.h)
+    check_symbol(getline stdio.h)
+    check_symbol(_SC_NPROCESSORS_ONLN unistd.h)
+
+    check_dependency(LIBEVENT event)
 
     if(HAVE_LIBEVENT AND HAVE_ATOMICS)
         add_executable(memaslap
@@ -22,7 +24,7 @@ if(ENABLE_MEMASLAP)
                 ${CMAKE_SOURCE_DIR}/src
                 ${CMAKE_BINARY_DIR}/src
                 ${CMAKE_BINARY_DIR})
-        target_link_libraries(memaslap PUBLIC libmemcached Threads::Threads ${LIBEVENT} m)
+        target_link_libraries(memaslap PRIVATE libmemcached Threads::Threads ${LIBEVENT} m)
         set_property(TARGET memaslap PROPERTY C_STANDARD 11)
         if(CMAKE_INSTALL_RPATH)
             set_target_properties(${CLIENT} PROPERTIES

@@ -14,6 +14,11 @@
 */
 
 #include "mem_config.h"
+
+#if HAVE_HTONLL && HAVE_ARPA_INET_H
+#  include <arpa/inet.h>
+#endif
+
 #include "libmemcached/byteorder.h"
 
 /* Byte swap a 64-bit number. */

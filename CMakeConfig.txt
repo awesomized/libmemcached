@@ -1,4 +1,3 @@
-
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     if(NOT DEFINED ENV{CMAKE_BUILD_TYPE})
         set(ENV{CMAKE_BUILD_TYPE} Release)
@@ -84,7 +83,6 @@ endif()
 # legacy
 
 set(HAVE_VISIBILITY 1)
-set(HAVE_SHARED_ENABLED 1)
 
 # modules
 

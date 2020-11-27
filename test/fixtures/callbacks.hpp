@@ -13,6 +13,8 @@
     +--------------------------------------------------------------------+
 */
 
+#pragma once
+
 #include "test/lib/common.hpp"
 #include "libmemcached/common.h"
 #include "libmemcachedutil/common.h"

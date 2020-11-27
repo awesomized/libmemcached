@@ -1451,7 +1451,7 @@ static int ms_try_read_network(ms_conn_t *c) {
       return -1;
     }
     if (res == -1) {
-      if ((errno == EAGAIN) || (errno == EWOULDBLOCK))
+      if ((errno == EAGAIN) || (EAGAIN != EWOULDBLOCK && errno == EWOULDBLOCK))
         break;
       /* Should close on unhandled errors. */
       ms_conn_set_state(c, conn_closing);
@@ -1909,7 +1909,7 @@ static int ms_transmit(ms_conn_t *c) {
       }
       return TRANSMIT_INCOMPLETE;
     }
-    if ((res == -1) && ((errno == EAGAIN) || (errno == EWOULDBLOCK))) {
+    if ((res == -1) && ((errno == EAGAIN) || (EAGAIN != EWOULDBLOCK && errno == EWOULDBLOCK))) {
       if (!ms_update_event(c, EV_WRITE | EV_PERSIST)) {
         fprintf(stderr, "Couldn't update event.\n");
         ms_conn_set_state(c, conn_closing);

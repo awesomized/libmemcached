@@ -13,6 +13,8 @@
     +--------------------------------------------------------------------+
 */
 
+#pragma once
+
 #include <chrono>
 
 using time_clock = std::chrono::high_resolution_clock;

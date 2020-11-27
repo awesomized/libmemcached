@@ -18,8 +18,6 @@ include(CMakeConfig.txt)
 
 if(NOT BUILD_DOCSONLY)
 
-    set(AUTOHEADER_FILE mem_config.h)
-
     set(CLIENTS
             memcapable
             memcat
@@ -40,10 +38,12 @@ if(NOT BUILD_DOCSONLY)
     add_subdirectory(contrib)
     add_subdirectory(include)
     add_subdirectory(support)
+
+    # tests need c++17 support
     add_subdirectory(test)
 
     # keep last
-    configure_file(src/mem_config.h.in ${AUTOHEADER_FILE} @ONLY)
+    configure_file(${CONFIGURE_FILE_IN} ${CONFIGURE_FILE_OUT} @ONLY)
 endif()
 
 if(BUILD_DOCS OR BUILD_DOCSONLY)

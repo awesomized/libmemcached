@@ -113,8 +113,8 @@ typedef struct global {
   pthread_mutex_t seq_mutex;
 
   /* global synchronous flags for slap mode */
-  bool finish_warmup;
-  bool time_out;
+  ATOMIC bool finish_warmup;
+  ATOMIC bool time_out;
 } ms_global_t;
 
 /* global structure */

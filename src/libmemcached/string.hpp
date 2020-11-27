@@ -15,12 +15,9 @@
 
 #pragma once
 
-#include "util/string.hpp"
-
-#define memcached_literal_param         util_literal_param
-#define memcached_literal_param_size    util_literal_param_size
-#define memcached_string_make_from_cstr util_string_make_from_cstr
-#define memcached_array_length          util_array_length
+#define memcached_literal_param(str)          (str),strlen(str)
+#define memcached_literal_param_size(str)     strlen(str)
+#define memcached_string_make_from_cstr(str)  (str),((str)?strlen(str):0)
 
 /**
   Strings are always under our control so we make some assumptions

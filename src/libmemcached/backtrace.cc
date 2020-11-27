@@ -25,11 +25,8 @@
 
 #  include BACKTRACE_HEADER
 
-#  if HAVE_ABI____CXA_DEMANGLE
+#  ifdef HAVE_ABI____CXA_DEMANGLE
 #    include <cxxabi.h>
-#    define USE_DEMANGLE 1
-#  else
-#    define USE_DEMANGLE 0
 #  endif
 
 #  ifdef HAVE_DLFCN_H
@@ -48,8 +45,8 @@ void custom_backtrace(void) {
       for (int x = 0; x < stack_frames; x++) {
         bool was_demangled = false;
 
-        if (USE_DEMANGLE) {
-#  ifdef HAVE_DLFCN_H
+#  ifdef HAVE_ABI____CXA_DEMANGLE
+#    ifdef HAVE_DLFCN_H
           Dl_info dlinfo;
           if (dladdr(backtrace_buffer[x], &dlinfo)) {
             char demangled_buffer[1024];
@@ -71,8 +68,8 @@ void custom_backtrace(void) {
                       dlinfo.dli_fname);
             }
           }
+#    endif
 #  endif
-        }
 
         if (was_demangled == false) {
           fprintf(stderr, "?%d  %p in %s\n", x, backtrace_buffer[x], symbollist[x]);

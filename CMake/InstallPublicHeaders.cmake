@@ -34,7 +34,7 @@ function(install_public_headers DIRECTORY)
         if(HEADER MATCHES "^@")
             string(SUBSTRING ${HEADER} 1 -1 HEADER)
             configure_file(${HEADER}.in ${HEADER})
-            string(PREPEND HEADER ${CMAKE_CURRENT_BINARY_DIR}/)
+            set(HEADER "${CMAKE_CURRENT_BINARY_DIR}/${HEADER}")
         endif()
         install(FILES ${HEADER}
                 DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${DIRECTORY}
