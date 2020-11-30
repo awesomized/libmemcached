@@ -17,14 +17,14 @@ function(check_dependency NAME LIB)
     endif()
 
     message(STATUS "Checking for library '${LIB}' ...")
-    find_library(${NAME}_FOUND NAMES ${LIB} ${ARGN})
-    if(${NAME}_FOUND)
-        mark_as_advanced(${NAME}_FOUND)
-        message(STATUS "  Found '${${NAME}_FOUND}'")
+    find_library(${NAME}_LIB NAMES ${LIB})
+    if(${NAME}_LIB)
+        mark_as_advanced(${NAME}_LIB)
+        message(STATUS "  Found '${${NAME}_LIB}'")
 
         set(${NAME}_INCLUDES "")
         foreach(PATH IN_LIST CMAKE_PREFIX_PATHS)
-            if(LIB${LIB} MATCHES "^${PATH}")
+            if(${NAME}_LIB MATCHES "^${PATH}")
                 set(${NAME}_INCLUDES "${PATH}/include")
                 break()
             endif()
@@ -33,7 +33,7 @@ function(check_dependency NAME LIB)
         add_library(Imported::${NAME} INTERFACE IMPORTED)
         set_target_properties(Imported::${NAME} PROPERTIES
                 INTERFACE_INCLUDE_DIRECTORIES "${${NAME}_INCLUDES}"
-                INTERFACE_LINK_LIBRARIES ${${NAME}_FOUND})
+                INTERFACE_LINK_LIBRARIES ${${NAME}_LIB})
 
         set(${NAME} Imported::${NAME} CACHE INTERNAL "${NAME} import target")
         set(${HAVE} 1 CACHE INTERNAL "${HAVE}")
