@@ -6,7 +6,7 @@ on:
       - "include/**"
       - "src/**"
       - "test/**"
-      - "CMake*"
+      - "**CMake**"
       - ".github/workflows/cmake-build-ci*"
     branches-ignore:
       - gh-pages
