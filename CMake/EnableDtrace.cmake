@@ -34,7 +34,7 @@ function(enable_dtrace_for TARGET PROBES_D PROBES_H)
             set(PROBES_C ${TARGET}_probes.cc)
             file(GENERATE
                     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PROBES_C}
-                    CONTENT "#include \"${PROBES_H}\""
+                    CONTENT "#include \"${PROBES_H}\"\n"
                     )
             add_custom_command(
                     TARGET ${TARGET}
