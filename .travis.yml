@@ -2,6 +2,7 @@ os: linux
 dist: focal
 arch:
   - arm64
+  - arm64-graviton2
   - ppc64le
   - s390x
 language: cpp
