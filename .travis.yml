@@ -1,11 +1,15 @@
 os: linux
 dist: focal
-arch:
-  - arm64
-  - arm64-graviton2
-  - ppc64le
-  - s390x
 language: cpp
+
+jobs:
+  include:
+    - arch: arm64-graviton2
+      virt: lxd
+      group: edge
+    - arch: arm64
+    - arch: ppc64le
+    - arch: s390x
 
 branches:
   only:
