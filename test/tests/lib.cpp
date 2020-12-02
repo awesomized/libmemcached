@@ -80,7 +80,7 @@ TEST_CASE("lib/Connection") {
     vector<Connection> conns;
     conns.reserve(cluster.getServers().size());
     for (const auto &server : cluster.getServers()) {
-      REQUIRE(conns.emplace_back(Connection{server.getSocketOrPort()}).open());
+      CHECK_NOFAIL(conns.emplace_back(Connection{server.getSocketOrPort()}).open());
     }
     while (!conns.empty()) {
       vector<Connection> again;
