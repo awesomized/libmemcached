@@ -16,6 +16,10 @@
 # include <sys/socket.h>
 #endif
 
+#if defined HAVE_NETINET_IN_H
+# include <netinet/in.h>
+#endif
+
 #if defined HAVE_SYS_UN_H
 # include <sys/un.h>
 #endif

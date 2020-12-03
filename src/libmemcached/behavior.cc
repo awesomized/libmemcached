@@ -17,7 +17,6 @@
 #include "libmemcached/options.hpp"
 #include "libmemcached/virtual_bucket.h"
 #include "p9y/random.hpp"
-#include "p9y/socket.hpp"
 
 #include <ctime>
 #include <sys/types.h>

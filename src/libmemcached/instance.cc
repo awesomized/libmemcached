@@ -14,7 +14,6 @@
 */
 
 #include "libmemcached/common.h"
-#include "p9y/socket.hpp"
 
 static inline void _server_init(memcached_instance_st *self, Memcached *root,
                                 const memcached_string_t &hostname, in_port_t port, uint32_t weight,

@@ -14,7 +14,6 @@
 */
 
 #include "libmemcached/common.h"
-#include "p9y/socket.hpp"
 #include "p9y/poll.hpp"
 
 #include <cassert>

@@ -14,7 +14,6 @@
 */
 
 #include "libmemcached/common.h"
-#include "p9y/socket.hpp"
 
 #define memcached_set_purging(__object, __value) ((__object)->state.is_purging = (__value))
 

@@ -14,7 +14,6 @@
 */
 
 #include "libmemcached/common.h"
-#include "p9y/socket.hpp"
 
 memcached_return_t memcached_flush_buffers(memcached_st *shell) {
   Memcached *memc = memcached2Memcached(shell);

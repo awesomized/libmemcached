@@ -38,24 +38,13 @@
 #  include <iso646.h>
 #endif
 
-#ifdef HAVE_SYS_UN_H
-#  include <sys/un.h>
-#endif
+#include "p9y/socket.hpp"
 
 #ifdef HAVE_SYS_TIME_H
 #  include <sys/time.h>
 #endif
 
 #include <fcntl.h>
-#include <sys/types.h>
-
-#ifdef HAVE_UNISTD_H
-#  include <unistd.h>
-#endif
-
-#ifdef HAVE_SYS_SOCKET_H
-#  include <sys/socket.h>
-#endif
 
 #ifdef HAVE_STRINGS_H
 #  include <strings.h>

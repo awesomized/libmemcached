@@ -18,6 +18,7 @@
 #include "common.hpp"
 
 #include <sys/socket.h>
+#include <netinet/in.h>
 #include <sys/un.h>
 
 class Connection {

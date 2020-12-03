@@ -14,8 +14,7 @@
 */
 
 #include "libmemcachedprotocol/common.h"
-
-#include <sys/types.h>
+#include "p9y/socket.hpp"
 
 #define ensure(a) \
   if (!(a)) { \
