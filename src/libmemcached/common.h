@@ -65,16 +65,10 @@
 #  include <dlfcn.h>
 #endif
 
-#if defined(_WIN32)
-#  include "libmemcached/windows.hpp"
-#endif
-
 #include "libmemcached-1.0/memcached.h"
 #include "libmemcached/watchpoint.h"
 #include "libmemcached/is.h"
 typedef struct memcached_st Memcached;
-
-#include "libmemcached/poll.h"
 
 #ifdef __cplusplus
 memcached_instance_st *memcached_instance_fetch(memcached_st *ptr, uint32_t server_key);
@@ -90,7 +84,6 @@ memcached_instance_st *memcached_instance_fetch(memcached_st *ptr, uint32_t serv
 #  include "libmemcached/io.hpp"
 #  include "libmemcached/udp.hpp"
 #  include "libmemcached/do.hpp"
-#  include "libmemcached/socket.hpp"
 #  include "libmemcached/connect.hpp"
 #  include "libmemcached/allocators.hpp"
 #  include "libmemcached/hash.hpp"
@@ -151,6 +144,7 @@ extern "C" {
 memcached_return_t run_distribution(memcached_st *ptr);
 
 #ifdef __cplusplus
+#  include "p9y/poll.hpp"
 static inline void memcached_server_response_increment(memcached_instance_st *instance) {
   instance->events(POLLIN);
   instance->cursor_active_++;

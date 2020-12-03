@@ -1,3 +1,4 @@
+add_subdirectory(p9y)
 
 add_subdirectory(bin)
 add_subdirectory(libhashkit)

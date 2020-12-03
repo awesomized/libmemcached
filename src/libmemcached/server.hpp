@@ -15,9 +15,7 @@
 
 #pragma once
 
-#ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-#endif
+#include "p9y/gettimeofday.hpp"
 
 #include <cassert>
 

@@ -1,29 +1,6 @@
-/*
-    +--------------------------------------------------------------------+
-    | libmemcached - C/C++ Client Library for memcached                  |
-    +--------------------------------------------------------------------+
-    | Redistribution and use in source and binary forms, with or without |
-    | modification, are permitted under the terms of the BSD license.    |
-    | You should have received a copy of the license in a bundled file   |
-    | named LICENSE; in case you did not receive a copy you can review   |
-    | the terms online at: https://opensource.org/licenses/BSD-3-Clause  |
-    +--------------------------------------------------------------------+
-    | Copyright (c) 2006-2014 Brian Aker   https://datadifferential.com/ |
-    | Copyright (c) 2020 Michael Wallner   <mike@php.net>                |
-    +--------------------------------------------------------------------+
-*/
+#include "poll.hpp"
 
-#include "libmemcached/common.h"
-
-#if defined(_WIN32)
-#  include "libmemcached/poll.h"
-#  if HAVE_SYS_TIME_H
-#    include <sys/time.h>
-#  endif
-#  include <time.h>
-#  if HAVE_STRINGS_H
-#    include <cstrings>
-#  endif
+#if defined P9Y_NEED_POLL
 
 int poll(struct pollfd fds[], nfds_t nfds, int tmo) {
   fd_set readfds, writefds, errorfds;
@@ -76,4 +53,4 @@ int poll(struct pollfd fds[], nfds_t nfds, int tmo) {
   return ret;
 }
 
-#endif // defined(_WIN32)
+#endif // P9Y_NEED_POLL

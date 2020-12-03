@@ -18,6 +18,8 @@
 #cmakedefine01 LIBMEMCACHED_ENABLE_DEPRECATED
 #cmakedefine01 LIBMEMCACHED_WITH_SASL_SUPPORT
 
+#cmakedefine HAVE_VISIBILITY 1
+
 #cmakedefine HAVE_NETDB_H 1
 
 #cmakedefine HAVE_IN_PORT_T 1

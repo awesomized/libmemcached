@@ -15,9 +15,8 @@
 
 #include "libmemcached/common.h"
 
-#ifdef HAVE_SYS_SOCKET_H
-#  include <sys/socket.h>
-#endif
+#include "p9y/socket.hpp"
+#include "p9y/poll.hpp"
 
 void initialize_binary_request(memcached_instance_st *server,
                                protocol_binary_request_header &header) {

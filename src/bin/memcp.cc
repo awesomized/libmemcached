@@ -21,13 +21,12 @@
 
 #include "common/options.hpp"
 #include "common/checks.hpp"
+#include "p9y/libgen.hpp"
+#include "p9y/realpath.hpp"
 
 #include <cerrno>
 #include <climits>
 #include <cstdlib>
-#if HAVE_LIBGEN_H
-#  include <libgen.h>
-#endif
 #include <fstream>
 #include <sstream>
 

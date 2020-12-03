@@ -197,7 +197,7 @@ static memcached_return_t textual_read_one_response(memcached_instance_st *insta
              and buffer[5] == 'O' and buffer[6] == 'N') /* VERSION */
     {
       /* Find the space, and then move one past it to copy version */
-      char *response_ptr = index(buffer, ' ');
+      char *response_ptr = strchr(buffer, ' ');
 
       char *endptr;
       errno = 0;

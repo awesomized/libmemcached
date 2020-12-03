@@ -57,7 +57,6 @@ set(LIBMEMCACHED_SOURCES
         namespace.cc
         options.cc
         parse.cc
-        poll.cc
         purge.cc
         quit.cc
         response.cc
@@ -95,6 +94,7 @@ set_target_properties(libmemcached PROPERTIES
         SOVERSION ${LIBMEMCACHED_SO_VERSION})
 target_compile_definitions(libmemcached PRIVATE -DBUILDING_LIBMEMCACHED)
 target_link_libraries(libmemcached PUBLIC libhashkit Threads::Threads ${CMAKE_DL_LIBS})
+target_link_libraries(libmemcached PRIVATE p9y)
 if(MSVC)
     target_link_libraries(libmemcached PUBLIC wsock32 ws2_32)
 endif()
@@ -138,6 +138,7 @@ add_library(memcachedinternal ALIAS libmemcachedinternal)
 set_target_properties(libmemcachedinternal PROPERTIES CXX_STANDARD ${CXX_STANDARD} LIBRARY_OUTPUT_NAME memcachedinternal)
 target_compile_definitions(libmemcachedinternal PRIVATE -DBUILDING_LIBMEMCACHEDINTERNAL)
 target_link_libraries(libmemcachedinternal PUBLIC libhashkit Threads::Threads ${CMAKE_DL_LIBS})
+target_link_libraries(libmemcachedinternal PRIVATE p9y)
 if(MSVC)
     target_link_libraries(libmemcached PUBLIC wsock32 ws2_32)
 endif()

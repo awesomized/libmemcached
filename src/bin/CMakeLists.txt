@@ -19,6 +19,5 @@ target_sources(memcapable PRIVATE ../libmemcached/byteorder.cc)
 
 # extra libs
 
-target_link_libraries(memcapable PRIVATE Threads::Threads)
 target_link_libraries(memping PRIVATE libmemcachedutil)
 target_link_libraries(memslap PRIVATE Threads::Threads)

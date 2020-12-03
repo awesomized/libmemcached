@@ -14,13 +14,9 @@
 */
 
 #include "libmemcached/common.h"
-
-#if HAVE_SYS_TIME_H
-#  include <sys/time.h>
-#endif
-#include <time.h>
-
 #include "libmemcached/virtual_bucket.h"
+#include "p9y/gettimeofday.hpp"
+#include "p9y/random.hpp"
 
 uint32_t memcached_generate_hash_value(const char *key, size_t key_length,
                                        memcached_hash_t hash_algorithm) {

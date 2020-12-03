@@ -14,6 +14,7 @@
 */
 
 #include "libmemcached/common.h"
+#include "p9y/random.hpp"
 
 char *memcached_get(memcached_st *ptr, const char *key, size_t key_length, size_t *value_length,
                     uint32_t *flags, memcached_return_t *error) {

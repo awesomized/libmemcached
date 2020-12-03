@@ -14,6 +14,7 @@
 */
 
 #include "libmemcachedprotocol/common.h"
+#include "p9y/socket.hpp"
 
 #include <stdlib.h>
 #include <sys/types.h>

@@ -16,6 +16,7 @@
 #pragma once
 
 #include <chrono>
+#include <cstring>
 #include <iostream>
 #include <map>
 #include <optional>

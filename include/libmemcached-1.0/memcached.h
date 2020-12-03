@@ -15,34 +15,8 @@
 
 #pragma once
 
-/* This seems to be required for older compilers @note
- * http://stackoverflow.com/questions/8132399/how-to-printf-uint64-t  */
-#ifndef __STDC_FORMAT_MACROS
-#  define __STDC_FORMAT_MACROS
-#endif
-
-#ifdef __cplusplus
-#  include <cinttypes>
-#  include <cstddef>
-#  include <cstdlib>
-#else
-#  include <inttypes.h>
-#  include <stddef.h>
-#  include <stdlib.h>
-#  include <stdbool.h>
-#endif
-
-#include <sys/types.h>
-
-#ifndef HAVE_PID_T
-typedef int pid_t;
-#endif
-#ifndef HAVE_SSIZE_T
-typedef long int ssize_t;
-#endif
-
-#include "libmemcached-1.0/visibility.h"
 #include "libmemcached-1.0/configure.h"
+#include "libmemcached-1.0/visibility.h"
 #include "libmemcached-1.0/platform.h"
 
 #include "libmemcached-1.0/limits.h"

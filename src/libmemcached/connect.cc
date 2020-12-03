@@ -14,32 +14,11 @@
 */
 
 #include "libmemcached/common.h"
+#include "p9y/socket.hpp"
+#include "p9y/poll.hpp"
 
 #include <cassert>
 
-#ifndef SOCK_CLOEXEC
-#  define SOCK_CLOEXEC 0
-#endif
-
-#ifndef SOCK_NONBLOCK
-#  define SOCK_NONBLOCK 0
-#endif
-
-#ifndef FD_CLOEXEC
-#  define FD_CLOEXEC 0
-#endif
-
-#ifndef SO_NOSIGPIPE
-#  define SO_NOSIGPIPE 0
-#endif
-
-#ifndef TCP_NODELAY
-#  define TCP_NODELAY 0
-#endif
-
-#ifndef TCP_KEEPIDLE
-#  define TCP_KEEPIDLE 0
-#endif
 
 static memcached_return_t connect_poll(memcached_instance_st *server, const int connection_error) {
   struct pollfd fds[1];

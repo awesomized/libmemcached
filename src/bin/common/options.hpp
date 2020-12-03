@@ -24,12 +24,7 @@
 #include <vector>
 
 #include "libmemcached/common.h"
-
-#ifdef HAVE_GETOPT_H
-#  include <getopt.h>
-#elif defined _MSC_VER
-#  include "win32/getopt.h"
-#endif
+#include "p9y/getopt.hpp"
 
 class client_options {
 public:

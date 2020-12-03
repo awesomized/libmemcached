@@ -21,7 +21,6 @@
 #include "libmemcachedprotocol-0.0/handler.h"
 #include "libmemcachedprotocol/cache.h"
 #include "libmemcached/byteorder.h"
-#include "libmemcached/socket.hpp"
 
 /*
  * I don't really need the following two functions as function pointers

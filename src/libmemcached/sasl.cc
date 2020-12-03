@@ -14,6 +14,8 @@
 */
 
 #include "libmemcached/common.h"
+#include "p9y/socket.hpp"
+
 #include <cassert>
 #include <atomic>
 

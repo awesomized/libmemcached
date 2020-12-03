@@ -1,6 +1,14 @@
 #pragma once
 
+#include "mem_config.h"
+
+#ifdef HAVE_GETOPT_H
+#  include <getopt.h>
+#else
+
+#  ifdef __cplusplus
 extern "C" {
+#  endif
 
 extern int opterr;    /* if error message should be printed */
 extern int optind;    /* index into parent argv vector */
@@ -27,4 +35,8 @@ int getopt_long(int nargc, char * const *nargv, const char *options,
 int getopt_long_only(int nargc, char * const *nargv, const char *options,
     const struct option *long_options, int *idx);
 
+#  ifdef __cplusplus
 }
+#  endif
+
+#endif // HAVE_GETOPT_H

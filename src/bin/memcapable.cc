@@ -32,13 +32,11 @@
 #  include <unistd.h>
 #endif
 
-#ifndef HAVE_GETOPT_H
-#  include "../../win32/getopt.h"
-#endif
+#include "p9y/getopt.hpp"
+#include "p9y/socket.hpp"
+#include "p9y/poll.hpp"
 
 #include "libmemcached-1.0/memcached.h"
-#include "libmemcached/poll.h"
-#include "libmemcached/socket.hpp"
 #include "libmemcachedprotocol-0.0/binary.h"
 #include "libmemcached/byteorder.h"
 
@@ -132,14 +130,14 @@ static memcached_socket_t set_noblock(void) {
   int flags = fcntl(sock, F_GETFL, 0);
   if (flags == -1) {
     perror("Failed to get socket flags");
-    memcached_close_socket(sock);
+    closesocket(sock);
     return INVALID_SOCKET;
   }
 
   if ((flags & O_NONBLOCK) != O_NONBLOCK) {
     if (fcntl(sock, F_SETFL, flags | O_NONBLOCK) == -1) {
       perror("Failed to set socket to nonblocking mode");
-      memcached_close_socket(sock);
+      closesocket(sock);
       return INVALID_SOCKET;
     }
   }
@@ -183,8 +181,8 @@ static ssize_t timeout_io_op(memcached_socket_t fd, short direction, const char 
   } else {
     ret = recv(fd, const_cast<char *>(buf), len, 0);
   }
-
-  if (ret == SOCKET_ERROR && get_socket_errno() == EWOULDBLOCK) {
+  int local_errno = get_socket_errno();
+  if (ret == SOCKET_ERROR && local_errno == EWOULDBLOCK || (EAGAIN != EWOULDBLOCK && local_errno == EAGAIN)) {
     struct pollfd fds;
     memset(&fds, 0, sizeof(struct pollfd));
     fds.events = direction;

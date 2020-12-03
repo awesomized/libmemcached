@@ -26,10 +26,7 @@
 #include <ctype.h>
 #include <stdio.h>
 
-#include <sys/types.h>
-#ifdef HAVE_SYS_SOCKET_H
-#  include <sys/socket.h>
-#endif
+#include "p9y/socket.hpp"
 
 /*
 ** **********************************************************************

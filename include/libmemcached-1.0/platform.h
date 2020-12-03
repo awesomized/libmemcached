@@ -17,25 +17,45 @@
 
 #include "libmemcached-1.0/configure.h"
 
-#if defined(_WIN32)
-#  include <winsock2.h>
-#  include <ws2tcpip.h>
+/* This seems to be required for older compilers @note
+ * http://stackoverflow.com/questions/8132399/how-to-printf-uint64-t  */
+#ifndef __STDC_FORMAT_MACROS
+#  define __STDC_FORMAT_MACROS
+#endif
 
-#  ifndef HAVE_IN_PORT_T
-typedef int in_port_t;
-#    define HAVE_IN_PORT_T 1
-#  endif
-
-typedef SOCKET memcached_socket_t;
-
+#ifdef __cplusplus
+#  include <cinttypes>
+#  include <cstddef>
+#  include <cstdlib>
 #else
-#  include <sys/socket.h>
-#  include <netinet/in.h>
-#  include <arpa/inet.h>
-#  include <netdb.h>
-#  include <sys/un.h>
-#  include <netinet/tcp.h>
+#  include <inttypes.h>
+#  include <stddef.h>
+#  include <stdlib.h>
+#  include <stdbool.h>
+#endif
 
+#include <sys/types.h>
+
+#if defined HAVE_NETDB_H
+# include <netdb.h>
+#endif
+
+#if !defined HAVE_IN_PORT_T
+typedef int in_port_t;
+#endif
+
+#if !defined HAVE_PID_T
+typedef int pid_t;
+#endif
+
+#ifndef HAVE_SSIZE_T
+typedef long int ssize_t;
+#endif
+
+#if defined _WIN32
+# include <winsock2.h>
+# include <ws2tcpip.h>
+typedef SOCKET memcached_socket_t;
+#else
 typedef int memcached_socket_t;
-
-#endif /* _WIN32 */
+#endif // _WIN32
