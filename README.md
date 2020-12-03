@@ -36,8 +36,8 @@ which automate pushing updated documentation to github pages.
 ## Installing
 
 libmemcached uses `CMake`.
-Please see/edit [`CMakeConfig.txt`](./CMakeConfig.txt) or use `ccmake(1)` to
-set any preferred options.
+Please see/edit [`CMakeConfig.txt`](./CMakeConfig.txt) or use `ccmake(1)` or
+`cmake-gui(1)` to set any preferred options.
 
 ### From source
 
@@ -51,16 +51,16 @@ set any preferred options.
 #### Requirements
 
 * CMake 3.9+
-* A C++11 compiler
+* C++11 compiler
 * GNU Bison 2.3+ and Flex
 
 ##### Optional dependencies
 
-* A C++17 compiler (tests: required)
-* Intel's libtbb (tests: optional for GCC's stdlib parallelism support)
-* PThreads (tests, contrib/bin/memaslap, libmemcachedutil/pool)
-* libevent (contrib/bin/memaslap)
-* Cyrus' libsasl2 (libmemacached/sasl)
+* C++17 compiler (required for: tests)
+* Intel's libtbb (optional for: tests; for GCC's stdlib parallelism support)
+* pthreads (required for: tests, contrib/bin/memaslap, libmemcachedutil/pool)
+* libevent (required for: contrib/bin/memaslap)
+* Cyrus' libsasl2 (required for: libmemacached/sasl)
 
 ## Testing
 
@@ -91,21 +91,23 @@ Enable the `BUILD_TESTING` setting for a build and run `make test`.
     https://builds.sr.ht/~m6w6/libmemcached/commits.svg
     "Sourcehut Builds"
 
-CI/Test results are performed on the follwing system matrix:
+CI/Testing is performed on the following system matrix:
 
-| OS               | Compiler                     | Arch                  |
-|------------------|------------------------------|-----------------------|
-| Linux            | GNU 9                        | arm64, ppc64le, s390x |
-| Linux            | GNU 7/8/9/10, Clang 6/8/9/10 | amd64                 |
-| MacOS            | Clang 12 (apple)             | amd64                 |
-| FreeBSD, OpenBSD | Clang 8                      | amd64                 |
+| OS               | Compiler                     | Arch                    | Comments                   |
+|------------------|------------------------------|-------------------------|----------------------------|
+| Linux            | GNU 9                        | aarch64, ppc64le, s390x | sasl, coverage, graviton2  |
+| Linux            | GNU 7/8/9/10, Clang 6/8/9/10 | amd64                   | sasl, coverage, sanitizers |
+| MacOS            | AppleClang 12                | amd64                   | sasl, coverage             |
+| FreeBSD, OpenBSD | Clang 8                      | amd64                   | sasl, coverage             |
+| Windows          | MSVC 16                      | amd64                   | no sasl, no tests          |
+| Solaris          | SunPro 12.5                  | amd64                   | no sasl, no tests, manually|
 
 libmemcached has been tested against [memcached](https://github.com/memcached/memcached) v1.5 and v1.6.
 
 ## ChangeLog
 
 Check out the latest [releases](https://github.com/m6w6/libmemcached/releases)
-or the bundled [ChangeLog](./ChangeLog.md) for a comprehensive list of changes.
+or the bundled [ChangeLog](./ChangeLog-1.1.md) for a comprehensive list of changes.
 
 ## License
 
