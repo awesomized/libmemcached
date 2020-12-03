@@ -80,10 +80,6 @@ if(BUILD_DOCS)
         CACHE STRING "append verbatim code to sphinx' conf.py")
 endif()
 
-# legacy
-
-set(HAVE_VISIBILITY 1)
-
 # modules
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake")

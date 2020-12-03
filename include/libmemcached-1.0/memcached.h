@@ -34,6 +34,13 @@
 
 #include <sys/types.h>
 
+#ifndef HAVE_PID_T
+typedef int pid_t;
+#endif
+#ifndef HAVE_SSIZE_T
+typedef long int ssize_t;
+#endif
+
 #include "libmemcached-1.0/visibility.h"
 #include "libmemcached-1.0/configure.h"
 #include "libmemcached-1.0/platform.h"

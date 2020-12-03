@@ -12,8 +12,12 @@ bison_target(CSL_PARSER csl/parser.yy ${CMAKE_CURRENT_BINARY_DIR}/csl/parser.cc
         COMPILE_FLAGS ${BISON_WARNINGS}
         )
 set_source_files_properties(${BISON_CSL_PARSER_OUTPUTS} PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+if(NOT HAVE_UNISTD_H)
+        set(FLEX_FLAGS --nounistd)
+endif()
 flex_target(CSL_SCANNER csl/scanner.l ${CMAKE_CURRENT_BINARY_DIR}/csl/scanner.cc
         DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/csl/scanner.h
+        COMPILE_FLAGS "${FLEX_FLAGS}"
         )
 set_source_files_properties(${FLEX_CSL_SCANNER_OUTPUTS} PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
 add_flex_bison_dependency(CSL_SCANNER CSL_PARSER)
@@ -91,6 +95,9 @@ set_target_properties(libmemcached PROPERTIES
         SOVERSION ${LIBMEMCACHED_SO_VERSION})
 target_compile_definitions(libmemcached PRIVATE -DBUILDING_LIBMEMCACHED)
 target_link_libraries(libmemcached PUBLIC libhashkit Threads::Threads ${CMAKE_DL_LIBS})
+if(MSVC)
+    target_link_libraries(libmemcached PUBLIC wsock32 ws2_32)
+endif()
 if(HAVE_BACKTRACE)
     target_link_libraries(libmemcached PUBLIC ${BACKTRACE})
 endif()
@@ -131,6 +138,9 @@ add_library(memcachedinternal ALIAS libmemcachedinternal)
 set_target_properties(libmemcachedinternal PROPERTIES CXX_STANDARD ${CXX_STANDARD} LIBRARY_OUTPUT_NAME memcachedinternal)
 target_compile_definitions(libmemcachedinternal PRIVATE -DBUILDING_LIBMEMCACHEDINTERNAL)
 target_link_libraries(libmemcachedinternal PUBLIC libhashkit Threads::Threads ${CMAKE_DL_LIBS})
+if(MSVC)
+    target_link_libraries(libmemcached PUBLIC wsock32 ws2_32)
+endif()
 if(HAVE_LIBSASL)
     target_link_libraries(libmemcachedinternal PUBLIC ${LIBSASL})
 endif()

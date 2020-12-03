@@ -30,7 +30,10 @@
  * host order.
  */
 #ifdef __cplusplus
+# include <cstdint>
 extern "C" {
+#else
+# include <stdint.h>
 #endif
 
 /**

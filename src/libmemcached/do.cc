@@ -17,7 +17,7 @@
 
 static memcached_return_t _vdo_udp(memcached_instance_st *instance,
                                    libmemcached_io_vector_st vector[], const size_t count) {
-#ifndef __MINGW32__
+#if HAVE_SENDMSG && HAVE_STRUCT_MSGHDR
   if (vector[0].buffer or vector[0].length) {
     return memcached_set_error(
         *instance->root, MEMCACHED_NOT_SUPPORTED, MEMCACHED_AT,

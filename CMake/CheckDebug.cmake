@@ -32,7 +32,7 @@ macro(check_sanitizer VAR NAME LIB)
     endif()
 endmacro()
 
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT MSVC)
     add_definitions(-DDEBUG=1)
     if(CMAKE_CXX_FLAGS MATCHES --coverage)
         message("-- Coverage build detected!")

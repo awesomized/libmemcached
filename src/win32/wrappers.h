@@ -59,6 +59,12 @@
 #ifndef SHUT_RDWR
 # define SHUT_RDWR SD_BOTH
 #endif
+#ifndef SHUT_WR
+# define SHUT_WR SD_SEND
+#endif
+#ifndef SHUT_RD
+# define SHUT_RD SD_RECEIVE
+#endif
 
 /* EAI_SYSTEM isn't defined anywhere... just set it to... 11? */
 #ifndef EAI_SYSTEM
@@ -75,3 +81,24 @@
 #define waitpid(a,b,c) (-1)
 #define fnmatch(a,b,c) (-1)
 #define sleep(a) Sleep(a*1000)
+
+#ifdef __cplusplus
+#  include <chrono>
+static inline int gettimeofday(struct timeval* tp, struct timezone* tzp) {
+  using clock = std::chrono::system_clock;
+  auto as_sec = [] (auto d) {
+      return std::chrono::duration_cast<std::chrono::seconds>(d);
+  };
+  auto as_usec = [] (auto d) {
+      return std::chrono::duration_cast<std::chrono::microseconds>(d);
+  };
+
+  auto now = clock::now().time_since_epoch();
+  auto sec = as_sec(now);
+  auto usec = as_usec(now - sec);
+
+  tp->tv_sec = sec.count();
+  tp->tv_usec = usec.count();
+  return 0;
+}
+#endif

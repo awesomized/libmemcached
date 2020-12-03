@@ -23,6 +23,27 @@
 
 #ifndef HAVE_UMEM_H
 
+#  ifdef _MSC_VER
+typedef SECURITY_ATTRIBUTES pthread_mutexattr_t;
+
+static inline int pthread_mutex_init(pthread_mutex_t *m, pthread_mutexattr_t *a) {
+    *m = CreateMutexA(a, FALSE, NULL);
+    return !*m;
+}
+static inline int pthread_mutex_destroy(pthread_mutex_t *m) {
+    return !CloseHandle(*m);
+}
+static inline int pthread_mutex_lock(pthread_mutex_t *m) {
+    if (WaitForSingleObject(*m, INFINITE)) {
+        return 0;
+    }
+    return GetLastError();
+}
+static inline int pthread_mutex_unlock(pthread_mutex_t *m) {
+    return !ReleaseMutex(*m);
+}
+#  endif
+
 #  ifndef NDEBUG
 #    include <signal.h>
 

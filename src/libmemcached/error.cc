@@ -191,10 +191,6 @@ memcached_return_t memcached_set_error(memcached_instance_st &self, memcached_re
   return memcached_set_error(self, rc, at, tmp);
 }
 
-#ifndef __INTEL_COMPILER
-#  pragma GCC diagnostic ignored "-Wformat-nonliteral"
-#endif
-
 memcached_return_t memcached_set_error(Memcached &memc, memcached_return_t rc, const char *at,
                                        memcached_string_t &str) {
   assert_msg(rc != MEMCACHED_ERRNO,

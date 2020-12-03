@@ -19,10 +19,15 @@
 #include <cstdint>
 #include <climits>
 #include <functional>
-#include <getopt.h>
 #include <iostream>
 #include <string>
 #include <vector>
+
+#ifdef HAVE_GETOPT_H
+#  include <getopt.h>
+#elif defined _MSC_VER
+#  include "win32/getopt.h"
+#endif
 
 #include "libmemcached/common.h"
 

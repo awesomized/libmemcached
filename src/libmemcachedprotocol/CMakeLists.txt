@@ -7,6 +7,7 @@ add_library(libmemcachedprotocol SHARED
         common.h
         handler.c
         pedantic.c
+        ../libmemcached/byteorder.cc
         )
 add_library(memcachedprotocol ALIAS libmemcachedprotocol)
 set_target_properties(libmemcachedprotocol PROPERTIES
@@ -21,6 +22,9 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL AppleClang)
 		)
 endif()
 target_link_libraries(libmemcachedprotocol PUBLIC Threads::Threads)
+if(MSVC)
+    target_link_libraries(libmemcachedprotocol PUBLIC wsock32 ws2_32)
+endif()
 target_include_directories(libmemcachedprotocol PRIVATE
         ${CMAKE_SOURCE_DIR}/src
         ${CMAKE_BINARY_DIR}/src

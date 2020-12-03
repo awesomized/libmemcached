@@ -118,21 +118,21 @@ configure_set(HAVE_HSIEH_HASH ${ENABLE_HASH_HSIEH})
 check_include(alloca.h)
 check_include(arpa/inet.h)
 check_include(dlfcn.h)
+check_include(getopt.h)
+check_include(libgen.h)
 check_include(netdb.h)
 check_include(poll.h)
 check_include(strings.h)
+check_include(sys/poll.h)
 check_include(sys/socket.h)
 check_include(sys/time.h)
 check_include(sys/un.h)
 check_include(unistd.h)
 
-if(WIN32)
-    check_include(io.h)
-    check_include(winsock2.h)
-    check_include(ws2tcpip.h)
-endif()
-
 check_type(in_port_t netinet/in.h)
+check_type(pid_t sys/types.h)
+check_type(ssize_t sys/types.h)
+check_type("struct msghdr" sys/socket.h)
 
 check_cxx_symbol(abi::__cxa_demangle cxxabi.h)
 check_symbol(fcntl fcntl.h)
@@ -142,6 +142,7 @@ check_symbol(MSG_MORE sys/socket.h)
 check_symbol(MSG_NOSIGNAL sys/socket.h)
 check_symbol(SO_RCVTIMEO sys/socket.h)
 check_symbol(SO_SNDTIMEO sys/socket.h)
+check_symbol(sendmsg sys/socket.h)
 check_symbol(setenv stdlib.h)
 check_symbol(strerror_r string.h)
 check_c_source("
@@ -152,3 +153,11 @@ check_c_source("
         }"
         HAVE_STRERROR_R_CHAR_P
 )
+
+if(WIN32)
+    check_include(io.h)
+    check_include(winsock2.h)
+    check_include(ws2tcpip.h)
+
+    check_symbol(htonll winsock2.h)
+endif()

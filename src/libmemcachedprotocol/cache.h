@@ -15,7 +15,11 @@
 
 #pragma once
 
-#include <pthread.h>
+#ifdef HAVE_PTHREAD_H
+#  include <pthread.h>
+#else
+typedef void *pthread_mutex_t;
+#endif
 
 #ifdef HAVE_UMEM_H
 #  include <umem.h>

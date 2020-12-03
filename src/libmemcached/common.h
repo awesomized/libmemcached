@@ -26,6 +26,7 @@
 #  include <cctype>
 #  include <cerrno>
 #  include <climits>
+#  include <ciso646>
 #else
 #  include <stddef.h>
 #  include <stdio.h>
@@ -34,6 +35,7 @@
 #  include <time.h>
 #  include <errno.h>
 #  include <limits.h>
+#  include <iso646.h>
 #endif
 
 #ifdef HAVE_SYS_UN_H
@@ -72,11 +74,7 @@
 #include "libmemcached/is.h"
 typedef struct memcached_st Memcached;
 
-#ifdef HAVE_POLL_H
-#  include <poll.h>
-#else
-#  include "libmemcached/poll.h"
-#endif
+#include "libmemcached/poll.h"
 
 #ifdef __cplusplus
 memcached_instance_st *memcached_instance_fetch(memcached_st *ptr, uint32_t server_key);

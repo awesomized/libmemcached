@@ -16,10 +16,12 @@
 #pragma once
 
 #ifdef __cplusplus
+#  include <cstdint>
 extern "C" {
+#else
+#  include <stdint.h>
 #endif
 
-#include <stdint.h>
 
 uint64_t memcached_ntohll(uint64_t);
 

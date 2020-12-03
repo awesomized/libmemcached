@@ -25,18 +25,6 @@
 #  define WIN32_LEAN_AND_MEAN
 #endif
 
-#ifndef _WIN32_WINNT
-#  define _WIN32_WINNT 0x0501
-#endif
-
-#ifdef __MINGW32__
-#  if (_WIN32_WINNT >= 0x0501)
-#  else
-#    undef _WIN32_WINNT
-#    define _WIN32_WINNT 0x0501
-#  endif /* _WIN32_WINNT >= 0x0501 */
-#endif   /* __MINGW32__ */
-
 #if defined(HAVE_WINSOCK2_H) && HAVE_WINSOCK2_H
 #  include <winsock2.h>
 #endif
@@ -58,26 +46,56 @@ static inline int translate_windows_error() {
   int local_errno = WSAGetLastError();
 
   switch (local_errno) {
-  case WSAEINVAL: local_errno = EINPROGRESS; break;
+  case WSAEINVAL:
+    local_errno = EINPROGRESS;
+    break;
   case WSAEALREADY:
-  case WSAEWOULDBLOCK: local_errno = EAGAIN; break;
+  case WSAEWOULDBLOCK:
+    local_errno = EAGAIN;
+    break;
 
-  case WSAECONNREFUSED: local_errno = ECONNREFUSED; break;
+  case WSAECONNREFUSED:
+    local_errno = ECONNREFUSED;
+    break;
 
-  case WSAENETUNREACH: local_errno = ENETUNREACH; break;
+  case WSAENETUNREACH:
+    local_errno = ENETUNREACH;
+    break;
 
-  case WSAETIMEDOUT: local_errno = ETIMEDOUT; break;
+  case WSAETIMEDOUT:
+    local_errno = ETIMEDOUT;
+    break;
 
-  case WSAECONNRESET: local_errno = ECONNRESET; break;
+  case WSAECONNRESET:
+    local_errno = ECONNRESET;
+    break;
 
-  case WSAEADDRINUSE: local_errno = EADDRINUSE; break;
+  case WSAEADDRINUSE:
+    local_errno = EADDRINUSE;
+    break;
 
-  case WSAEOPNOTSUPP: local_errno = EOPNOTSUPP; break;
+  case WSAEOPNOTSUPP:
+    local_errno = EOPNOTSUPP;
+    break;
 
-  case WSAENOPROTOOPT: local_errno = ENOPROTOOPT; break;
+  case WSAENOPROTOOPT:
+    local_errno = ENOPROTOOPT;
+    break;
 
-  default: break;
+  default:
+    break;
   }
 
   return local_errno;
+}
+
+static inline char *basename(const char *filename) {
+  static char base[MAX_PATH * 2], ext[MAX_PATH], *ptr;
+  (void) _splitpath_s(filename, NULL, 0, NULL, 0, base, MAX_PATH, ext, MAX_PATH);
+  strcat_s(base, MAX_PATH * 2 - 1, ext);
+  return base;
+}
+
+static inline char *realpath(const char *path, char real[MAX_PATH]) {
+  return _fullpath(real, path, MAX_PATH);
 }

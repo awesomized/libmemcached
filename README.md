@@ -48,6 +48,20 @@ set any preferred options.
     make
     sudo make install
 
+#### Requirements
+
+* CMake 3.9+
+* A C++11 compiler
+* GNU Bison 2.3+ and Flex
+
+##### Optional dependencies
+
+* A C++17 compiler (tests: required)
+* Intel's libtbb (tests: optional for GCC's stdlib parallelism support)
+* PThreads (tests, contrib/bin/memaslap, libmemcachedutil/pool)
+* libevent (contrib/bin/memaslap)
+* Cyrus' libsasl2 (libmemacached/sasl)
+
 ## Testing
 
 [![Codecov Badge]](https://codecov.io/gh/m6w6/libmemcached)

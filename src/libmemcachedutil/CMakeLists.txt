@@ -5,9 +5,11 @@ add_library(libmemcachedutil SHARED
         flush.cc
         pid.cc
         ping.cc
-        pool.cc
         version.cc
         )
+if(CMAKE_USE_PTHREADS_INIT)
+    target_sources(libmemcachedutil PRIVATE pool.cc)
+endif()
 add_library(memcachedutil ALIAS libmemcachedutil)
 set_target_properties(libmemcachedutil PROPERTIES
         CXX_STANDARD ${CXX_STANDARD}
@@ -19,6 +21,11 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL AppleClang)
 	set_target_properties(libmemcachedutil PROPERTIES
 		LINK_FLAGS "-Wl,-undefined,dynamic_lookup"
 		)
+endif()
+if(MSVC)
+        set_target_properties(libmemcachedutil PROPERTIES
+                LINK_FLAGS "/FORCE:UNRESOLVED"
+                )
 endif()
 target_link_libraries(libmemcachedutil PUBLIC Threads::Threads)
 if(HAVE_LIBSASL)

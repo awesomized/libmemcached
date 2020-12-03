@@ -149,7 +149,7 @@ bool client_options::parse(int argc, char **argv, char ***argp) {
 bool client_options::apply(memcached_st *memc) {
 #ifdef _WIN32
   WSADATA wsaData;
-  if (WSAStartup(MAKEWORD(2, 0), &wsaData)) {
+  if (WSAStartup(MAKEWORD(2, 2), &wsaData)) {
     std::cerr << "Socket Initialization Error.\n";
     return false;
   }

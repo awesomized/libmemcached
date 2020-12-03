@@ -17,12 +17,6 @@
 
 #include "mem_config.h"
 
-#ifdef HAVE_POLL_H
-#  include <poll.h>
-#else
-#  include "poll/poll.h"
-#endif
-
 #include <cassert>
 #include <cerrno>
 #include <cstdio>
@@ -31,14 +25,19 @@
 #include <cctype>
 #include <fcntl.h>
 #include <cinttypes>
-#include <pthread.h>
+#include <ciso646>
 #include <csignal>
 #include <sys/types.h>
 #if HAVE_UNISTD_H
 #  include <unistd.h>
 #endif
-#include "libmemcached-1.0/memcached.h"
 
+#ifndef HAVE_GETOPT_H
+#  include "../../win32/getopt.h"
+#endif
+
+#include "libmemcached-1.0/memcached.h"
+#include "libmemcached/poll.h"
 #include "libmemcached/socket.hpp"
 #include "libmemcachedprotocol-0.0/binary.h"
 #include "libmemcached/byteorder.h"
@@ -176,13 +175,13 @@ static memcached_socket_t connect_server(const char *hostname, const char *port)
   return sock;
 }
 
-static ssize_t timeout_io_op(memcached_socket_t fd, short direction, void *buf, size_t len) {
+static ssize_t timeout_io_op(memcached_socket_t fd, short direction, const char *buf, size_t len) {
   ssize_t ret;
 
   if (direction == POLLOUT) {
     ret = send(fd, buf, len, 0);
   } else {
-    ret = recv(fd, buf, len, 0);
+    ret = recv(fd, const_cast<char *>(buf), len, 0);
   }
 
   if (ret == SOCKET_ERROR && get_socket_errno() == EWOULDBLOCK) {
@@ -196,7 +195,7 @@ static ssize_t timeout_io_op(memcached_socket_t fd, short direction, void *buf, 
       if (direction == POLLOUT) {
         ret = send(fd, buf, len, 0);
       } else {
-        ret = recv(fd, buf, len, 0);
+        ret = recv(fd, const_cast<char *>(buf), len, 0);
       }
     } else if (err == 0) {
       errno = ETIMEDOUT;
@@ -251,7 +250,7 @@ static enum test_return retry_write(const void *buf, size_t len) {
 
   do {
     size_t num_bytes = len - offset;
-    ssize_t nw = timeout_io_op(sock, POLLOUT, (void *) (ptr + offset), num_bytes);
+    ssize_t nw = timeout_io_op(sock, POLLOUT, (ptr + offset), num_bytes);
     if (nw == -1) {
       verify(get_socket_errno() == EINTR || get_socket_errno() == EAGAIN);
     } else {
@@ -1882,7 +1881,14 @@ int main(int argc, char **argv) {
     return EXIT_FAILURE;
   }
 
-  //initialize_sockets();
+  #ifdef _WIN32
+  WSADATA wsaData;
+  if (WSAStartup(MAKEWORD(2, 2), &wsaData)) {
+    fprintf(stderr, "Socket Initialization Error.\n");
+    return EXIT_FAILURE;
+  }
+#endif // _WIN32
+
   sock = connect_server(hostname, port);
   if (sock == INVALID_SOCKET) {
     fprintf(stderr, "Failed to connect to <%s:%s>: %s\n", hostname, port,
@@ -1957,6 +1963,10 @@ int main(int argc, char **argv) {
   } else {
     fprintf(stderr, "%d of %d tests failed\n", failed, total);
   }
+
+#ifdef _WIN32
+  WSACleanup();
+#endif
 
   return (failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

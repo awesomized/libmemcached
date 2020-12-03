@@ -59,7 +59,7 @@ static memcached_return_t connect_poll(memcached_instance_st *server, const int 
   while (--loop_max) // Should only loop on cases of ERESTART or EINTR
   {
     int number_of;
-    if ((number_of = poll(fds, 1, server->root->connect_timeout)) == -1) {
+    if ((number_of = poll(fds, 1, server->root->connect_timeout)) == SOCKET_ERROR) {
       int local_errno = get_socket_errno(); // We cache in case closesocket() modifies errno
       switch (local_errno) {
 #ifdef __linux__
@@ -90,7 +90,7 @@ static memcached_return_t connect_poll(memcached_instance_st *server, const int 
     }
 
     if (number_of == 0) {
-      if (connection_error == EINPROGRESS) {
+      if (connection_error != EALREADY) {
         int err;
         socklen_t len = sizeof(err);
         if (getsockopt(server->fd, SOL_SOCKET, SO_ERROR, (char *) &err, &len) == -1) {
@@ -138,7 +138,7 @@ static memcached_return_t connect_poll(memcached_instance_st *server, const int 
     }
     assert(fds[0].revents & POLLOUT);
 
-    if (fds[0].revents & POLLOUT and connection_error == EINPROGRESS) {
+    if (fds[0].revents & POLLOUT and connection_error != EALREADY) {
       int err;
       socklen_t len = sizeof(err);
       if (getsockopt(server->fd, SOL_SOCKET, SO_ERROR, (char *) &err, &len) == -1) {
@@ -521,6 +521,7 @@ static memcached_return_t network_connect(memcached_instance_st *server) {
 #if EWOULDBLOCK != EAGAIN
     case EWOULDBLOCK:
 #endif
+    case EAGAIN:
     case EINPROGRESS: // nonblocking mode - first return
     case EALREADY:    // nonblocking mode - subsequent returns
     {

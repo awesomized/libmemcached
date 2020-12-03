@@ -22,7 +22,7 @@
 #  endif
 #  include <time.h>
 #  if HAVE_STRINGS_H
-#    include <strings.h>
+#    include <cstrings>
 #  endif
 
 int poll(struct pollfd fds[], nfds_t nfds, int tmo) {
@@ -49,7 +49,7 @@ int poll(struct pollfd fds[], nfds_t nfds, int tmo) {
     }
   }
 
-  struct timeval timeout = {.tv_sec = tmo / 1000, .tv_usec = (tmo % 1000) * 1000};
+  struct timeval timeout = {tmo / 1000, (tmo % 1000) * 1000};
   struct timeval *tp = &timeout;
   if (tmo == -1) {
     tp = NULL;

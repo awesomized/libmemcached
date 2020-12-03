@@ -15,9 +15,15 @@
 
 #pragma once
 
-#if defined(_WIN32)
-
-#  include <winsock2.h>
+#if defined HAVE_SYS_POLL_H
+#  include <sys/poll.h>
+#elif defined HAVE_POLL_H
+#  include <poll.h>
+#elif defined _WIN32
+#  include "windows.hpp"
+#  define poll WSAPoll
+typedef int nfds_t;
+#elif !defined _MSC_VER
 
 #  ifdef __cplusplus
 extern "C" {

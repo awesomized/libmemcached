@@ -25,9 +25,19 @@
 #include <cerrno>
 #include <climits>
 #include <cstdlib>
-#include <libgen.h>
+#if HAVE_LIBGEN_H
+#  include <libgen.h>
+#endif
 #include <fstream>
 #include <sstream>
+
+#ifndef PATH_MAX
+#  ifdef MAX_PATH
+#    define PATH_MAX MAX_PATH
+#  else
+#    define PATH_MAX 256
+#  endif
+#endif
 
 struct memcp_file {
   enum class type {
@@ -130,7 +140,7 @@ static bool path2key(const client_options &opt, memcp_file &file, char **path) {
   } else if (file.key == memcp_file::type::relative) {
     *path = file.path;
   } else {
-    *path = basename((file.path));
+    *path = basename(file.path);
   }
   return true;
 }

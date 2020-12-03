@@ -22,6 +22,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cmath>
+#include <ciso646>
 
 #ifndef __WORDSIZE
 #  ifdef __MINGW32__

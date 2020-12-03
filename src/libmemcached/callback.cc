@@ -16,10 +16,6 @@
 #include "libmemcached/common.h"
 #include <sys/types.h>
 
-#ifndef __INTEL_COMPILER
-#  pragma GCC diagnostic ignored "-Wstrict-aliasing"
-#endif
-
 /*
   These functions provide data and function callback support
 */

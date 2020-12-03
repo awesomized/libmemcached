@@ -16,8 +16,16 @@
 #pragma once
 
 #include <sys/types.h>
-#if !defined(__cplusplus)
+#ifndef HAVE_SSIZE_T
+typedef long int ssize_t;
+#endif
+
+#ifndef __cplusplus
 #  include <stdbool.h>
+#  include <stdint.h>
+#  include <stddef.h>
+#else
+#  include <cstdint>
 #endif
 
 #include "libmemcached-1.0/visibility.h"

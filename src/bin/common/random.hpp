@@ -17,6 +17,7 @@
 
 #include "time.hpp"
 #include <random>
+#undef max
 
 class random64 {
 public:
@@ -27,8 +28,8 @@ public:
   , dst{}
   {}
 
-  typ operator()(typ min = 0, typ max = std::numeric_limits<typ>::max()) {
-    return (dst(gen) % (max - min)) + min;
+  typ operator()(typ min_ = 0, typ max_ = std::numeric_limits<typ>::max()) {
+    return (dst(gen) % (max_ - min_)) + min_;
   }
 
   void fill(char *buf, size_t len,

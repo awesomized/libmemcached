@@ -15,6 +15,17 @@
 
 #pragma once
 
+#ifdef __cplusplus
+# include <cstdint>
+extern "C" {
+#else
+# include <stdint.h>
+#endif
+
+#ifdef _MSC_VER
+# undef interface
+#endif
+
 /**
  * Callback to send data back from a successful GET/GETQ/GETK/GETKQ command
  *
@@ -362,3 +373,7 @@ typedef struct {
     memcached_binary_protocol_callback_v1_st v1;
   } interface;
 } memcached_binary_protocol_callback_st;
+
+#ifdef __cplusplus
+}
+#endif
