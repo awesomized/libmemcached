@@ -232,12 +232,12 @@ void ms_dump_format_stats(ms_stat_t *stat, int run_time, int freq, int obj_size)
          "Geo_dist");
 
   printf("%-8s %-8d %-12llu %-12lld %-10.1f %-10lld %-8lld %-10lld %-10lld %-10.2f %.2f\n",
-         "Period", freq, (long long) diff_events, (long long) period_tps, global_rate,
+         "Period", freq, (long long) diff_events, (long long) period_tps, period_rate,
          (long long) (stat->get_miss - stat->pre_get_miss), (long long) stat->period_min_time,
          (long long) stat->period_max_time, (long long) period_average, period_std, period_log);
 
   printf("%-8s %-8d %-12llu %-12lld %-10.1f %-10lld %-8lld %-10lld %-10lld %-10.2f %.2f\n\n",
-         "Global", run_time, (long long) events, (long long) global_tps, period_rate,
+         "Global", run_time, (long long) events, (long long) global_tps, global_rate,
          (long long) stat->get_miss, (long long) stat->min_time, (long long) stat->max_time,
          (long long) global_average, global_std, global_log);
 
