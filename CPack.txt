@@ -1,26 +1,15 @@
-# options
+# default options
 
-# DEBs
-if(EXISTS /usr/bin/dpkg)
-    message(STATUS "Enabling Debian packages")
-    set(CPACK_BINARY_DEB ON)
-endif()
-
-# BSDs
-if(CMAKE_SYSTEM_NAME MATCHES BSD AND EXISTS CPackFreeBSD.txt)
-    message(STATUS "Enabling FreeBSD packages")
-    set(CPACK_BINARY_FREEBSD ON)
-    include(CPackFreeBSD.txt)
-endif()
-
-# RPMs
-if(EXISTS /usr/bin/dnf OR EXISTS /usr/bin/yum OR EXISTS /usr/bin/rpm-build)
-    message(STATUS "Enabling RPM packages")
-    set(CPACK_BINARY_RPM ON)
-endif()
-
-if (EXISTS CPackNSIS.txt)
-    include(CPackNSIS.txt)
+macro(cpack_include_if GENERATOR)
+    message(STATUS "Checking ${GENERATOR} package configuration ...")
+    if(EXISTS ${CMAKE_SOURCE_DIR}/CPack${GENERATOR}.txt)
+        message(STATUS "  Sourcing ${CMAKE_SOURCE_DIR}/CPack${GENERATOR}.txt")
+        include(${CMAKE_SOURCE_DIR}/CPack${GENERATOR}.txt)
+    elseif(EXISTS ${CMAKE_BINARY_DIR}/CPack${GENERATOR}.txt)
+        message(STATUS "  Sourcing ${CMAKE_BINARY_DIR}/CPack${GENERATOR}.txt")
+        include(${CMAKE_BINARY_DIR}/CPack${GENERATOR}.txt)
+    endif()
+endmacro()
 
 # shell installer
 set(CPACK_BINARY_STGZ ${UNIX})
@@ -31,6 +20,8 @@ set(CPACK_BINARY_TGZ ${UNIX})
 set(CPACK_BINARY_TXZ 0)
 set(CPACK_BINARY_TZ 0)
 set(CPACK_BINARY_ZIP ${WIN32})
+set(CPACK_BINARY_NSIS ${WIN32})
+set(CPACK_BINARY_NUGET ${WIN32})
 
 # source archive
 set(CPACK_SOURCE_TBZ2 0)
@@ -38,6 +29,21 @@ set(CPACK_SOURCE_TGZ ${UNIX})
 set(CPACK_SOURCE_TXZ 0)
 set(CPACK_SOURCE_TZ 0)
 set(CPACK_SOURCE_ZIP ${WIN32})
+
+# DEBs
+if(EXISTS /usr/bin/dpkg)
+    cpack_include_if(DEB)
+endif()
+
+# BSDs
+if(CMAKE_SYSTEM_NAME MATCHES BSD)
+    cpack_include_if(BSD)
+endif()
+
+# RPMs
+if(EXISTS /usr/bin/dnf OR EXISTS /usr/bin/yum OR EXISTS /usr/bin/rpmbuild)
+    cpack_include_if(RPM)
+endif()
 
 # project internals
 set(CPACK_PACKAGE_VENDOR ${CMAKE_PROJECT_HOMEPAGE_URL})
@@ -47,4 +53,5 @@ set(CPACK_PACKAGE_CHECKSUM SHA1)
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
 set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
 
+# keep last
 include(CPack)

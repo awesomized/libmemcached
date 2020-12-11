@@ -11,6 +11,7 @@ project(libmemcached
         HOMEPAGE_URL "https://github.com/m6w6/libmemcached"
         DESCRIPTION "libmemcached, a C/C++ memcached client library"
         )
+set(PROJECT_CONTACT "Michael Wallner <mike@php.net>")
 
 set(CXX_STANDARD 11)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
