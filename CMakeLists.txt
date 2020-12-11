@@ -8,13 +8,18 @@ include(CMakeVersions.txt)
 
 project(libmemcached
         VERSION "${LIBMEMCACHED_VERSION}"
-        DESCRIPTION "libmemcached https://github.com/m6w6/libmemcached"
+        HOMEPAGE_URL "https://github.com/m6w6/libmemcached"
+        DESCRIPTION "libmemcached, a C/C++ memcached client library"
         )
 
 set(CXX_STANDARD 11)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 include(CMakeConfig.txt)
+
+if(BUILD_DOCS OR BUILD_DOCSONLY)
+    add_subdirectory(docs)
+endif()
 
 if(NOT BUILD_DOCSONLY)
 
@@ -44,10 +49,7 @@ if(NOT BUILD_DOCSONLY)
 
     # keep last
     configure_file(${CONFIGURE_FILE_IN} ${CONFIGURE_FILE_OUT} @ONLY)
-endif()
-
-if(BUILD_DOCS OR BUILD_DOCSONLY)
-    add_subdirectory(docs)
+    include(CPack.txt)
 endif()
 
 if(ENV{INVALID_CONFIGURATION})
