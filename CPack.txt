@@ -19,8 +19,11 @@ if(EXISTS /usr/bin/dnf OR EXISTS /usr/bin/yum OR EXISTS /usr/bin/rpm-build)
     set(CPACK_BINARY_RPM ON)
 endif()
 
+if (EXISTS CPackNSIS.txt)
+    include(CPackNSIS.txt)
+
 # shell installer
-set(CPACK_BINARY_STGZ ON)
+set(CPACK_BINARY_STGZ ${UNIX})
 
 # binary archive
 set(CPACK_BINARY_TBZ2 0)
