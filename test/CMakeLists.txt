@@ -60,10 +60,10 @@ target_link_libraries(runtests PRIVATE libhashkit libmemcachedinternal libmemcac
 
 # parallelism
 if(NOT (thread IN_LIST ENABLE_SANITIZERS))
-    include(CheckTbb)
-endif()
-if(HAVE_TBB)
-    target_link_libraries(runtests PRIVATE ${LIBTBB})
+    include(CheckCpp17Parallelism)
+    if(HAVE_CPP17_PARALLELISM)
+        target_link_libraries(runtests PRIVATE cpp17::parallelism)
+    endif()
 endif()
 
 add_dependencies(runtests ${CLIENTS})

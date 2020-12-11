@@ -27,7 +27,8 @@ if(HAVE_LIBTBB)
                 }
                 "
                 HAVE_TBB
-        )
+                )
+
     endif()
     cmake_pop_check_state()
 endif()
