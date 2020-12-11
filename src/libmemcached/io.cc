@@ -60,7 +60,7 @@ static bool repack_input_buffer(memcached_instance_st *instance) {
           case EWOULDBLOCK:
 #endif
           case EAGAIN:
-#ifdef __linux
+#ifdef HAVE_ERESTART
           case ERESTART:
 #endif
             break; // No IO is fine, we can just move on
@@ -209,7 +209,7 @@ static memcached_return_t io_wait(memcached_instance_st *instance, const short e
     int local_errno = get_socket_errno(); // We cache in case memcached_quit_server() modifies errno
     assert_msg(active_fd == -1, "poll() returned an unexpected value");
     switch (local_errno) {
-#ifdef __linux
+#ifdef ERESTART
     case ERESTART:
 #endif
     case EINTR:
@@ -367,7 +367,7 @@ static memcached_return_t _io_fill(memcached_instance_st *instance) {
       case EWOULDBLOCK:
 #endif
       case EAGAIN:
-#ifdef __linux
+#ifdef HAVE_ERESTART
       case ERESTART:
 #endif
       {
@@ -496,7 +496,7 @@ memcached_return_t memcached_io_slurp(memcached_instance_st *instance) {
       case EWOULDBLOCK:
 #endif
       case EAGAIN:
-#ifdef __linux
+#ifdef ERESTART
       case ERESTART:
 #endif
         if (memcached_success(io_wait(instance, POLLIN))) {

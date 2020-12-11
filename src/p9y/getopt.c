@@ -110,7 +110,7 @@ char    *optarg;		/* argument associated with option */
 #define	INORDER 	(int)1
 
 #ifndef __CYGWIN__
-#define __progname __argv[0]
+#define progname __argv[0]
 #else
 extern char __declspec(dllimport) *__progname;
 #endif
@@ -145,7 +145,7 @@ static const char illoptstring[] = "unknown option -- %s";
 static void
 _vwarnx(const char *fmt,va_list ap)
 {
-  (void)fprintf(stderr,"%s: ",__progname);
+  (void)fprintf(stderr,"%s: ", progname);
   if (fmt != NULL)
     (void)vfprintf(stderr,fmt,ap);
   (void)fprintf(stderr,"\n");

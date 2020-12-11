@@ -135,7 +135,7 @@ struct memcached_instance_st {
   }
 };
 
-memcached_instance_st *__instance_create_with(memcached_st *memc, memcached_instance_st *self,
+memcached_instance_st *instance_create_with(memcached_st *memc, memcached_instance_st *self,
                                               const memcached_string_t &_hostname,
                                               const in_port_t port, uint32_t weight,
                                               const memcached_connection_t type);
@@ -143,4 +143,4 @@ memcached_instance_st *__instance_create_with(memcached_st *memc, memcached_inst
 memcached_return_t memcached_instance_push(memcached_st *ptr, const memcached_instance_st *,
                                            uint32_t);
 
-void __instance_free(memcached_instance_st *);
+void instance_free(memcached_instance_st *);

@@ -72,7 +72,7 @@ static memcached_server_st *_server_create(memcached_server_st *self, const Memc
   return self;
 }
 
-memcached_server_st *__server_create_with(Memcached *memc, memcached_server_st *allocated_instance,
+memcached_server_st *server_create_with(Memcached *memc, memcached_server_st *self,
                                           const memcached_string_t &hostname, const in_port_t port,
                                           uint32_t weight, const memcached_connection_t type) {
   if (memcached_is_valid_servername(hostname) == false) {
@@ -81,18 +81,18 @@ memcached_server_st *__server_create_with(Memcached *memc, memcached_server_st *
     return NULL;
   }
 
-  allocated_instance = _server_create(allocated_instance, memc);
+  self = _server_create(self, memc);
 
-  if (allocated_instance == NULL) {
+  if (self == NULL) {
     return NULL;
   }
 
-  _server_init(allocated_instance, const_cast<Memcached *>(memc), hostname, port, weight, type);
+  _server_init(self, const_cast<Memcached *>(memc), hostname, port, weight, type);
 
-  return allocated_instance;
+  return self;
 }
 
-void __server_free(memcached_server_st *self) {
+void server_free(memcached_server_st *self) {
   memcached_error_free(*self);
 
   if (memcached_is_allocated(self)) {
@@ -112,7 +112,7 @@ void memcached_server_free(memcached_server_st *self) {
     return;
   }
 
-  __server_free(self);
+  server_free(self);
 }
 
 void memcached_server_error_reset(memcached_server_st *self) {

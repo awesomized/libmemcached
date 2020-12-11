@@ -19,7 +19,7 @@
 
 #include <cassert>
 
-memcached_server_st *__server_create_with(memcached_st *memc, memcached_server_st *self,
+memcached_server_st *server_create_with(memcached_st *memc, memcached_server_st *self,
                                           const memcached_string_t &hostname, const in_port_t port,
                                           uint32_t weight, const memcached_connection_t type);
 
@@ -27,7 +27,7 @@ memcached_return_t memcached_server_add_parsed(memcached_st *ptr, const char *ho
                                                size_t hostname_length, in_port_t port,
                                                uint32_t weight);
 
-void __server_free(memcached_server_st *);
+void server_free(memcached_server_st *);
 
 static inline bool memcached_is_valid_servername(const memcached_string_t &arg) {
   return (arg.c_str != NULL or arg.size == 0) and arg.size < MEMCACHED_NI_MAXHOST;

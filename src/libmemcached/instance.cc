@@ -97,11 +97,11 @@ void memcached_instance_st::revents(short arg) {
   _events &= short(~arg);
 }
 
-memcached_instance_st *__instance_create_with(memcached_st *memc, memcached_instance_st *self,
-                                              const memcached_string_t &hostname,
+memcached_instance_st *instance_create_with(memcached_st *memc, memcached_instance_st *self,
+                                              const memcached_string_t &_hostname,
                                               const in_port_t port, uint32_t weight,
                                               const memcached_connection_t type) {
-  if (memcached_is_valid_servername(hostname) == false) {
+  if (memcached_is_valid_servername(_hostname) == false) {
     memcached_set_error(*memc, MEMCACHED_INVALID_ARGUMENTS, MEMCACHED_AT,
                         memcached_literal_param("Invalid hostname provided"));
     return NULL;
@@ -113,7 +113,7 @@ memcached_instance_st *__instance_create_with(memcached_st *memc, memcached_inst
     return NULL;
   }
 
-  _server_init(self, const_cast<memcached_st *>(memc), hostname, port, weight, type);
+  _server_init(self, const_cast<memcached_st *>(memc), _hostname, port, weight, type);
 
   if (memc and memcached_is_udp(memc)) {
     self->write_buffer_offset = UDP_DATAGRAM_HEADER_LENGTH;
@@ -123,7 +123,7 @@ memcached_instance_st *__instance_create_with(memcached_st *memc, memcached_inst
   return self;
 }
 
-void __instance_free(memcached_instance_st *self) {
+void instance_free(memcached_instance_st *self) {
   memcached_quit_server(self, false);
 
   self->clear_addrinfo();
@@ -140,7 +140,7 @@ void __instance_free(memcached_instance_st *self) {
 
 void memcached_instance_free(memcached_instance_st *self) {
   if (self) {
-    __instance_free(self);
+    instance_free(self);
   }
 }
 
@@ -226,8 +226,8 @@ static memcached_instance_st *memcached_instance_clone(memcached_instance_st *so
   }
 
   memcached_string_t hostname_ = {memcached_string_make_from_cstr(source->hostname())};
-  return __instance_create_with(source->root, NULL, hostname_, source->port(), source->weight,
-                                source->type);
+  return instance_create_with(source->root, NULL, hostname_, source->port(), source->weight,
+                              source->type);
 }
 
 void set_last_disconnected_host(memcached_instance_st *self) {

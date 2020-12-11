@@ -137,6 +137,7 @@ check_type(ssize_t sys/types.h)
 check_type("struct msghdr" sys/socket.h)
 
 check_cxx_symbol(abi::__cxa_demangle cxxabi.h)
+check_symbol(ERESTART errno.h)
 check_symbol(fcntl fcntl.h)
 check_symbol(gettimeofday sys/time.h)
 check_symbol(htonll arpa/inet.h)

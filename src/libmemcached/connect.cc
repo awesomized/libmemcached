@@ -40,7 +40,7 @@ static memcached_return_t connect_poll(memcached_instance_st *server, const int 
     if ((number_of = poll(fds, 1, server->root->connect_timeout)) == SOCKET_ERROR) {
       int local_errno = get_socket_errno(); // We cache in case closesocket() modifies errno
       switch (local_errno) {
-#ifdef __linux__
+#ifdef HAVE_ERESTART
       case ERESTART:
 #endif
       case EINTR:

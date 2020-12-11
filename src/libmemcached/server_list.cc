@@ -51,8 +51,8 @@ memcached_server_list_st memcached_server_list_append_with_weight(memcached_serv
 
   memcached_string_t _hostname = {memcached_string_make_from_cstr(hostname)};
   /* @todo Check return type */
-  if (__server_create_with(NULL, &new_host_list[count - 1], _hostname, port, weight,
-                           port ? MEMCACHED_CONNECTION_TCP : MEMCACHED_CONNECTION_UNIX_SOCKET)
+  if (server_create_with(NULL, &new_host_list[count - 1], _hostname, port, weight,
+                         port ? MEMCACHED_CONNECTION_TCP : MEMCACHED_CONNECTION_UNIX_SOCKET)
       == NULL)
   {
 #if 0
@@ -63,7 +63,7 @@ memcached_server_list_st memcached_server_list_append_with_weight(memcached_serv
   }
 
 #if 0
-  // Handset allocated since 
+  // Handset allocated since
   new_host_list->options.is_allocated= true;
 #endif
 
@@ -101,7 +101,7 @@ void memcached_server_list_free(memcached_server_list_st self) {
       assert_msg(not memcached_is_allocated(&self[x]),
                  "You have called memcached_server_list_free(), but you did not pass it a valid "
                  "memcached_server_list_st");
-      __server_free(&self[x]);
+      server_free(&self[x]);
     }
 
     libmemcached_free(self->root, self);
@@ -114,7 +114,7 @@ void memcached_instance_list_free(memcached_instance_st *self, uint32_t instance
       assert_msg(memcached_is_allocated(&self[x]) == false,
                  "You have called memcached_server_list_free(), but you did not pass it a valid "
                  "memcached_server_list_st");
-      __instance_free(&self[x]);
+      instance_free(&self[x]);
     }
 
     libmemcached_free(self->root, self);

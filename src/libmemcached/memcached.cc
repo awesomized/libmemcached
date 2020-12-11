@@ -104,7 +104,7 @@ static inline bool _memcached_init(Memcached *self) {
   return true;
 }
 
-static void __memcached_free(Memcached *ptr, bool release_st) {
+static void memcached_free_ex(Memcached *ptr, bool release_st) {
   /* If we have anything open, lets close it now */
   send_quit(ptr);
   memcached_instance_list_free(memcached_instance_list(ptr), memcached_instance_list_count(ptr));
@@ -219,7 +219,7 @@ memcached_return_t memcached_reset(memcached_st *shell) {
 
   bool stored_is_allocated = memcached_is_allocated(ptr);
   uint64_t query_id = ptr->query_id;
-  __memcached_free(ptr, false);
+  memcached_free_ex(ptr, false);
   memcached_create(ptr);
   memcached_set_allocated(ptr, stored_is_allocated);
   ptr->query_id = query_id;
@@ -256,7 +256,7 @@ void memcached_reset_last_disconnected_server(memcached_st *shell) {
 
 void memcached_free(memcached_st *ptr) {
   if (ptr) {
-    __memcached_free(ptr, true);
+    memcached_free_ex(ptr, true);
   }
 }
 

@@ -311,7 +311,7 @@ static memcached_return_t server_add(Memcached *memc, const memcached_string_t &
   memcached_instance_st *instance =
       memcached_instance_fetch(memc, memcached_server_count(memc) - 1);
 
-  if (__instance_create_with(memc, instance, hostname, port, weight, type) == NULL) {
+  if (instance_create_with(memc, instance, hostname, port, weight, type) == NULL) {
     return memcached_set_error(*memc, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
   }
 
@@ -353,8 +353,7 @@ memcached_return_t memcached_server_push(memcached_st *shell, const memcached_se
       WATCHPOINT_ASSERT(instance);
 
       memcached_string_t hostname = {memcached_string_make_from_cstr(list[x].hostname)};
-      if (__instance_create_with(ptr, instance, hostname, list[x].port, list[x].weight,
-                                 list[x].type)
+      if (instance_create_with(ptr, instance, hostname, list[x].port, list[x].weight, list[x].type)
           == NULL)
       {
         ptr->state.is_parsing = false;
@@ -404,8 +403,7 @@ memcached_return_t memcached_instance_push(memcached_st *ptr,
     WATCHPOINT_ASSERT(instance);
 
     memcached_string_t hostname = {memcached_string_make_from_cstr(list[x]._hostname)};
-    if (__instance_create_with(ptr, instance, hostname, list[x].port(), list[x].weight,
-                               list[x].type)
+    if (instance_create_with(ptr, instance, hostname, list[x].port(), list[x].weight, list[x].type)
         == NULL)
     {
       ptr->state.is_parsing = false;

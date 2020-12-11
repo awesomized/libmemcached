@@ -21,7 +21,7 @@ char *memcached_get(memcached_st *ptr, const char *key, size_t key_length, size_
   return memcached_get_by_key(ptr, NULL, 0, key, key_length, value_length, flags, error);
 }
 
-static memcached_return_t __mget_by_key_real(memcached_st *ptr, const char *group_key,
+static memcached_return_t mget_by_key_real(memcached_st *ptr, const char *group_key,
                                              size_t group_key_length, const char *const *keys,
                                              const size_t *key_length, size_t number_of_keys,
                                              const bool mget_mode);
@@ -40,8 +40,8 @@ char *memcached_get_by_key(memcached_st *shell, const char *group_key, size_t gr
   }
 
   /* Request the key */
-  *error = __mget_by_key_real(ptr, group_key, group_key_length, (const char *const *) &key,
-                              &key_length, 1, false);
+  *error = mget_by_key_real(ptr, group_key, group_key_length, (const char *const *) &key,
+                            &key_length, 1, false);
   if (ptr) {
     assert_msg(ptr->query_id == query_id + 1,
                "Programmer error, the query_id was not incremented.");
@@ -133,8 +133,8 @@ static memcached_return_t binary_mget_by_key(memcached_st *ptr, const uint32_t m
                                              const size_t *key_length, const size_t number_of_keys,
                                              const bool mget_mode);
 
-static memcached_return_t __mget_by_key_real(memcached_st *ptr, const char *group_key,
-                                             const size_t group_key_length, const char *const *keys,
+static memcached_return_t mget_by_key_real(memcached_st *ptr, const char *group_key,
+                                           size_t group_key_length, const char *const *keys,
                                              const size_t *key_length, size_t number_of_keys,
                                              const bool mget_mode) {
   bool failures_occured_in_sending = false;
@@ -297,8 +297,7 @@ memcached_return_t memcached_mget_by_key(memcached_st *shell, const char *group_
                                          size_t group_key_length, const char *const *keys,
                                          const size_t *key_length, size_t number_of_keys) {
   Memcached *ptr = memcached2Memcached(shell);
-  return __mget_by_key_real(ptr, group_key, group_key_length, keys, key_length, number_of_keys,
-                            true);
+  return mget_by_key_real(ptr, group_key, group_key_length, keys, key_length, number_of_keys, true);
 }
 
 memcached_return_t memcached_mget_execute(memcached_st *ptr, const char *const *keys,
