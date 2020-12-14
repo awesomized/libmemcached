@@ -18,6 +18,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 include(CMakeConfig.txt)
 include(GNUInstallDirs)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake")
 
 if(BUILD_DOCS OR BUILD_DOCSONLY)
     add_subdirectory(docs)

@@ -16,7 +16,7 @@ was incremented due to the following changes:
     * Source: https://github.com/m6w6/libmemcached
     * Documentation: https://m6w6.github.io/libmemcached
     * Continuous Integration:
-        * Github: https://github.com/m6w6/libmemcached/actions (Linux, MacOS **·** amd64)
+        * Github: https://github.com/m6w6/libmemcached/actions (Linux, MacOS, Windows **·** amd64)
         * Travis: https://travis-ci.org/m6w6/libmemcached (Linux **·** arm64, ppc64le, s390x)
         * Sourcehut: https://builds.sr.ht/~m6w6/libmemcached (FreeBSD, OpenBSD **·** amd64)
 
