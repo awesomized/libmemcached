@@ -57,13 +57,10 @@ include(CPack.txt)
 install(FILES
             AUTHORS
             BUGS.md
-            ChangeLog
             ChangeLog-0.md
             ChangeLog-1.0.md
             ChangeLog-1.1.md
-            ChangeLog.md
             CONTRIBUTING.md
-            COPYING
             LICENSE
             NEWS
             README.md
@@ -71,6 +68,16 @@ install(FILES
         COMPONENT doc
         DESTINATION ${CMAKE_INSTALL_DOCDIR}/
         )
+if(NOT WIN32)
+    # skip links on windows (cmake bug?)
+    install(FILES
+                ChangeLog
+                ChangeLog.md
+                COPYING
+            COMPONENT doc
+            DESTINATION ${CMAKE_INSTALL_DOCDIR}/
+            )
+endif()
 
 if(ENV{INVALID_CONFIGURATION})
     message(FATAL_ERROR "invalid configuration -- giving up")
