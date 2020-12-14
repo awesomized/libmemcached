@@ -17,6 +17,12 @@ elseif(UNIX)
         CACHE STRING "set relative rpath")
 endif()
 
+if(${CMAKE_VERSION} VERSION_LESS "3.12")
+    set(TARGET_NAMELINK_COMPONENT "")
+else()
+    set(TARGET_NAMELINK_COMPONENT NAMELINK_COMPONENT dev)
+endif()
+
 option(BUILD_TESTING        "whether to enable build of the test suite"
         $ENV{BUILD_TESTING})
 option(BUILD_DOCSONLY       "build *only* documentation"
@@ -78,14 +84,4 @@ if(BUILD_DOCS)
         CACHE STRING "comma separated list of quoted sphinx extensions")
     set(SPHINX_CONF_APPEND ""
         CACHE STRING "append verbatim code to sphinx' conf.py")
-endif()
-
-# modules
-
-include(GNUInstallDirs)
-
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake")
-
-if(NOT BUILD_DOCSONLY)
-    include(CMake/_Include.cmake)
 endif()

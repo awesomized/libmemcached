@@ -43,7 +43,7 @@ target_include_directories(libmemcachedutil PUBLIC
 install(TARGETS libmemcachedutil EXPORT libmemcachedutil-targets
         LIBRARY
         COMPONENT lib
-        NAMELINK_COMPONENT dev
+        ${TARGET_NAMELINK_COMPONENT}
         DESTINATION ${CMAKE_INSTALL_LIBDIR})
 export(EXPORT libmemcachedutil-targets NAMESPACE libmemcached::)
 install(EXPORT libmemcachedutil-targets NAMESPACE libmemcached::

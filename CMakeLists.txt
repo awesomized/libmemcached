@@ -8,21 +8,23 @@ include(CMakeVersions.txt)
 
 project(libmemcached
         VERSION "${LIBMEMCACHED_VERSION}"
-        HOMEPAGE_URL "https://github.com/m6w6/libmemcached"
         DESCRIPTION "libmemcached, a C/C++ memcached client library"
         )
+set(CMAKE_PROJECT_HOMEPAGE_URL "https://github.com/m6w6/libmemcached")
 set(PROJECT_CONTACT "Michael Wallner <mike@php.net>")
 
 set(CXX_STANDARD 11)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 include(CMakeConfig.txt)
+include(GNUInstallDirs)
 
 if(BUILD_DOCS OR BUILD_DOCSONLY)
     add_subdirectory(docs)
 endif()
 
 if(NOT BUILD_DOCSONLY)
+    include(CMake/_Include.cmake)
 
     set(CLIENTS
             memcapable

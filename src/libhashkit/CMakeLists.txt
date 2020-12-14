@@ -42,7 +42,7 @@ configure_file(hashkitcon.h.in hashkitcon.h @ONLY)
 install(TARGETS libhashkit EXPORT libhashkit-targets
         LIBRARY
         COMPONENT lib
-        NAMELINK_COMPONENT dev
+        ${TARGET_NAMELINK_COMPONENT}
         DESTINATION ${CMAKE_INSTALL_LIBDIR})
 export(EXPORT libhashkit-targets NAMESPACE libmemcached::)
 install(EXPORT libhashkit-targets NAMESPACE libmemcached::

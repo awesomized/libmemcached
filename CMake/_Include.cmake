@@ -1,3 +1,5 @@
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake")
+
 include(_Configure)
 configure_init(${CMAKE_BINARY_DIR}/mem_config.h)
 
