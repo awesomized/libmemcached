@@ -176,7 +176,9 @@
 <h1>ChangeLog v1.1<a class="headerlink" href="#changelog-v1-1" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="v-1-1-0">
 <h2>v 1.1.0<a class="headerlink" href="#v-1-1-0" title="Permalink to this headline">¶</a></h2>
-<p><strong>NOTE:</strong><span class="raw-html-m2r"><br></span>
+<blockquote>
+<div>released YYYY-MM-DD</div></blockquote>
+<p><strong>NOTE:</strong>
 This is a bug fix release, not a feature release. The minor version number
 was incremented due to the following changes:</p>
 <ul class="simple">
@@ -190,15 +192,11 @@ was incremented due to the following changes:</p>
 <li>Continuous Integration:<ul>
 <li>Github: <a class="reference external" href="https://github.com/m6w6/libmemcached/actions">https://github.com/m6w6/libmemcached/actions</a> (Linux, MacOS <strong>·</strong> amd64)</li>
 <li>Travis: <a class="reference external" href="https://travis-ci.org/m6w6/libmemcached">https://travis-ci.org/m6w6/libmemcached</a> (Linux <strong>·</strong> arm64, ppc64le, s390x)</li>
-<li>Cirrus: <a class="reference external" href="https://cirrus-ci.com/m6w6/libmemcached">https://cirrus-ci.com/m6w6/libmemcached</a> (FreeBSD <strong>·</strong> amd64)</li>
+<li>Sourcehut: <a class="reference external" href="https://builds.sr.ht/~m6w6/libmemcached">https://builds.sr.ht/~m6w6/libmemcached</a> (FreeBSD, OpenBSD <strong>·</strong> amd64)</li>
 </ul>
 </li>
 </ul>
 </li>
-</ul>
-<blockquote>
-<div>released YYYY-MM-DD</div></blockquote>
-<ul class="simple">
 <li>Fix build failure due to comparison of incompatible types in bin/memflush and bin/memstat.</li>
 <li>Fix wrong type of memcached_instance_st::server_timeout_counter_query_id from uint32_t to uint64_t.</li>
 <li>Fix memcached_dump():
@@ -269,7 +267,7 @@ build fails with bison 2.3.</li>
 <li>Fix memaslap: build fails with newer compiler versions.</li>
 <li>Fix usage of strerror_r() implementations returning pointer to char.</li>
 <li>Fix pipelining commands with memcached &gt;= 1.6.</li>
-<li>Fixed memcached_stat_get_value(): buffer overflow.</li>
+<li>Fix memcached_stat_get_value(): buffer overflow.</li>
 <li>Fix memcached_stat(): undefined behavior due to unintialized memcached_return_t.</li>
 <li>Fix SASL tests: requires SASL_PWDB_CONF.</li>
 <li>Fix bin/memaslap to idnentify itself as memaslap instead of memslap.</li>
@@ -279,6 +277,9 @@ build fails with bison 2.3.</li>
 <a class="reference external" href="https://github.com/m6w6/libmemcached/issues/64">gh #64</a> and
 <a class="reference external" href="https://github.com/m6w6/libmemcached/issues/21">gh #21</a>:
 clarify documentation on replication.</li>
+<li>Fix <a class="reference external" href="https://github.com/m6w6/libmemcached/issues/95">gh #95</a>:
+MEMCACHED_CALLBACK_GET_FAILURE and MEMCACHED_BEHAVIOR_BUFFER_REQUESTS</li>
+<li>Fix bin/memcat to output flags if requested with <code class="docutils literal notranslate"><span class="pre">--flag</span></code>.</li>
 </ul>
 <hr class="docutils" />
 <p>See <a class="reference internal" href="ChangeLog-1.0.html"><span class="doc">ChangeLog-1.0</span></a> for changes prior v1.1.</p>
