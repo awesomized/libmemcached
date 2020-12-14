@@ -29,7 +29,8 @@ env:
 
 install:
   - |
-    if test "$CMAKE_BUILT_TYPE" == "Debug"; then
+    if test $CMAKE_BUILD_TYPE == Debug
+    then
       git clone --depth 1 -b 1.6.7 https://github.com/memcached/memcached
       cd memcached
       ./autogen.sh
@@ -52,7 +53,8 @@ before_script:
 script:
   - |
     cd build
-    if test "$CMAKE_BUILD_TYPE" == "Debug"; then
+    if test $CMAKE_BUILD_TYPE == Debug
+    then
       cmake -DMEMCACHED_BINARY=/opt/bin/memcached ..
       make -j2 VERBOSE=1
       make test VERBOSE=1
@@ -66,10 +68,10 @@ script:
     fi
 
 after_failure:
-  - test "$CMAKE_BUILD_TYPE" == "Debug" && cat Testing/Temporary/LastTest.log || true
+  - test $CMAKE_BUILD_TYPE == Debug && cat Testing/Temporary/LastTest.log || true
 
 after_success:
-  - test "$CMAKE_BUILD_TYPE" == "Debug" && bash <(curl -s https://codecov.io/bash)
+  - test $CMAKE_BUILD_TYPE == Debug && bash <(curl -s https://codecov.io/bash)
 
 notifications:
   webhooks:
