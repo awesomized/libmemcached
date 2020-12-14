@@ -31,6 +31,7 @@ if(ENABLE_MEMASLAP AND CMAKE_USE_PTHREADS_INIT)
                     INSTALL_RPATH ${CMAKE_INSTALL_RPATH}/../${CMAKE_INSTALL_LIBDIR})
         endif()
         install(TARGETS memaslap
+                COMPONENT bin
                 RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
     endif()
 

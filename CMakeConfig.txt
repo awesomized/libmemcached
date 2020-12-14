@@ -82,6 +82,8 @@ endif()
 
 # modules
 
+include(GNUInstallDirs)
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake")
 
 if(NOT BUILD_DOCSONLY)

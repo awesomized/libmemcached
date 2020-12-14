@@ -37,6 +37,7 @@ function(install_public_headers DIRECTORY)
             set(HEADER "${CMAKE_CURRENT_BINARY_DIR}/${HEADER}")
         endif()
         install(FILES ${HEADER}
+                COMPONENT dev
                 DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${DIRECTORY}
                 )
     endforeach()

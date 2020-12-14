@@ -1,15 +1,18 @@
 
 install(FILES ax_libmemcached.m4
+        COMPONENT dev
         DESTINATION ${CMAKE_INSTALL_DATADIR}/aclocal
         )
 
 configure_file(example.cnf.in example.cnf @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/example.cnf
+        COMPONENT dev
         DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}
         )
 
 configure_file(libmemcached.pc.in libmemcached.pc @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libmemcached.pc
+        COMPONENT dev
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
         )
 
@@ -43,4 +46,5 @@ install(FILES
         ${CMAKE_CURRENT_BINARY_DIR}/libmemcached-version.cmake
         ${CMAKE_CURRENT_BINARY_DIR}/libmemcachedprotocol-version.cmake
         ${CMAKE_CURRENT_BINARY_DIR}/libmemcachedutil-version.cmake
+        COMPONENT dev
         DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake/)

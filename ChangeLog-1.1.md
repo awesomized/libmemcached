@@ -2,6 +2,8 @@
 
 ## v 1.1.0
 
+> released YYYY-MM-DD
+
 **NOTE:**
 This is a bug fix release, not a feature release. The minor version number
 was incremented due to the following changes:
@@ -18,7 +20,6 @@ was incremented due to the following changes:
         * Travis: https://travis-ci.org/m6w6/libmemcached (Linux **·** arm64, ppc64le, s390x)
         * Sourcehut: https://builds.sr.ht/~m6w6/libmemcached (FreeBSD, OpenBSD **·** amd64)
 
-> released YYYY-MM-DD
 
 * Fix build failure due to comparison of incompatible types in bin/memflush and bin/memstat.
 * Fix wrong type of memcached_instance_st::server_timeout_counter_query_id from uint32_t to uint64_t.

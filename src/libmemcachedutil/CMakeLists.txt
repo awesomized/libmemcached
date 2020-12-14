@@ -41,6 +41,11 @@ target_include_directories(libmemcachedutil PUBLIC
         $<INSTALL_INTERFACE:include>)
 
 install(TARGETS libmemcachedutil EXPORT libmemcachedutil-targets
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+        LIBRARY
+        COMPONENT lib
+        NAMELINK_COMPONENT dev
+        DESTINATION ${CMAKE_INSTALL_LIBDIR})
 export(EXPORT libmemcachedutil-targets NAMESPACE libmemcached::)
-install(EXPORT libmemcachedutil-targets NAMESPACE libmemcached:: DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake)
+install(EXPORT libmemcachedutil-targets NAMESPACE libmemcached::
+        COMPONENT dev
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake)

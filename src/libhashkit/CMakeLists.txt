@@ -40,9 +40,14 @@ target_include_directories(libhashkit PUBLIC
 configure_file(hashkitcon.h.in hashkitcon.h @ONLY)
 
 install(TARGETS libhashkit EXPORT libhashkit-targets
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+        LIBRARY
+        COMPONENT lib
+        NAMELINK_COMPONENT dev
+        DESTINATION ${CMAKE_INSTALL_LIBDIR})
 export(EXPORT libhashkit-targets NAMESPACE libmemcached::)
-install(EXPORT libhashkit-targets NAMESPACE libmemcached:: DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake)
+install(EXPORT libhashkit-targets NAMESPACE libmemcached::
+        COMPONENT dev
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake)
 
 install_public_headers(
         libhashkit

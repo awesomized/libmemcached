@@ -50,8 +50,27 @@ if(NOT BUILD_DOCSONLY)
 
     # keep last
     configure_file(${CONFIGURE_FILE_IN} ${CONFIGURE_FILE_OUT} @ONLY)
-    include(CPack.txt)
 endif()
+
+include(CPack.txt)
+
+install(FILES
+            AUTHORS
+            BUGS.md
+            ChangeLog
+            ChangeLog-0.md
+            ChangeLog-1.0.md
+            ChangeLog-1.1.md
+            ChangeLog.md
+            CONTRIBUTING.md
+            COPYING
+            LICENSE
+            NEWS
+            README.md
+            TODO
+        COMPONENT doc
+        DESTINATION ${CMAKE_INSTALL_DOCDIR}/
+        )
 
 if(ENV{INVALID_CONFIGURATION})
     message(FATAL_ERROR "invalid configuration -- giving up")

@@ -8,7 +8,12 @@ ChangeLog v1.1
 v 1.1.0
 -------
 
-**NOTE:**\ :raw-html-m2r:`<br>`
+..
+
+   released YYYY-MM-DD
+
+
+**NOTE:**
 This is a bug fix release, not a feature release. The minor version number
 was incremented due to the following changes:
 
@@ -17,7 +22,7 @@ was incremented due to the following changes:
 * Ported test suite to Catch2.
 * Build requires C++11 compiler support.
 * Tests require C++17 compiler support.
-* Moved the project from launchpad to github: 
+* Moved the project from launchpad to github:
 
   * Source: https://github.com/m6w6/libmemcached
   * Documentation: https://m6w6.github.io/libmemcached
@@ -25,12 +30,7 @@ was incremented due to the following changes:
 
     * Github: https://github.com/m6w6/libmemcached/actions (Linux, MacOS **·** amd64)
     * Travis: https://travis-ci.org/m6w6/libmemcached (Linux **·** arm64, ppc64le, s390x)
-    * Cirrus: https://cirrus-ci.com/m6w6/libmemcached (FreeBSD **·** amd64)
-
-..
-
-   released YYYY-MM-DD
-
+    * Sourcehut: https://builds.sr.ht/~m6w6/libmemcached (FreeBSD, OpenBSD **·** amd64)
 
 
 * Fix build failure due to comparison of incompatible types in bin/memflush and bin/memstat.
@@ -58,7 +58,7 @@ was incremented due to the following changes:
 * Fix `gh #62 <https://github.com/m6w6/libmemcached/issues/62>`_\ :
   uint32_t overflow cause busy loop.
 * Removed restriction of UDP+IPv6.
-* Fix SERVER_ERROR_MEMORY_ALLOCATION_FAILURE: 
+* Fix SERVER_ERROR_MEMORY_ALLOCATION_FAILURE:
   recognize more strings returned by the server.
 * Fix `gh #13 <https://github.com/m6w6/libmemcached/issues/13>`_\ :
   reset continuum counter after freeing them.
@@ -103,7 +103,7 @@ was incremented due to the following changes:
 * Fix memaslap: build fails with newer compiler versions.
 * Fix usage of strerror_r() implementations returning pointer to char.
 * Fix pipelining commands with memcached >= 1.6.
-* Fixed memcached_stat_get_value(): buffer overflow.
+* Fix memcached_stat_get_value(): buffer overflow.
 * Fix memcached_stat(): undefined behavior due to unintialized memcached_return_t.
 * Fix SASL tests: requires SASL_PWDB_CONF.
 * Fix bin/memaslap to idnentify itself as memaslap instead of memslap.
@@ -113,6 +113,9 @@ was incremented due to the following changes:
   `gh #64 <https://github.com/m6w6/libmemcached/issues/64>`_ and
   `gh #21 <https://github.com/m6w6/libmemcached/issues/21>`_\ :
   clarify documentation on replication.
+* Fix `gh #95 <https://github.com/m6w6/libmemcached/issues/95>`_\ :
+  MEMCACHED_CALLBACK_GET_FAILURE and MEMCACHED_BEHAVIOR_BUFFER_REQUESTS
+* Fix bin/memcat to output flags if requested with ``--flag``.
 
 ----
 

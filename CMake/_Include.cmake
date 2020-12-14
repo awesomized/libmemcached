@@ -6,7 +6,6 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 endif()
 
 include(CMakePushCheckState)
-include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
 macro(make_have_identifier NAME ID)

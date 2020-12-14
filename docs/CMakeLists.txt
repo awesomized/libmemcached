@@ -32,8 +32,13 @@ else()
     configure_file("conf.py.in" "conf.py" @ONLY)
     add_subdirectory(source)
 
+    file(GLOB_RECURSE DOCS_SOURCE
+            CONFIGURE_DEPENDS
+            "*.rst")
+
     if(BUILD_DOCS_HTML)
-        add_custom_target(html
+        add_custom_command(
+                OUTPUT "${SPHINX_HTML_DIR}"
                 COMMAND
                 ${SPHINX_EXECUTABLE}
                 -q -b html
@@ -42,12 +47,21 @@ else()
                 ${SPHINX_OPTIONS}
                 "${SPHINX_SOURCE_DIR}"
                 "${SPHINX_HTML_DIR}"
+                COMMAND ${CMAKE_COMMAND} -E touch html
                 BYPRODUCTS ${SPHINX_HTML_DIR}
+                DEPENDS "${DOCS_SOURCE}"
                 )
+        add_custom_target(html ALL DEPENDS "${SPHINX_HTML_DIR}")
+
+        install(DIRECTORY ${SPHINX_HTML_DIR}/
+                COMPONENT doc
+                DESTINATION ${CMAKE_INSTALL_DOCDIR}/html)
     endif()
 
     if(BUILD_DOCS_MAN)
-        add_custom_target(man ALL
+        add_custom_command(
+                OUTPUT ${SPHINX_MAN_DIR}
+                COMMAND
                 ${SPHINX_EXECUTABLE}
                 -q -b man
                 -c "${SPHINX_BUILD_DIR}"
@@ -55,8 +69,11 @@ else()
                 ${SPHINX_OPTIONS}
                 "${SPHINX_SOURCE_DIR}"
                 "${SPHINX_MAN_DIR}"
+                COMMAND ${CMAKE_COMMAND} -E touch man
                 BYPRODUCTS ${SPHINX_MAN_DIR}
+                DEPENDS "${DOCS_SOURCE}"
                 )
+        add_custom_target(man ALL DEPENDS "${SPHINX_MAN_DIR}")
 
         set(MAN_EXT "")
         if(BUILD_DOCS_MANGZ)
@@ -76,10 +93,12 @@ else()
         endif()
 
         install(DIRECTORY ${SPHINX_MAN_DIR}/
+                COMPONENT doc
                 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1
                 FILES_MATCHING PATTERN *.1${MAN_EXT}
                 )
         install(DIRECTORY ${SPHINX_MAN_DIR}/
+                COMPONENT doc
                 DESTINATION ${CMAKE_INSTALL_MANDIR}/man3
                 FILES_MATCHING PATTERN *.3${MAN_EXT}
                 )

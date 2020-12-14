@@ -10,6 +10,7 @@ foreach(CLIENT IN LISTS CLIENTS)
                 INSTALL_RPATH ${CMAKE_INSTALL_RPATH}/../${CMAKE_INSTALL_LIBDIR})
     endif()
     install(TARGETS ${CLIENT}
+            COMPONENT bin
             RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 endforeach()
 

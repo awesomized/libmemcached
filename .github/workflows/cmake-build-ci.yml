@@ -97,6 +97,9 @@ jobs:
         run: make -C build -j2 test
       - name: Install
         run: make -C build -j2 install DESTDIR=/tmp
+      - name: Package
+        if: ${{ env.CMAKE_BUILD_TYPE == 'Release' && env.CC_VER == 'cur' }}
+        run: make -C build package
       - name: Failed tests log
         if: ${{ failure() }}
         run: cat build/Testing/Temporary/LastTest.log || true
@@ -174,6 +177,9 @@ jobs:
         run: make -C build -j2 test
       - name: Install
         run: make -C build -j2 install DESTDIR=/tmp
+      - name: Package
+        if: ${{ env.CMAKE_BUILD_TYPE == 'Release' && env.CC_VER == 'cur' }}
+        run: make -C build package
       - name: Failed tests log
         if: ${{ failure() }}
         run: cat build/Testing/Temporary/LastTest.log || true
@@ -250,6 +256,9 @@ jobs:
         run: make -C build -j2 test
       - name: Install
         run: make -C build -j2 install DESTDIR=/tmp
+      - name: Package
+        if: ${{ env.CMAKE_BUILD_TYPE == 'Release' && env.CC_VER == 'cur' }}
+        run: make -C build package
       - name: Failed tests log
         if: ${{ failure() }}
         run: cat build/Testing/Temporary/LastTest.log || true
@@ -327,6 +336,9 @@ jobs:
         run: make -C build -j2 test
       - name: Install
         run: make -C build -j2 install DESTDIR=/tmp
+      - name: Package
+        if: ${{ env.CMAKE_BUILD_TYPE == 'Release' && env.CC_VER == 'cur' }}
+        run: make -C build package
       - name: Failed tests log
         if: ${{ failure() }}
         run: cat build/Testing/Temporary/LastTest.log || true
@@ -368,6 +380,8 @@ jobs:
         run: cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }}
       - name: Install
         run: cmake --install build --prefix installed --config ${{ env.CMAKE_BUILD_TYPE }}
+      - name: Package
+        run: cmake -E chdir build cpack
 
   # release builds
   release:
@@ -500,6 +514,9 @@ jobs:
         run: make -C build -j2 test
       - name: Install
         run: make -C build -j2 install DESTDIR=/tmp
+      - name: Package
+        if: ${{ env.CMAKE_BUILD_TYPE == 'Release' && env.CC_VER == 'cur' }}
+        run: make -C build package
       - name: Failed tests log
         if: ${{ failure() }}
         run: cat build/Testing/Temporary/LastTest.log || true
