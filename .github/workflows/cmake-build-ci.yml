@@ -54,11 +54,11 @@ jobs:
       - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get install \
+          sudo apt-get install -my \
             libevent-dev \
             libsasl2-dev \
             libtbb-dev \
-            python3-m2r \
+            m2r \
             python3-sphinx \
             ${INSTALL_MEMCACHED} \
             ${INSTALL_CC} ${INSTALL_CXX}
@@ -146,11 +146,11 @@ jobs:
       - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get install \
+          sudo apt-get install -my \
             libevent-dev \
             libsasl2-dev \
             libtbb-dev \
-            python3-m2r \
+            m2r \
             python3-sphinx \
             ${INSTALL_MEMCACHED} \
             ${INSTALL_CC} ${INSTALL_CXX}
@@ -237,11 +237,11 @@ jobs:
       - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get install \
+          sudo apt-get install -my \
             libevent-dev \
             libsasl2-dev \
             libtbb-dev \
-            python3-m2r \
+            m2r \
             python3-sphinx \
             ${INSTALL_MEMCACHED} \
             ${INSTALL_CC} ${INSTALL_CXX}
@@ -331,11 +331,11 @@ jobs:
       - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get install \
+          sudo apt-get install -my \
             libevent-dev \
             libsasl2-dev \
             libtbb-dev \
-            python3-m2r \
+            m2r \
             python3-sphinx \
             ${INSTALL_MEMCACHED} \
             ${INSTALL_CC} ${INSTALL_CXX}
@@ -409,6 +409,7 @@ jobs:
     name: rel-mac (macos-10.15, clang, cur)
     runs-on: macos-10.15 #
     env:
+      CMAKE_BUILD_TYPE:   "Release"
       ENABLE_SASL:        "OFF"
       BUILD_DOCS_MANGZ:   "ON"
       OS_VND:   macOS #
@@ -421,11 +422,11 @@ jobs:
       - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get install \
+          sudo apt-get install -my \
             libevent-dev \
             libsasl2-dev \
             libtbb-dev \
-            python3-m2r \
+            m2r \
             python3-sphinx \
             ${INSTALL_MEMCACHED} \
             ${INSTALL_CC} ${INSTALL_CXX}
@@ -498,6 +499,7 @@ jobs:
     name: win-msvc (windows-2019, msvc, cur)
     runs-on: windows-2019 #
     env:
+      CMAKE_BUILD_TYPE: "Release"
       ENABLE_SASL:      "OFF"
       BISON_ROOT:       "C:/msys64/usr"
       FLEX_ROOT:        "C:/msys64/usr"
@@ -542,6 +544,7 @@ jobs:
     runs-on: ${{ matrix.os_ver }}
     continue-on-error: ${{ matrix.cc_vnd == 'clang' }}
     env:
+      CMAKE_BUILD_TYPE: "Release"
       BUILD_DOCS_MANGZ: "ON"
       OS_VND: Linux
       OS_VER: ${{ matrix.os_ver }}
@@ -620,11 +623,11 @@ jobs:
       - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get install \
+          sudo apt-get install -my \
             libevent-dev \
             libsasl2-dev \
             libtbb-dev \
-            python3-m2r \
+            m2r \
             python3-sphinx \
             ${INSTALL_MEMCACHED} \
             ${INSTALL_CC} ${INSTALL_CXX}

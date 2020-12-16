@@ -6,6 +6,7 @@ packages:
   - libevent
   - memcached--
   - pkgconf
+  - pigz
   - py3-sphinx
   - py3-m2r
   - rsync

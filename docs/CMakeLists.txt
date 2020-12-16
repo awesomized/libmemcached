@@ -87,7 +87,7 @@ else()
                 set(MAN_EXT ".gz")
                 add_custom_target(man_gz ALL
                         ${GZIP} -kf ${SPHINX_MAN_DIR}/*.{1,3}
-                        DEPENDS man
+                        DEPENDS ${SPHINX_MAN_DIR}
                         )
             endif()
         endif()

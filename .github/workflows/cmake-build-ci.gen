@@ -136,11 +136,11 @@ function steps_getdeps() {
       - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get install \
+          sudo apt-get install -my \
             libevent-dev \
             libsasl2-dev \
             libtbb-dev \
-            python3-m2r \
+            m2r \
             python3-sphinx \
             ${INSTALL_MEMCACHED} \
             ${INSTALL_CC} ${INSTALL_CXX}
@@ -349,6 +349,7 @@ jobs:
     name: rel-mac (<?=DEF["macOS"]?>, <?=DEF[DEF["macOS"]]?>, <?=DEF[DEF[DEF["macOS"]]]["ver"]?>)
     runs-on: <?=DEF["macOS"]?> #
     env:
+      CMAKE_BUILD_TYPE:   "Release"
       ENABLE_SASL:        "OFF"
       BUILD_DOCS_MANGZ:   "ON"
 <?php env_override("macOS")?>
@@ -362,6 +363,7 @@ jobs:
     name: win-msvc (<?=DEF["Windows"]?>, <?=DEF[DEF["Windows"]]?>, <?=DEF[DEF[DEF["Windows"]]]["ver"]?>)
     runs-on: <?=DEF["Windows"]?> #
     env:
+      CMAKE_BUILD_TYPE: "Release"
       ENABLE_SASL:      "OFF"
       BISON_ROOT:       "C:/msys64/usr"
       FLEX_ROOT:        "C:/msys64/usr"
@@ -403,6 +405,7 @@ jobs:
     runs-on: ${{ matrix.os_ver }}
     continue-on-error: ${{ matrix.cc_vnd == 'clang' }}
     env:
+      CMAKE_BUILD_TYPE: "Release"
       BUILD_DOCS_MANGZ: "ON"
       OS_VND: Linux
       OS_VER: ${{ matrix.os_ver }}
