@@ -242,10 +242,10 @@ function defaults($os_vnd = DEF["os"]) {
 
 function env_override($os_vnd) {
 ?>
-        OS_VND:   <?=$os_vnd?> #
-        OS_VER:   <?=DEF[$os_vnd]?> #
-        CC_VND:   <?=DEF[DEF[$os_vnd]]?> #
-        CC_VER:   <?=DEF[DEF[DEF[$os_vnd]]]["ver"]?> #
+      OS_VND:   <?=$os_vnd?> #
+      OS_VER:   <?=DEF[$os_vnd]?> #
+      CC_VND:   <?=DEF[DEF[$os_vnd]]?> #
+      CC_VER:   <?=DEF[DEF[DEF[$os_vnd]]]["ver"]?> #
 <?php
 }
 

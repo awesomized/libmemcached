@@ -320,10 +320,10 @@ jobs:
       VERBOSE:            "ON"
       CFLAGS:             "-O0 --coverage"
       CXXFLAGS:           "-O0 --coverage"
-        OS_VND:   macOS #
-        OS_VER:   macos-10.15 #
-        CC_VND:   clang #
-        CC_VER:   cur #
+      OS_VND:   macOS #
+      OS_VER:   macos-10.15 #
+      CC_VND:   clang #
+      CC_VER:   cur #
  #
     continue-on-error: true
     steps:
@@ -411,10 +411,10 @@ jobs:
     env:
       ENABLE_SASL:        "OFF"
       BUILD_DOCS_MANGZ:   "ON"
-        OS_VND:   macOS #
-        OS_VER:   macos-10.15 #
-        CC_VND:   clang #
-        CC_VER:   cur #
+      OS_VND:   macOS #
+      OS_VER:   macos-10.15 #
+      CC_VND:   clang #
+      CC_VER:   cur #
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
@@ -501,10 +501,10 @@ jobs:
       ENABLE_SASL:      "OFF"
       BISON_ROOT:       "C:/msys64/usr"
       FLEX_ROOT:        "C:/msys64/usr"
-        OS_VND:   Windows #
-        OS_VER:   windows-2019 #
-        CC_VND:   msvc #
-        CC_VER:   cur #
+      OS_VND:   Windows #
+      OS_VER:   windows-2019 #
+      CC_VND:   msvc #
+      CC_VER:   cur #
     continue-on-error: true
     defaults:
       run:
