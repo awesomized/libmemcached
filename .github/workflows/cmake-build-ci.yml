@@ -17,12 +17,9 @@ on:
 env:
   # defaults
   INSTALL_MEMCACHED:  memcached
-  CMAKE_BUILD_TYPE:   Debug
-  BUILD_TESTING:      "ON"
-  ENABLE_SASL:        "OFF"
+  ENABLE_SASL:        "ON"
   ENABLE_HASH_HSIEH:  "ON"
   ENABLE_DTRACE:      "OFF"
-  VERBOSE:            "ON"
   OS_VND:   Linux #
   OS_VER:   ubuntu-20.04 #
   CC_VND:   gnu #
@@ -35,11 +32,13 @@ jobs:
     name: dbg-new (ubuntu-20.04, gnu, cur)
     runs-on: ubuntu-20.04 #
     env:
-      INSTALL_MEMCACHED:
-      MEMCACHED_PREFIX: /tmp
-      ENABLE_SASL:      "ON"
-      CFLAGS:           "-O0 --coverage"
-      CXXFLAGS:         "-O0 --coverage"
+      CMAKE_BUILD_TYPE:   "Debug"
+      BUILD_TESTING:      "ON"
+      VERBOSE:            "ON"
+      CFLAGS:             "-O0 --coverage"
+      CXXFLAGS:           "-O0 --coverage"
+      INSTALL_MEMCACHED:  ""
+      MEMCACHED_PREFIX:   "/tmp"
     steps:
       - uses: actions/checkout@v2
       - uses: actions/checkout@v2
@@ -59,13 +58,15 @@ jobs:
             libevent-dev \
             libsasl2-dev \
             libtbb-dev \
+            python3-m2r \
+            python3-sphinx \
             ${INSTALL_MEMCACHED} \
             ${INSTALL_CC} ${INSTALL_CXX}
           sudo systemctl stop memcached || true
       - name: Install dependencies (Mac)
         if: runner.os == 'macOS'
         run: |
-          brew install bison flex ${INSTALL_MEMCACHED}
+          brew install bison flex sphinx-doc ${INSTALL_MEMCACHED}
           brew services stop memcached || true
           echo MEMCACHED_BINARY="/usr/local/bin/memcached" >> ${GITHUB_ENV}
       - name: Build memcached
@@ -92,17 +93,24 @@ jobs:
       - name: Generate build tree (${{ env.CMAKE_BUILD_TYPE }})
         run: cmake -S . -B build
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
-        run: make -C build -j2 all
+        run: cmake --build build -j2
       - name: Test
-        run: make -C build -j2 test
+        run: cmake --build build -j2 --target test
       - name: Install
-        run: make -C build -j2 install DESTDIR=/tmp
-      - name: Package
-        if: ${{ env.CMAKE_BUILD_TYPE == 'Release' && env.CC_VER == 'cur' }}
-        run: make -C build package
+        run: cmake --build build -j2 --target install -- DESTDIR=/tmp
       - name: Failed tests log
         if: ${{ failure() }}
         run: cat build/Testing/Temporary/LastTest.log || true
+      - name: Package
+        env:
+          PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
+        if: env.OS_VND!='Windows' && env.CC_VER=='cur' && env.CMAKE_BUILD_TYPE=='Release'
+        run: |
+          cmake -DENABLE_SASL=ON -DBUILD_DOCS_MANGZ=ON -S . -B build
+          cmake --build build -j2 --target package -- VERBOSE=
+          cmake -DCPACK_COMPONENT_INSTALL=ON build
+          cmake --build build -j2 --target package -- VERBOSE=
+          cmake --build build -j2 --target push-artifacts -- VERBOSE=
       - name: Notify Gitter (success)
         if: ${{ success() }}
         run: |
@@ -124,7 +132,10 @@ jobs:
     name: dbg-san (ubuntu-20.04, gnu, cur)
     runs-on: ubuntu-20.04 #
     env:
-      ENABLE_SANITIZERS: "address;undefined"
+      CMAKE_BUILD_TYPE:   "Debug"
+      BUILD_TESTING:      "ON"
+      VERBOSE:            "ON"
+      ENABLE_SANITIZERS:  "address;undefined"
     steps:
       - uses: actions/checkout@v2
       - name: Prepare environment (for cur gnu on ubuntu-20.04)
@@ -139,13 +150,15 @@ jobs:
             libevent-dev \
             libsasl2-dev \
             libtbb-dev \
+            python3-m2r \
+            python3-sphinx \
             ${INSTALL_MEMCACHED} \
             ${INSTALL_CC} ${INSTALL_CXX}
           sudo systemctl stop memcached || true
       - name: Install dependencies (Mac)
         if: runner.os == 'macOS'
         run: |
-          brew install bison flex ${INSTALL_MEMCACHED}
+          brew install bison flex sphinx-doc ${INSTALL_MEMCACHED}
           brew services stop memcached || true
           echo MEMCACHED_BINARY="/usr/local/bin/memcached" >> ${GITHUB_ENV}
       - name: Build memcached
@@ -172,17 +185,24 @@ jobs:
       - name: Generate build tree (${{ env.CMAKE_BUILD_TYPE }})
         run: cmake -S . -B build
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
-        run: make -C build -j2 all
+        run: cmake --build build -j2
       - name: Test
-        run: make -C build -j2 test
+        run: cmake --build build -j2 --target test
       - name: Install
-        run: make -C build -j2 install DESTDIR=/tmp
-      - name: Package
-        if: ${{ env.CMAKE_BUILD_TYPE == 'Release' && env.CC_VER == 'cur' }}
-        run: make -C build package
+        run: cmake --build build -j2 --target install -- DESTDIR=/tmp
       - name: Failed tests log
         if: ${{ failure() }}
         run: cat build/Testing/Temporary/LastTest.log || true
+      - name: Package
+        env:
+          PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
+        if: env.OS_VND!='Windows' && env.CC_VER=='cur' && env.CMAKE_BUILD_TYPE=='Release'
+        run: |
+          cmake -DENABLE_SASL=ON -DBUILD_DOCS_MANGZ=ON -S . -B build
+          cmake --build build -j2 --target package -- VERBOSE=
+          cmake -DCPACK_COMPONENT_INSTALL=ON build
+          cmake --build build -j2 --target package -- VERBOSE=
+          cmake --build build -j2 --target push-artifacts -- VERBOSE=
       - name: Notify Gitter (success)
         if: ${{ success() }}
         run: |
@@ -203,6 +223,9 @@ jobs:
     name: dbg-tsan (ubuntu-20.04, gnu, cur)
     runs-on: ubuntu-20.04 #
     env:
+      CMAKE_BUILD_TYPE:   "Debug"
+      BUILD_TESTING:      "ON"
+      VERBOSE:            "ON"
       ENABLE_SANITIZERS:  "thread"
     steps:
       - uses: actions/checkout@v2
@@ -218,13 +241,15 @@ jobs:
             libevent-dev \
             libsasl2-dev \
             libtbb-dev \
+            python3-m2r \
+            python3-sphinx \
             ${INSTALL_MEMCACHED} \
             ${INSTALL_CC} ${INSTALL_CXX}
           sudo systemctl stop memcached || true
       - name: Install dependencies (Mac)
         if: runner.os == 'macOS'
         run: |
-          brew install bison flex ${INSTALL_MEMCACHED}
+          brew install bison flex sphinx-doc ${INSTALL_MEMCACHED}
           brew services stop memcached || true
           echo MEMCACHED_BINARY="/usr/local/bin/memcached" >> ${GITHUB_ENV}
       - name: Build memcached
@@ -251,17 +276,24 @@ jobs:
       - name: Generate build tree (${{ env.CMAKE_BUILD_TYPE }})
         run: cmake -S . -B build
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
-        run: make -C build -j2 all
+        run: cmake --build build -j2
       - name: Test
-        run: make -C build -j2 test
+        run: cmake --build build -j2 --target test
       - name: Install
-        run: make -C build -j2 install DESTDIR=/tmp
-      - name: Package
-        if: ${{ env.CMAKE_BUILD_TYPE == 'Release' && env.CC_VER == 'cur' }}
-        run: make -C build package
+        run: cmake --build build -j2 --target install -- DESTDIR=/tmp
       - name: Failed tests log
         if: ${{ failure() }}
         run: cat build/Testing/Temporary/LastTest.log || true
+      - name: Package
+        env:
+          PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
+        if: env.OS_VND!='Windows' && env.CC_VER=='cur' && env.CMAKE_BUILD_TYPE=='Release'
+        run: |
+          cmake -DENABLE_SASL=ON -DBUILD_DOCS_MANGZ=ON -S . -B build
+          cmake --build build -j2 --target package -- VERBOSE=
+          cmake -DCPACK_COMPONENT_INSTALL=ON build
+          cmake --build build -j2 --target package -- VERBOSE=
+          cmake --build build -j2 --target push-artifacts -- VERBOSE=
       - name: Notify Gitter (success)
         if: ${{ success() }}
         run: |
@@ -277,17 +309,22 @@ jobs:
             --data-urlencode "level=error" \
             --data-urlencode "message=Github [${GITHUB_REPOSITORY}](https://github.com/${GITHUB_REPOSITORY}/commits/${REF}) (${REF}) [failure](https://github.com/m6w6/libmemcached/actions/runs/${GITHUB_RUN_ID}) (${ImageOS}/${CC:-${CC_VND}-${CC_VER}})"
 
-  # mac build
+  # mac debug
   dbg-mac:
-    name: dbg-mac (macos-10.15, clang, apple)
+    name: dbg-mac (macos-10.15, clang, cur)
     runs-on: macos-10.15 #
     env:
-      CFLAGS:   -O0 --coverage
-      CXXFLAGS: -O0 --coverage
-      OS_VND:   macOS
-      OS_VER:   macos-10.15 #
-      CC_VND:   clang #
-      CC_VER:   apple #
+      CMAKE_BUILD_TYPE:   "Debug"
+      ENABLE_SASL:        "OFF"
+      BUILD_TESTING:      "ON"
+      VERBOSE:            "ON"
+      CFLAGS:             "-O0 --coverage"
+      CXXFLAGS:           "-O0 --coverage"
+        OS_VND:   macOS #
+        OS_VER:   macos-10.15 #
+        CC_VND:   clang #
+        CC_VER:   cur #
+ #
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
@@ -298,13 +335,15 @@ jobs:
             libevent-dev \
             libsasl2-dev \
             libtbb-dev \
+            python3-m2r \
+            python3-sphinx \
             ${INSTALL_MEMCACHED} \
             ${INSTALL_CC} ${INSTALL_CXX}
           sudo systemctl stop memcached || true
       - name: Install dependencies (Mac)
         if: runner.os == 'macOS'
         run: |
-          brew install bison flex ${INSTALL_MEMCACHED}
+          brew install bison flex sphinx-doc ${INSTALL_MEMCACHED}
           brew services stop memcached || true
           echo MEMCACHED_BINARY="/usr/local/bin/memcached" >> ${GITHUB_ENV}
       - name: Build memcached
@@ -331,17 +370,24 @@ jobs:
       - name: Generate build tree (${{ env.CMAKE_BUILD_TYPE }})
         run: cmake -S . -B build
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
-        run: make -C build -j2 all
+        run: cmake --build build -j2
       - name: Test
-        run: make -C build -j2 test
+        run: cmake --build build -j2 --target test
       - name: Install
-        run: make -C build -j2 install DESTDIR=/tmp
-      - name: Package
-        if: ${{ env.CMAKE_BUILD_TYPE == 'Release' && env.CC_VER == 'cur' }}
-        run: make -C build package
+        run: cmake --build build -j2 --target install -- DESTDIR=/tmp
       - name: Failed tests log
         if: ${{ failure() }}
         run: cat build/Testing/Temporary/LastTest.log || true
+      - name: Package
+        env:
+          PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
+        if: env.OS_VND!='Windows' && env.CC_VER=='cur' && env.CMAKE_BUILD_TYPE=='Release'
+        run: |
+          cmake -DENABLE_SASL=ON -DBUILD_DOCS_MANGZ=ON -S . -B build
+          cmake --build build -j2 --target package -- VERBOSE=
+          cmake -DCPACK_COMPONENT_INSTALL=ON build
+          cmake --build build -j2 --target package -- VERBOSE=
+          cmake --build build -j2 --target push-artifacts -- VERBOSE=
       - name: Notify Gitter (success)
         if: ${{ success() }}
         run: |
@@ -358,22 +404,120 @@ jobs:
             --data-urlencode "message=Github [${GITHUB_REPOSITORY}](https://github.com/${GITHUB_REPOSITORY}/commits/${REF}) (${REF}) [failure](https://github.com/m6w6/libmemcached/actions/runs/${GITHUB_RUN_ID}) (${ImageOS}/${CC:-${CC_VND}-${CC_VER}})"
       - uses: codecov/codecov-action@v1.0.13
 
+  # mac release
+  rel-mac:
+    name: rel-mac (macos-10.15, clang, cur)
+    runs-on: macos-10.15 #
+    env:
+      ENABLE_SASL:        "OFF"
+      BUILD_DOCS_MANGZ:   "ON"
+        OS_VND:   macOS #
+        OS_VER:   macos-10.15 #
+        CC_VND:   clang #
+        CC_VER:   cur #
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install \
+            libevent-dev \
+            libsasl2-dev \
+            libtbb-dev \
+            python3-m2r \
+            python3-sphinx \
+            ${INSTALL_MEMCACHED} \
+            ${INSTALL_CC} ${INSTALL_CXX}
+          sudo systemctl stop memcached || true
+      - name: Install dependencies (Mac)
+        if: runner.os == 'macOS'
+        run: |
+          brew install bison flex sphinx-doc ${INSTALL_MEMCACHED}
+          brew services stop memcached || true
+          echo MEMCACHED_BINARY="/usr/local/bin/memcached" >> ${GITHUB_ENV}
+      - name: Build memcached
+        run: |
+          if test -d memcached
+          then
+            cd memcached
+            ./autogen.sh
+            ./configure CFLAGS="-O2 -pipe" \
+              --prefix=${MEMCACHED_PREFIX} \
+              --enable-sasl \
+              --enable-sasl-pwdb \
+              --disable-coverage \
+              --disable-dependency-tracking \
+              --disable-docs \
+              --disable-extstore \
+              --disable-option-checking \
+              ;
+            make -j2
+            make install
+            cd ..
+            echo MEMCACHED_BINARY="${MEMCACHED_PREFIX}/bin/memcached" >> ${GITHUB_ENV}
+          fi
+      - name: Generate build tree (${{ env.CMAKE_BUILD_TYPE }})
+        run: cmake -S . -B build
+      - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
+        run: cmake --build build -j2
+      - name: Test
+        run: cmake --build build -j2 --target test
+      - name: Install
+        run: cmake --build build -j2 --target install -- DESTDIR=/tmp
+      - name: Failed tests log
+        if: ${{ failure() }}
+        run: cat build/Testing/Temporary/LastTest.log || true
+      - name: Package
+        env:
+          PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
+        if: env.OS_VND!='Windows' && env.CC_VER=='cur' && env.CMAKE_BUILD_TYPE=='Release'
+        run: |
+          cmake -DENABLE_SASL=ON -DBUILD_DOCS_MANGZ=ON -S . -B build
+          cmake --build build -j2 --target package -- VERBOSE=
+          cmake -DCPACK_COMPONENT_INSTALL=ON build
+          cmake --build build -j2 --target package -- VERBOSE=
+          cmake --build build -j2 --target push-artifacts -- VERBOSE=
+      - name: Notify Gitter (success)
+        if: ${{ success() }}
+        run: |
+          REF=$(basename ${GITHUB_REF})
+          curl -sS "${{ secrets.GITTER }}" \
+            --data-urlencode "level=info" \
+            --data-urlencode "message=Github [${GITHUB_REPOSITORY}](https://github.com/${GITHUB_REPOSITORY}/commits/${REF}) (${REF}) [success](https://github.com/m6w6/libmemcached/actions/runs/${GITHUB_RUN_ID}) (${ImageOS}/${CC:-${CC_VND}-${CC_VER}})"
+      - name: Notify Gitter (failure)
+        if: ${{ failure() }}
+        run: |
+          REF=$(basename ${GITHUB_REF})
+          curl -sS "${{ secrets.GITTER }}" \
+            --data-urlencode "level=error" \
+            --data-urlencode "message=Github [${GITHUB_REPOSITORY}](https://github.com/${GITHUB_REPOSITORY}/commits/${REF}) (${REF}) [failure](https://github.com/m6w6/libmemcached/actions/runs/${GITHUB_RUN_ID}) (${ImageOS}/${CC:-${CC_VND}-${CC_VER}})"
+
   # win build
   win-msvc:
     name: win-msvc (windows-2019, msvc, cur)
     runs-on: windows-2019 #
     env:
-      CMAKE_BUILD_TYPE: Release
-      BUILD_TESTING:    "OFF"
+      ENABLE_SASL:      "OFF"
       BISON_ROOT:       "C:/msys64/usr"
       FLEX_ROOT:        "C:/msys64/usr"
-      OS_VND: Windows
-      OS_VER: windows-2019 #
-      CC_VND: msvc #
-      CC_VER: cur #
+        OS_VND:   Windows #
+        OS_VER:   windows-2019 #
+        CC_VND:   msvc #
+        CC_VER:   cur #
     continue-on-error: true
+    defaults:
+      run:
+        shell: msys2 {0}
     steps:
       - uses: actions/checkout@v2
+      - uses: msys2/setup-msys2@v2
+        with:
+          release: false
+          path-type: inherit
+          install: >-
+            rsync
+            openssh
       - name: Generate build tree (${{ env.CMAKE_BUILD_TYPE }})
         run: cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
       - name: Build all with ${{ env.CC_VND }}
@@ -381,7 +525,11 @@ jobs:
       - name: Install
         run: cmake --install build --prefix installed --config ${{ env.CMAKE_BUILD_TYPE }}
       - name: Package
-        run: cmake -E chdir build cpack
+        env:
+          PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
+        run: |
+          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} --target package
+          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} --target push-artifacts
 
   # release builds
   release:
@@ -394,7 +542,7 @@ jobs:
     runs-on: ${{ matrix.os_ver }}
     continue-on-error: ${{ matrix.cc_vnd == 'clang' }}
     env:
-      CMAKE_BUILD_TYPE: Release
+      BUILD_DOCS_MANGZ: "ON"
       OS_VND: Linux
       OS_VER: ${{ matrix.os_ver }}
       CC_VND: ${{ matrix.cc_vnd }}
@@ -476,13 +624,15 @@ jobs:
             libevent-dev \
             libsasl2-dev \
             libtbb-dev \
+            python3-m2r \
+            python3-sphinx \
             ${INSTALL_MEMCACHED} \
             ${INSTALL_CC} ${INSTALL_CXX}
           sudo systemctl stop memcached || true
       - name: Install dependencies (Mac)
         if: runner.os == 'macOS'
         run: |
-          brew install bison flex ${INSTALL_MEMCACHED}
+          brew install bison flex sphinx-doc ${INSTALL_MEMCACHED}
           brew services stop memcached || true
           echo MEMCACHED_BINARY="/usr/local/bin/memcached" >> ${GITHUB_ENV}
       - name: Build memcached
@@ -509,17 +659,24 @@ jobs:
       - name: Generate build tree (${{ env.CMAKE_BUILD_TYPE }})
         run: cmake -S . -B build
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
-        run: make -C build -j2 all
+        run: cmake --build build -j2
       - name: Test
-        run: make -C build -j2 test
+        run: cmake --build build -j2 --target test
       - name: Install
-        run: make -C build -j2 install DESTDIR=/tmp
-      - name: Package
-        if: ${{ env.CMAKE_BUILD_TYPE == 'Release' && env.CC_VER == 'cur' }}
-        run: make -C build package
+        run: cmake --build build -j2 --target install -- DESTDIR=/tmp
       - name: Failed tests log
         if: ${{ failure() }}
         run: cat build/Testing/Temporary/LastTest.log || true
+      - name: Package
+        env:
+          PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
+        if: env.OS_VND!='Windows' && env.CC_VER=='cur' && env.CMAKE_BUILD_TYPE=='Release'
+        run: |
+          cmake -DENABLE_SASL=ON -DBUILD_DOCS_MANGZ=ON -S . -B build
+          cmake --build build -j2 --target package -- VERBOSE=
+          cmake -DCPACK_COMPONENT_INSTALL=ON build
+          cmake --build build -j2 --target package -- VERBOSE=
+          cmake --build build -j2 --target push-artifacts -- VERBOSE=
       - name: Notify Gitter (success)
         if: ${{ success() }}
         run: |

@@ -6,24 +6,29 @@ packages:
   - libevent
   - memcached--
   - pkgconf
+  - py3-sphinx
+  - py3-m2r
+  - rsync
   - sudo--
   - tbb
 sources:
   - https://github.com/m6w6/libmemcached
 environment:
-  CMAKE_BUILD_TYPE:   Debug
-  BUILD_TESTING:      "ON"
   ENABLE_HASH_HSIEH:  "ON"
   ENABLE_MEMASLAP:    "OFF"
   VERBOSE:            "ON"
   MEMCACHED_BINARY:   "memcached"
 tasks:
   - configure: |
-      cmake -S libmemcached -B build
+      cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON -S libmemcached -B debug
   - build: |
-      make -C build -j2 all
+      cmake --build debug -j2
   - test: |
-      make -C build -j2 test/fast
+      cmake --build debug -j2 --target test
   - install: |
-      make -C build install DESTDIR=/tmp
+      cmake --build debug -j2 --target install -- DESTDIR=/tmp
+  - package: |
+      cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_DOCS_MANGZ=ON -S libmemcached -B release
+      cmake --build release -j2 --target package -- VERBOSE=
+      cmake --build release -j2 --target push-artifact -- VERBOSE=
 

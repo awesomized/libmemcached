@@ -73,6 +73,12 @@ if(BUILD_TESTING)
     endif()
 endif()
 
+if(BUILD_DOCS_MANGZ)
+    set(BUILD_DOCS_MAN ON)
+endif()
+if(BUILD_DOCS_MAN OR BUILD_DOCS_HTML)
+    set(BUILD_DOCS ON)
+endif()
 if(BUILD_DOCS)
     set(SPHINX_OPTIONS ""
         CACHE STRING "additional sphinx-build command line options")

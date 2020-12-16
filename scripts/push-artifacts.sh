@@ -1,0 +1,10 @@
+#!/bin/bash
+# push artifacts to https://artifacts.m6w6.name/libmemcached/
+
+if test -n "$PUSH_ARTIFACTS_ID"
+then
+  echo "$PUSH_ARTIFACTS_ID" > push-artifacts.id
+fi
+
+RSYNC_CONF=$(dirname $0)/push-artifacts.conf
+rsync -RPae "ssh -F $RSYNC_CONF" "$@" m6w6.name::artifacts/libmemcached/

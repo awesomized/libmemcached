@@ -17,7 +17,7 @@ const DEF = [
     "CXX"  => "g++",
   ],
   "clang" => [
-    "ver" => "apple",
+    "ver" => "cur",
     "CC"  => "clang",
     "CXX"  => "clang++",
   ],
@@ -140,13 +140,15 @@ function steps_getdeps() {
             libevent-dev \
             libsasl2-dev \
             libtbb-dev \
+            python3-m2r \
+            python3-sphinx \
             ${INSTALL_MEMCACHED} \
             ${INSTALL_CC} ${INSTALL_CXX}
           sudo systemctl stop memcached || true
       - name: Install dependencies (Mac)
         if: runner.os == 'macOS'
         run: |
-          brew install bison flex ${INSTALL_MEMCACHED}
+          brew install bison flex sphinx-doc ${INSTALL_MEMCACHED}
           brew services stop memcached || true
           echo MEMCACHED_BINARY="/usr/local/bin/memcached" >> ${GITHUB_ENV}
       - name: Build memcached
@@ -178,17 +180,29 @@ function steps_build() {
       - name: Generate build tree (${{ env.CMAKE_BUILD_TYPE }})
         run: cmake -S . -B build
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
-        run: make -C build -j2 all
+        run: cmake --build build -j2
       - name: Test
-        run: make -C build -j2 test
+        run: cmake --build build -j2 --target test
       - name: Install
-        run: make -C build -j2 install DESTDIR=/tmp
-      - name: Package
-        if: ${{ env.CMAKE_BUILD_TYPE == 'Release' && env.CC_VER == 'cur' }}
-        run: make -C build package
+        run: cmake --build build -j2 --target install -- DESTDIR=/tmp
       - name: Failed tests log
         if: ${{ failure() }}
         run: cat build/Testing/Temporary/LastTest.log || true
+<?php
+}
+
+function steps_package() {
+?>
+      - name: Package
+        env:
+          PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
+        if: env.OS_VND!='Windows' && env.CC_VER=='cur' && env.CMAKE_BUILD_TYPE=='Release'
+        run: |
+          cmake -DENABLE_SASL=ON -DBUILD_DOCS_MANGZ=ON -S . -B build
+          cmake --build build -j2 --target package -- VERBOSE=
+          cmake -DCPACK_COMPONENT_INSTALL=ON build
+          cmake --build build -j2 --target package -- VERBOSE=
+          cmake --build build -j2 --target push-artifacts -- VERBOSE=
 <?php
 }
 
@@ -215,15 +229,26 @@ function steps($splat_map = null) {
   steps_setenv($splat_map);
   steps_getdeps();
   steps_build();
+  steps_package();
   steps_notify();
 }
 
-function defaults() {
-  $os_ver = DEF[DEF["os"]];
+function defaults($os_vnd = DEF["os"]) {
+  $os_ver = DEF[$os_vnd];
   $cc_vnd = DEF[$os_ver];
   $cc_ver = DEF[$cc_vnd]["ver"];
   return "$os_ver, $cc_vnd, $cc_ver";
 }
+
+function env_override($os_vnd) {
+?>
+        OS_VND:   <?=$os_vnd?> #
+        OS_VER:   <?=DEF[$os_vnd]?> #
+        CC_VND:   <?=DEF[DEF[$os_vnd]]?> #
+        CC_VER:   <?=DEF[DEF[DEF[$os_vnd]]]["ver"]?> #
+<?php
+}
+
 ?>
 name: cmake-build-ci
 on:
@@ -243,12 +268,9 @@ on:
 env:
   # defaults
   INSTALL_MEMCACHED:  memcached
-  CMAKE_BUILD_TYPE:   Debug
-  BUILD_TESTING:      "ON"
-  ENABLE_SASL:        "OFF"
+  ENABLE_SASL:        "ON"
   ENABLE_HASH_HSIEH:  "ON"
   ENABLE_DTRACE:      "OFF"
-  VERBOSE:            "ON"
   OS_VND:   <?=DEF["os"]?> #
   OS_VER:   <?=DEF[DEF["os"]]?> #
   CC_VND:   <?=DEF[DEF[DEF["os"]]]?> #
@@ -261,11 +283,13 @@ jobs:
     name: dbg-new (<?=defaults()?>)
     runs-on: <?=DEF[DEF["os"]]?> #
     env:
-      INSTALL_MEMCACHED:
-      MEMCACHED_PREFIX: /tmp
-      ENABLE_SASL:      "ON"
-      CFLAGS:           "-O0 --coverage"
-      CXXFLAGS:         "-O0 --coverage"
+      CMAKE_BUILD_TYPE:   "Debug"
+      BUILD_TESTING:      "ON"
+      VERBOSE:            "ON"
+      CFLAGS:             "-O0 --coverage"
+      CXXFLAGS:           "-O0 --coverage"
+      INSTALL_MEMCACHED:  ""
+      MEMCACHED_PREFIX:   "/tmp"
     steps:
       - uses: actions/checkout@v2
       - uses: actions/checkout@v2
@@ -281,7 +305,10 @@ jobs:
     name: dbg-san (<?=defaults()?>)
     runs-on: <?=DEF[DEF["os"]]?> #
     env:
-      ENABLE_SANITIZERS: "address;undefined"
+      CMAKE_BUILD_TYPE:   "Debug"
+      BUILD_TESTING:      "ON"
+      VERBOSE:            "ON"
+      ENABLE_SANITIZERS:  "address;undefined"
     steps:
       - uses: actions/checkout@v2
 <?php steps(); ?>
@@ -291,44 +318,67 @@ jobs:
     name: dbg-tsan (<?=defaults()?>)
     runs-on: <?=DEF[DEF["os"]]?> #
     env:
+      CMAKE_BUILD_TYPE:   "Debug"
+      BUILD_TESTING:      "ON"
+      VERBOSE:            "ON"
       ENABLE_SANITIZERS:  "thread"
     steps:
       - uses: actions/checkout@v2
 <?php steps(); ?>
 
-  # mac build
+  # mac debug
   dbg-mac:
     name: dbg-mac (<?=DEF["macOS"]?>, <?=DEF[DEF["macOS"]]?>, <?=DEF[DEF[DEF["macOS"]]]["ver"]?>)
     runs-on: <?=DEF["macOS"]?> #
     env:
-      CFLAGS:   -O0 --coverage
-      CXXFLAGS: -O0 --coverage
-      OS_VND:   macOS
-      OS_VER:   <?=DEF["macOS"]?> #
-      CC_VND:   <?=DEF[DEF["macOS"]]?> #
-      CC_VER:   <?=DEF[DEF[DEF["macOS"]]]["ver"]?> #
+      CMAKE_BUILD_TYPE:   "Debug"
+      ENABLE_SASL:        "OFF"
+      BUILD_TESTING:      "ON"
+      VERBOSE:            "ON"
+      CFLAGS:             "-O0 --coverage"
+      CXXFLAGS:           "-O0 --coverage"
+<?php env_override("macOS")?> #
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
 <?php steps(false); ?>
       - uses: codecov/codecov-action@v1.0.13
 
+  # mac release
+  rel-mac:
+    name: rel-mac (<?=DEF["macOS"]?>, <?=DEF[DEF["macOS"]]?>, <?=DEF[DEF[DEF["macOS"]]]["ver"]?>)
+    runs-on: <?=DEF["macOS"]?> #
+    env:
+      ENABLE_SASL:        "OFF"
+      BUILD_DOCS_MANGZ:   "ON"
+<?php env_override("macOS")?>
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v2
+<?php steps(false); ?>
+
   # win build
   win-msvc:
     name: win-msvc (<?=DEF["Windows"]?>, <?=DEF[DEF["Windows"]]?>, <?=DEF[DEF[DEF["Windows"]]]["ver"]?>)
     runs-on: <?=DEF["Windows"]?> #
     env:
-      CMAKE_BUILD_TYPE: Release
-      BUILD_TESTING:    "OFF"
+      ENABLE_SASL:      "OFF"
       BISON_ROOT:       "C:/msys64/usr"
       FLEX_ROOT:        "C:/msys64/usr"
-      OS_VND: Windows
-      OS_VER: <?=DEF["Windows"]?> #
-      CC_VND: <?=DEF[DEF["Windows"]]?> #
-      CC_VER: <?=DEF[DEF[DEF["Windows"]]]["ver"]?> #
+<?php env_override("Windows")?>
     continue-on-error: true
+    defaults:
+      run:
+        shell: msys2 {0}
     steps:
       - uses: actions/checkout@v2
+      - uses: msys2/setup-msys2@v2
+        with:
+          release: false
+          path-type: inherit
+          install: >-
+            rsync
+            openssh
       - name: Generate build tree (${{ env.CMAKE_BUILD_TYPE }})
         run: cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
       - name: Build all with ${{ env.CC_VND }}
@@ -336,7 +386,11 @@ jobs:
       - name: Install
         run: cmake --install build --prefix installed --config ${{ env.CMAKE_BUILD_TYPE }}
       - name: Package
-        run: cmake -E chdir build cpack
+        env:
+          PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
+        run: |
+          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} --target package
+          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} --target push-artifacts
 
   # release builds
   release:
@@ -349,7 +403,7 @@ jobs:
     runs-on: ${{ matrix.os_ver }}
     continue-on-error: ${{ matrix.cc_vnd == 'clang' }}
     env:
-      CMAKE_BUILD_TYPE: Release
+      BUILD_DOCS_MANGZ: "ON"
       OS_VND: Linux
       OS_VER: ${{ matrix.os_ver }}
       CC_VND: ${{ matrix.cc_vnd }}

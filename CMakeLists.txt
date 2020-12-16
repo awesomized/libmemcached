@@ -10,7 +10,7 @@ project(libmemcached
         VERSION "${LIBMEMCACHED_VERSION}"
         DESCRIPTION "libmemcached, a C/C++ memcached client library"
         )
-set(CMAKE_PROJECT_HOMEPAGE_URL "https://github.com/m6w6/libmemcached")
+set(PROJECT_HOMEPAGE_URL "https://github.com/m6w6/libmemcached")
 set(PROJECT_CONTACT "Michael Wallner <mike@php.net>")
 
 set(CXX_STANDARD 11)
@@ -54,6 +54,10 @@ if(NOT BUILD_DOCSONLY)
     # keep last
     configure_file(${CONFIGURE_FILE_IN} ${CONFIGURE_FILE_OUT} @ONLY)
 endif()
+
+list(APPEND PROJECT_CONFIG ${CMAKE_SYSTEM_NAME} ${CMAKE_SYSTEM_PROCESSOR})
+list(APPEND PROJECT_CONFIG ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION})
+list(APPEND PROJECT_CONFIG ${CMAKE_BUILD_TYPE})
 
 include(CPack.txt)
 
