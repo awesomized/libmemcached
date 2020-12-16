@@ -35,6 +35,12 @@ option(BUILD_DOCS_MAN       "build manpages"
         ${BUILD_DOCS})
 option(BUILD_DOCS_MANGZ     "gzip manpages"
         ${BUILD_DOCS_MAN})
+if(BUILD_DOCS_MANGZ)
+    set(BUILD_DOCS_MAN ON CACHE BOOL "forced by BUILD_DOCS_MANGZ" FORCE)
+endif()
+if(BUILD_DOCS_MAN OR BUILD_DOCS_HTML)
+    set(BUILD_DOCS ON CACHE BOOL "forced by BUILD_DOCS_MAN OR BUILD_DOCS_HTML" FORCE)
+endif()
 
 set(ENABLE_SANITIZERS "$ENV{ENABLE_SANITIZERS}"
         CACHE STRING "sanitizers to enable (e.g. address;undefined ...)")
@@ -73,12 +79,6 @@ if(BUILD_TESTING)
     endif()
 endif()
 
-if(BUILD_DOCS_MANGZ)
-    set(BUILD_DOCS_MAN ON)
-endif()
-if(BUILD_DOCS_MAN OR BUILD_DOCS_HTML)
-    set(BUILD_DOCS ON)
-endif()
 if(BUILD_DOCS)
     set(SPHINX_OPTIONS ""
         CACHE STRING "additional sphinx-build command line options")

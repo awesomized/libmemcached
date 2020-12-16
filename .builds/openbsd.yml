@@ -13,6 +13,8 @@ packages:
   - tbb
 sources:
   - https://github.com/m6w6/libmemcached
+secrets:
+  - 685c5b0a-395c-4031-97f8-97496bb6c25f
 environment:
   ENABLE_HASH_HSIEH:  "ON"
   ENABLE_MEMASLAP:    "OFF"
@@ -30,5 +32,4 @@ tasks:
   - package: |
       cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_DOCS_MANGZ=ON -S libmemcached -B release
       cmake --build release -j2 --target package -- VERBOSE=
-      cmake --build release -j2 --target push-artifact -- VERBOSE=
-
+      cmake --build release -j2 --target push-artifacts -- VERBOSE=

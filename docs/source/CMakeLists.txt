@@ -1,4 +1,4 @@
-find_program(M2R m2r)
+find_program(M2R NAMES m2r m2r-3)
 
 if(M2R)
     file(GLOB CHANGELOGS "${CMAKE_SOURCE_DIR}/ChangeLog-*.md")
