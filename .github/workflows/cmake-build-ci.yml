@@ -72,6 +72,7 @@ jobs:
           brew services stop memcached || true
           echo MEMCACHED_BINARY="/usr/local/bin/memcached" >> ${GITHUB_ENV}
       - name: Build memcached
+        if: runner.os != 'Windows'
         run: |
           if test -d memcached
           then
@@ -107,7 +108,7 @@ jobs:
       - name: Package
         env:
           PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
-        if: env.CC_VER=='cur' && env.CMAKE_BUILD_TYPE=='Release'
+        if: env.CC_VER == 'cur' && env.CMAKE_BUILD_TYPE == 'Release'
         run: |
           cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package -- VERBOSE=
@@ -115,7 +116,7 @@ jobs:
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package -- VERBOSE=
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target push-artifacts -- VERBOSE=
       - name: Notify Gitter (success)
-        if: ${{ success() && runner.os!='Windows'}}
+        if: ${{ success() && runner.os != 'Windows'}}
         run: |
           REF=$(basename ${GITHUB_REF})
           curl -sS "${{ secrets.GITTER }}" \
@@ -164,6 +165,7 @@ jobs:
           brew services stop memcached || true
           echo MEMCACHED_BINARY="/usr/local/bin/memcached" >> ${GITHUB_ENV}
       - name: Build memcached
+        if: runner.os != 'Windows'
         run: |
           if test -d memcached
           then
@@ -199,7 +201,7 @@ jobs:
       - name: Package
         env:
           PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
-        if: env.CC_VER=='cur' && env.CMAKE_BUILD_TYPE=='Release'
+        if: env.CC_VER == 'cur' && env.CMAKE_BUILD_TYPE == 'Release'
         run: |
           cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package -- VERBOSE=
@@ -207,7 +209,7 @@ jobs:
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package -- VERBOSE=
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target push-artifacts -- VERBOSE=
       - name: Notify Gitter (success)
-        if: ${{ success() && runner.os!='Windows'}}
+        if: ${{ success() && runner.os != 'Windows'}}
         run: |
           REF=$(basename ${GITHUB_REF})
           curl -sS "${{ secrets.GITTER }}" \
@@ -255,6 +257,7 @@ jobs:
           brew services stop memcached || true
           echo MEMCACHED_BINARY="/usr/local/bin/memcached" >> ${GITHUB_ENV}
       - name: Build memcached
+        if: runner.os != 'Windows'
         run: |
           if test -d memcached
           then
@@ -290,7 +293,7 @@ jobs:
       - name: Package
         env:
           PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
-        if: env.CC_VER=='cur' && env.CMAKE_BUILD_TYPE=='Release'
+        if: env.CC_VER == 'cur' && env.CMAKE_BUILD_TYPE == 'Release'
         run: |
           cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package -- VERBOSE=
@@ -298,7 +301,7 @@ jobs:
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package -- VERBOSE=
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target push-artifacts -- VERBOSE=
       - name: Notify Gitter (success)
-        if: ${{ success() && runner.os!='Windows'}}
+        if: ${{ success() && runner.os != 'Windows'}}
         run: |
           REF=$(basename ${GITHUB_REF})
           curl -sS "${{ secrets.GITTER }}" \
@@ -348,6 +351,7 @@ jobs:
           brew services stop memcached || true
           echo MEMCACHED_BINARY="/usr/local/bin/memcached" >> ${GITHUB_ENV}
       - name: Build memcached
+        if: runner.os != 'Windows'
         run: |
           if test -d memcached
           then
@@ -383,7 +387,7 @@ jobs:
       - name: Package
         env:
           PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
-        if: env.CC_VER=='cur' && env.CMAKE_BUILD_TYPE=='Release'
+        if: env.CC_VER == 'cur' && env.CMAKE_BUILD_TYPE == 'Release'
         run: |
           cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package -- VERBOSE=
@@ -391,7 +395,7 @@ jobs:
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package -- VERBOSE=
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target push-artifacts -- VERBOSE=
       - name: Notify Gitter (success)
-        if: ${{ success() && runner.os!='Windows'}}
+        if: ${{ success() && runner.os != 'Windows'}}
         run: |
           REF=$(basename ${GITHUB_REF})
           curl -sS "${{ secrets.GITTER }}" \
@@ -440,6 +444,7 @@ jobs:
           brew services stop memcached || true
           echo MEMCACHED_BINARY="/usr/local/bin/memcached" >> ${GITHUB_ENV}
       - name: Build memcached
+        if: runner.os != 'Windows'
         run: |
           if test -d memcached
           then
@@ -475,7 +480,7 @@ jobs:
       - name: Package
         env:
           PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
-        if: env.CC_VER=='cur' && env.CMAKE_BUILD_TYPE=='Release'
+        if: env.CC_VER == 'cur' && env.CMAKE_BUILD_TYPE == 'Release'
         run: |
           cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package -- VERBOSE=
@@ -483,7 +488,7 @@ jobs:
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package -- VERBOSE=
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target push-artifacts -- VERBOSE=
       - name: Notify Gitter (success)
-        if: ${{ success() && runner.os!='Windows'}}
+        if: ${{ success() && runner.os != 'Windows'}}
         run: |
           REF=$(basename ${GITHUB_REF})
           curl -sS "${{ secrets.GITTER }}" \
@@ -539,6 +544,7 @@ jobs:
           brew services stop memcached || true
           echo MEMCACHED_BINARY="/usr/local/bin/memcached" >> ${GITHUB_ENV}
       - name: Build memcached
+        if: runner.os != 'Windows'
         run: |
           if test -d memcached
           then
@@ -574,7 +580,7 @@ jobs:
       - name: Package
         env:
           PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
-        if: env.CC_VER=='cur' && env.CMAKE_BUILD_TYPE=='Release'
+        if: env.CC_VER == 'cur' && env.CMAKE_BUILD_TYPE == 'Release'
         run: |
           cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package -- VERBOSE=
@@ -582,7 +588,7 @@ jobs:
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package -- VERBOSE=
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target push-artifacts -- VERBOSE=
       - name: Notify Gitter (success)
-        if: ${{ success() && runner.os!='Windows'}}
+        if: ${{ success() && runner.os != 'Windows'}}
         run: |
           REF=$(basename ${GITHUB_REF})
           curl -sS "${{ secrets.GITTER }}" \
@@ -703,6 +709,7 @@ jobs:
           brew services stop memcached || true
           echo MEMCACHED_BINARY="/usr/local/bin/memcached" >> ${GITHUB_ENV}
       - name: Build memcached
+        if: runner.os != 'Windows'
         run: |
           if test -d memcached
           then
@@ -738,7 +745,7 @@ jobs:
       - name: Package
         env:
           PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
-        if: env.CC_VER=='cur' && env.CMAKE_BUILD_TYPE=='Release'
+        if: env.CC_VER == 'cur' && env.CMAKE_BUILD_TYPE == 'Release'
         run: |
           cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package -- VERBOSE=
@@ -746,7 +753,7 @@ jobs:
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package -- VERBOSE=
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target push-artifacts -- VERBOSE=
       - name: Notify Gitter (success)
-        if: ${{ success() && runner.os!='Windows'}}
+        if: ${{ success() && runner.os != 'Windows'}}
         run: |
           REF=$(basename ${GITHUB_REF})
           curl -sS "${{ secrets.GITTER }}" \
