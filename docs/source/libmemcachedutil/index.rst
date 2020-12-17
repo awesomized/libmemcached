@@ -6,7 +6,7 @@ Utility library for libmemcached
 SYNOPSIS
 --------
 
-#include <libmemcachedutil-|libmemcached_version|/util.h>
+#include <libmemcachedutil-|libmemcachedutil_version|/util.h>
   Compile and link with -lmemcachedutil -lmemcached
 
 DESCRIPTION

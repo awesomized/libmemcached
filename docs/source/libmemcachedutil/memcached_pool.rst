@@ -4,7 +4,7 @@ Working with memcached pools
 SYNOPSIS
 --------
 
-#include <libmemcachedutil-|libmemcached_version|/pool.h>
+#include <libmemcachedutil-|libmemcachedutil_version|/pool.h>
   Compile and link with -lmemcachedutil -lmemcached
 
 .. type:: struct memcached_pool_st memcached_pool_st
