@@ -40,8 +40,9 @@ tasks:
   - test: |
       cmake --build debug -j2 --target test
   - install: |
-      cmake --build debug -j2 --target install -- DESTDIR=/tmp
+      cmake --install debug --prefix /tmp
   - package: |
       cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_DOCS_MANGZ=ON -S libmemcached -B release
       cmake --build release -j2 --target package -- VERBOSE=
+      cmake -DCPACK_COMPONENT_INSTALL=ON release
       cmake --build release -j2 --target push-artifacts -- VERBOSE=

@@ -36,10 +36,10 @@ target_include_directories(libmemcachedprotocol PUBLIC
         $<INSTALL_INTERFACE:include>)
 
 install(TARGETS libmemcachedprotocol EXPORT libmemcachedprotocol-targets
-        LIBRARY
-        COMPONENT lib
+        RUNTIME COMPONENT bin DESTINATION ${CMAKE_INSTALL_BINDIR}
+        LIBRARY COMPONENT lib DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ${TARGET_NAMELINK_COMPONENT}
-        DESTINATION ${CMAKE_INSTALL_LIBDIR})
+        )
 export(EXPORT libmemcachedprotocol-targets NAMESPACE libmemcached::)
 install(EXPORT libmemcachedprotocol-targets NAMESPACE libmemcached::
         COMPONENT dev

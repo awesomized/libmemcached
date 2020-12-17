@@ -20,7 +20,7 @@ endif()
 if(${CMAKE_VERSION} VERSION_LESS "3.12")
     set(TARGET_NAMELINK_COMPONENT "")
 else()
-    set(TARGET_NAMELINK_COMPONENT NAMELINK_COMPONENT dev)
+    set(TARGET_NAMELINK_COMPONENT NAMELINK_COMPONENT dev DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endif()
 
 option(BUILD_TESTING        "whether to enable build of the test suite"

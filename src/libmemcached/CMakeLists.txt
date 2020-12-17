@@ -120,10 +120,10 @@ target_include_directories(libmemcached PUBLIC
 enable_dtrace_for(libmemcached libmemcached_probes.d dtrace_probes.h)
 
 install(TARGETS libmemcached EXPORT libmemcached-targets
-        LIBRARY
-        COMPONENT lib
+        RUNTIME COMPONENT bin DESTINATION ${CMAKE_INSTALL_BINDIR}
+        LIBRARY COMPONENT lib DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ${TARGET_NAMELINK_COMPONENT}
-        DESTINATION ${CMAKE_INSTALL_LIBDIR})
+        )
 export(EXPORT libmemcached-targets NAMESPACE libmemcached::)
 install(EXPORT libmemcached-targets NAMESPACE libmemcached::
         COMPONENT dev

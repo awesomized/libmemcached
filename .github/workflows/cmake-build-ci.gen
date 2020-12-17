@@ -191,7 +191,7 @@ function steps_test() {
         run: cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target test
       - name: Install
         if: env.BUILD_TESTING == 'ON'
-        run: cmake --install build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --prefix /tmp
+        run: cmake --install build --config ${{ env.CMAKE_BUILD_TYPE }} --prefix /tmp
       - name: Failed tests log
         if: ${{ env.BUILD_TESTING == 'ON' && failure() }}
         run: cat build/Testing/Temporary/LastTest.log || true
@@ -223,7 +223,7 @@ function steps_notify() {
             --data-urlencode "level=info" \
             --data-urlencode "message=Github [${GITHUB_REPOSITORY}](https://github.com/${GITHUB_REPOSITORY}/commits/${REF}) (${REF}) [success](https://github.com/m6w6/libmemcached/actions/runs/${GITHUB_RUN_ID}) (${ImageOS}/${CC:-${CC_VND}-${CC_VER}})"
       - name: Notify Gitter (failure)
-        if: ${{ failure() && runner.os!='Windows'}}
+        if: ${{ failure() && runner.os != 'Windows'}}
         run: |
           REF=$(basename ${GITHUB_REF})
           curl -sS "${{ secrets.GITTER }}" \

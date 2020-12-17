@@ -40,10 +40,10 @@ target_include_directories(libhashkit PUBLIC
 configure_file(hashkitcon.h.in hashkitcon.h @ONLY)
 
 install(TARGETS libhashkit EXPORT libhashkit-targets
-        LIBRARY
-        COMPONENT lib
+        RUNTIME COMPONENT bin DESTINATION ${CMAKE_INSTALL_BINDIR}
+        LIBRARY COMPONENT lib DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ${TARGET_NAMELINK_COMPONENT}
-        DESTINATION ${CMAKE_INSTALL_LIBDIR})
+        )
 export(EXPORT libhashkit-targets NAMESPACE libmemcached::)
 install(EXPORT libhashkit-targets NAMESPACE libmemcached::
         COMPONENT dev

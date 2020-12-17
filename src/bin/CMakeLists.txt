@@ -9,9 +9,7 @@ foreach(CLIENT IN LISTS CLIENTS)
         set_target_properties(${CLIENT} PROPERTIES
                 INSTALL_RPATH ${CMAKE_INSTALL_RPATH}/../${CMAKE_INSTALL_LIBDIR})
     endif()
-    install(TARGETS ${CLIENT}
-            COMPONENT bin
-            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+    install(TARGETS ${CLIENT} RUNTIME COMPONENT bin DESTINATION ${CMAKE_INSTALL_BINDIR})
 endforeach()
 
 # extra sources
