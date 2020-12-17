@@ -177,9 +177,9 @@ function steps_getdeps() {
 function steps_build() {
 ?>
       - name: Generate build tree (${{ env.CMAKE_BUILD_TYPE }})
-        run: cmake -S . -B build
+        run: cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
-        run: cmake --build build -j2
+        run: cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2
 <?php
 }
 
@@ -188,8 +188,8 @@ function steps_test() {
       - name: Test
         if: env.BUILD_TESTING == 'ON'
         run: |
-          cmake --build build -j2 --target test
-          cmake --build build -j2 --target install -- DESTDIR=/tmp
+          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target test
+          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target install -- DESTDIR=/tmp
       - name: Failed tests log
         if: ${{ failure() }}
         run: cat build/Testing/Temporary/LastTest.log || true
@@ -201,27 +201,27 @@ function steps_package() {
       - name: Package
         env:
           PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
-        if: env.OS_VND!='Windows' && env.CC_VER=='cur' && env.CMAKE_BUILD_TYPE=='Release'
+        if: env.CC_VER=='cur' && env.CMAKE_BUILD_TYPE=='Release'
         run: |
-          cmake -DENABLE_SASL=ON -DBUILD_DOCS_MANGZ=ON -S . -B build
-          cmake --build build -j2 --target package -- VERBOSE=
+          cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
+          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package -- VERBOSE=
           cmake -DCPACK_COMPONENT_INSTALL=ON build
-          cmake --build build -j2 --target package -- VERBOSE=
-          cmake --build build -j2 --target push-artifacts -- VERBOSE=
+          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package -- VERBOSE=
+          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target push-artifacts -- VERBOSE=
 <?php
 }
 
 function steps_notify() {
 ?>
       - name: Notify Gitter (success)
-        if: ${{ success() }}
+        if: ${{ success() && runner.os!='Windows'}}
         run: |
           REF=$(basename ${GITHUB_REF})
           curl -sS "${{ secrets.GITTER }}" \
             --data-urlencode "level=info" \
             --data-urlencode "message=Github [${GITHUB_REPOSITORY}](https://github.com/${GITHUB_REPOSITORY}/commits/${REF}) (${REF}) [success](https://github.com/m6w6/libmemcached/actions/runs/${GITHUB_RUN_ID}) (${ImageOS}/${CC:-${CC_VND}-${CC_VER}})"
       - name: Notify Gitter (failure)
-        if: ${{ failure() }}
+        if: ${{ failure() && runner.os!='Windows'}}
         run: |
           REF=$(basename ${GITHUB_REF})
           curl -sS "${{ secrets.GITTER }}" \
@@ -363,8 +363,8 @@ jobs:
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
-      - name: Fetch tags
-        run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+        with:
+          fetch-depth: 0
 <?php steps(false); ?>
 
   # win build
@@ -379,8 +379,8 @@ jobs:
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
-      - name: Fetch tags
-        run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+        with:
+          fetch-depth: 0
       - uses: msys2/setup-msys2@v2
         with:
           release: false
@@ -388,20 +388,9 @@ jobs:
           install: >-
             rsync
             openssh
-      - name: Generate build tree (${{ env.CMAKE_BUILD_TYPE }})
-        run: cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
-      - name: Build all with ${{ env.CC_VND }}
-        run: cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }}
-      - name: Install
-        run: cmake --install build --prefix installed --config ${{ env.CMAKE_BUILD_TYPE }}
-      - name: Package
-        env:
-          PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
-        run: |
-          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} --target package
-          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} --target push-artifacts
+<?php steps(false);?>
 
-  # release builds
+  # linux release builds
   release:
     strategy:
       fail-fast: false
@@ -420,6 +409,6 @@ jobs:
       CC_VER: ${{ matrix.cc_ver }}
     steps:
       - uses: actions/checkout@v2
-      - name: Fetch tags
-        run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+        with:
+          fetch-depth: 0
 <?php steps(true); ?>
