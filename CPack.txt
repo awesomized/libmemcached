@@ -94,9 +94,15 @@ endif()
 # keep last
 include(CPack)
 
+set(PUSH_ARTIFACTS_SH "${CMAKE_SOURCE_DIR}/scripts/push-artifacts.sh")
+if(WIN32)
+    set(PUSH_ARTIFACTS_CMD msys2 -c '${PUSH_ARTIFACTS_SH} ${CPACK_PACKAGE_DIRECTORY}/')
+else()
+    set(PUSH_ARTIFACTS_CMD ${PUSH_ARTIFACTS_SH} ${CPACK_PACKAGE_DIRECTORY}/)
+endif()
+
 add_custom_target(push-artifacts
-        COMMAND
-            bash ${CMAKE_SOURCE_DIR}/scripts/push-artifacts.sh "${CPACK_PACKAGE_DIRECTORY}/"
+        COMMAND ${PUSH_ARTIFACTS_CMD}
         WORKING_DIRECTORY ${CPACK_BINARY_DIR}
         )
 
