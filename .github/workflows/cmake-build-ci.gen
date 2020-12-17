@@ -260,10 +260,12 @@ name: cmake-build-ci
 on:
   push:
     paths:
+      - "contrib/**"
       - "include/**"
       - "src/**"
       - "test/**"
       - "CMake*"
+      - "CPack*"
       - ".github/workflows/cmake-build-ci*"
     branches-ignore:
       - gh-pages
