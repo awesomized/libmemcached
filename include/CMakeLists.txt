@@ -17,5 +17,7 @@ if(NOT WIN32)
                 ${CMAKE_CURRENT_BINARY_DIR}/libmemcachedutil-1.0
                 ${CMAKE_CURRENT_BINARY_DIR}/libmemcachedprotocol-0.0
             DESTINATION \${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR})
-    ")
+        "
+        COMPONENT dev
+        )
 endif()
