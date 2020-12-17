@@ -4,6 +4,7 @@
 if test -n "$PUSH_ARTIFACTS_ID"
 then
   echo "$PUSH_ARTIFACTS_ID" > push-artifacts.id
+  chmod 0600 push-artifacts.id
 fi
 
 RSYNC_CONF=$(dirname $0)/push-artifacts.conf

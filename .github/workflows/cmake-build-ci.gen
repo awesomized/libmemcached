@@ -140,7 +140,6 @@ function steps_getdeps() {
             libevent-dev \
             libsasl2-dev \
             libtbb-dev \
-            m2r \
             python3-sphinx \
             ${INSTALL_MEMCACHED} \
             ${INSTALL_CC} ${INSTALL_CXX}
@@ -181,10 +180,16 @@ function steps_build() {
         run: cmake -S . -B build
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
         run: cmake --build build -j2
+<?php
+}
+
+function steps_test() {
+?>
       - name: Test
-        run: cmake --build build -j2 --target test
-      - name: Install
-        run: cmake --build build -j2 --target install -- DESTDIR=/tmp
+        if: env.BUILD_TESTING == 'ON'
+        run: |
+          cmake --build build -j2 --target test
+          cmake --build build -j2 --target install -- DESTDIR=/tmp
       - name: Failed tests log
         if: ${{ failure() }}
         run: cat build/Testing/Temporary/LastTest.log || true
@@ -229,6 +234,7 @@ function steps($splat_map = null) {
   steps_setenv($splat_map);
   steps_getdeps();
   steps_build();
+  steps_test();
   steps_package();
   steps_notify();
 }
@@ -268,7 +274,7 @@ on:
 env:
   # defaults
   INSTALL_MEMCACHED:  memcached
-  ENABLE_SASL:        "ON"
+  ENABLE_SASL:        "OFF" # ^ almost no memcached distribution package has built in sasl support
   ENABLE_HASH_HSIEH:  "ON"
   ENABLE_DTRACE:      "OFF"
   OS_VND:   <?=DEF["os"]?> #
@@ -290,6 +296,7 @@ jobs:
       CXXFLAGS:           "-O0 --coverage"
       INSTALL_MEMCACHED:  ""
       MEMCACHED_PREFIX:   "/tmp"
+      ENABLE_SASL:        "ON"
     steps:
       - uses: actions/checkout@v2
       - uses: actions/checkout@v2
@@ -332,7 +339,6 @@ jobs:
     runs-on: <?=DEF["macOS"]?> #
     env:
       CMAKE_BUILD_TYPE:   "Debug"
-      ENABLE_SASL:        "OFF"
       BUILD_TESTING:      "ON"
       VERBOSE:            "ON"
       CFLAGS:             "-O0 --coverage"
@@ -350,7 +356,6 @@ jobs:
     runs-on: <?=DEF["macOS"]?> #
     env:
       CMAKE_BUILD_TYPE:   "Release"
-      ENABLE_SASL:        "OFF"
       BUILD_DOCS_MANGZ:   "ON"
 <?php env_override("macOS")?>
     continue-on-error: true
@@ -364,14 +369,10 @@ jobs:
     runs-on: <?=DEF["Windows"]?> #
     env:
       CMAKE_BUILD_TYPE: "Release"
-      ENABLE_SASL:      "OFF"
       BISON_ROOT:       "C:/msys64/usr"
       FLEX_ROOT:        "C:/msys64/usr"
 <?php env_override("Windows")?>
     continue-on-error: true
-    defaults:
-      run:
-        shell: msys2 {0}
     steps:
       - uses: actions/checkout@v2
       - uses: msys2/setup-msys2@v2

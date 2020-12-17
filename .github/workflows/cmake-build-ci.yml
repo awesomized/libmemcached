@@ -17,7 +17,7 @@ on:
 env:
   # defaults
   INSTALL_MEMCACHED:  memcached
-  ENABLE_SASL:        "ON"
+  ENABLE_SASL:        "OFF" # ^ almost no memcached distribution package has built in sasl support
   ENABLE_HASH_HSIEH:  "ON"
   ENABLE_DTRACE:      "OFF"
   OS_VND:   Linux #
@@ -39,6 +39,7 @@ jobs:
       CXXFLAGS:           "-O0 --coverage"
       INSTALL_MEMCACHED:  ""
       MEMCACHED_PREFIX:   "/tmp"
+      ENABLE_SASL:        "ON"
     steps:
       - uses: actions/checkout@v2
       - uses: actions/checkout@v2
@@ -58,7 +59,6 @@ jobs:
             libevent-dev \
             libsasl2-dev \
             libtbb-dev \
-            m2r \
             python3-sphinx \
             ${INSTALL_MEMCACHED} \
             ${INSTALL_CC} ${INSTALL_CXX}
@@ -95,9 +95,10 @@ jobs:
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
         run: cmake --build build -j2
       - name: Test
-        run: cmake --build build -j2 --target test
-      - name: Install
-        run: cmake --build build -j2 --target install -- DESTDIR=/tmp
+        if: env.BUILD_TESTING == 'ON'
+        run: |
+          cmake --build build -j2 --target test
+          cmake --build build -j2 --target install -- DESTDIR=/tmp
       - name: Failed tests log
         if: ${{ failure() }}
         run: cat build/Testing/Temporary/LastTest.log || true
@@ -150,7 +151,6 @@ jobs:
             libevent-dev \
             libsasl2-dev \
             libtbb-dev \
-            m2r \
             python3-sphinx \
             ${INSTALL_MEMCACHED} \
             ${INSTALL_CC} ${INSTALL_CXX}
@@ -187,9 +187,10 @@ jobs:
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
         run: cmake --build build -j2
       - name: Test
-        run: cmake --build build -j2 --target test
-      - name: Install
-        run: cmake --build build -j2 --target install -- DESTDIR=/tmp
+        if: env.BUILD_TESTING == 'ON'
+        run: |
+          cmake --build build -j2 --target test
+          cmake --build build -j2 --target install -- DESTDIR=/tmp
       - name: Failed tests log
         if: ${{ failure() }}
         run: cat build/Testing/Temporary/LastTest.log || true
@@ -241,7 +242,6 @@ jobs:
             libevent-dev \
             libsasl2-dev \
             libtbb-dev \
-            m2r \
             python3-sphinx \
             ${INSTALL_MEMCACHED} \
             ${INSTALL_CC} ${INSTALL_CXX}
@@ -278,9 +278,10 @@ jobs:
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
         run: cmake --build build -j2
       - name: Test
-        run: cmake --build build -j2 --target test
-      - name: Install
-        run: cmake --build build -j2 --target install -- DESTDIR=/tmp
+        if: env.BUILD_TESTING == 'ON'
+        run: |
+          cmake --build build -j2 --target test
+          cmake --build build -j2 --target install -- DESTDIR=/tmp
       - name: Failed tests log
         if: ${{ failure() }}
         run: cat build/Testing/Temporary/LastTest.log || true
@@ -315,7 +316,6 @@ jobs:
     runs-on: macos-10.15 #
     env:
       CMAKE_BUILD_TYPE:   "Debug"
-      ENABLE_SASL:        "OFF"
       BUILD_TESTING:      "ON"
       VERBOSE:            "ON"
       CFLAGS:             "-O0 --coverage"
@@ -335,7 +335,6 @@ jobs:
             libevent-dev \
             libsasl2-dev \
             libtbb-dev \
-            m2r \
             python3-sphinx \
             ${INSTALL_MEMCACHED} \
             ${INSTALL_CC} ${INSTALL_CXX}
@@ -372,9 +371,10 @@ jobs:
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
         run: cmake --build build -j2
       - name: Test
-        run: cmake --build build -j2 --target test
-      - name: Install
-        run: cmake --build build -j2 --target install -- DESTDIR=/tmp
+        if: env.BUILD_TESTING == 'ON'
+        run: |
+          cmake --build build -j2 --target test
+          cmake --build build -j2 --target install -- DESTDIR=/tmp
       - name: Failed tests log
         if: ${{ failure() }}
         run: cat build/Testing/Temporary/LastTest.log || true
@@ -410,7 +410,6 @@ jobs:
     runs-on: macos-10.15 #
     env:
       CMAKE_BUILD_TYPE:   "Release"
-      ENABLE_SASL:        "OFF"
       BUILD_DOCS_MANGZ:   "ON"
       OS_VND:   macOS #
       OS_VER:   macos-10.15 #
@@ -426,7 +425,6 @@ jobs:
             libevent-dev \
             libsasl2-dev \
             libtbb-dev \
-            m2r \
             python3-sphinx \
             ${INSTALL_MEMCACHED} \
             ${INSTALL_CC} ${INSTALL_CXX}
@@ -463,9 +461,10 @@ jobs:
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
         run: cmake --build build -j2
       - name: Test
-        run: cmake --build build -j2 --target test
-      - name: Install
-        run: cmake --build build -j2 --target install -- DESTDIR=/tmp
+        if: env.BUILD_TESTING == 'ON'
+        run: |
+          cmake --build build -j2 --target test
+          cmake --build build -j2 --target install -- DESTDIR=/tmp
       - name: Failed tests log
         if: ${{ failure() }}
         run: cat build/Testing/Temporary/LastTest.log || true
@@ -500,7 +499,6 @@ jobs:
     runs-on: windows-2019 #
     env:
       CMAKE_BUILD_TYPE: "Release"
-      ENABLE_SASL:      "OFF"
       BISON_ROOT:       "C:/msys64/usr"
       FLEX_ROOT:        "C:/msys64/usr"
       OS_VND:   Windows #
@@ -508,9 +506,6 @@ jobs:
       CC_VND:   msvc #
       CC_VER:   cur #
     continue-on-error: true
-    defaults:
-      run:
-        shell: msys2 {0}
     steps:
       - uses: actions/checkout@v2
       - uses: msys2/setup-msys2@v2
@@ -627,7 +622,6 @@ jobs:
             libevent-dev \
             libsasl2-dev \
             libtbb-dev \
-            m2r \
             python3-sphinx \
             ${INSTALL_MEMCACHED} \
             ${INSTALL_CC} ${INSTALL_CXX}
@@ -664,9 +658,10 @@ jobs:
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
         run: cmake --build build -j2
       - name: Test
-        run: cmake --build build -j2 --target test
-      - name: Install
-        run: cmake --build build -j2 --target install -- DESTDIR=/tmp
+        if: env.BUILD_TESTING == 'ON'
+        run: |
+          cmake --build build -j2 --target test
+          cmake --build build -j2 --target install -- DESTDIR=/tmp
       - name: Failed tests log
         if: ${{ failure() }}
         run: cat build/Testing/Temporary/LastTest.log || true

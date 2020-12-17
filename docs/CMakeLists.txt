@@ -40,14 +40,15 @@ else()
         add_custom_command(
                 OUTPUT "${SPHINX_HTML_DIR}"
                 COMMAND
-                ${SPHINX_EXECUTABLE}
-                -q -b html
-                -c "${SPHINX_BUILD_DIR}"
-                -d "${SPHINX_CACHE_DIR}"
-                ${SPHINX_OPTIONS}
-                "${SPHINX_SOURCE_DIR}"
-                "${SPHINX_HTML_DIR}"
-                COMMAND ${CMAKE_COMMAND} -E touch html
+                    ${SPHINX_EXECUTABLE}
+                    -q -b html
+                    -c "${SPHINX_BUILD_DIR}"
+                    -d "${SPHINX_CACHE_DIR}"
+                    ${SPHINX_OPTIONS}
+                    "${SPHINX_SOURCE_DIR}"
+                    "${SPHINX_HTML_DIR}"
+                COMMAND
+                    ${CMAKE_COMMAND} -E touch "${SPHINX_HTML_DIR}"
                 BYPRODUCTS ${SPHINX_HTML_DIR}
                 DEPENDS "${DOCS_SOURCE}"
                 )
@@ -62,14 +63,15 @@ else()
         add_custom_command(
                 OUTPUT ${SPHINX_MAN_DIR}
                 COMMAND
-                ${SPHINX_EXECUTABLE}
-                -q -b man
-                -c "${SPHINX_BUILD_DIR}"
-                -d "${SPHINX_CACHE_DIR}"
-                ${SPHINX_OPTIONS}
-                "${SPHINX_SOURCE_DIR}"
-                "${SPHINX_MAN_DIR}"
-                COMMAND ${CMAKE_COMMAND} -E touch man
+                    ${SPHINX_EXECUTABLE}
+                    -q -b man
+                    -c "${SPHINX_BUILD_DIR}"
+                    -d "${SPHINX_CACHE_DIR}"
+                    ${SPHINX_OPTIONS}
+                    "${SPHINX_SOURCE_DIR}"
+                    "${SPHINX_MAN_DIR}"
+                COMMAND
+                    ${CMAKE_COMMAND} -E touch "${SPHINX_MAN_DIR}"
                 BYPRODUCTS ${SPHINX_MAN_DIR}
                 DEPENDS "${DOCS_SOURCE}"
                 )
@@ -86,9 +88,11 @@ else()
             if(GZIP)
                 set(MAN_EXT ".gz")
                 add_custom_target(man_gz ALL
-                        ${GZIP} -kf ${SPHINX_MAN_DIR}/*.{1,3}
+                        COMMAND ${GZIP} -kf
+                            ${SPHINX_MAN_DIR}/*.1
+                            ${SPHINX_MAN_DIR}/*.3
                         DEPENDS ${SPHINX_MAN_DIR}
-                        )
+                        ) # some shells do not support braced glob patterns
             endif()
         endif()
 
