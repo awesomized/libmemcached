@@ -420,6 +420,8 @@ jobs:
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 1000
       - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
@@ -510,6 +512,8 @@ jobs:
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 1000
       - uses: msys2/setup-msys2@v2
         with:
           release: false
@@ -549,6 +553,8 @@ jobs:
       CC_VER: ${{ matrix.cc_ver }}
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 1000
       - name: Prepare environment (for new gnu on ubuntu-20.04)
         if: (env.OS_VER=='ubuntu-20.04') && (env.CC_VND=='gnu') && (env.CC_VER=='new')
         run: |

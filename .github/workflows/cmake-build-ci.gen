@@ -363,6 +363,8 @@ jobs:
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 1000
 <?php steps(false); ?>
 
   # win build
@@ -377,6 +379,8 @@ jobs:
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 1000
       - uses: msys2/setup-msys2@v2
         with:
           release: false
@@ -416,4 +420,6 @@ jobs:
       CC_VER: ${{ matrix.cc_ver }}
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 1000
 <?php steps(true); ?>
