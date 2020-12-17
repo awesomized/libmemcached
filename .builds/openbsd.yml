@@ -9,7 +9,7 @@ packages:
   - pigz
   - py3-sphinx
   - py3-m2r
-  - rsync
+  - rsync--
   - sudo--
   - tbb
 sources:
