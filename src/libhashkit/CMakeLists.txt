@@ -41,6 +41,7 @@ configure_file(hashkitcon.h.in hashkitcon.h @ONLY)
 
 install(TARGETS libhashkit EXPORT libhashkit-targets
         RUNTIME COMPONENT bin DESTINATION ${CMAKE_INSTALL_BINDIR}
+        ARCHIVE COMPONENT lib DESTINATION ${CMAKE_INSTALL_LIBDIR}
         LIBRARY COMPONENT lib DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ${TARGET_NAMELINK_COMPONENT}
         )

@@ -121,6 +121,7 @@ enable_dtrace_for(libmemcached libmemcached_probes.d dtrace_probes.h)
 
 install(TARGETS libmemcached EXPORT libmemcached-targets
         RUNTIME COMPONENT bin DESTINATION ${CMAKE_INSTALL_BINDIR}
+        ARCHIVE COMPONENT lib DESTINATION ${CMAKE_INSTALL_LIBDIR}
         LIBRARY COMPONENT lib DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ${TARGET_NAMELINK_COMPONENT}
         )
