@@ -22,6 +22,6 @@
 #include <cstdio>
 #include <ciso646>
 
-#include "libmemcachedutil-1.0/util.h"
+#include "libmemcachedutil-1/util.h"
 #include "libmemcached/assert.hpp"
 #include "libmemcached/backtrace.hpp"

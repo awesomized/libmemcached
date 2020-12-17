@@ -12,6 +12,7 @@ was incremented due to the following changes:
 * Ported test suite to Catch2.
 * Build requires C++11 compiler support.
 * Tests require C++17 compiler support.
+* Moved to the Semantic Versioning Specification: https://semver.org
 * Moved the project from launchpad to github:
     * Source: https://github.com/m6w6/libmemcached
     * Documentation: https://m6w6.github.io/libmemcached

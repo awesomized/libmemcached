@@ -36,8 +36,8 @@
 #include "p9y/socket.hpp"
 #include "p9y/poll.hpp"
 
-#include "libmemcached-1.0/memcached.h"
-#include "libmemcachedprotocol-0.0/binary.h"
+#include "libmemcached-1/memcached.h"
+#include "libmemcachedprotocol-0/binary.h"
 #include "libmemcached/byteorder.h"
 
 #include <vector>

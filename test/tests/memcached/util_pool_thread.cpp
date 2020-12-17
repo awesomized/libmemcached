@@ -1,6 +1,6 @@
 #include "test/lib/common.hpp"
 
-#include "libmemcachedutil-1.0/pool.h"
+#include "libmemcachedutil-1/pool.h"
 #include <cassert>
 
 struct test_pool_context_st {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "libmemcached-1.0/platform.h"
+#include "libmemcached-1/platform.h"
 
 #include <time.h>
 #if defined HAVE_SYS_TIME_H

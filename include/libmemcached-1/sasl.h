@@ -15,4 +15,31 @@
 
 #pragma once
 
-#include "libhashkit-1/hashkit.h"
+#if defined(LIBMEMCACHED_WITH_SASL_SUPPORT) && LIBMEMCACHED_WITH_SASL_SUPPORT
+#  include <sasl/sasl.h>
+#else
+#  define sasl_callback_t void
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+LIBMEMCACHED_API
+void memcached_set_sasl_callbacks(memcached_st *ptr, const sasl_callback_t *callbacks);
+
+LIBMEMCACHED_API
+memcached_return_t memcached_set_sasl_auth_data(memcached_st *ptr, const char *username,
+                                                const char *password);
+
+LIBMEMCACHED_API
+memcached_return_t memcached_destroy_sasl_auth_data(memcached_st *ptr);
+
+LIBMEMCACHED_API
+sasl_callback_t *memcached_get_sasl_callbacks(memcached_st *ptr);
+
+#ifdef __cplusplus
+}
+#endif
+
+#include "libmemcached-1/struct/sasl.h"

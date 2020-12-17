@@ -13,37 +13,36 @@
     +--------------------------------------------------------------------+
 */
 
+#include "libmemcached-1/struct/stat.h"
+
 #pragma once
-
-#include "libhashkit/hashkitcon.h"
-
-#include <cassert>
-#include <cerrno>
-#include <cstdio>
-#include <cstdlib>
-#include <cmath>
-#include <ciso646>
-
-#ifndef __WORDSIZE
-#  ifdef __MINGW32__
-#    define __WORDSIZE 32
-#  endif
-#endif
-
-#include "libhashkit-1/hashkit.h"
-#include "libhashkit/algorithm.h"
-#include "libhashkit/is.h"
-#include "libhashkit/string.h"
-#include "libhashkit/aes.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void md5_signature(const unsigned char *key, unsigned int length, unsigned char *result);
+LIBMEMCACHED_API
+void memcached_stat_free(const memcached_st *, memcached_stat_st *);
 
-int update_continuum(hashkit_st *hashkit);
+LIBMEMCACHED_API
+memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_return_t *error);
+
+LIBMEMCACHED_API
+memcached_return_t memcached_stat_servername(memcached_stat_st *memc_stat, char *args,
+                                             const char *hostname, in_port_t port);
+
+LIBMEMCACHED_API
+char *memcached_stat_get_value(const memcached_st *ptr, memcached_stat_st *memc_stat,
+                               const char *key, memcached_return_t *error);
+
+LIBMEMCACHED_API
+char **memcached_stat_get_keys(memcached_st *ptr, memcached_stat_st *memc_stat,
+                               memcached_return_t *error);
+
+LIBMEMCACHED_API
+memcached_return_t memcached_stat_execute(memcached_st *memc, const char *args,
+                                          memcached_stat_fn func, void *context);
 
 #ifdef __cplusplus
-}
+} // extern "C"
 #endif

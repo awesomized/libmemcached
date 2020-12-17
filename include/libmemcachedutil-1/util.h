@@ -15,4 +15,10 @@
 
 #pragma once
 
-#include "libhashkit-1/hashkit.h"
+#include "libmemcached-1/memcached.h"
+
+#include "libmemcachedutil-1/pid.h"
+#include "libmemcachedutil-1/flush.h"
+#include "libmemcachedutil-1/ping.h"
+#include "libmemcachedutil-1/pool.h"
+#include "libmemcachedutil-1/version.h"

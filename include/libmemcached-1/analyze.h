@@ -13,6 +13,21 @@
     +--------------------------------------------------------------------+
 */
 
+#include "libmemcached-1/struct/analysis.h"
+
 #pragma once
 
-#include "libhashkit-1/hashkit.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+LIBMEMCACHED_API
+memcached_analysis_st *memcached_analyze(memcached_st *memc, memcached_stat_st *memc_stat,
+                                         memcached_return_t *error);
+
+LIBMEMCACHED_API
+void memcached_analyze_free(memcached_analysis_st *);
+
+#ifdef __cplusplus
+}
+#endif

@@ -18,7 +18,7 @@
 #include "mem_config.h"
 #include <assert.h>
 
-#include "libmemcachedprotocol-0.0/handler.h"
+#include "libmemcachedprotocol-0/handler.h"
 #include "libmemcachedprotocol/cache.h"
 #include "libmemcached/byteorder.h"
 

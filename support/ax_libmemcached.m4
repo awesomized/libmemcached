@@ -52,13 +52,13 @@
 #serial 1
 
 AC_DEFUN([AX_LIBMEMCACHED], [
-    AC_CHECK_HEADER([libmemcached-1.0/memcached.h], [
+    AC_CHECK_HEADER([libmemcached-1/memcached.h], [
       AC_CACHE_CHECK([check for -lmemcached], [ax_cv_libmemcached], [
         AC_LANG_PUSH([C])
         AX_SAVE_FLAGS
         LIBS="-lmemcached $LIBS"
         AC_RUN_IFELSE([
-          AC_LANG_PROGRAM([#include <libmemcached-1.0/memcached.h>], [
+          AC_LANG_PROGRAM([#include <libmemcached-1/memcached.h>], [
             memcached_st *memc;
             memc= memcached(NULL, 0);
             memcached_free(memc);
@@ -72,22 +72,22 @@ AC_DEFUN([AX_LIBMEMCACHED], [
       ])
 
   AS_IF([test "x$ax_cv_libmemcached" = "xyes"], [
-      AC_DEFINE([HAVE_LIBMEMCACHED_MEMCACHED_H], [1], [Have libmemcached-1.0/memcached.h])
+      AC_DEFINE([HAVE_LIBMEMCACHED_MEMCACHED_H], [1], [Have libmemcached-1/memcached.h])
       ],[
-      AC_DEFINE([HAVE_LIBMEMCACHED_MEMCACHED_H], [0], [Have libmemcached-1.0/memcached.h])
+      AC_DEFINE([HAVE_LIBMEMCACHED_MEMCACHED_H], [0], [Have libmemcached-1/memcached.h])
       ])
   ])
 
   AC_DEFUN([AX_LIBMEMCACHED_UTIL], [
       AC_REQUIRE([AX_LIBMEMCACHED])
       AS_IF([test "$ax_cv_libmemcached" = yes], [
-        AC_CHECK_HEADER([libmemcachedutil-1.0/util.h], [
+        AC_CHECK_HEADER([libmemcachedutil-1/util.h], [
           AC_CACHE_CHECK([check for -lmemcachedutil], [ax_cv_libmemcached_util], [
             AX_SAVE_FLAGS
             AC_LANG_PUSH([C])
             LIBS="-lmemcachedutil -lmemcached $LIBS"
             AC_RUN_IFELSE([
-              AC_LANG_PROGRAM([#include <libmemcachedutil-1.0/util.h>], [
+              AC_LANG_PROGRAM([#include <libmemcachedutil-1/util.h>], [
                 memcached_pool_st *memc_pool= memcached_pool_create(NULL, 0, 3);
                 memcached_pool_destroy(memc_pool);
                 ])],
@@ -101,9 +101,9 @@ AC_DEFUN([AX_LIBMEMCACHED], [
         ])
 
       AS_IF([test "x$ax_cv_libmemcached_util" = "xyes"], [
-        AC_DEFINE([HAVE_LIBMEMCACHED_UTIL_H], [1], [Have libmemcachedutil-1.0/util.h])
+        AC_DEFINE([HAVE_LIBMEMCACHED_UTIL_H], [1], [Have libmemcachedutil-1/util.h])
         ],[
-        AC_DEFINE([HAVE_LIBMEMCACHED_UTIL_H], [0], [Have libmemcachedutil-1.0/util.h])
+        AC_DEFINE([HAVE_LIBMEMCACHED_UTIL_H], [0], [Have libmemcachedutil-1/util.h])
         ])
       ])
 
