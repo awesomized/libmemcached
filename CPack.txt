@@ -39,6 +39,7 @@ memcached server (http://memcached.org/). It has been designed to be
 light on memory usage, thread safe, and provide full access to server
 side methods.")
 list(JOIN PROJECT_CONFIG "-" CPACK_PACKAGE_DIRECTORY)
+set(CPACK_PROJECT_CONFIG_FILE "${CMAKE_SOURCE_DIR}/CPack/ProjectConfig.txt")
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_SOURCE_DIR}/README.md")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "${PROJECT_NAME}/${PROJECT_VERSION}")
 set(CPACK_PACKAGE_CHECKSUM SHA1)
@@ -46,13 +47,15 @@ set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
 set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
 set(CPACK_CHANGELOG_FILE "${CMAKE_SOURCE_DIR}/ChangeLog-1.1.md")
 
-
 execute_process(
         COMMAND git describe --tags --match [0-9]*.*
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         OUTPUT_VARIABLE PROJECT_TAG
-        ERROR_VARIABLE IGNORED
+        ERROR_VARIABLE GIT_ERROR_OUTPUT
 )
+if(ERROR_OUTPUT)
+    message(NOTICE "git describe: ${GIT_ERROR_OUTPUT}")
+endif()
 string(STRIP "${PROJECT_TAG}" PROJECT_TAG)
 if(PROJECT_TAG)
     set(CPACK_PACKAGE_FILE_NAME ${PROJECT_NAME}-${PROJECT_TAG})
@@ -92,8 +95,8 @@ endif()
 include(CPack)
 
 add_custom_target(push-artifacts
-        COMMAND ${CMAKE_SOURCE_DIR}/scripts/push-artifacts.sh
-            ${CPACK_PACKAGE_DIRECTORY}/${PROJECT_NAME}-*
+        COMMAND
+            bash ${CMAKE_SOURCE_DIR}/scripts/push-artifacts.sh "${CPACK_PACKAGE_DIRECTORY}/"
         WORKING_DIRECTORY ${CPACK_BINARY_DIR}
         )
 

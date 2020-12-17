@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # push artifacts to https://artifacts.m6w6.name/libmemcached/
 
 if test -n "$PUSH_ARTIFACTS_ID"
@@ -8,4 +8,4 @@ then
 fi
 
 RSYNC_CONF=$(dirname $0)/push-artifacts.conf
-rsync -RPae "ssh -F $RSYNC_CONF" "$@" m6w6.name::artifacts/libmemcached/
+rsync -RPae "ssh -F $RSYNC_CONF" --exclude "_CPack_Packages" "$@" m6w6.name::artifacts/libmemcached/
