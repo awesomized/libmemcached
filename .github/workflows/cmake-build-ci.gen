@@ -188,11 +188,12 @@ function steps_test() {
 ?>
       - name: Test
         if: env.BUILD_TESTING == 'ON'
-        run: |
-          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target test
-          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target install -- DESTDIR=/tmp
+        run: cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target test
+      - name: Install
+        if: env.BUILD_TESTING == 'ON'
+        run: cmake --install build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --prefix /tmp
       - name: Failed tests log
-        if: ${{ failure() }}
+        if: ${{ env.BUILD_TESTING == 'ON' && failure() }}
         run: cat build/Testing/Temporary/LastTest.log || true
 <?php
 }
@@ -205,10 +206,10 @@ function steps_package() {
         if: env.CC_VER == 'cur' && env.CMAKE_BUILD_TYPE == 'Release'
         run: |
           cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
-          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package -- VERBOSE=
+          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
           cmake -DCPACK_COMPONENT_INSTALL=ON build
-          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package -- VERBOSE=
-          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target push-artifacts -- VERBOSE=
+          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
+          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target push-artifacts
 <?php
 }
 
