@@ -45,4 +45,5 @@ tasks:
       cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_DOCS_MANGZ=ON -S libmemcached -B release
       cmake --build release -j2 --target package -- VERBOSE=
       cmake -DCPACK_COMPONENT_INSTALL=ON release
+      cmake --build release -j2 --target package -- VERBOSE=
       cmake --build release -j2 --target push-artifacts -- VERBOSE=
