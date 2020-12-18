@@ -22,10 +22,8 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL AppleClang)
 		LINK_FLAGS "-Wl,-undefined,dynamic_lookup"
 		)
 endif()
-if(MSVC)
-        set_target_properties(libmemcachedutil PROPERTIES
-                LINK_FLAGS "/FORCE:UNRESOLVED"
-                )
+if(MSVC OR MINGW)
+    target_link_libraries(libmemcachedutil PUBLIC libmemcached)
 endif()
 target_link_libraries(libmemcachedutil PUBLIC Threads::Threads)
 if(HAVE_LIBSASL)

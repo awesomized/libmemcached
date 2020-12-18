@@ -22,7 +22,7 @@ extern "C" {
 # include <stdint.h>
 #endif
 
-#ifdef _MSC_VER
+#if defined _WIN32
 # undef interface
 #endif
 

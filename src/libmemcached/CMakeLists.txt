@@ -145,7 +145,7 @@ set_target_properties(libmemcachedinternal PROPERTIES CXX_STANDARD ${CXX_STANDAR
 target_compile_definitions(libmemcachedinternal PRIVATE -DBUILDING_LIBMEMCACHEDINTERNAL)
 target_link_libraries(libmemcachedinternal PUBLIC libhashkit Threads::Threads ${CMAKE_DL_LIBS})
 target_link_libraries(libmemcachedinternal PRIVATE p9y)
-if(MSVC)
+if(MSVC OR MINGW)
     target_link_libraries(libmemcached PUBLIC wsock32 ws2_32)
 endif()
 if(HAVE_LIBSASL)

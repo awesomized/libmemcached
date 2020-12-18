@@ -23,7 +23,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL AppleClang)
 endif()
 target_link_libraries(libmemcachedprotocol PRIVATE p9y)
 target_link_libraries(libmemcachedprotocol PUBLIC Threads::Threads)
-if(MSVC)
+if(MSVC OR MINGW)
     target_link_libraries(libmemcachedprotocol PUBLIC wsock32 ws2_32)
 endif()
 target_include_directories(libmemcachedprotocol PRIVATE

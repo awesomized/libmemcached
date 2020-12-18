@@ -18,6 +18,7 @@
 #include <cassert>
 #include <cerrno>
 #include <cstring>
+#include <ctime>
 #include <pthread.h>
 #include <memory>
 
