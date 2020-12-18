@@ -4,6 +4,7 @@
 *.output
 *.pop
 *.rej
+*.bak
 *TAGS
 *patch
 .cproject

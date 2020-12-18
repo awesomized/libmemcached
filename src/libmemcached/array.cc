@@ -14,8 +14,8 @@
 */
 
 #include "libmemcached/common.h"
-#include <assert.h>
-#include <iso646.h>
+
+#include <cassert>
 
 struct memcached_array_st {
   Memcached *root;

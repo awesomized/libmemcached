@@ -9,13 +9,12 @@
 #endif
 
 #if !defined HAVE_REALPATH
-# if defined _WIN32
-#  if defined __cplusplus
+# define P9Y_NEED_REALPATH
+# if defined __cplusplus
 extern "C" {
-#  endif
+# endif
 char *realpath(const char *path, char real[_MAX_PATH]);
-#  if defined __cplusplus
+# if defined __cplusplus
 }
-#  endif
-# endif // _WIN32
+# endif
 #endif // HAVE_REALPATH

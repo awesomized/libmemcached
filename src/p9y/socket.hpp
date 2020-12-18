@@ -39,6 +39,7 @@ extern "C" {
 #endif
 
 # if defined _WIN32
+# define P9Y_NEED_GET_SOCKET_ERRNO
 int get_socket_errno();
 #  define SHUT_WR SD_SEND
 #  define SHUT_RD SD_RECEIVE

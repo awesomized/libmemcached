@@ -28,7 +28,7 @@ set(LIBMEMCACHED_SOURCES
         ${FLEX_CSL_SCANNER_OUTPUTS}
         allocators.cc
         analyze.cc
-        array.c
+        array.cc
         auto.cc
         backtrace.cc
         behavior.cc
@@ -72,7 +72,7 @@ set(LIBMEMCACHED_SOURCES
         udp.cc
         verbosity.cc
         version.cc
-        virtual_bucket.c)
+        virtual_bucket.cc)
 
 check_cxx_compiler_flag(-Wno-deprecated-register W_NO_DEPRECATED_REGISTER)
 

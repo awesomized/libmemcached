@@ -14,6 +14,7 @@
 */
 
 #include "libmemcached/common.h"
+#include "libmemcached/virtual_bucket.h"
 
 struct bucket_t {
   uint32_t master;
