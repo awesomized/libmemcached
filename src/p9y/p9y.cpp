@@ -1,6 +1,7 @@
 #include "libgen.hpp"
 #if defined P9Y_NEED_BASENAME
 # if defined _WIN32
+# include <cstring>
 char *basename(const char *filename) {
   static char base[_MAX_PATH * 2], ext[_MAX_PATH], *ptr;
   (void) _splitpath_s(filename, NULL, 0, NULL, 0, base, _MAX_PATH, ext, _MAX_PATH);
