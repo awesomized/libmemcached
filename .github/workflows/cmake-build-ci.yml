@@ -631,6 +631,7 @@ jobs:
             rsync
             openssh
             mingw-w64-x86_64-toolchain
+            git
       - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
         run: |

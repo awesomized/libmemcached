@@ -409,6 +409,7 @@ jobs:
             rsync
             openssh
             mingw-w64-x86_64-toolchain
+            git
 <?php steps(false);?>
 
   # linux release builds
