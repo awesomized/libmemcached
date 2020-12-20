@@ -635,9 +635,9 @@ jobs:
             git
       - name: Prepare environment (for mingw on Windows)
         run: |
-          echo "\msys64\usr\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          echo "\msys64\mingw64\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-        - name: Install dependencies (Linux)
+          echo "c:\msys64\usr\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          echo "c:\msys64\mingw64\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
           sudo apt-get install -my \
