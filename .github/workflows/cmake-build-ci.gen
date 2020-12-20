@@ -402,6 +402,8 @@ jobs:
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - uses: msys2/setup-msys2@v2
         with:
           release: false
