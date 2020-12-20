@@ -26,6 +26,11 @@ const DEF = [
     "CC" => "msvc",
     "CXX" => "msvc",
   ],
+  "mingw" => [ // dummy
+    "ver" => "cur",
+    "CC" => "mingw",
+    "CXX" => "mingw",
+  ]
 ];
 const ENV = [
   "ubuntu-20.04" => [
@@ -81,15 +86,6 @@ const MAP = [
           ]
         ]
       ]
-    ],
-    "windows-2019" => [
-      'env.CC_VND' => [
-        "msvc" => [
-          'env.CC_VER' => [
-            "cur" => "2019",
-          ],
-        ],
-      ],
     ],
   ]
 ];
@@ -248,12 +244,13 @@ function defaults($os_vnd = DEF["os"]) {
   return "$os_ver, $cc_vnd, $cc_ver";
 }
 
-function env_override($os_vnd) {
+function env_override($os_vnd, $cc_vnd = null) {
+  isset($cc_vnd) or $cc_vnd = DEF[DEF[$os_vnd]];
 ?>
       OS_VND:   <?=$os_vnd?> #
       OS_VER:   <?=DEF[$os_vnd]?> #
-      CC_VND:   <?=DEF[DEF[$os_vnd]]?> #
-      CC_VER:   <?=DEF[DEF[DEF[$os_vnd]]]["ver"]?> #
+      CC_VND:   <?=$cc_vnd?> #
+      CC_VER:   <?=DEF[$cc_vnd]["ver"]?> #
 <?php
 }
 
@@ -369,7 +366,7 @@ jobs:
           fetch-depth: 0
 <?php steps(false); ?>
 
-  # win build
+  # win msvc build
   win-msvc:
     name: win-msvc (<?=DEF["Windows"]?>, <?=DEF[DEF["Windows"]]?>, <?=DEF[DEF[DEF["Windows"]]]["ver"]?>)
     runs-on: <?=DEF["Windows"]?> #
@@ -377,7 +374,7 @@ jobs:
       CMAKE_BUILD_TYPE: "Release"
       BISON_ROOT:       "C:/msys64/usr"
       FLEX_ROOT:        "C:/msys64/usr"
-<?php env_override("Windows")?>
+<?php env_override("Windows", "msvc")?>
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
@@ -390,6 +387,28 @@ jobs:
           install: >-
             rsync
             openssh
+<?php steps(false);?>
+
+  # win mingw build (set PATH=%PATH%;c:\msys64\mingw64\bin)
+  win-msvc:
+    name: win-mingw (<?=DEF["Windows"]?>, mingw, <?=DEF["mingw"]["ver"]?>)
+    runs-on: <?=DEF["Windows"]?> #
+    env:
+      CMAKE_BUILD_TYPE: "Release"
+      CMAKE_GENERATOR:  "MinGW Makefiles"
+      BISON_ROOT:       "C:/msys64/usr"
+      FLEX_ROOT:        "C:/msys64/usr"
+<?php env_override("Windows", "mingw")?>
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v2
+      - uses: msys2/setup-msys2@v2
+        with:
+          release: false
+          install: >-
+            rsync
+            openssh
+            mingw-w64-x86_64-toolchain
 <?php steps(false);?>
 
   # linux release builds
