@@ -390,7 +390,7 @@ jobs:
 <?php steps(false);?>
 
   # win mingw build (set PATH=%PATH%;c:\msys64\mingw64\bin)
-  win-msvc:
+  win-mingw:
     name: win-mingw (<?=DEF["Windows"]?>, mingw, <?=DEF["mingw"]["ver"]?>)
     runs-on: <?=DEF["Windows"]?> #
     env:
