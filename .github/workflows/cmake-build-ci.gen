@@ -93,8 +93,19 @@ const MAP = [
 /**
  * @var bool $splat_map false = no splat map, null = default splat map, true = full splat map
  */
-function steps_setenv($splat_map = null) {
-  if ($splat_map !== false) {
+function steps_setenv($os_vnd, $splat_map = null) {
+  if ($os_vnd === "Windows") {
+?>
+      - name: Prepare environment (Windows)
+        run: |
+          echo "c:\msys64\usr\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          echo "c:\msys64\mingw64\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - name: Prepare environment (MinGW)
+        if: env.CC_VND == 'mingw'
+        run: |
+          echo "CMAKE_GENERATOR=\"MinGW Makefiles\"" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+<?php
+  } elseif ($splat_map !== false) {
     foreach (MAP as $os_is => $os_vers) {
       foreach ($os_vers as $os_ver => $cc_vnds_) {
         if (!$splat_map && DEF[DEF["os"]] != $os_ver) continue;
@@ -127,10 +138,13 @@ function steps_setenv($splat_map = null) {
   }
 }
 
-function steps_getdeps() {
+function steps_getdeps($os_vnd) {
 ?>
-      - name: Install dependencies (Linux)
-        if: runner.os == 'Linux'
+      - name: Install dependencies (<?=$os_vnd?>)
+        if: runner.os == '<?=$os_vnd?>'
+<?php
+  if ($os_vnd === "Linux") :
+?>
         run: |
           sudo apt-get install -my \
             libevent-dev \
@@ -140,12 +154,29 @@ function steps_getdeps() {
             ${INSTALL_MEMCACHED} \
             ${INSTALL_CC} ${INSTALL_CXX}
           sudo systemctl stop memcached || true
-      - name: Install dependencies (Mac)
-        if: runner.os == 'macOS'
+<?php
+  endif;
+  if ($os_vnd === "macOS") :
+?>
         run: |
           brew install bison flex sphinx-doc ${INSTALL_MEMCACHED}
           brew services stop memcached || true
           echo MEMCACHED_BINARY="/usr/local/bin/memcached" >> ${GITHUB_ENV}
+<?php
+  endif;
+  if ($os_vnd === "Windows") :
+?>
+        uses: msys2/setup-msys2@v2
+        with:
+          release: false
+          path-type: inherit
+          install: >-
+            rsync
+            openssh
+<?php
+  endif;
+  if ($os_vnd != "Windows") :
+?>
       - name: Build memcached
         if: runner.os != 'Windows'
         run: |
@@ -169,6 +200,7 @@ function steps_getdeps() {
             echo MEMCACHED_BINARY="${MEMCACHED_PREFIX}/bin/memcached" >> ${GITHUB_ENV}
           fi
 <?php
+  endif;
 }
 
 function steps_build() {
@@ -209,7 +241,8 @@ function steps_package() {
 <?php
 }
 
-function steps_notify() {
+function steps_notify($os_vnd) {
+  if ($os_vnd !== "Windows") :
 ?>
       - name: Notify Gitter (success)
         if: ${{ success() && runner.os != 'Windows'}}
@@ -226,15 +259,16 @@ function steps_notify() {
             --data-urlencode "level=error" \
             --data-urlencode "message=Github [${GITHUB_REPOSITORY}](https://github.com/${GITHUB_REPOSITORY}/commits/${REF}) (${REF}) [failure](https://github.com/m6w6/libmemcached/actions/runs/${GITHUB_RUN_ID}) (${ImageOS}/${CC:-${CC_VND}-${CC_VER}})"
 <?php
+  endif;
 }
 
-function steps($splat_map = null) {
-  steps_setenv($splat_map);
-  steps_getdeps();
+function steps($os_vnd, $splat_map = null) {
+  steps_setenv($os_vnd, $splat_map);
+  steps_getdeps($os_vnd);
   steps_build();
   steps_test();
   steps_package();
-  steps_notify();
+  steps_notify($os_vnd);
 }
 
 function defaults($os_vnd = DEF["os"]) {
@@ -305,34 +339,23 @@ jobs:
           repository: memcached/memcached
           path: memcached
           ref: 1.6.7
-<?php steps(); ?>
+<?php steps("Linux"); ?>
       - uses: codecov/codecov-action@v1.0.13
 
   # sanitizer build
-  dbg-san:
-    name: dbg-san (<?=defaults()?>)
+  sanitizer:
     runs-on: <?=DEF[DEF["os"]]?> #
+    strategy:
+      matrix:
+        sanitizer: ['address;undefined', 'thread']
     env:
       CMAKE_BUILD_TYPE:   "Debug"
       BUILD_TESTING:      "ON"
       VERBOSE:            "ON"
-      ENABLE_SANITIZERS:  "address;undefined"
+      ENABLE_SANITIZERS:  ${{ matrix.sanitizer }}
     steps:
       - uses: actions/checkout@v2
-<?php steps(); ?>
-
-  # thread sanitizer build
-  dbg-tsan:
-    name: dbg-tsan (<?=defaults()?>)
-    runs-on: <?=DEF[DEF["os"]]?> #
-    env:
-      CMAKE_BUILD_TYPE:   "Debug"
-      BUILD_TESTING:      "ON"
-      VERBOSE:            "ON"
-      ENABLE_SANITIZERS:  "thread"
-    steps:
-      - uses: actions/checkout@v2
-<?php steps(); ?>
+<?php steps("Linux"); ?>
 
   # mac debug
   dbg-mac:
@@ -344,11 +367,11 @@ jobs:
       VERBOSE:            "ON"
       CFLAGS:             "-O0 --coverage"
       CXXFLAGS:           "-O0 --coverage"
-<?php env_override("macOS")?> #
+<?php env_override("macOS")?>
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
-<?php steps(false); ?>
+<?php steps("macOS", false); ?>
       - uses: codecov/codecov-action@v1.0.13
 
   # mac release
@@ -366,58 +389,27 @@ jobs:
           fetch-depth: 0
 <?php steps(false); ?>
 
-  # win msvc build
-  win-msvc:
-    name: win-msvc (<?=DEF["Windows"]?>, <?=DEF[DEF["Windows"]]?>, <?=DEF[DEF[DEF["Windows"]]]["ver"]?>)
-    runs-on: <?=DEF["Windows"]?> #
+  # windows release builds
+  windows:
+    strategy:
+      fail-fast: false
+      matrix:
+        os_ver: [<?=DEF["Windows"]?>]
+        cc_vnd: [msvc, mingw]
+        cc_ver: [cur]
+    runs-on: ${{ matrix.os_ver }}
+    continue-on-error: true
     env:
       CMAKE_BUILD_TYPE: "Release"
-      BISON_ROOT:       "C:/msys64/usr"
-      FLEX_ROOT:        "C:/msys64/usr"
-<?php env_override("Windows", "msvc")?>
-    continue-on-error: true
+      OS_VND: Windows
+      OS_VER: ${{ matrix.os_ver }}
+      CC_VND: ${{ matrix.cc_vnd }}
+      CC_VER: ${{ matrix.cc_ver }}
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - uses: msys2/setup-msys2@v2
-        with:
-          release: false
-          path-type: inherit
-          install: >-
-            rsync
-            openssh
-<?php steps(false);?>
-
-  # win mingw build (set PATH=%PATH%;c:\msys64\mingw64\bin)
-  win-mingw:
-    name: win-mingw (<?=DEF["Windows"]?>, mingw, <?=DEF["mingw"]["ver"]?>)
-    runs-on: <?=DEF["Windows"]?> #
-    env:
-      CMAKE_BUILD_TYPE: "Release"
-      CMAKE_GENERATOR:  "MinGW Makefiles"
-      BISON_ROOT:       "C:/msys64/usr"
-      FLEX_ROOT:        "C:/msys64/usr"
-<?php env_override("Windows", "mingw")?>
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - uses: msys2/setup-msys2@v2
-        with:
-          release: false
-          path-type: inherit
-          install: >-
-            rsync
-            openssh
-            mingw-w64-x86_64-toolchain
-            git
-      - name: Prepare environment (for mingw on Windows)
-        run: |
-          echo "c:\msys64\usr\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          echo "c:\msys64\mingw64\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-<?php steps(false);?>
+<?php steps("Windows", true); ?>
 
   # linux release builds
   release:
@@ -440,4 +432,4 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-<?php steps(true); ?>
+<?php steps("Linux", true); ?>
