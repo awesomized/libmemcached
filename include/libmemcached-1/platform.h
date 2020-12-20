@@ -53,15 +53,11 @@ typedef long int ssize_t;
 #endif
 
 #if defined _WIN32
+# define WINVER 0x0600
+# define _WIN32_WINNT 0x0600
 # include <winsock2.h>
 # include <ws2tcpip.h>
 typedef SOCKET memcached_socket_t;
-# if !defined POLLIN
-#  define POLLIN (POLLRDNORM|POLLRDBAND)
-# endif
-# if !defined POLLOUT
-#  define POLLOUT (POLLWRNORM)
-# endif
 #else
 typedef int memcached_socket_t;
 #endif // _WIN32
