@@ -53,7 +53,7 @@ execute_process(
         OUTPUT_VARIABLE PROJECT_TAG
         ERROR_VARIABLE GIT_ERROR_OUTPUT
 )
-if(ERROR_OUTPUT)
+if(GIT_ERROR_OUTPUT)
     message(NOTICE "git describe: ${GIT_ERROR_OUTPUT}")
 endif()
 string(STRIP "${PROJECT_TAG}" PROJECT_TAG)

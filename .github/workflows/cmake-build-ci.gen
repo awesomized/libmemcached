@@ -405,12 +405,17 @@ jobs:
       - uses: msys2/setup-msys2@v2
         with:
           release: false
+          path-type: inherit
           install: >-
             rsync
             openssh
             mingw-w64-x86_64-toolchain
             git
-<?php steps(false);?>
+      - name: Prepare environment (for mingw on Windows)
+        run: |
+          echo "\msys64\usr\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          echo "\msys64\mingw64\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+  <?php steps(false);?>
 
   # linux release builds
   release:
