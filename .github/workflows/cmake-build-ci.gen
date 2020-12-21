@@ -32,40 +32,6 @@ const DEF = [
     "CXX" => "mingw",
   ]
 ];
-const ENV = [
-  "ubuntu-20.04" => [
-    "gnu" => [
-      "new" => [
-        "INSTALL_CC" => "gcc-10",
-        "INSTALL_CXX" => "g++-10",
-      ]
-    ],
-    "clang" => [
-      "new" => [
-        "CXXFLAGS" => "-stdlib=libc++"
-      ],
-      "cur" => [
-        "CXXFLAGS" => "-stdlib=libc++"
-      ],
-      "old" => [
-        "CXXFLAGS" => "-stdlib=libc++"
-      ],
-    ]
-  ],
-  "ubuntu-18.04" => [
-    "clang" => [
-      "new" => [
-        "CXXFLAGS" => "-stdlib=libc++"
-      ],
-      "cur" => [
-        "CXXFLAGS" => "-stdlib=libc++"
-      ],
-      "old" => [
-        "CXXFLAGS" => "-stdlib=libc++"
-      ],
-    ]
-  ]
-];
 const MAP = [
   'env.OS_VER' => [
     "ubuntu-20.04" => [
@@ -104,6 +70,44 @@ const MAP = [
         ]
       ]
     ],
+  ]
+];
+const ENV = [
+  "ubuntu-20.04" => [
+    "gnu" => [
+      "new" => [
+        "INSTALL_CC" => "gcc-10",
+        "INSTALL_CXX" => "g++-10",
+      ]
+    ],
+    "clang" => [
+      "new" => [
+        "CXXFLAGS" => "-stdlib=libc++"
+      ],
+      "cur" => [
+        "CXXFLAGS" => "-stdlib=libc++",
+        "INSTALL_CXX" => "libc++"
+          . MAP["env.OS_VER"]["ubuntu-20.04"]["env.CC_VND"]["clang"]["env.CC_VER"]["cur"] . "-dev"
+      ],
+      "old" => [
+        "CXXFLAGS" => "-stdlib=libc++",
+        "INSTALL_CXX" => "libc++"
+          . MAP["env.OS_VER"]["ubuntu-20.04"]["env.CC_VND"]["clang"]["env.CC_VER"]["old"] . "-dev"
+      ],
+    ]
+  ],
+  "ubuntu-18.04" => [
+    "clang" => [
+      "new" => [
+        "CXXFLAGS" => "-stdlib=libc++"
+      ],
+      "cur" => [
+        "CXXFLAGS" => "-stdlib=libc++"
+      ],
+      "old" => [
+        "CXXFLAGS" => "-stdlib=libc++"
+      ],
+    ]
   ]
 ];
 
