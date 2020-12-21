@@ -360,7 +360,7 @@ jobs:
       - name: Prepare environment (MinGW)
         if: env.CC_VND == 'mingw'
         run: |
-          echo "CMAKE_GENERATOR=\"MinGW Makefiles\"" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo 'CMAKE_GENERATOR="MinGW Makefiles"' | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       - name: Install dependencies (Windows)
         if: runner.os == 'Windows'
         uses: msys2/setup-msys2@v2
