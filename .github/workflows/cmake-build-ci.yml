@@ -103,7 +103,7 @@ jobs:
       - name: Package
         env:
           PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
-        if: env.CC_VER == 'cur' && env.CMAKE_BUILD_TYPE == 'Release'
+        if: env.CMAKE_BUILD_TYPE == 'Release' && !(env.OS_VER == 'ubuntu-18.04' && env.CC_VND == 'gnu' && env.CC_VER == 'new  ')
         run: |
           cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
@@ -181,7 +181,7 @@ jobs:
       - name: Package
         env:
           PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
-        if: env.CC_VER == 'cur' && env.CMAKE_BUILD_TYPE == 'Release'
+        if: env.CMAKE_BUILD_TYPE == 'Release' && !(env.OS_VER == 'ubuntu-18.04' && env.CC_VND == 'gnu' && env.CC_VER == 'new  ')
         run: |
           cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
@@ -252,7 +252,7 @@ jobs:
       - name: Package
         env:
           PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
-        if: env.CC_VER == 'cur' && env.CMAKE_BUILD_TYPE == 'Release'
+        if: env.CMAKE_BUILD_TYPE == 'Release' && !(env.OS_VER == 'ubuntu-18.04' && env.CC_VND == 'gnu' && env.CC_VER == 'new  ')
         run: |
           cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
@@ -323,7 +323,7 @@ jobs:
       - name: Package
         env:
           PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
-        if: env.CC_VER == 'cur' && env.CMAKE_BUILD_TYPE == 'Release'
+        if: env.CMAKE_BUILD_TYPE == 'Release' && !(env.OS_VER == 'ubuntu-18.04' && env.CC_VND == 'gnu' && env.CC_VER == 'new  ')
         run: |
           cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
@@ -386,7 +386,7 @@ jobs:
       - name: Package
         env:
           PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
-        if: env.CC_VER == 'cur' && env.CMAKE_BUILD_TYPE == 'Release'
+        if: env.CMAKE_BUILD_TYPE == 'Release' && !(env.OS_VER == 'ubuntu-18.04' && env.CC_VND == 'gnu' && env.CC_VER == 'new  ')
         run: |
           cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
@@ -534,7 +534,7 @@ jobs:
       - name: Package
         env:
           PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
-        if: env.CC_VER == 'cur' && env.CMAKE_BUILD_TYPE == 'Release'
+        if: env.CMAKE_BUILD_TYPE == 'Release' && !(env.OS_VER == 'ubuntu-18.04' && env.CC_VND == 'gnu' && env.CC_VER == 'new  ')
         run: |
           cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
