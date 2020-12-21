@@ -242,24 +242,10 @@ function steps_package() {
 }
 
 function steps_notify($os_vnd) {
-  if ($os_vnd !== "Windows") :
 ?>
       - name: Notify Gitter (success)
-        if: ${{ success() && runner.os != 'Windows'}}
-        run: |
-          REF=$(basename ${GITHUB_REF})
-          curl -sS "${{ secrets.GITTER }}" \
-            --data-urlencode "level=info" \
-            --data-urlencode "message=Github [${GITHUB_REPOSITORY}](https://github.com/${GITHUB_REPOSITORY}/commits/${REF}) (${REF}) [success](https://github.com/m6w6/libmemcached/actions/runs/${GITHUB_RUN_ID}) (${ImageOS}/${CC:-${CC_VND}-${CC_VER}})"
-      - name: Notify Gitter (failure)
-        if: ${{ failure() && runner.os != 'Windows'}}
-        run: |
-          REF=$(basename ${GITHUB_REF})
-          curl -sS "${{ secrets.GITTER }}" \
-            --data-urlencode "level=error" \
-            --data-urlencode "message=Github [${GITHUB_REPOSITORY}](https://github.com/${GITHUB_REPOSITORY}/commits/${REF}) (${REF}) [failure](https://github.com/m6w6/libmemcached/actions/runs/${GITHUB_RUN_ID}) (${ImageOS}/${CC:-${CC_VND}-${CC_VER}})"
+        run: bash .github/notify-gitter.sh ${{ secrets.GITTER }} ${{ success() }}
 <?php
-  endif;
 }
 
 function steps($os_vnd, $splat_map = null) {
@@ -387,7 +373,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-<?php steps(false); ?>
+<?php steps("macOS", false); ?>
 
   # windows release builds
   windows:
