@@ -1,8 +1,8 @@
 # ChangeLog v1.1
 
-## v 1.1.0
+## v 1.1.0-beta1
 
-> released YYYY-MM-DD
+> released 2020-12-21
 
 **NOTE:**
 This is a bug fix release, not a feature release. The minor version number
