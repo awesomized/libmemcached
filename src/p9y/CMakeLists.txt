@@ -9,6 +9,9 @@ add_library(p9y STATIC
     p9y.cpp
     )
 
+set_target_properties(p9y PROPERTIES
+    CXX_STANDARD ${CXX_STANDARD}
+    )
 target_include_directories(p9y PRIVATE
     .
     ${CMAKE_SOURCE_DIR}/include
