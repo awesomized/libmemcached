@@ -1,9 +1,8 @@
 #include "ForkAndExec.hpp"
+#include "p9y/poll.hpp"
 
 #include <cstdio>
-
 #include <fcntl.h>
-#include <sys/poll.h>
 #if HAVE_UNISTD_H
 #  include <unistd.h>
 #endif

@@ -18,6 +18,10 @@
 
 #include "ms_memslap.h"
 
+#ifdef HAVE_SYS_TIME_H
+# include <sys/time.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
