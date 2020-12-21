@@ -5,7 +5,7 @@ GITTER=$(cat ~/.gitter)
 STATUS=$1
 
 REPO=m6w6/libmemcached
-REF=$(git describe --abbrev --always libmemcached)
+REF=$(GIT_DIR=libmemcached/.git git describe --abbrev --always)
 REF_URL=https://github.com/${REPO}/commits/${REF}
 
 BUILD_URL=${JOB_URL}
