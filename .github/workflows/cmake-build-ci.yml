@@ -1,6 +1,9 @@
 # Generated file; do not edit!
 name: cmake-build-ci
 on:
+  workflow_dispatch:
+  release:
+    types: [published]
   push:
     paths:
       - "contrib/**"

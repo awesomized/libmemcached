@@ -297,6 +297,9 @@ function env_override($os_vnd, $cc_vnd = null) {
 ?>
 name: cmake-build-ci
 on:
+  workflow_dispatch:
+  release:
+    types: [published]
   push:
     paths:
       - "contrib/**"
