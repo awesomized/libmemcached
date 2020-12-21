@@ -117,6 +117,8 @@ was incremented due to the following changes:
 * Fix `gh #95 <https://github.com/m6w6/libmemcached/issues/95>`_\ :
   MEMCACHED_CALLBACK_GET_FAILURE and MEMCACHED_BEHAVIOR_BUFFER_REQUESTS
 * Fix bin/memcat to output flags if requested with ``--flag``.
+* Fix `gh #68 <https://github.com/m6w6/libmemcached/issues/68>`_\ :
+  Windows support.
 
 ----
 
