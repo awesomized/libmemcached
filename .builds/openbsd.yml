@@ -16,7 +16,7 @@ sources:
   - https://github.com/m6w6/libmemcached
 secrets:
   - 685c5b0a-395c-4031-97f8-97496bb6c25f
-  - 79d59693-c250-4eba-9569-24650f86256b
+  - d7dfe587-b433-481b-8725-d7ccd82e59fb
 environment:
   ENABLE_HASH_HSIEH:  "ON"
   ENABLE_MEMASLAP:    "OFF"
@@ -40,4 +40,4 @@ tasks:
       maybe cmake --build release -j2 --target package -- VERBOSE=
       maybe cmake --build release -j2 --target push-artifacts -- VERBOSE=
   - success:
-      maybe
+      notify-gitter success

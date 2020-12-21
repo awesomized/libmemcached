@@ -9,7 +9,7 @@ REF=$(GIT_DIR=libmemcached/.git git describe --abbrev --always)
 REF_URL=https://github.com/${REPO}/commits/${REF}
 
 BUILD_URL=${JOB_URL}
-BUILD_TAG=$(uname -o)
+BUILD_TAG=$(uname -o 2>/dev/null || uname -s)
 if test "$BUILD_TAG" = "GNU/Linux"
 then
 	BUILD_TAG=$(lsb_release -irs)
