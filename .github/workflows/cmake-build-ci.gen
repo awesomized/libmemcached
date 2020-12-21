@@ -103,7 +103,7 @@ function steps_setenv($os_vnd, $splat_map = null) {
       - name: Prepare environment (MinGW)
         if: env.CC_VND == 'mingw'
         run: |
-          echo 'CMAKE_GENERATOR="MinGW Makefiles"' | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo 'CMAKE_GENERATOR=MinGW Makefiles' | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 <?php
   } elseif ($splat_map !== false) {
     foreach (MAP as $os_is => $os_vers) {
