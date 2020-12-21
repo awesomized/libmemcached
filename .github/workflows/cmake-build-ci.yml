@@ -110,8 +110,8 @@ jobs:
           cmake -DCPACK_COMPONENT_INSTALL=ON build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target push-artifacts
-      - name: Notify Gitter (success)
-        run: bash .github/notify-gitter.sh ${{ secrets.GITTER }} ${{ success() }}
+      - name: Notify Gitter
+        run: bash .github/notify-gitter.sh ${{ secrets.GITTER }} ${{ job.status }}
       - uses: codecov/codecov-action@v1.0.13
 
   # sanitizer build
@@ -188,8 +188,8 @@ jobs:
           cmake -DCPACK_COMPONENT_INSTALL=ON build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target push-artifacts
-      - name: Notify Gitter (success)
-        run: bash .github/notify-gitter.sh ${{ secrets.GITTER }} ${{ success() }}
+      - name: Notify Gitter
+        run: bash .github/notify-gitter.sh ${{ secrets.GITTER }} ${{ job.status }}
 
   # mac debug
   dbg-mac:
@@ -259,8 +259,8 @@ jobs:
           cmake -DCPACK_COMPONENT_INSTALL=ON build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target push-artifacts
-      - name: Notify Gitter (success)
-        run: bash .github/notify-gitter.sh ${{ secrets.GITTER }} ${{ success() }}
+      - name: Notify Gitter
+        run: bash .github/notify-gitter.sh ${{ secrets.GITTER }} ${{ job.status }}
       - uses: codecov/codecov-action@v1.0.13
 
   # mac release
@@ -330,8 +330,8 @@ jobs:
           cmake -DCPACK_COMPONENT_INSTALL=ON build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target push-artifacts
-      - name: Notify Gitter (success)
-        run: bash .github/notify-gitter.sh ${{ secrets.GITTER }} ${{ success() }}
+      - name: Notify Gitter
+        run: bash .github/notify-gitter.sh ${{ secrets.GITTER }} ${{ job.status }}
 
   # windows release builds
   windows:
@@ -393,8 +393,8 @@ jobs:
           cmake -DCPACK_COMPONENT_INSTALL=ON build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target push-artifacts
-      - name: Notify Gitter (success)
-        run: bash .github/notify-gitter.sh ${{ secrets.GITTER }} ${{ success() }}
+      - name: Notify Gitter
+        run: bash .github/notify-gitter.sh ${{ secrets.GITTER }} ${{ job.status }}
 
   # linux release builds
   release:
@@ -536,5 +536,5 @@ jobs:
           cmake -DCPACK_COMPONENT_INSTALL=ON build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target push-artifacts
-      - name: Notify Gitter (success)
-        run: bash .github/notify-gitter.sh ${{ secrets.GITTER }} ${{ success() }}
+      - name: Notify Gitter
+        run: bash .github/notify-gitter.sh ${{ secrets.GITTER }} ${{ job.status }}

@@ -243,8 +243,8 @@ function steps_package() {
 
 function steps_notify($os_vnd) {
 ?>
-      - name: Notify Gitter (success)
-        run: bash .github/notify-gitter.sh ${{ secrets.GITTER }} ${{ success() }}
+      - name: Notify Gitter
+        run: bash .github/notify-gitter.sh ${{ secrets.GITTER }} ${{ job.status }}
 <?php
 }
 

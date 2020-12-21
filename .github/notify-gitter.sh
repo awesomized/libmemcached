@@ -10,7 +10,7 @@ BUILD_URL=https://github.com/${REPO}/actions/runs/${GITHUB_RUN_ID}
 BUILD_ENV=${ImageOS}/${CC:-${CC_VND}-${CC_VER}}
 
 case "$2" in
-1|true)
+1|true|success)
 	level=info
 	status=success
 	;;
