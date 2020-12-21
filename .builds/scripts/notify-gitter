@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -eu
+
+GITTER=$(cat ~/.gitter)
+STATUS=$1
+
+REPO=m6w6/libmemcached
+REF=$(git describe --abbrev --always libmemcached)
+REF_URL=https://github.com/${REPO}/commits/${REF}
+
+BUILD_URL=${JOB_URL}
+BUILD_TAG=$(uname -o)
+if test "$BUILD_TAG" = "GNU/Linux"
+then
+	BUILD_TAG=$(lsb_release -irs)
+fi
+BUILD_CXX=$(c++ --version | head -1)
+BUILD_ENV=${BUILD_TAG}/${BUILD_CXX}
+
+case "$STATUS" in
+success)
+	LEVEL=info
+	;;
+*)
+	LEVEL=error
+	;;
+esac
+MESSAGE="Sourcehut [${REPO}](${REF_URL}) (${REF}) [${STATUS}](${BUILD_URL}) (${BUILD_ENV})"
+
+curl -sS "${GITTER}" --data-urlencode "level=${LEVEL}" --data-urlencode "message=${MESSAGE}"
+

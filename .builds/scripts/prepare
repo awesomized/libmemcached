@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+echo 'PATH="$PATH:~/libmemcached/.builds/scripts"' >~/.buildenv

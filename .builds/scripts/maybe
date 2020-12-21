@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+if test $# -eq 0
+then
+	notify-gitter success
+fi
+
+"$@"
+ERROR=$?
+
+if test $ERROR -ne 0
+then
+	notify-gitter failure
+	exit $ERROR
+fi

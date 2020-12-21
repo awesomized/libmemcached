@@ -12,16 +12,21 @@ sources:
   - https://github.com/m6w6/libmemcached
 secrets:
   - 685c5b0a-395c-4031-97f8-97496bb6c25f
+  - 79d59693-c250-4eba-9569-24650f86256b
 environment:
   ENABLE_HASH_HSIEH:  "ON"
   ENABLE_MEMASLAP:    "ON"
   VERBOSE:            "ON"
 tasks:
+  - prepare: |
+      ./libmemcached/.builds/scripts/prepare
   - configure: |
-      cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON -S libmemcached -B debug
+      maybe cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON -S libmemcached -B debug
   - build: |
-      cmake --build debug -j2
+      maybe cmake --build debug -j2
   - test: |
-      cmake --build debug -j2 --target test
+      maybe cmake --build debug -j2 --target test
   - install: |
-      cmake --install debug --prefix /tmp
+      maybe cmake --install debug --prefix /tmp
+  - success: |
+      maybe
