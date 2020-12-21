@@ -86,13 +86,11 @@ const ENV = [
       ],
       "cur" => [
         "CXXFLAGS" => "-stdlib=libc++",
-        "INSTALL_CXX" => "libc++"
-          . MAP["env.OS_VER"]["ubuntu-20.04"]["env.CC_VND"]["clang"]["env.CC_VER"]["cur"] . "-dev"
+        "INSTALL_CXX" => "libc++-9-dev libc++abi-9-dev"
       ],
       "old" => [
         "CXXFLAGS" => "-stdlib=libc++",
-        "INSTALL_CXX" => "libc++"
-          . MAP["env.OS_VER"]["ubuntu-20.04"]["env.CC_VND"]["clang"]["env.CC_VER"]["old"] . "-dev"
+        "INSTALL_CXX" => "libc++-8-dev libc++abi-8-dev"
       ],
     ]
   ],
