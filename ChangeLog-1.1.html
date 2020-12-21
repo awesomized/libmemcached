@@ -186,7 +186,13 @@ was incremented due to the following changes:</p>
 <li>Ported test suite to Catch2.</li>
 <li>Build requires C++11 compiler support.</li>
 <li>Tests require C++17 compiler support.</li>
-<li>Moved to the Semantic Versioning Specification: <a class="reference external" href="https://semver.org">https://semver.org</a></li>
+<li>Moved to the Semantic Versioning Specification: <a class="reference external" href="https://semver.org">https://semver.org</a><ul>
+<li>Public include directories have been renamed from <code class="docutils literal notranslate"><span class="pre">${lib}-${major}.${minor}</span></code>
+to <code class="docutils literal notranslate"><span class="pre">${lib}-${major}</span></code> due to having the minor version (always having been 0
+in this case) in the public interface being unreasonable when using semantic
+versioning. Symbolic links are provided for backwards compatibility, though.</li>
+</ul>
+</li>
 <li>Moved the project from launchpad to github:<ul>
 <li>Source: <a class="reference external" href="https://github.com/m6w6/libmemcached">https://github.com/m6w6/libmemcached</a></li>
 <li>Documentation: <a class="reference external" href="https://m6w6.github.io/libmemcached">https://m6w6.github.io/libmemcached</a></li>
@@ -281,6 +287,8 @@ clarify documentation on replication.</li>
 <li>Fix <a class="reference external" href="https://github.com/m6w6/libmemcached/issues/95">gh #95</a>:
 MEMCACHED_CALLBACK_GET_FAILURE and MEMCACHED_BEHAVIOR_BUFFER_REQUESTS</li>
 <li>Fix bin/memcat to output flags if requested with <code class="docutils literal notranslate"><span class="pre">--flag</span></code>.</li>
+<li>Fix <a class="reference external" href="https://github.com/m6w6/libmemcached/issues/68">gh #68</a>:
+Windows support.</li>
 </ul>
 <hr class="docutils" />
 <p>See <a class="reference internal" href="ChangeLog-1.0.html"><span class="doc">ChangeLog-1.0</span></a> for changes prior v1.1.</p>
