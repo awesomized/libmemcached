@@ -39,13 +39,30 @@ const ENV = [
         "INSTALL_CC" => "gcc-10",
         "INSTALL_CXX" => "g++-10",
       ]
+    ],
+    "clang" => [
+      "new" => [
+        "CXXFLAGS" => "-stdlib=libc++"
+      ],
+      "cur" => [
+        "CXXFLAGS" => "-stdlib=libc++"
+      ],
+      "old" => [
+        "CXXFLAGS" => "-stdlib=libc++"
+      ],
     ]
   ],
   "ubuntu-18.04" => [
     "clang" => [
+      "new" => [
+        "CXXFLAGS" => "-stdlib=libc++"
+      ],
+      "cur" => [
+        "CXXFLAGS" => "-stdlib=libc++"
+      ],
       "old" => [
         "CXXFLAGS" => "-stdlib=libc++"
-      ]
+      ],
     ]
   ]
 ];
