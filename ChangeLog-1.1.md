@@ -18,8 +18,8 @@ was incremented due to the following changes:
     * Documentation: https://m6w6.github.io/libmemcached
     * Continuous Integration:
         * Github: https://github.com/m6w6/libmemcached/actions (Linux, MacOS, Windows **·** amd64)
-        * Travis: https://travis-ci.org/m6w6/libmemcached (Linux **·** arm64, ppc64le, s390x)
         * Sourcehut: https://builds.sr.ht/~m6w6/libmemcached (FreeBSD, OpenBSD **·** amd64)
+        * Build artifacts: https://artifacts.m6w6.name/libmemcached/ rsync://m6w6.name::artifacts/libmemcached/
 
 
 * Fix build failure due to comparison of incompatible types in bin/memflush and bin/memstat.

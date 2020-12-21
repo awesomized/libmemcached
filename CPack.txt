@@ -38,7 +38,11 @@ set(CPACK_PACKAGE_DESCRIPTION
 memcached server (http://memcached.org/). It has been designed to be
 light on memory usage, thread safe, and provide full access to server
 side methods.")
-list(JOIN PROJECT_CONFIG "-" CPACK_PACKAGE_DIRECTORY)
+if(CMAKE_VERSION VERSION_LESS 3.12)
+    string(REPLACE ";" "-" CPACK_PACKAGE_DIRECTORY "${PROJECT_CONFIG}")
+else()
+    list(JOIN PROJECT_CONFIG "-" CPACK_PACKAGE_DIRECTORY)
+endif()
 set(CPACK_PROJECT_CONFIG_FILE "${CMAKE_SOURCE_DIR}/CPack/ProjectConfig.txt")
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_SOURCE_DIR}/README.md")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "${PROJECT_NAME}/${PROJECT_VERSION}")

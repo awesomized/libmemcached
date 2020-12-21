@@ -62,6 +62,11 @@ Please see/edit [`CMakeConfig.txt`](./CMakeConfig.txt) or use `ccmake(1)` or
 * libevent (required for: contrib/bin/memaslap)
 * Cyrus' libsasl2 (required for: libmemacached/sasl)
 
+### Binaries
+
+CI and release builds for Linux, a couple BSDs, MacOS and Windows are available at
+https://artifacts.m6w6.name/libmemcached/ and rsync://m6w6.name::artifacts/libmemcached/.
+
 ## Testing
 
 [![Codecov Badge]](https://codecov.io/gh/m6w6/libmemcached)
@@ -77,13 +82,9 @@ Enable the `BUILD_TESTING` setting for a build and run `make test`.
 
 ### Continuous integration
 
-[![Travis Badge]](https://travis-ci.org/github/m6w6/libmemcached)
 [![Actions Badge]](https://github.com/m6w6/libmemcached/actions?query=workflow%3Acmake-build-ci)
 [![Sourcehut Badge]](https://builds.sr.ht/~m6w6/libmemcached)
 
-[Travis Badge]:
-    https://api.travis-ci.org/m6w6/libmemcached.svg?branch=v1.x
-    "Travis CI"
 [Actions Badge]:
     https://github.com/m6w6/libmemcached/workflows/cmake-build-ci/badge.svg?branch=v1.x
     "Github Actions"
@@ -95,11 +96,10 @@ CI/Testing is performed on the following system matrix:
 
 | OS               | Compiler                     | Arch                    | Comments                   |
 |------------------|------------------------------|-------------------------|----------------------------|
-| Linux            | GNU 9                        | aarch64, ppc64le, s390x | sasl, coverage, graviton2  |
 | Linux            | GNU 7/8/9/10, Clang 6/8/9/10 | amd64                   | sasl, coverage, sanitizers |
 | MacOS            | AppleClang 12                | amd64                   | sasl, coverage             |
 | FreeBSD, OpenBSD | Clang 8                      | amd64                   | sasl, coverage             |
-| Windows          | MSVC 16                      | amd64                   | no sasl, no tests          |
+| Windows          | MSVC 16, MinGW               | amd64                   | no sasl, no tests          |
 | Solaris          | SunPro 12.5                  | amd64                   | no sasl, no tests, manually|
 
 libmemcached has been tested against [memcached](https://github.com/memcached/memcached) v1.5 and v1.6.

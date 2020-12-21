@@ -22,15 +22,16 @@ was incremented due to the following changes:
 * Ported test suite to Catch2.
 * Build requires C++11 compiler support.
 * Tests require C++17 compiler support.
+* Moved to the Semantic Versioning Specification: https://semver.org
 * Moved the project from launchpad to github:
 
   * Source: https://github.com/m6w6/libmemcached
   * Documentation: https://m6w6.github.io/libmemcached
   * Continuous Integration:
 
-    * Github: https://github.com/m6w6/libmemcached/actions (Linux, MacOS **·** amd64)
-    * Travis: https://travis-ci.org/m6w6/libmemcached (Linux **·** arm64, ppc64le, s390x)
+    * Github: https://github.com/m6w6/libmemcached/actions (Linux, MacOS, Windows **·** amd64)
     * Sourcehut: https://builds.sr.ht/~m6w6/libmemcached (FreeBSD, OpenBSD **·** amd64)
+    * Build artifacts: https://artifacts.m6w6.name/libmemcached/ rsync://m6w6.name::artifacts/libmemcached/
 
 
 * Fix build failure due to comparison of incompatible types in bin/memflush and bin/memstat.
