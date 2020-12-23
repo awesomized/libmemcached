@@ -143,6 +143,6 @@ void MemcachedCluster::enableReplication() {
 
 void MemcachedCluster::killOneServer() const {
   const auto &servers = cluster.getServers();
-  const auto &victim = servers[random_num(0UL, servers.size() - 1)];
+  const auto &victim = servers[random_num((size_t)0, servers.size() - 1)];
   ::kill(victim.getPid(), SIGKILL);
 }
