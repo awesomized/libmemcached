@@ -1,6 +1,6 @@
 #pragma once
 
-#include "libmemcached-1/platform.h"
+#include "libmemcached-1.0/platform.h"
 
 #if defined HAVE_POLL_H
 #  include <poll.h>

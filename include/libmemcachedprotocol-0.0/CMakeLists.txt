@@ -1,6 +1,6 @@
 
 install_public_headers(
-        libmemcachedprotocol-0
+        libmemcachedprotocol-0.0
 
         binary.h
         callback.h

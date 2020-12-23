@@ -1,6 +1,6 @@
 
 install_public_headers(
-        libmemcachedutil-1
+        libmemcachedutil-1.0
 
         flush.h
         ostream.hpp

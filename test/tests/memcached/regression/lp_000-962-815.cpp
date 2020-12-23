@@ -1,7 +1,7 @@
 #include "test/lib/common.hpp"
 #include "test/lib/MemcachedCluster.hpp"
 
-#include "libmemcachedutil-1/pool.h"
+#include "libmemcachedutil-1.0/pool.h"
 
 #include <atomic>
 #include <sstream>

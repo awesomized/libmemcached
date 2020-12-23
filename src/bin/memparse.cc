@@ -19,7 +19,7 @@
 #include <cstring>
 #include <iostream>
 
-#include "libmemcached-1/memcached.h"
+#include "libmemcached-1.0/memcached.h"
 
 int main(int argc, char *argv[]) {
   if (argc < 2) {

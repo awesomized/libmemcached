@@ -13,7 +13,7 @@
     +--------------------------------------------------------------------+
 */
 
-#include "libmemcached-1/struct/analysis.h"
+#include "libmemcached-1.0/struct/stat.h"
 
 #pragma once
 
@@ -22,12 +22,27 @@ extern "C" {
 #endif
 
 LIBMEMCACHED_API
-memcached_analysis_st *memcached_analyze(memcached_st *memc, memcached_stat_st *memc_stat,
-                                         memcached_return_t *error);
+void memcached_stat_free(const memcached_st *, memcached_stat_st *);
 
 LIBMEMCACHED_API
-void memcached_analyze_free(memcached_analysis_st *);
+memcached_stat_st *memcached_stat(memcached_st *ptr, char *args, memcached_return_t *error);
+
+LIBMEMCACHED_API
+memcached_return_t memcached_stat_servername(memcached_stat_st *memc_stat, char *args,
+                                             const char *hostname, in_port_t port);
+
+LIBMEMCACHED_API
+char *memcached_stat_get_value(const memcached_st *ptr, memcached_stat_st *memc_stat,
+                               const char *key, memcached_return_t *error);
+
+LIBMEMCACHED_API
+char **memcached_stat_get_keys(memcached_st *ptr, memcached_stat_st *memc_stat,
+                               memcached_return_t *error);
+
+LIBMEMCACHED_API
+memcached_return_t memcached_stat_execute(memcached_st *memc, const char *args,
+                                          memcached_stat_fn func, void *context);
 
 #ifdef __cplusplus
-}
+} // extern "C"
 #endif

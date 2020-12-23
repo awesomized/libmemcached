@@ -22,7 +22,7 @@
 #include <netdb.h>
 
 #include "ms_task.h"
-#include "libmemcachedprotocol-0/binary.h"
+#include "libmemcachedprotocol-0.0/binary.h"
 
 #ifdef __cplusplus
 extern "C" {

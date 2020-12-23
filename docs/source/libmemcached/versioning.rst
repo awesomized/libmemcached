@@ -1,12 +1,10 @@
 libmemcached Versioning
 =======================
 
-Libmemcached is laid out by interface version and strives to adhere to the
-``Semantic Versioning Specification`` since version ``1.1``.
+Libmemcached is laid out by interface version. The 1.0 version would be found
+in: ``libmemcached-1.0/memcached.h``
 
-.. seealso::
-    `https://semver.org/ <http://semver.org/>`_
+The historic ``libmemcached/memcached.h`` includes
+``libmemcached-1.0/memcached.h``. For best practice you should include the
+version of libmemcached that you used during development.
 
-The 1.x version would be found in: ``libmemcached-1/memcached.h``. The historic 
-``libmemcached/memcached.h`` includes ``libmemcached-1/memcached.h`` and on
-previously supported platforms ``libmemcached-1.0`` points to ``libmemcached-1``. 

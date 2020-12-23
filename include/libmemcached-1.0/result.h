@@ -13,43 +13,54 @@
     +--------------------------------------------------------------------+
 */
 
-#pragma once
+#include "libmemcached-1.0/struct/result.h"
 
-#include "libmemcached-1/memcached.h"
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-struct memcached_pool_st;
-typedef struct memcached_pool_st memcached_pool_st;
+/* Result Struct */
+LIBMEMCACHED_API
+void memcached_result_free(memcached_result_st *result);
 
 LIBMEMCACHED_API
-memcached_pool_st *memcached_pool_create(memcached_st *mmc, uint32_t initial, uint32_t max);
+void memcached_result_reset(memcached_result_st *ptr);
 
 LIBMEMCACHED_API
-memcached_pool_st *memcached_pool(const char *option_string, size_t option_string_length);
+memcached_result_st *memcached_result_create(const memcached_st *ptr, memcached_result_st *result);
 
 LIBMEMCACHED_API
-memcached_st *memcached_pool_destroy(memcached_pool_st *pool);
+const char *memcached_result_key_value(const memcached_result_st *self);
 
 LIBMEMCACHED_API
-memcached_st *memcached_pool_pop(memcached_pool_st *pool, bool block, memcached_return_t *rc);
-LIBMEMCACHED_API
-memcached_return_t memcached_pool_push(memcached_pool_st *pool, memcached_st *mmc);
-LIBMEMCACHED_API
-memcached_return_t memcached_pool_release(memcached_pool_st *pool, memcached_st *mmc);
+size_t memcached_result_key_length(const memcached_result_st *self);
 
 LIBMEMCACHED_API
-memcached_st *memcached_pool_fetch(memcached_pool_st *, struct timespec *relative_time,
-                                   memcached_return_t *rc);
+const char *memcached_result_value(const memcached_result_st *self);
 
 LIBMEMCACHED_API
-memcached_return_t memcached_pool_behavior_set(memcached_pool_st *ptr, memcached_behavior_t flag,
-                                               uint64_t data);
+char *memcached_result_take_value(memcached_result_st *self);
+
 LIBMEMCACHED_API
-memcached_return_t memcached_pool_behavior_get(memcached_pool_st *ptr, memcached_behavior_t flag,
-                                               uint64_t *value);
+size_t memcached_result_length(const memcached_result_st *self);
+
+LIBMEMCACHED_API
+uint32_t memcached_result_flags(const memcached_result_st *self);
+
+LIBMEMCACHED_API
+uint64_t memcached_result_cas(const memcached_result_st *self);
+
+LIBMEMCACHED_API
+memcached_return_t memcached_result_set_value(memcached_result_st *ptr, const char *value,
+                                              size_t length);
+
+LIBMEMCACHED_API
+void memcached_result_set_flags(memcached_result_st *self, uint32_t flags);
+
+LIBMEMCACHED_API
+void memcached_result_set_expiration(memcached_result_st *self, time_t expiration);
 
 #ifdef __cplusplus
 } // extern "C"

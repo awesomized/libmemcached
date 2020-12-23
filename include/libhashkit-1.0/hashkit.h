@@ -23,17 +23,17 @@
 #endif
 #include <sys/types.h>
 
-#include <libhashkit-1/visibility.h>
-#include <libhashkit-1/configure.h>
-#include <libhashkit-1/types.h>
-#include <libhashkit-1/has.h>
-#include <libhashkit-1/algorithm.h>
-#include <libhashkit-1/behavior.h>
-#include <libhashkit-1/digest.h>
-#include <libhashkit-1/function.h>
-#include <libhashkit-1/str_algorithm.h>
-#include <libhashkit-1/strerror.h>
-#include <libhashkit-1/string.h>
+#include <libhashkit-1.0/visibility.h>
+#include <libhashkit-1.0/configure.h>
+#include <libhashkit-1.0/types.h>
+#include <libhashkit-1.0/has.h>
+#include <libhashkit-1.0/algorithm.h>
+#include <libhashkit-1.0/behavior.h>
+#include <libhashkit-1.0/digest.h>
+#include <libhashkit-1.0/function.h>
+#include <libhashkit-1.0/str_algorithm.h>
+#include <libhashkit-1.0/strerror.h>
+#include <libhashkit-1.0/string.h>
 
 struct hashkit_st {
   struct hashkit_function_st {

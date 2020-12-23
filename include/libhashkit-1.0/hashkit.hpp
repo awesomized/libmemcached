@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include <libhashkit-1/hashkit.h>
+#include <libhashkit-1.0/hashkit.h>
 #include <string>
 
 class Hashkit {

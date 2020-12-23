@@ -13,51 +13,21 @@
     +--------------------------------------------------------------------+
 */
 
+#include "libmemcached-1.0/struct/analysis.h"
+
 #pragma once
 
-#include "libmemcached-1/configure.h"
-
-/* This seems to be required for older compilers @note
- * http://stackoverflow.com/questions/8132399/how-to-printf-uint64-t  */
-#ifndef __STDC_FORMAT_MACROS
-#  define __STDC_FORMAT_MACROS
+#ifdef __cplusplus
+extern "C" {
 #endif
+
+LIBMEMCACHED_API
+memcached_analysis_st *memcached_analyze(memcached_st *memc, memcached_stat_st *memc_stat,
+                                         memcached_return_t *error);
+
+LIBMEMCACHED_API
+void memcached_analyze_free(memcached_analysis_st *);
 
 #ifdef __cplusplus
-#  include <cinttypes>
-#  include <cstddef>
-#  include <cstdlib>
-#else
-#  include <inttypes.h>
-#  include <stddef.h>
-#  include <stdlib.h>
-#  include <stdbool.h>
+}
 #endif
-
-#include <sys/types.h>
-
-#if defined HAVE_NETDB_H
-# include <netdb.h>
-#endif
-
-#if !defined HAVE_IN_PORT_T
-typedef int in_port_t;
-#endif
-
-#if !defined HAVE_PID_T
-typedef int pid_t;
-#endif
-
-#ifndef HAVE_SSIZE_T
-typedef long int ssize_t;
-#endif
-
-#if defined _WIN32
-# define WINVER 0x0600
-# define _WIN32_WINNT 0x0600
-# include <winsock2.h>
-# include <ws2tcpip.h>
-typedef SOCKET memcached_socket_t;
-#else
-typedef int memcached_socket_t;
-#endif // _WIN32

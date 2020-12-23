@@ -54,7 +54,7 @@
 #  include <dlfcn.h>
 #endif
 
-#include "libmemcached-1/memcached.h"
+#include "libmemcached-1.0/memcached.h"
 #include "libmemcached/watchpoint.h"
 #include "libmemcached/is.h"
 typedef struct memcached_st Memcached;
@@ -69,7 +69,7 @@ memcached_instance_st *memcached_instance_fetch(memcached_st *ptr, uint32_t serv
 #include "libmemcached/io.h"
 #ifdef __cplusplus
 #  include "libmemcached/string.hpp"
-#  include "libmemcachedprotocol-0/binary.h"
+#  include "libmemcachedprotocol-0.0/binary.h"
 #  include "libmemcached/io.hpp"
 #  include "libmemcached/udp.hpp"
 #  include "libmemcached/do.hpp"

@@ -1,7 +1,7 @@
 #include "test/lib/common.hpp"
 #include "test/fixtures/hashes.hpp"
 
-#include "libhashkit-1/hashkit.hpp"
+#include "libhashkit-1.0/hashkit.hpp"
 
 TEST_CASE("hashkit") {
   hashkit_st st, *hp = hashkit_create(nullptr);

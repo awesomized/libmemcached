@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "libmemcached-1/memcached.h"
+#include "libmemcached-1.0/memcached.h"
 #if 0
 #  include "libmemcached/exception.hpp"
 #endif

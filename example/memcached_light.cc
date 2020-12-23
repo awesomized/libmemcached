@@ -25,7 +25,7 @@
 
 #include <mem_config.h>
 
-#include <libmemcachedprotocol-0/handler.h>
+#include <libmemcachedprotocol-0.0/handler.h>
 #include <libmemcached/socket.hpp>
 #include <example/byteorder.h>
 #include "example/storage.h"

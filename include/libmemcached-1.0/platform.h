@@ -15,31 +15,49 @@
 
 #pragma once
 
-#if defined(LIBMEMCACHED_WITH_SASL_SUPPORT) && LIBMEMCACHED_WITH_SASL_SUPPORT
-#  include <sasl/sasl.h>
+#include "libmemcached-1.0/configure.h"
+
+/* This seems to be required for older compilers @note
+ * http://stackoverflow.com/questions/8132399/how-to-printf-uint64-t  */
+#ifndef __STDC_FORMAT_MACROS
+#  define __STDC_FORMAT_MACROS
+#endif
+
+#ifdef __cplusplus
+#  include <cinttypes>
+#  include <cstddef>
+#  include <cstdlib>
 #else
-#  define sasl_callback_t void
+#  include <inttypes.h>
+#  include <stddef.h>
+#  include <stdlib.h>
+#  include <stdbool.h>
 #endif
 
-#ifdef __cplusplus
-extern "C" {
+#include <sys/types.h>
+
+#if defined HAVE_NETDB_H
+# include <netdb.h>
 #endif
 
-LIBMEMCACHED_API
-void memcached_set_sasl_callbacks(memcached_st *ptr, const sasl_callback_t *callbacks);
-
-LIBMEMCACHED_API
-memcached_return_t memcached_set_sasl_auth_data(memcached_st *ptr, const char *username,
-                                                const char *password);
-
-LIBMEMCACHED_API
-memcached_return_t memcached_destroy_sasl_auth_data(memcached_st *ptr);
-
-LIBMEMCACHED_API
-sasl_callback_t *memcached_get_sasl_callbacks(memcached_st *ptr);
-
-#ifdef __cplusplus
-}
+#if !defined HAVE_IN_PORT_T
+typedef int in_port_t;
 #endif
 
-#include "libmemcached-1/struct/sasl.h"
+#if !defined HAVE_PID_T
+typedef int pid_t;
+#endif
+
+#ifndef HAVE_SSIZE_T
+typedef long int ssize_t;
+#endif
+
+#if defined _WIN32
+# define WINVER 0x0600
+# define _WIN32_WINNT 0x0600
+# include <winsock2.h>
+# include <ws2tcpip.h>
+typedef SOCKET memcached_socket_t;
+#else
+typedef int memcached_socket_t;
+#endif // _WIN32

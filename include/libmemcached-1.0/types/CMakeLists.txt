@@ -1,6 +1,6 @@
 
 install_public_headers(
-        libmemcached-1/types
+        libmemcached-1.0/types
 
         behavior.h
         callback.h

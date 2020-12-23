@@ -1,5 +1,5 @@
 
-install_public_headers(libhashkit-1
+install_public_headers(libhashkit-1.0
         @configure.h
         algorithm.h
         basic_string.h

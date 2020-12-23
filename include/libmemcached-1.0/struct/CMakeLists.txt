@@ -1,6 +1,6 @@
 
 install_public_headers(
-        libmemcached-1/struct
+        libmemcached-1.0/struct
 
         allocator.h
         analysis.h
