@@ -14,7 +14,8 @@ set_target_properties(libmemcachedprotocol PROPERTIES
         CXX_STANDARD ${CXX_STANDARD}
         LIBRARY_OUTPUT_NAME memcachedprotocol
         LIBRARY_OUTPUT_NAME_DEBUG memcachedprotocol-dbg
-        SOVERSION ${LIBMEMCACHEDPROTOCOL_SO_VERSION})
+        SOVERSION ${LIBMEMCACHEDPROTOCOL_SO_SOVERSION}
+        VERSION ${LIBMEMCACHEDPROTOCOL_SO_VERSION})
 target_compile_definitions(libmemcachedprotocol PRIVATE -DBUILDING_LIBMEMCACHED)
 if(CMAKE_CXX_COMPILER_ID STREQUAL AppleClang)
 	set_target_properties(libmemcachedprotocol PROPERTIES
