@@ -48,4 +48,4 @@ install(TARGETS libmemcachedutil EXPORT libmemcachedutil-targets
 export(EXPORT libmemcachedutil-targets NAMESPACE libmemcached::)
 install(EXPORT libmemcachedutil-targets NAMESPACE libmemcached::
         COMPONENT dev
-        DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake)
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})

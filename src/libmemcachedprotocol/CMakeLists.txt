@@ -45,4 +45,4 @@ install(TARGETS libmemcachedprotocol EXPORT libmemcachedprotocol-targets
 export(EXPORT libmemcachedprotocol-targets NAMESPACE libmemcached::)
 install(EXPORT libmemcachedprotocol-targets NAMESPACE libmemcached::
         COMPONENT dev
-        DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake)
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})

@@ -27,7 +27,7 @@ endif()
 
 configure_package_config_file(libmemcached-config.cmake.in
         libmemcached-config.cmake
-        INSTALL_DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake/)
+        INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 write_basic_package_version_file(libhashkit-version.cmake
         VERSION ${LIBHASHKIT_VERSION}
         COMPATIBILITY SameMajorVersion)
@@ -47,4 +47,4 @@ install(FILES
         ${CMAKE_CURRENT_BINARY_DIR}/libmemcachedprotocol-version.cmake
         ${CMAKE_CURRENT_BINARY_DIR}/libmemcachedutil-version.cmake
         COMPONENT dev
-        DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake/)
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}/)

@@ -49,7 +49,7 @@ install(TARGETS libhashkit EXPORT libhashkit-targets
 export(EXPORT libhashkit-targets NAMESPACE libmemcached::)
 install(EXPORT libhashkit-targets NAMESPACE libmemcached::
         COMPONENT dev
-        DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake)
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 
 install_public_headers(
         libhashkit
