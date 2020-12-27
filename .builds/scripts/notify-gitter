@@ -12,7 +12,7 @@ BUILD_URL=${JOB_URL}
 BUILD_TAG=$(uname -o 2>/dev/null || uname -s)
 if expr match "$BUILD_TAG" ".*Linux" >/dev/null
 then
-	BUILD_TAG=$(lsb_release -irs)
+	BUILD_TAG=$(source /etc/os-release; echo $PRETTY_NAME)
 fi
 BUILD_CXX=$(c++ --version | head -1)
 if expr match "${BUILD_CXX}" "${BUILD_TAG}" >/dev/null
