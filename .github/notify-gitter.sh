@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-GITTER=$1
-
 REPO=${GITHUB_REPOSITORY}
 
 REF=$(basename ${GITHUB_REF})
@@ -9,7 +7,7 @@ REF_URL=https://github.com/${REPO}/commits/${REF}
 BUILD_URL=https://github.com/${REPO}/actions/runs/${GITHUB_RUN_ID}
 BUILD_ENV=${ImageOS}/${CC:-${CC_VND}-${CC_VER}}
 
-case "$2" in
+case "$1" in
 1|true|success)
 	level=info
 	status=success

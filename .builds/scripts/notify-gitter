@@ -10,12 +10,17 @@ REF_URL=https://github.com/${REPO}/commits/${REF}
 
 BUILD_URL=${JOB_URL}
 BUILD_TAG=$(uname -o 2>/dev/null || uname -s)
-if test "$BUILD_TAG" = "GNU/Linux"
+if expr match "$BUILD_TAG" ".*Linux" >/dev/null
 then
 	BUILD_TAG=$(lsb_release -irs)
 fi
 BUILD_CXX=$(c++ --version | head -1)
-BUILD_ENV=${BUILD_TAG}/${BUILD_CXX}
+if expr match "${BUILD_CXX}" "${BUILD_TAG}" >/dev/null
+then
+	BUILD_ENV="${BUILD_CXX}"
+else
+	BUILD_ENV="${BUILD_TAG}/${BUILD_CXX}"
+fi
 
 case "$STATUS" in
 success)

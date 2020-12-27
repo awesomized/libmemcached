@@ -6,13 +6,13 @@ on:
     types: [published]
   push:
     paths:
+      - ".github/workflows/cmake-build-ci*"
+      - "CMake*"
+      - "CPack*"
       - "contrib/**"
       - "include/**"
       - "src/**"
       - "test/**"
-      - "CMake*"
-      - "CPack*"
-      - ".github/workflows/cmake-build-ci*"
     branches-ignore:
       - gh-pages
   pull_request:
@@ -106,7 +106,7 @@ jobs:
       - name: Package
         env:
           PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
-        if: env.CMAKE_BUILD_TYPE == 'Release' && !(env.OS_VER == 'ubuntu-18.04' && env.CC_VND == 'gnu' && env.CC_VER == 'new  ')
+        if: env.PUSH_ARTIFACTS_ID != '' && env.CMAKE_BUILD_TYPE == 'Release' && !(env.OS_VER == 'ubuntu-18.04' && env.CC_VND == 'gnu' && env.CC_VER == 'new  ')
         run: |
           cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
@@ -114,8 +114,10 @@ jobs:
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target push-artifacts
       - name: Notify Gitter
-        if: success() || failure()
-        run: bash .github/notify-gitter.sh ${{ secrets.GITTER }} ${{ job.status }}
+        env:
+          GITTER: ${{ secrets.GITTER }}
+        if: (success() || failure()) && env.GITTER != ''
+        run: bash .github/notify-gitter.sh ${{ job.status }}
       - uses: codecov/codecov-action@v1.0.13
 
   # sanitizer build
@@ -185,7 +187,7 @@ jobs:
       - name: Package
         env:
           PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
-        if: env.CMAKE_BUILD_TYPE == 'Release' && !(env.OS_VER == 'ubuntu-18.04' && env.CC_VND == 'gnu' && env.CC_VER == 'new  ')
+        if: env.PUSH_ARTIFACTS_ID != '' && env.CMAKE_BUILD_TYPE == 'Release' && !(env.OS_VER == 'ubuntu-18.04' && env.CC_VND == 'gnu' && env.CC_VER == 'new  ')
         run: |
           cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
@@ -193,8 +195,10 @@ jobs:
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target push-artifacts
       - name: Notify Gitter
-        if: success() || failure()
-        run: bash .github/notify-gitter.sh ${{ secrets.GITTER }} ${{ job.status }}
+        env:
+          GITTER: ${{ secrets.GITTER }}
+        if: (success() || failure()) && env.GITTER != ''
+        run: bash .github/notify-gitter.sh ${{ job.status }}
 
   # mac debug
   dbg-mac:
@@ -257,7 +261,7 @@ jobs:
       - name: Package
         env:
           PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
-        if: env.CMAKE_BUILD_TYPE == 'Release' && !(env.OS_VER == 'ubuntu-18.04' && env.CC_VND == 'gnu' && env.CC_VER == 'new  ')
+        if: env.PUSH_ARTIFACTS_ID != '' && env.CMAKE_BUILD_TYPE == 'Release' && !(env.OS_VER == 'ubuntu-18.04' && env.CC_VND == 'gnu' && env.CC_VER == 'new  ')
         run: |
           cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
@@ -265,8 +269,10 @@ jobs:
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target push-artifacts
       - name: Notify Gitter
-        if: success() || failure()
-        run: bash .github/notify-gitter.sh ${{ secrets.GITTER }} ${{ job.status }}
+        env:
+          GITTER: ${{ secrets.GITTER }}
+        if: (success() || failure()) && env.GITTER != ''
+        run: bash .github/notify-gitter.sh ${{ job.status }}
       - uses: codecov/codecov-action@v1.0.13
 
   # mac release
@@ -329,7 +335,7 @@ jobs:
       - name: Package
         env:
           PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
-        if: env.CMAKE_BUILD_TYPE == 'Release' && !(env.OS_VER == 'ubuntu-18.04' && env.CC_VND == 'gnu' && env.CC_VER == 'new  ')
+        if: env.PUSH_ARTIFACTS_ID != '' && env.CMAKE_BUILD_TYPE == 'Release' && !(env.OS_VER == 'ubuntu-18.04' && env.CC_VND == 'gnu' && env.CC_VER == 'new  ')
         run: |
           cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
@@ -337,8 +343,10 @@ jobs:
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target push-artifacts
       - name: Notify Gitter
-        if: success() || failure()
-        run: bash .github/notify-gitter.sh ${{ secrets.GITTER }} ${{ job.status }}
+        env:
+          GITTER: ${{ secrets.GITTER }}
+        if: (success() || failure()) && env.GITTER != ''
+        run: bash .github/notify-gitter.sh ${{ job.status }}
 
   # windows release builds
   windows:
@@ -393,7 +401,7 @@ jobs:
       - name: Package
         env:
           PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
-        if: env.CMAKE_BUILD_TYPE == 'Release' && !(env.OS_VER == 'ubuntu-18.04' && env.CC_VND == 'gnu' && env.CC_VER == 'new  ')
+        if: env.PUSH_ARTIFACTS_ID != '' && env.CMAKE_BUILD_TYPE == 'Release' && !(env.OS_VER == 'ubuntu-18.04' && env.CC_VND == 'gnu' && env.CC_VER == 'new  ')
         run: |
           cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
@@ -401,8 +409,10 @@ jobs:
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target push-artifacts
       - name: Notify Gitter
-        if: success() || failure()
-        run: bash .github/notify-gitter.sh ${{ secrets.GITTER }} ${{ job.status }}
+        env:
+          GITTER: ${{ secrets.GITTER }}
+        if: (success() || failure()) && env.GITTER != ''
+        run: bash .github/notify-gitter.sh ${{ job.status }}
 
   # linux release builds
   release:
@@ -544,7 +554,7 @@ jobs:
       - name: Package
         env:
           PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
-        if: env.CMAKE_BUILD_TYPE == 'Release' && !(env.OS_VER == 'ubuntu-18.04' && env.CC_VND == 'gnu' && env.CC_VER == 'new  ')
+        if: env.PUSH_ARTIFACTS_ID != '' && env.CMAKE_BUILD_TYPE == 'Release' && !(env.OS_VER == 'ubuntu-18.04' && env.CC_VND == 'gnu' && env.CC_VER == 'new  ')
         run: |
           cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
@@ -552,5 +562,7 @@ jobs:
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target push-artifacts
       - name: Notify Gitter
-        if: success() || failure()
-        run: bash .github/notify-gitter.sh ${{ secrets.GITTER }} ${{ job.status }}
+        env:
+          GITTER: ${{ secrets.GITTER }}
+        if: (success() || failure()) && env.GITTER != ''
+        run: bash .github/notify-gitter.sh ${{ job.status }}
