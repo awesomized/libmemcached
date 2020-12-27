@@ -19,6 +19,8 @@ Changes from beta1:
 
 * Fix `gh #103 <https://github.com/m6w6/libmemcached/issues/103>`_\ :
   Build failure on 32-bit.
+* Fix `gh #102 <https://github.com/m6w6/libmemcached/issues/102>`_\ :
+  Doc build with old sphinx.
 * Fix `gh #100 <https://github.com/m6w6/libmemcached/issues/100>`_\ :
   Revert symbolic rename of public header include directories.
 * Fix `gh #98 <https://github.com/m6w6/libmemcached/issues/98>`_\ :
