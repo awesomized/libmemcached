@@ -1,13 +1,12 @@
-- Clients (src/bin):
-    - consolidate CLI
-    - convert to proper C++ where applicable
 - Stats:
     - redo
--Deprecations:
+- Deprecations:
     - UDP, disabled by default from memcached-1.5.6
       soft (maybe only discourage in docs)
     - API:
         - memcached_delete(): expires param is obsolete
+Includes:
+    - Rename all headers with a standard name like `string.h` and `limits.h`.
 
 ## Legacy:
 
