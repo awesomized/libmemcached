@@ -1,5 +1,22 @@
 # ChangeLog v1.1
 
+## v 1.1.0-beta2
+
+> TBR
+
+### Changes from beta1:
+
+* Fix [gh #103](https://github.com/m6w6/libmemcached/issues/103):
+  Build failure on 32-bit.
+* Fix [gh #100](https://github.com/m6w6/libmemcached/issues/100):
+  Revert symbolic rename of public header include directories.
+* Fix [gh #98](https://github.com/m6w6/libmemcached/issues/98):
+  Library SONAMEs and NAME_LINKs differ from 1.0.18.
+* Fix [gh #97](https://github.com/m6w6/libmemcached/issues/97):
+  Location of cmake files installation directory.
+* Fix [gh #96](https://github.com/m6w6/libmemcached/issues/96):
+  LIBXXX_VERSION_HEX constants format.
+
 ## v 1.1.0-beta1
 
 > released 2020-12-21
