@@ -208,10 +208,10 @@ man_pages = [
   ]
 
 rst_prolog = """
-.. |libhashkit_version| replace:: @LIBHASHKIT_VERSION_MAJOR@
-.. |libmemcached_version| replace:: @LIBMEMCACHED_VERSION_MAJOR@
-.. |libmemcachedprotocol_version| replace:: @LIBMEMCACHEDPROTOCOL_VERSION_MAJOR@
-.. |libmemcachedutil_version| replace:: @LIBMEMCACHEDUTIL_VERSION_MAJOR@
+.. |libhashkit_version| replace:: 1.0
+.. |libmemcached_version| replace:: 1.0
+.. |libmemcachedprotocol_version| replace:: 0.0
+.. |libmemcachedutil_version| replace:: 1.0
 """
 
 @SPHINX_CONF_APPEND@
