@@ -2,9 +2,9 @@
 
 ## v 1.1.0-beta2
 
-> TBR
+> released 2020-12-28
 
-### Changes from beta1:
+**Changes from beta1:**
 
 * Fix [gh #103](https://github.com/m6w6/libmemcached/issues/103):
   Build failure on 32-bit.
