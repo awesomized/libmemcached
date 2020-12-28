@@ -1,6 +1,9 @@
 name: docs-publish-pages
 
 on:
+  workflow_dispatch:
+  release:
+    types: [published]
   push:
     paths:
       - 'docs/**'
