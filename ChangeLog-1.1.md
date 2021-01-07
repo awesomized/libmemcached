@@ -1,5 +1,14 @@
 # ChangeLog v1.1
 
+## v 1.1.0-beta3
+
+> TBR
+
+**Changes from beta2:**
+
+* Fix [gh #105](https://github.com/m6w6/libmemcached/issues/105):
+  EINTR handled too defensively when polling.
+
 ## v 1.1.0-beta2
 
 > released 2020-12-28

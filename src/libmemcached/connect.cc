@@ -19,128 +19,6 @@
 #include <cassert>
 
 
-static memcached_return_t connect_poll(memcached_instance_st *server, const int connection_error) {
-  struct pollfd fds[1];
-  fds[0].fd = server->fd;
-  fds[0].events = server->events();
-  fds[0].revents = 0;
-
-  size_t loop_max = 5;
-
-  if (server->root->connect_timeout == 0) {
-    return memcached_set_error(
-        *server, MEMCACHED_TIMEOUT, MEMCACHED_AT,
-        memcached_literal_param("The time to wait for a connection to be established was set to "
-                                "zero which produces a timeout to every call to poll()."));
-  }
-
-  while (--loop_max) // Should only loop on cases of ERESTART or EINTR
-  {
-    int number_of;
-    if ((number_of = poll(fds, 1, server->root->connect_timeout)) == SOCKET_ERROR) {
-      int local_errno = get_socket_errno(); // We cache in case closesocket() modifies errno
-      switch (local_errno) {
-#ifdef HAVE_ERESTART
-      case ERESTART:
-#endif
-      case EINTR:
-        continue;
-
-      case EFAULT:
-      case ENOMEM:
-        return memcached_set_error(*server, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT);
-
-      case EINVAL:
-        return memcached_set_error(
-            *server, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT,
-            memcached_literal_param(
-                "RLIMIT_NOFILE exceeded, or if OSX the timeout value was invalid"));
-
-      default: // This should not happen
-        break;
-      }
-
-      assert_msg(server->fd != INVALID_SOCKET, "poll() was passed an invalid file descriptor");
-      server->reset_socket();
-      server->state = MEMCACHED_SERVER_STATE_NEW;
-
-      return memcached_set_errno(*server, local_errno, MEMCACHED_AT);
-    }
-
-    if (number_of == 0) {
-      if (connection_error != EALREADY) {
-        int err;
-        socklen_t len = sizeof(err);
-        if (getsockopt(server->fd, SOL_SOCKET, SO_ERROR, (char *) &err, &len) == -1) {
-          return memcached_set_errno(
-              *server, errno, MEMCACHED_AT,
-              memcached_literal_param(
-                  "getsockopt() error'ed while looking for error connect_poll(EINPROGRESS)"));
-        }
-
-        // If Zero, my hero, we just fail to a generic MEMCACHED_TIMEOUT error
-        if (err) {
-          return memcached_set_errno(
-              *server, err, MEMCACHED_AT,
-              memcached_literal_param("getsockopt() found the error from poll() after connect() "
-                                      "returned EINPROGRESS."));
-        }
-      }
-
-      return memcached_set_error(*server, MEMCACHED_TIMEOUT, MEMCACHED_AT,
-                                 memcached_literal_param("(number_of == 0)"));
-    }
-
-    assert(number_of == 1);
-
-    if (fds[0].revents & POLLERR or fds[0].revents & POLLHUP or fds[0].revents & POLLNVAL) {
-      int err;
-      socklen_t len = sizeof(err);
-      if (getsockopt(fds[0].fd, SOL_SOCKET, SO_ERROR, (char *) &err, &len) == -1) {
-        return memcached_set_errno(
-            *server, errno, MEMCACHED_AT,
-            memcached_literal_param(
-                "getsockopt() errored while looking up error state from poll()"));
-      }
-
-      // We check the value to see what happened with the socket.
-      if (err == 0) // Should not happen
-      {
-        return MEMCACHED_SUCCESS;
-      }
-      errno = err;
-
-      return memcached_set_errno(
-          *server, err, MEMCACHED_AT,
-          memcached_literal_param("getsockopt() found the error from poll() during connect."));
-    }
-    assert(fds[0].revents & POLLOUT);
-
-    if (fds[0].revents & POLLOUT and connection_error != EALREADY) {
-      int err;
-      socklen_t len = sizeof(err);
-      if (getsockopt(server->fd, SOL_SOCKET, SO_ERROR, (char *) &err, &len) == -1) {
-        return memcached_set_errno(*server, errno, MEMCACHED_AT);
-      }
-
-      if (err == 0) {
-        return MEMCACHED_SUCCESS;
-      }
-
-      return memcached_set_errno(
-          *server, err, MEMCACHED_AT,
-          memcached_literal_param(
-              "getsockopt() found the error from poll() after connect() returned EINPROGRESS."));
-    }
-
-    break; // We only have the loop setup for errno types that require restart
-  }
-
-  // This should only be possible from ERESTART or EINTR;
-  return memcached_set_errno(*server, connection_error, MEMCACHED_AT,
-                             memcached_literal_param("connect_poll() was exhausted"));
-}
-
 static memcached_return_t set_hostinfo(memcached_instance_st *server) {
   assert(server->type != MEMCACHED_CONNECTION_UNIX_SOCKET);
   server->clear_addrinfo();
@@ -505,7 +383,7 @@ static memcached_return_t network_connect(memcached_instance_st *server) {
     {
       server->events(POLLOUT);
       server->state = MEMCACHED_SERVER_STATE_IN_PROGRESS;
-      memcached_return_t rc = connect_poll(server, local_error);
+      memcached_return_t rc = memcached_io_poll(server, IO_POLL_CONNECT, local_error);
 
       if (memcached_success(rc)) {
         server->state = MEMCACHED_SERVER_STATE_CONNECTED;

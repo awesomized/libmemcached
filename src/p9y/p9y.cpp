@@ -147,3 +147,27 @@ int poll(struct pollfd fds[], nfds_t nfds, int tmo) {
   return ret;
 }
 #endif // P9Y_NEED_POLL
+
+#include "clock_gettime.hpp"
+#ifdef P9Y_NEED_CLOCK_GETTIME
+# ifdef _WIN32
+
+static inline __int64 wintime2unixtime(__int64 wintime) {
+  return wintime - 116444736000000000i64;
+}
+
+int clock_gettime(int, struct timespec *spec)
+{
+  __int64 wintime, unixtime;
+
+  GetSystemTimeAsFileTime((FILETIME*) &wintime);
+  unixtime = wintime2unixtime(wintime);
+
+
+  spec->tv_sec = unixtime / 10000000i64;
+  spec->tv_nsec = unixtime % 10000000i64 * 100;
+
+  return 0;
+}
+# endif // _WIN32
+#endif // P9Y_NEED_CLOCK_GETTIME

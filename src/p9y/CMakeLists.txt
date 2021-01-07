@@ -6,6 +6,7 @@ add_library(p9y STATIC
     poll.hpp
     random.hpp
     index.hpp
+    clock_gettime.hpp
     p9y.cpp
     )
 

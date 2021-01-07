@@ -43,3 +43,6 @@ memcached_return_t memcached_safe_read(memcached_instance_st *ptr, void *dta, co
 memcached_instance_st *memcached_io_get_readable_server(memcached_st *memc, memcached_return_t &);
 
 memcached_return_t memcached_io_slurp(memcached_instance_st *ptr);
+
+#define IO_POLL_CONNECT 0
+memcached_return_t memcached_io_poll(memcached_instance_st *inst, int16_t events = IO_POLL_CONNECT, int prev_errno = 0);
