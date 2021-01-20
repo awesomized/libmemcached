@@ -60,6 +60,7 @@ jobs:
       - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
+          sudo apt-get update -y
           sudo apt-get install -my \
             libevent-dev \
             libsasl2-dev \
@@ -141,6 +142,7 @@ jobs:
       - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
+          sudo apt-get update -y
           sudo apt-get install -my \
             libevent-dev \
             libsasl2-dev \
@@ -508,6 +510,7 @@ jobs:
       - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
+          sudo apt-get update -y
           sudo apt-get install -my \
             libevent-dev \
             libsasl2-dev \

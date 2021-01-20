@@ -165,6 +165,7 @@ function steps_getdeps($os_vnd) {
   if ($os_vnd === "Linux") :
 ?>
         run: |
+          sudo apt-get update -y
           sudo apt-get install -my \
             libevent-dev \
             libsasl2-dev \
