@@ -16,6 +16,7 @@ v 1.1.0-beta3
 **Changes from beta2:**
 
 
+* Fix libmemcachedprotocol's binary ``STAT`` and ``VERSION`` handlers.
 * Fix `gh #105 <https://github.com/m6w6/libmemcached/issues/105>`_\ :
   EINTR handled too defensively when polling.
 
@@ -51,7 +52,7 @@ v 1.1.0-beta1
    released 2020-12-21
 
 
-**NOTE:**
+**NOTE:**\ :raw-html-m2r:`<br>`
 This is a bug fix release, not a feature release. The minor version number
 was incremented due to the following changes:
 

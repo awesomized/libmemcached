@@ -6,6 +6,7 @@
 
 **Changes from beta2:**
 
+* Fix libmemcachedprotocol's binary `STAT` and `VERSION` handlers.
 * Fix [gh #105](https://github.com/m6w6/libmemcached/issues/105):
   EINTR handled too defensively when polling.
 
@@ -32,7 +33,7 @@
 
 > released 2020-12-21
 
-**NOTE:**
+**NOTE:**  
 This is a bug fix release, not a feature release. The minor version number
 was incremented due to the following changes:
 

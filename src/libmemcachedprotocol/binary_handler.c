@@ -44,13 +44,17 @@ binary_raw_response_handler(const void *cookie, protocol_binary_request_header *
                             protocol_binary_response_header *response) {
   memcached_protocol_client_st *client = (void *) cookie;
 
-  if (client->root->pedantic
+  if (response && client->root->pedantic
       && !memcached_binary_protocol_pedantic_check_response(request, response)) {
     return PROTOCOL_BINARY_RESPONSE_EINVAL;
   }
 
   if (client->root->drain(client) == false) {
     return PROTOCOL_BINARY_RESPONSE_EINTERNAL;
+  }
+
+  if (!response) {
+    return PROTOCOL_BINARY_RESPONSE_SUCCESS;
   }
 
   size_t len = sizeof(protocol_binary_response_header) + htonl(response->response.bodylen);
@@ -917,6 +921,20 @@ stat_command_handler(const void *cookie, protocol_binary_request_header *header,
 
     rval = client->root->callback->interface.v1.stat(cookie, (void *) (header + 1), keylen,
                                                      stat_response_handler);
+    if (rval == PROTOCOL_BINARY_RESPONSE_SUCCESS) {
+      /* END message */
+      protocol_binary_response_no_extras response = {
+          .message = {
+              .header.response =
+                  {
+                      .magic = PROTOCOL_BINARY_RES,
+                      .opcode = PROTOCOL_BINARY_CMD_STAT,
+                      .status = htons(PROTOCOL_BINARY_RESPONSE_SUCCESS),
+                      .opaque = header->request.opaque,
+                  },
+          }};
+      rval = response_handler(cookie, header, &response);
+    }
   } else {
     rval = PROTOCOL_BINARY_RESPONSE_UNKNOWN_COMMAND;
   }
@@ -941,6 +959,9 @@ version_command_handler(const void *cookie, protocol_binary_request_header *head
   memcached_protocol_client_st *client = (void *) cookie;
   if (client->root->callback->interface.v1.version) {
     rval = client->root->callback->interface.v1.version(cookie, version_response_handler);
+    if (rval == PROTOCOL_BINARY_RESPONSE_SUCCESS) {
+      rval = response_handler(cookie, header, NULL);
+    }
   } else {
     rval = PROTOCOL_BINARY_RESPONSE_UNKNOWN_COMMAND;
   }
