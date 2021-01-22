@@ -45,7 +45,7 @@ memcached_return_t memcat(const client_options &opt, memcached_st *memc, const c
     if (verbose) {
       *ref << "value: ";
     }
-    
+
     ref->write(val, len);
 
     if (verbose || !opt.isset("file")) {
@@ -68,7 +68,8 @@ int main(int argc, char *argv[]) {
     opt.add(def);
   }
   opt.add("flags", 'F', no_argument, "Display key flags, too.");
-  opt.add("file", 'f', required_argument, "Output to file instead of standard output.");
+  opt.add("file", 'f', optional_argument, "Output to file instead of standard output."
+                                          "\n\t\t# NOTE: defaults to <key> if no argument was provided.");
 
   char **argp = nullptr;
   if (!opt.parse(argc, argv, &argp)) {
@@ -99,8 +100,9 @@ int main(int argc, char *argv[]) {
   for (auto arg = argp; *arg; ++arg) {
     auto key = *arg;
     if (*key) {
+      char *file = opt.isset("file") ? (opt.argof("file") ?: key) : nullptr;
       std::ofstream fstream{};
-      std::ostream *ostream = check_ostream(opt, opt.argof("file"), fstream);
+      std::ostream *ostream = check_ostream(opt, file, fstream);
 
       if (!check_return(opt, memc, key, memcat(opt, &memc, key, ostream))) {
         exit_code = EXIT_FAILURE;
