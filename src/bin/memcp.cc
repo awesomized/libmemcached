@@ -149,7 +149,7 @@ int main(int argc, char *argv[]) {
   client_options opt{PROGRAM_NAME, PROGRAM_VERSION, PROGRAM_DESCRIPTION,
                      "file [file ...]"
                      "\n\t\t\t# NOTE: order of flags and positional"
-                     "\n\t\t\t#       arguments matters on GNU systems)"};
+                     "\n\t\t\t#       arguments matters on GNU systems"};
 
   opt.add(nullptr, '-', no_argument, "GNU argv extension")
       .parse = [&files](client_options &opt_, client_options::extended_option &ext) {
