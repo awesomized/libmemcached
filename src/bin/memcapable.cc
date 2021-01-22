@@ -1868,7 +1868,8 @@ int main(int argc, char **argv) {
               "\t\t\tEverything else will start the test\n"
               "\t-T n\tJust run the test named n\n"
               "\t-a\tOnly test the ascii protocol\n"
-              "\t-b\tOnly test the binary protocol\n",
+              "\t-b\tOnly test the binary protocol\n\n"
+              "WARNING: This will FLUSH your server!\n\n",
               argv[0]);
       return EXIT_SUCCESS;
     }
@@ -1879,7 +1880,7 @@ int main(int argc, char **argv) {
     return EXIT_FAILURE;
   }
 
-  #ifdef _WIN32
+#ifdef _WIN32
   WSADATA wsaData;
   if (WSAStartup(MAKEWORD(2, 2), &wsaData)) {
     fprintf(stderr, "Socket Initialization Error.\n");
