@@ -96,11 +96,16 @@ int main(int argc, char *argv[]) {
     exit(EXIT_FAILURE);
   }
 
+  auto file_flag = opt.isset("file");
+  auto file = opt.argof("file");
   auto exit_code = EXIT_SUCCESS;
   for (auto arg = argp; *arg; ++arg) {
     auto key = *arg;
     if (*key) {
-      char *file = opt.isset("file") ? (opt.argof("file") ?: key) : nullptr;
+      if (!file && file_flag) {
+        file = key;
+      }
+
       std::ofstream fstream{};
       std::ostream *ostream = check_ostream(opt, file, fstream);
 
