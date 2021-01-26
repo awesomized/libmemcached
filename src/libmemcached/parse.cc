@@ -44,8 +44,17 @@ memcached_server_list_st memcached_servers_parse(const char *server_strings) {
       begin_ptr = end_ptr;
     }
 
-    ptr = strchr(buffer, ':');
-
+    ptr = strchr(buffer, '[');
+    if (ptr) {
+      ptr2 = strchr(ptr+1, ']');
+    }
+    if (ptr && ptr2) {
+      // [IPv6]:port
+      ptr = strchr(ptr2+1, ':');
+    } else {
+      // IPv4:port or name:port
+      ptr = strchr(buffer, ':');
+    }
     in_port_t port = 0;
     if (ptr) {
       ptr[0] = 0;
