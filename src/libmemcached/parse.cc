@@ -30,7 +30,7 @@ memcached_server_list_st memcached_servers_parse(const char *server_strings) {
        begin_ptr != end_ptr; string = (char *) strchr(begin_ptr, ','))
   {
     char buffer[HUGE_STRING_LEN];
-    char *ptr, *ptr2;
+    char *ptr, *ptr2 = NULL;
     uint32_t weight = 0;
 
     if (string) {
