@@ -18,50 +18,44 @@
 
 #include <cassert>
 
-
 static memcached_return_t set_hostinfo(memcached_instance_st *server) {
   assert(server->type != MEMCACHED_CONNECTION_UNIX_SOCKET);
+  assert(server->hostname());
+
   server->clear_addrinfo();
 
-  char str_port[MEMCACHED_NI_MAXSERV] = {0};
+  char str_host[MEMCACHED_NI_MAXHOST] = {0}, str_port[MEMCACHED_NI_MAXSERV] = {0};
   errno = 0;
-  int length = snprintf(str_port, MEMCACHED_NI_MAXSERV, "%u", uint32_t(server->port()));
-  if (length >= MEMCACHED_NI_MAXSERV or length <= 0 or errno) {
+
+  auto length = snprintf(str_port, MEMCACHED_NI_MAXSERV, "%u", uint32_t(server->port()));
+  if (length <= 0 or errno) {
     return memcached_set_error(*server, MEMCACHED_MEMORY_ALLOCATION_FAILURE, MEMCACHED_AT,
                                memcached_literal_param("snprintf(NI_MAXSERV)"));
   }
 
-  struct addrinfo hints;
-  memset(&hints, 0, sizeof(struct addrinfo));
-
+  struct addrinfo hints{};
   hints.ai_family = AF_UNSPEC;
   if (memcached_is_udp(server->root)) {
     hints.ai_protocol = IPPROTO_UDP;
     hints.ai_socktype = SOCK_DGRAM;
   } else {
-    hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
+    hints.ai_socktype = SOCK_STREAM;
   }
 
-  assert(server->address_info == NULL);
-  assert(server->address_info_next == NULL);
-  int errcode;
-  char hostname[MEMCACHED_NI_MAXHOST];
-  const char *addr;
-  char *p;
-
-  assert(server->hostname());
-  // drop [] from address, commonly used for IPv6
-  addr = server->hostname();
-  if (*addr == '[') {
-     strcpy(hostname, addr +1);
-     p = strchr(hostname, ']');
-     if (p) {
-       *p = 0;
-       addr = hostname;
-     }
+  auto hostname = server->hostname();
+  if (*hostname == '[') {
+    auto closing_bracket = &hostname[strlen(hostname) - 1];
+    if (*closing_bracket == ']') {
+      auto host_len = closing_bracket - hostname - 1;
+      if (host_len < MEMCACHED_NI_MAXHOST) {
+        hostname = strncpy(str_host, hostname + 1, host_len);
+      }
+    }
   }
-  switch (errcode = getaddrinfo(addr, str_port, &hints, &server->address_info)) {
+
+  auto errcode = getaddrinfo(hostname, str_port, &hints, &server->address_info);
+  switch (errcode) {
   case 0:
     server->address_info_next = server->address_info;
     server->state = MEMCACHED_SERVER_STATE_ADDRINFO;
