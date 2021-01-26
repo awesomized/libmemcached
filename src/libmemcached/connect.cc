@@ -46,8 +46,22 @@ static memcached_return_t set_hostinfo(memcached_instance_st *server) {
   assert(server->address_info == NULL);
   assert(server->address_info_next == NULL);
   int errcode;
+  char hostname[MEMCACHED_NI_MAXHOST];
+  const char *addr;
+  char *p;
+
   assert(server->hostname());
-  switch (errcode = getaddrinfo(server->hostname(), str_port, &hints, &server->address_info)) {
+  // drop [] from address, commonly used for IPv6
+  addr = server->hostname();
+  if (*addr == '[') {
+     strcpy(hostname, addr +1);
+     p = strchr(hostname, ']');
+     if (p) {
+       *p = 0;
+       addr = hostname;
+     }
+  }
+  switch (errcode = getaddrinfo(addr, str_port, &hints, &server->address_info)) {
   case 0:
     server->address_info_next = server->address_info;
     server->state = MEMCACHED_SERVER_STATE_ADDRINFO;
