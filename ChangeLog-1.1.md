@@ -6,6 +6,8 @@
 
 **Changes from beta2:**
 
+* Fix [gh #108](https://github.com/m6w6/libmemcached/issues/105):
+  macOS Big Sur: dtrace does not understand -G switch
 * Fix libmemcachedprotocol's binary `STAT` and `VERSION` handlers.
 * Fix [gh #105](https://github.com/m6w6/libmemcached/issues/105):
   EINTR handled too defensively when polling.

@@ -30,7 +30,10 @@ function(enable_dtrace_for TARGET PROBES_D PROBES_H)
             set_source_files_properties(${TARGET}_probes.o PROPERTIES
                     GENERATED true
                     EXTERNAL_OBJECT true)
-        else() # not Linux
+            return()
+        endif()
+        cmake_host_system_information(RESULT OS_RELEASE QUERY OS_RELEASE)
+        if(NOT (CMAKE_HOST_SYSTEM_NAME STREQUAL Darwin AND OS_RELEASE VERSION_GREATER_EQUAL 11))
             set(PROBES_C ${TARGET}_probes.cc)
             file(GENERATE
                     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PROBES_C}
