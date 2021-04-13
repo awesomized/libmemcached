@@ -40,14 +40,13 @@ const MAP = [
           'env.CC_VER' => [
             "new"  => "-10",
             "cur"  => "-9",
-            "old"  => "-8"
           ]
         ],
         "clang" => [
           'env.CC_VER' => [
-            "new"  => "-10",
-            "cur"  => "-9",
-            "old"  => "-8"
+            "new"  => "-11",
+            "cur"  => "-10",
+            "old"  => "-9"
           ]
         ]
       ]
@@ -56,16 +55,14 @@ const MAP = [
       'env.CC_VND' => [
         "gnu" => [
           'env.CC_VER' => [
-            "new"  => "-9",
-            "cur"  => "-8",
+            "new"  => "-10",
+            "cur"  => "-9",
             "old"  => "-7"
           ]
         ],
         "clang" => [
           'env.CC_VER' => [
-            "new"  => "-9",
-            "cur"  => "-8",
-            "old"  => "-6.0"
+            "cur"  => "-9",
           ]
         ]
       ]
