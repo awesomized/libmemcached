@@ -109,7 +109,7 @@ jobs:
           PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
         if: env.PUSH_ARTIFACTS_ID != '' && env.CMAKE_BUILD_TYPE == 'Release' && !(env.OS_VER == 'ubuntu-18.04' && env.CC_VND == 'gnu' && env.CC_VER == 'new  ')
         run: |
-          cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
+          cmake -DCMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }} -S . -B build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
           cmake -DCPACK_COMPONENT_INSTALL=ON build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
@@ -191,7 +191,7 @@ jobs:
           PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
         if: env.PUSH_ARTIFACTS_ID != '' && env.CMAKE_BUILD_TYPE == 'Release' && !(env.OS_VER == 'ubuntu-18.04' && env.CC_VND == 'gnu' && env.CC_VER == 'new  ')
         run: |
-          cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
+          cmake -DCMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }} -S . -B build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
           cmake -DCPACK_COMPONENT_INSTALL=ON build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
@@ -265,7 +265,7 @@ jobs:
           PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
         if: env.PUSH_ARTIFACTS_ID != '' && env.CMAKE_BUILD_TYPE == 'Release' && !(env.OS_VER == 'ubuntu-18.04' && env.CC_VND == 'gnu' && env.CC_VER == 'new  ')
         run: |
-          cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
+          cmake -DCMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }} -S . -B build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
           cmake -DCPACK_COMPONENT_INSTALL=ON build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
@@ -339,7 +339,7 @@ jobs:
           PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
         if: env.PUSH_ARTIFACTS_ID != '' && env.CMAKE_BUILD_TYPE == 'Release' && !(env.OS_VER == 'ubuntu-18.04' && env.CC_VND == 'gnu' && env.CC_VER == 'new  ')
         run: |
-          cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
+          cmake -DCMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }} -S . -B build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
           cmake -DCPACK_COMPONENT_INSTALL=ON build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
@@ -405,7 +405,7 @@ jobs:
           PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
         if: env.PUSH_ARTIFACTS_ID != '' && env.CMAKE_BUILD_TYPE == 'Release' && !(env.OS_VER == 'ubuntu-18.04' && env.CC_VND == 'gnu' && env.CC_VER == 'new  ')
         run: |
-          cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
+          cmake -DCMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }} -S . -B build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
           cmake -DCPACK_COMPONENT_INSTALL=ON build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
@@ -559,7 +559,7 @@ jobs:
           PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
         if: env.PUSH_ARTIFACTS_ID != '' && env.CMAKE_BUILD_TYPE == 'Release' && !(env.OS_VER == 'ubuntu-18.04' && env.CC_VND == 'gnu' && env.CC_VER == 'new  ')
         run: |
-          cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
+          cmake -DCMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }} -S . -B build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
           cmake -DCPACK_COMPONENT_INSTALL=ON build
           cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
