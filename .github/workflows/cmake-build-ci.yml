@@ -92,7 +92,7 @@ jobs:
             echo MEMCACHED_BINARY="${MEMCACHED_PREFIX}/bin/memcached" >> ${GITHUB_ENV}
           fi
       - name: Generate build tree (${{ env.CMAKE_BUILD_TYPE }})
-        run: cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
+        run: cmake -DCMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }} -S . -B build
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
         run: cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2
       - name: Test
@@ -174,7 +174,7 @@ jobs:
             echo MEMCACHED_BINARY="${MEMCACHED_PREFIX}/bin/memcached" >> ${GITHUB_ENV}
           fi
       - name: Generate build tree (${{ env.CMAKE_BUILD_TYPE }})
-        run: cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
+        run: cmake -DCMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }} -S . -B build
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
         run: cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2
       - name: Test
@@ -248,7 +248,7 @@ jobs:
             echo MEMCACHED_BINARY="${MEMCACHED_PREFIX}/bin/memcached" >> ${GITHUB_ENV}
           fi
       - name: Generate build tree (${{ env.CMAKE_BUILD_TYPE }})
-        run: cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
+        run: cmake -DCMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }} -S . -B build
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
         run: cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2
       - name: Test
@@ -322,7 +322,7 @@ jobs:
             echo MEMCACHED_BINARY="${MEMCACHED_PREFIX}/bin/memcached" >> ${GITHUB_ENV}
           fi
       - name: Generate build tree (${{ env.CMAKE_BUILD_TYPE }})
-        run: cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
+        run: cmake -DCMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }} -S . -B build
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
         run: cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2
       - name: Test
@@ -388,7 +388,7 @@ jobs:
             rsync
             openssh
       - name: Generate build tree (${{ env.CMAKE_BUILD_TYPE }})
-        run: cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
+        run: cmake -DCMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }} -S . -B build
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
         run: cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2
       - name: Test
@@ -542,7 +542,7 @@ jobs:
             echo MEMCACHED_BINARY="${MEMCACHED_PREFIX}/bin/memcached" >> ${GITHUB_ENV}
           fi
       - name: Generate build tree (${{ env.CMAKE_BUILD_TYPE }})
-        run: cmake --config ${{ env.CMAKE_BUILD_TYPE }} -S . -B build
+        run: cmake -DCMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }} -S . -B build
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
         run: cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2
       - name: Test
