@@ -71,23 +71,18 @@ const MAP = [
 ];
 const ENV = [
   "ubuntu-20.04" => [
-    "gnu" => [
-      "new" => [
-        "INSTALL_CC" => "gcc-10",
-        "INSTALL_CXX" => "g++-10",
-      ]
-    ],
     "clang" => [
       "new" => [
-        "CXXFLAGS" => "-stdlib=libc++"
+        "CXXFLAGS" => "-stdlib=libc++",
+        "INSTALL_CXX" => "libc++-11-dev libc++abi-11-dev"
       ],
       "cur" => [
         "CXXFLAGS" => "-stdlib=libc++",
-        "INSTALL_CXX" => "libc++-9-dev libc++abi-9-dev"
+        "INSTALL_CXX" => "libc++-10-dev libc++abi-10-dev"
       ],
       "old" => [
         "CXXFLAGS" => "-stdlib=libc++",
-        "INSTALL_CXX" => "libc++-8-dev libc++abi-8-dev"
+        "INSTALL_CXX" => "libc++-9-dev libc++abi-9-dev"
       ],
     ]
   ],

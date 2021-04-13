@@ -442,8 +442,6 @@ jobs:
         run: |
           echo CC="gcc-10" >> ${GITHUB_ENV}
           echo CXX="g++-10" >> ${GITHUB_ENV}
-          echo INSTALL_CC="gcc-10" >> ${GITHUB_ENV}
-          echo INSTALL_CXX="g++-10" >> ${GITHUB_ENV}
       - name: Prepare environment (for cur gnu on ubuntu-20.04)
         if: (env.OS_VER=='ubuntu-20.04') && (env.CC_VND=='gnu') && (env.CC_VER=='cur')
         run: |
@@ -455,20 +453,21 @@ jobs:
           echo CC="clang-11" >> ${GITHUB_ENV}
           echo CXX="clang++-11" >> ${GITHUB_ENV}
           echo CXXFLAGS="-stdlib=libc++" >> ${GITHUB_ENV}
+          echo INSTALL_CXX="libc++-11-dev libc++abi-11-dev" >> ${GITHUB_ENV}
       - name: Prepare environment (for cur clang on ubuntu-20.04)
         if: (env.OS_VER=='ubuntu-20.04') && (env.CC_VND=='clang') && (env.CC_VER=='cur')
         run: |
           echo CC="clang-10" >> ${GITHUB_ENV}
           echo CXX="clang++-10" >> ${GITHUB_ENV}
           echo CXXFLAGS="-stdlib=libc++" >> ${GITHUB_ENV}
-          echo INSTALL_CXX="libc++-9-dev libc++abi-9-dev" >> ${GITHUB_ENV}
+          echo INSTALL_CXX="libc++-10-dev libc++abi-10-dev" >> ${GITHUB_ENV}
       - name: Prepare environment (for old clang on ubuntu-20.04)
         if: (env.OS_VER=='ubuntu-20.04') && (env.CC_VND=='clang') && (env.CC_VER=='old')
         run: |
           echo CC="clang-9" >> ${GITHUB_ENV}
           echo CXX="clang++-9" >> ${GITHUB_ENV}
           echo CXXFLAGS="-stdlib=libc++" >> ${GITHUB_ENV}
-          echo INSTALL_CXX="libc++-8-dev libc++abi-8-dev" >> ${GITHUB_ENV}
+          echo INSTALL_CXX="libc++-9-dev libc++abi-9-dev" >> ${GITHUB_ENV}
       - name: Prepare environment (for new gnu on ubuntu-18.04)
         if: (env.OS_VER=='ubuntu-18.04') && (env.CC_VND=='gnu') && (env.CC_VER=='new')
         run: |
