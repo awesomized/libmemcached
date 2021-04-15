@@ -96,9 +96,9 @@ CI/Testing is performed on the following system matrix:
 
 | OS               | Compiler                     | Arch                    | Comments                   |
 |------------------|------------------------------|-------------------------|----------------------------|
-| Linux            | GNU 7/8/9/10, Clang 6/8/9/10 | amd64                   | sasl, coverage, sanitizers |
+| Linux            | GNU 7/9/10, Clang 9/10/11    | amd64                   | sasl, coverage, sanitizers |
 | MacOS            | AppleClang 12                | amd64                   | sasl, coverage             |
-| FreeBSD, OpenBSD | Clang 8                      | amd64                   | sasl, coverage             |
+| FreeBSD, OpenBSD | Clang 10                     | amd64                   | sasl, coverage             |
 | Windows          | MSVC 16, MinGW               | amd64                   | no sasl, no tests          |
 | Solaris          | SunPro 12.5                  | amd64                   | no sasl, no tests, manually|
 
