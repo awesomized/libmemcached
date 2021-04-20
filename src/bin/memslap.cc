@@ -117,13 +117,28 @@ static size_t execute_get(const client_options &opt, memcached_st &memc, const k
 static size_t execute_mget(const client_options &opt, memcached_st &memc, const keyval_st &kv) {
   size_t retrieved = 0;
   memcached_execute_fn cb[] = {&counter};
+  memcached_return_t rc;
 
-  auto rc = memcached_mget_execute(&memc, kv.key.chr.data(), kv.key.len.data(), kv.num, cb, &retrieved, 1);
+  if (memcached_is_binary(&memc)) {
+    rc = memcached_mget_execute(&memc, kv.key.chr.data(), kv.key.len.data(), kv.num, cb,
+                                     &retrieved, 1);
 
-  while (rc != MEMCACHED_END && memcached_success(rc)) {
-    rc = memcached_fetch_execute(&memc, cb, &retrieved, 1);
+    while (rc != MEMCACHED_END && memcached_success(rc)) {
+      rc = memcached_fetch_execute(&memc, cb, &retrieved, 1);
+    }
+  } else {
+    memcached_result_st res;
+    memcached_result_create(&memc, &res);
+
+    rc = memcached_mget(&memc, kv.key.chr.data(), kv.key.len.data(), kv.num);
+
+    while (rc != MEMCACHED_END && memcached_success(rc)) {
+      if (memcached_fetch_result(&memc, &res, &rc)) {
+        ++retrieved;
+      }
+    }
+    memcached_result_free(&res);
   }
-
   if (memcached_fatal(rc)) {
     if (!opt.isset("quiet")) {
       std::cerr << "Failed mget: " << memcached_strerror(&memc, rc) << ": "
