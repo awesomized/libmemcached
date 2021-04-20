@@ -96,10 +96,6 @@ v 1.1.0-beta1
    released 2020-12-21
 
 
-**NOTE:**\ :raw-html-m2r:`<br>`
-This is a bug fix release, not a feature release. The minor version number
-was incremented due to the following changes:
-
 
 * Ported build system to CMake.
 * Ported test suite to Catch2.
