@@ -15,7 +15,7 @@ packages:
 sources:
   - https://github.com/m6w6/libmemcached
 secrets:
-  - 685c5b0a-395c-4031-97f8-97496bb6c25f
+  - a223d068-8d3f-4bab-a623-ed6e2887820a
   - d7dfe587-b433-481b-8725-d7ccd82e59fb
 environment:
   ENABLE_HASH_HSIEH:  "ON"
