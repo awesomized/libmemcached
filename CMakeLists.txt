@@ -43,9 +43,9 @@ if(NOT BUILD_DOCSONLY)
             memtouch
             )
 
+    add_subdirectory(include)
     add_subdirectory(src)
     add_subdirectory(contrib)
-    add_subdirectory(include)
     add_subdirectory(support)
 
     # tests need c++17 support

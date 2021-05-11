@@ -1,5 +1,4 @@
-
-add_library(libmemcachedutil SHARED
+set(libmemcachedutil_sources
         ../libmemcached/backtrace.cc
         common.h
         flush.cc
@@ -7,10 +6,11 @@ add_library(libmemcachedutil SHARED
         ping.cc
         version.cc
         )
+add_library(libmemcachedutil SHARED)
+add_library(memcachedutil ALIAS libmemcachedutil)
 if(CMAKE_USE_PTHREADS_INIT)
     target_sources(libmemcachedutil PRIVATE pool.cc)
 endif()
-add_library(memcachedutil ALIAS libmemcachedutil)
 set_target_properties(libmemcachedutil PROPERTIES
         CXX_STANDARD ${CXX_STANDARD}
         LIBRARY_OUTPUT_NAME memcachedutil
@@ -49,3 +49,7 @@ export(EXPORT libmemcachedutil-targets NAMESPACE libmemcached::)
 install(EXPORT libmemcachedutil-targets NAMESPACE libmemcached::
         COMPONENT dev
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+
+target_sources(libmemcachedutil PRIVATE
+    ${libmemcachedutil_sources}
+    ${libmemcachedutil_includes})

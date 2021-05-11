@@ -1,9 +1,8 @@
-
 find_package(FLEX)
 find_package(BISON 2.3)
 
 if("${BISON_VERSION}" VERSION_GREATER_EQUAL 3.0)
-        set(BISON_WARNINGS -Wno-deprecated)
+    set(BISON_WARNINGS -Wno-deprecated)
 endif()
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/csl)
@@ -11,21 +10,23 @@ bison_target(CSL_PARSER csl/parser.yy ${CMAKE_CURRENT_BINARY_DIR}/csl/parser.cc
         DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/csl/parser.h
         COMPILE_FLAGS ${BISON_WARNINGS}
         )
-set_source_files_properties(${BISON_CSL_PARSER_OUTPUTS} PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+set_source_files_properties(${BISON_CSL_PARSER_OUTPUTS} PROPERTIES
+        SKIP_UNITY_BUILD_INCLUSION ON)
 if(NOT HAVE_UNISTD_H)
-        set(FLEX_FLAGS --nounistd)
+    set(FLEX_FLAGS --nounistd)
 endif()
 flex_target(CSL_SCANNER csl/scanner.l ${CMAKE_CURRENT_BINARY_DIR}/csl/scanner.cc
         DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/csl/scanner.h
         COMPILE_FLAGS "${FLEX_FLAGS}"
         )
-set_source_files_properties(${FLEX_CSL_SCANNER_OUTPUTS} PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+set_source_files_properties(${FLEX_CSL_SCANNER_OUTPUTS} PROPERTIES
+        SKIP_UNITY_BUILD_INCLUSION ON)
 add_flex_bison_dependency(CSL_SCANNER CSL_PARSER)
 
-set(LIBMEMCACHED_SOURCES
+set(libmemcached_sources
         csl/context.cc
-        ${BISON_CSL_PARSER_OUTPUTS}
         ${FLEX_CSL_SCANNER_OUTPUTS}
+        ${BISON_CSL_PARSER_OUTPUTS}
         allocators.cc
         analyze.cc
         array.cc
@@ -84,8 +85,7 @@ if(W_NO_DEPRECATED_REGISTER)
         )
 endif()
 
-add_library(libmemcached SHARED
-        ${LIBMEMCACHED_SOURCES})
+add_library(libmemcached SHARED)
 add_library(memcached ALIAS libmemcached)
 set_target_properties(libmemcached PROPERTIES
         CXX_STANDARD ${CXX_STANDARD}
@@ -139,8 +139,13 @@ install_public_headers(
         util.h
         )
 
-add_library(libmemcachedinternal STATIC
-        ${LIBMEMCACHED_SOURCES})
+target_sources(libmemcached PRIVATE
+        ${libmemcached_sources}
+        ${libmemcached_includes})
+
+# TODO: do we really need this?
+
+add_library(libmemcachedinternal STATIC)
 add_library(memcachedinternal ALIAS libmemcachedinternal)
 set_target_properties(libmemcachedinternal PROPERTIES CXX_STANDARD ${CXX_STANDARD} LIBRARY_OUTPUT_NAME memcachedinternal)
 target_compile_definitions(libmemcachedinternal PRIVATE -DBUILDING_LIBMEMCACHEDINTERNAL)
@@ -169,3 +174,7 @@ enable_dtrace_for(libmemcachedinternal libmemcached_probes.d dtrace_probes.h)
 # let libmemcached depend on libmemcachedinternal to ensure that they do not
 # compete for the same generated dependencies
 add_dependencies(libmemcached libmemcachedinternal)
+
+target_sources(libmemcachedinternal PRIVATE
+        ${libmemcached_sources}
+        ${libmemcached_includes})

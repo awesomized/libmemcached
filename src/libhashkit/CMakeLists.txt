@@ -1,4 +1,4 @@
-add_library(libhashkit SHARED
+set(libhashkit_sources
         aes.cc
         algorithm.cc
         common.h
@@ -22,6 +22,7 @@ add_library(libhashkit SHARED
         strerror.cc
         string.cc
         )
+add_library(libhashkit SHARED)
 add_library(hashkit ALIAS libhashkit)
 set_target_properties(libhashkit PROPERTIES
         CXX_STANDARD ${CXX_STANDARD}
@@ -56,3 +57,7 @@ install_public_headers(
 
         hashkit.h
         )
+
+target_sources(libhashkit PRIVATE
+        ${libhashkit_sources}
+        ${libhashkit_includes})

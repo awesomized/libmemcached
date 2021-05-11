@@ -1,6 +1,6 @@
 check_include(umem.h)
 
-add_library(libmemcachedprotocol SHARED
+set(libmemcachedprotocol_sources
         ascii_handler.c
         binary_handler.c
         cache.c
@@ -9,6 +9,7 @@ add_library(libmemcachedprotocol SHARED
         pedantic.c
         ../libmemcached/byteorder.cc
         )
+add_library(libmemcachedprotocol SHARED)
 add_library(memcachedprotocol ALIAS libmemcachedprotocol)
 set_target_properties(libmemcachedprotocol PROPERTIES
         CXX_STANDARD ${CXX_STANDARD}
@@ -46,3 +47,8 @@ export(EXPORT libmemcachedprotocol-targets NAMESPACE libmemcached::)
 install(EXPORT libmemcachedprotocol-targets NAMESPACE libmemcached::
         COMPONENT dev
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+
+target_sources(libmemcachedprotocol PRIVATE
+        ${libmemcachedprotocol_sources}
+        ${libmemcachedprotocol_includes}
+        )
