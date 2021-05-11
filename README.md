@@ -60,7 +60,7 @@ Please see/edit [`CMakeConfig.txt`](./CMakeConfig.txt) or use `ccmake(1)` or
 * Intel's libtbb (optional for: tests; for GCC's stdlib parallelism support)
 * pthreads (required for: tests, contrib/bin/memaslap, libmemcachedutil/pool)
 * libevent (required for: contrib/bin/memaslap)
-* Cyrus' libsasl2 (required for: libmemacached/sasl)
+* Cyrus' libsasl2 (required for: libmemcached/sasl)
 
 ### Binaries
 
@@ -98,7 +98,8 @@ CI/Testing is performed on the following system matrix:
 |------------------|------------------------------|-------------------------|----------------------------|
 | Linux            | GNU 7/9/10, Clang 9/10/11    | amd64                   | sasl, coverage, sanitizers |
 | MacOS            | AppleClang 12                | amd64                   | sasl, coverage             |
-| FreeBSD, OpenBSD | Clang 10                     | amd64                   | sasl, coverage             |
+| FreeBSD          | Clang 11                     | amd64                   | sasl, coverage             |
+| OpenBSD          | Clang 10                     | amd64                   | sasl, coverage             |
 | Windows          | MSVC 16, MinGW               | amd64                   | no sasl, no tests          |
 | Solaris          | SunPro 12.5                  | amd64                   | no sasl, no tests, manually|
 
