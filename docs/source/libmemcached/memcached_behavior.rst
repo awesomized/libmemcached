@@ -62,24 +62,19 @@ SYNOPSIS
 
     .. enumerator:: MEMCACHED_BEHAVIOR_NO_BLOCK
 
-        Causes `libmemcached` to use asynchronous IO. This is the fastest
-        transport available for storage functions.
+        This enables `SO_LINGER` only, so the :manpage:`close(2)` call on the
+        socket returns immediately.  I/O is always handled asynchronously in
+        recent versions of `libmemcached`.
 
     .. enumerator:: MEMCACHED_BEHAVIOR_SND_TIMEOUT
 
         This sets the microsecond behavior of the socket against the SO_SNDTIMEO
         flag.
 
-        In cases where you cannot use non-blocking IO this will allow you to
-        still have timeouts on the sending of data.
-
     .. enumerator:: MEMCACHED_BEHAVIOR_RCV_TIMEOUT
 
         This sets the microsecond behavior of the socket against the SO_RCVTIMEO
         flag.
-
-        In cases where you cannot use non-blocking IO this will allow you to
-        still have timeouts on the reading of data.
 
     .. enumerator:: MEMCACHED_BEHAVIOR_TCP_NODELAY
 
@@ -176,8 +171,8 @@ SYNOPSIS
 
     .. enumerator:: MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT
 
-        In non-blocking mode this changes the value of the timeout during socket
-        connection in milliseconds. Specifying -1 means an infinite time‐out.
+        Set the timeout during socket connection in milliseconds.
+        Specifying -1 means an infinite time‐out.
 
     .. enumerator:: MEMCACHED_BEHAVIOR_BINARY_PROTOCOL
 
