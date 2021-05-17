@@ -283,8 +283,9 @@ server when this behavior has not been enabled.</p>
 <dl class="enumerator">
 <dt id="_CPPv4N20memcached_behavior_t27MEMCACHED_BEHAVIOR_NO_BLOCKE">
 <span id="_CPPv3N20memcached_behavior_t27MEMCACHED_BEHAVIOR_NO_BLOCKE"></span><span id="_CPPv2N20memcached_behavior_t27MEMCACHED_BEHAVIOR_NO_BLOCKE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_BEHAVIOR_NO_BLOCK</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t27MEMCACHED_BEHAVIOR_NO_BLOCKE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Causes <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcached</span></code> to use asynchronous IO. This is the fastest
-transport available for storage functions.</p>
+<dd><p>This enables <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">SO_LINGER</span></code> only, so the <em class="manpage"><a class="manpage reference external" href="https://linux.die.net/man/2/close">close(2)</a></em> call on the
+socket returns immediately.  I/O is always handled asynchronously in
+recent versions of <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcached</span></code>.</p>
 </dd></dl>
 
 <dl class="enumerator">
@@ -292,8 +293,6 @@ transport available for storage functions.</p>
 <span id="_CPPv3N20memcached_behavior_t30MEMCACHED_BEHAVIOR_SND_TIMEOUTE"></span><span id="_CPPv2N20memcached_behavior_t30MEMCACHED_BEHAVIOR_SND_TIMEOUTE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_BEHAVIOR_SND_TIMEOUT</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t30MEMCACHED_BEHAVIOR_SND_TIMEOUTE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>This sets the microsecond behavior of the socket against the SO_SNDTIMEO
 flag.</p>
-<p>In cases where you cannot use non-blocking IO this will allow you to
-still have timeouts on the sending of data.</p>
 </dd></dl>
 
 <dl class="enumerator">
@@ -301,8 +300,6 @@ still have timeouts on the sending of data.</p>
 <span id="_CPPv3N20memcached_behavior_t30MEMCACHED_BEHAVIOR_RCV_TIMEOUTE"></span><span id="_CPPv2N20memcached_behavior_t30MEMCACHED_BEHAVIOR_RCV_TIMEOUTE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_BEHAVIOR_RCV_TIMEOUT</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t30MEMCACHED_BEHAVIOR_RCV_TIMEOUTE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>This sets the microsecond behavior of the socket against the SO_RCVTIMEO
 flag.</p>
-<p>In cases where you cannot use non-blocking IO this will allow you to
-still have timeouts on the reading of data.</p>
 </dd></dl>
 
 <dl class="enumerator">
@@ -429,8 +426,8 @@ list in sorted order. This will defeat consistent hashing.</p>
 <dl class="enumerator">
 <dt id="_CPPv4N20memcached_behavior_t34MEMCACHED_BEHAVIOR_CONNECT_TIMEOUTE">
 <span id="_CPPv3N20memcached_behavior_t34MEMCACHED_BEHAVIOR_CONNECT_TIMEOUTE"></span><span id="_CPPv2N20memcached_behavior_t34MEMCACHED_BEHAVIOR_CONNECT_TIMEOUTE"></span><em class="property">enumerator </em><code class="descname">MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT</code><a class="headerlink" href="#_CPPv4N20memcached_behavior_t34MEMCACHED_BEHAVIOR_CONNECT_TIMEOUTE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>In non-blocking mode this changes the value of the timeout during socket
-connection in milliseconds. Specifying -1 means an infinite time‐out.</p>
+<dd><p>Set the timeout during socket connection in milliseconds.
+Specifying -1 means an infinite time‐out.</p>
 </dd></dl>
 
 <dl class="enumerator">
