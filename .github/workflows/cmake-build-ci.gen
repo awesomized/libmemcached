@@ -44,9 +44,9 @@ const MAP = [
         ],
         "clang" => [
           'env.CC_VER' => [
-            "new"  => "-11",
-            "cur"  => "-10",
-            "old"  => "-9"
+            "new"  => "-12",
+            "cur"  => "-11",
+            "old"  => "-10"
           ]
         ]
       ]
@@ -74,15 +74,15 @@ const ENV = [
     "clang" => [
       "new" => [
         "CXXFLAGS" => "-stdlib=libc++",
-        "INSTALL_CXX" => "libc++-11-dev libc++abi-11-dev"
+        "INSTALL_CXX" => "libc++-12-dev libc++abi-12-dev"
       ],
       "cur" => [
         "CXXFLAGS" => "-stdlib=libc++",
-        "INSTALL_CXX" => "libc++-10-dev libc++abi-10-dev"
+        "INSTALL_CXX" => "libc++-11-dev libc++abi-11-dev"
       ],
       "old" => [
         "CXXFLAGS" => "-stdlib=libc++",
-        "INSTALL_CXX" => "libc++-9-dev libc++abi-9-dev"
+        "INSTALL_CXX" => "libc++-10-dev libc++abi-10-dev"
       ],
     ]
   ],
