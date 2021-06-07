@@ -4,7 +4,7 @@ libdir=@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@
 includedir=@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_INCLUDEDIR@
 
 Name: libmemcached
-URL: https://m6w6.github.io/libmemcached/
+URL: https://awesomized.github.io/libmemcached/
 Description: libmemcached C/C++ library
 Version: @PROJECT_VERSION@
 Libs: -L@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@ -lmemcached -lmemcachedutil

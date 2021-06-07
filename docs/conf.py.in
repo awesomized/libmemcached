@@ -39,7 +39,7 @@ manpages_url = 'https://linux.die.net/man/{section}/{page}'
 
 html_context = {
   'display_github': True,
-  'github_user': 'm6w6',
+  'github_user': 'awesomized',
   'github_repo': 'libmemcached',
   'github_version': 'v1.x/docs/source/'
 }

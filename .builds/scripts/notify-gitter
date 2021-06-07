@@ -4,7 +4,7 @@ set -eu
 GITTER=$(cat ~/.gitter)
 STATUS=$1
 
-REPO=m6w6/libmemcached
+REPO=awesomized/libmemcached
 REF=$(GIT_DIR=libmemcached/.git git describe --abbrev --always)
 REF_URL=https://github.com/${REPO}/commits/${REF}
 

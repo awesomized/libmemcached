@@ -9,7 +9,7 @@ then
   git pull -r
   cd ..
 else
-  git clone -b gh-pages github.com:m6w6/libmemcached pages
+  git clone -b gh-pages github.com:awesomized/libmemcached pages
 fi
 
 mkdir -p build
