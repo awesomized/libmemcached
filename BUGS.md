@@ -11,7 +11,7 @@ Hashkit's MurMur/MurMur3 are limited to the lower 32 bits.
 
 ### crc32
 
-Commit "[More Hashing methods](https://github.com/m6w6/libmemcached/commits/1207354f)"
+Commit "[More Hashing methods](https://github.com/awesomized/libmemcached/commits/1207354f)"
 from October 2007 first released in v0.8, which main intention seems to have
 been to add FNV1 hash algos, changed the result of the crc32 hash to only its
 upper 16 bits sans MSB, without any additional comment.

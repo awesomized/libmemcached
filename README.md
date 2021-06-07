@@ -1,9 +1,7 @@
 # libmemcached
 
-[![Gitter Badge]](https://gitter.im/m6w6/libmemcached)
 [![License Badge]](https://opensource.org/licenses/BSD-3-Clause)
 
-[Gitter Badge]:     https://badges.gitter.im/m6w6/libmemcached.svg "Gitter Chat"
 [License Badge]:    https://img.shields.io/badge/License-BSD%203--Clause-blue.svg "BSD 3-Clause"
 
 libmemcached is an open source C/C++ client library and tools for the
@@ -13,19 +11,18 @@ side methods.
 
 > **NOTE:**  
 > This is a resurrection of the original work from Brian Aker at
-> [libmemcached.org](https://libmemcached.org) and the only publicly maintained
-> version of libmemcached currently known to me.
+> [libmemcached.org](https://libmemcached.org).
 
 ## Documentation
 
 [![Docs Actions Badge]](
-    https://github.com/m6w6/libmemcached/actions?query=workflow%3Adocs-publish-pages)
+    https://github.com/awesomized/libmemcached/actions?query=workflow%3Adocs-publish-pages)
 
 [Docs Actions Badge]:
-    https://github.com/m6w6/libmemcached/workflows/docs-publish-pages/badge.svg?branch=v1.x
+    https://github.com/awesomized/libmemcached/workflows/docs-publish-pages/badge.svg?branch=v1.x
     "Github Docs Action"
 
-See https://m6w6.github.io/libmemcached
+See https://awesomized.github.io/libmemcached
 
 ### Building and updating docs
 
@@ -41,7 +38,7 @@ Please see/edit [`CMakeConfig.txt`](./CMakeConfig.txt) or use `ccmake(1)` or
 
 ### From source
 
-    git clone github.com:m6w6/libmemcached
+    git clone github.com:awesomized/libmemcached
     mkdir build-libmemcached
     cd $_
     cmake ../libmemcached
@@ -69,10 +66,10 @@ https://artifacts.m6w6.name/libmemcached/ and rsync://m6w6.name::artifacts/libme
 
 ## Testing
 
-[![Codecov Badge]](https://codecov.io/gh/m6w6/libmemcached)
+[![Codecov Badge]](https://codecov.io/gh/awesomized/libmemcached)
 
 [Codecov Badge]:
-    https://codecov.io/gh/m6w6/libmemcached/branch/v1.x/graph/badge.svg
+    https://codecov.io/gh/awesomized/libmemcached/branch/v1.x/graph/badge.svg
     "Code coverage"
 
 Enable the `BUILD_TESTING` setting for a build and run `make test`.
@@ -82,11 +79,11 @@ Enable the `BUILD_TESTING` setting for a build and run `make test`.
 
 ### Continuous integration
 
-[![Actions Badge]](https://github.com/m6w6/libmemcached/actions?query=workflow%3Acmake-build-ci)
+[![Actions Badge]](https://github.com/awesomized/libmemcached/actions?query=workflow%3Acmake-build-ci)
 [![Sourcehut Badge]](https://builds.sr.ht/~m6w6/libmemcached)
 
 [Actions Badge]:
-    https://github.com/m6w6/libmemcached/workflows/cmake-build-ci/badge.svg?branch=v1.x
+    https://github.com/awesomized/libmemcached/workflows/cmake-build-ci/badge.svg?branch=v1.x
     "Github Actions"
 [Sourcehut Badge]:
     https://builds.sr.ht/~m6w6/libmemcached/commits.svg
@@ -107,7 +104,7 @@ libmemcached has been tested against [memcached](https://github.com/memcached/me
 
 ## ChangeLog
 
-Check out the latest [releases](https://github.com/m6w6/libmemcached/releases)
+Check out the latest [releases](https://github.com/awesomized/libmemcached/releases)
 or the bundled [ChangeLog](./ChangeLog-1.1.md) for a comprehensive list of changes.
 
 ## License
@@ -117,7 +114,7 @@ found in the accompanying [LICENSE](./LICENSE) file.
 
 ## Contributing
 
-Please report any issues on the [bug tracker](https://github.com/m6w6/libmemcached/issues).
+Please report any issues on the [bug tracker](https://github.com/awesomized/libmemcached/issues).
 
 A list of known permanent issues is maintained in [BUGS](./BUGS.md).
 

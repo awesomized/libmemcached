@@ -10,7 +10,7 @@ project(libmemcached
         VERSION "${LIBMEMCACHED_VERSION}"
         DESCRIPTION "libmemcached, a C/C++ memcached client library"
         )
-set(PROJECT_HOMEPAGE_URL "https://github.com/m6w6/libmemcached")
+set(PROJECT_HOMEPAGE_URL "https://github.com/awesomized/libmemcached")
 set(PROJECT_CONTACT "Michael Wallner <mike@php.net>")
 
 set(CXX_STANDARD 11)
