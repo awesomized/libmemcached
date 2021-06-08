@@ -1,6 +1,6 @@
 /*
     +--------------------------------------------------------------------+
-    | libmemcached - C/C++ Client Library for memcached                  |
+    | libmemcached-awesome - C/C++ Client Library for memcached          |
     +--------------------------------------------------------------------+
     | Redistribution and use in source and binary forms, with or without |
     | modification, are permitted under the terms of the BSD license.    |
