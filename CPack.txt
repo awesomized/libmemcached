@@ -39,7 +39,7 @@ for the memcached server (http://memcached.org/). It has been designed
 to be light on memory usage, thread safe, and provide full access to
 server side methods.")
 if(CMAKE_VERSION VERSION_LESS 3.12)
-    string(REPLACE ";" "-" CPACK_PACKAGE_DIRECTORY "${PROJECT_CONFIG}")
+    string(REPLACE ";" "-" CPACK_PACKAGE_DIRECTORY "${CMAKE_BINARY_DIR}/${PROJECT_CONFIG}")
 else()
     list(JOIN PROJECT_CONFIG "-" CPACK_PACKAGE_DIRECTORY)
 endif()
