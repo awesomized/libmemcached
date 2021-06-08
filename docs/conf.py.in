@@ -20,7 +20,7 @@ pygments_style = 'sphinx'
 primary_domain = 'cpp'
 default_role = 'any'
 
-project = u'libmemcached'
+project = u'libmemcached-awesome'
 version = '@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@'
 release = '@PROJECT_VERSION@'
 

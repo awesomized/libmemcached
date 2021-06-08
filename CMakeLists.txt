@@ -6,9 +6,9 @@ endif()
 
 include(CMakeVersions.txt)
 
-project(libmemcached
+project(libmemcached-awesome
         VERSION "${LIBMEMCACHED_VERSION}"
-        DESCRIPTION "libmemcached, a C/C++ memcached client library"
+        DESCRIPTION "libmemcached-awesome, a C/C++ memcached client library"
         )
 set(PROJECT_HOMEPAGE_URL "https://github.com/awesomized/libmemcached")
 set(PROJECT_CONTACT "Michael Wallner <mike@php.net>")

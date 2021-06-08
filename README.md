@@ -1,13 +1,13 @@
-# libmemcached
+# libmemcached-awesome
 
 [![License Badge]](https://opensource.org/licenses/BSD-3-Clause)
 
 [License Badge]:    https://img.shields.io/badge/License-BSD%203--Clause-blue.svg "BSD 3-Clause"
 
-libmemcached is an open source C/C++ client library and tools for the
-memcached server (http://memcached.org/). It has been designed to be
-light on memory usage, thread safe, and provide full access to server
-side methods.
+libmemcached-awesome is an open source C/C++ client library and tools
+for the memcached server (http://memcached.org/). It has been designed
+to be light on memory usage, thread safe, and provide full access to
+server side methods.
 
 > **NOTE:**  
 > This is a resurrection of the original work from Brian Aker at
@@ -32,7 +32,7 @@ which automate pushing updated documentation to github pages.
 
 ## Installing
 
-libmemcached uses `CMake`.
+libmemcached-awesome uses `CMake`.
 Please see/edit [`CMakeConfig.txt`](./CMakeConfig.txt) or use `ccmake(1)` or
 `cmake-gui(1)` to set any preferred options.
 
@@ -66,12 +66,6 @@ https://artifacts.m6w6.name/libmemcached/ and rsync://m6w6.name::artifacts/libme
 
 ## Testing
 
-[![Codecov Badge]](https://codecov.io/gh/awesomized/libmemcached)
-
-[Codecov Badge]:
-    https://codecov.io/gh/awesomized/libmemcached/branch/v1.x/graph/badge.svg
-    "Code coverage"
-
 Enable the `BUILD_TESTING` setting for a build and run `make test`.
 
     cmake -DBUILD_TESTING=ON ../libmemcached
@@ -100,7 +94,8 @@ CI/Testing is performed on the following system matrix:
 | Windows          | MSVC 16, MinGW               | amd64                   | no sasl, no tests          |
 | Solaris          | SunPro 12.5                  | amd64                   | no sasl, no tests, manually|
 
-libmemcached has been tested against [memcached](https://github.com/memcached/memcached) v1.5 and v1.6.
+libmemcached-awesome has been tested against [memcached](https://github.
+com/memcached/memcached) v1.5 and v1.6.
 
 ## ChangeLog
 
@@ -109,7 +104,8 @@ or the bundled [ChangeLog](./ChangeLog-1.1.md) for a comprehensive list of chang
 
 ## License
 
-libmemcached is licensed under the 3-Clause-BSD license, which can be
+libmemcached-awesome is licensed under the 3-Clause-BSD license, which 
+can be
 found in the accompanying [LICENSE](./LICENSE) file.
 
 ## Contributing

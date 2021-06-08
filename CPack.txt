@@ -34,10 +34,10 @@ set(CPACK_PACKAGE_LICENSE "BSD-3-Clause")
 set(CPACK_PACKAGE_CONTACT "${PROJECT_CONTACT}")
 set(CPACK_PACKAGE_VENDOR "${PROJECT_CONTACT}")
 set(CPACK_PACKAGE_DESCRIPTION
-	"libmemcached is an open source C/C++ client library and tools for the
-memcached server (http://memcached.org/). It has been designed to be
-light on memory usage, thread safe, and provide full access to server
-side methods.")
+	"libmemcached-awesome is an open source C/C++ client library and tools
+for the memcached server (http://memcached.org/). It has been designed
+to be light on memory usage, thread safe, and provide full access to
+server side methods.")
 if(CMAKE_VERSION VERSION_LESS 3.12)
     string(REPLACE ";" "-" CPACK_PACKAGE_DIRECTORY "${PROJECT_CONFIG}")
 else()

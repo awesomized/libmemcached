@@ -3,8 +3,8 @@ Copyright
 
  * | 2006-2014 Brian Aker, DataDifferential
    | https://datadifferential.com/
- * | 2020 Michael Wallner, SmugMug Inc
-   | https://smugmug.com/
+ * | 2020-2021 Michael Wallner, Awesome Inc
+   | https://awesome.co/
 
 All rights reserved.
 
