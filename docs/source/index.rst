@@ -1,7 +1,7 @@
 libmemcached-awesome Manual
 ===========================
 
-`libmemcached-awesome` is an open source C/C++ client library and tools for the
+``libmemcached-awesome`` is an open source C/C++ client library and tools for the
 memcached server (http://memcached.org/). It has been designed to be light on
 memory usage, thread safe, and provide full access to server side methods.
 
