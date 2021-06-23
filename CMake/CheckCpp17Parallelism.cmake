@@ -19,7 +19,7 @@ check_cxx_source_compiles("
         )
 
 if(HAVE_CPP17_PARALLELISM)
-    add_library(cpp17::paralleslism INTERFACE IMPORTED)
+    add_library(cpp17::parallelism INTERFACE IMPORTED)
     # noting to be done
 else()
     include(CheckTbb)
