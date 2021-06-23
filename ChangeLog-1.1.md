@@ -1,5 +1,16 @@
 # ChangeLog v1.1
 
+## v 1.1.0
+
+> released 2021-06-23
+
+**Changes from beta3:**
+
+* Add ASCII multi get support to bin/memslap.
+
+See logs from `beta3`, `beta2`, and `beta1` for
+the full list of changes since the last 1.0 release.
+
 ## v 1.1.0-beta3
 
 > released 2021-04-15
