@@ -1,5 +1,13 @@
 # ChangeLog v1.1
 
+## v 1.1.1
+
+> released TBD
+
+* Fix [gh #113](https://github.com/awesomized/libmemcached/issues/105):
+  Build failure with Catch2 < 2.13.5.
+
+
 ## v 1.1.0
 
 > released 2021-06-23
