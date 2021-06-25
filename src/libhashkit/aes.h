@@ -15,6 +15,27 @@
 
 #pragma once
 
+#ifdef WITH_OPENSSL
+
+#include <openssl/evp.h>
+
+typedef struct encryption_context {
+  EVP_CIPHER_CTX *encryption_context;
+  EVP_CIPHER_CTX *decryption_context;
+} encryption_context_t;
+
+hashkit_string_st *aes_encrypt(encryption_context_t *crypto_context, const unsigned char *source,
+                               size_t source_length);
+
+hashkit_string_st *aes_decrypt(encryption_context_t *crypto_context, const unsigned char *source,
+                               size_t source_length);
+
+bool aes_initialize(const unsigned char *key, const size_t key_length,
+                    encryption_context_t *crypto_context);
+
+encryption_context_t *aes_clone_cryptographic_context(encryption_context_t *source);
+#else
+
 struct aes_key_t;
 
 hashkit_string_st *aes_encrypt(aes_key_t *_aes_key, const char *source, size_t source_length);
@@ -24,3 +45,4 @@ hashkit_string_st *aes_decrypt(aes_key_t *_aes_key, const char *source, size_t s
 aes_key_t *aes_create_key(const char *key, const size_t key_length);
 
 aes_key_t *aes_clone_key(aes_key_t *_aes_key);
+#endif

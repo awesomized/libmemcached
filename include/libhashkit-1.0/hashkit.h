@@ -49,7 +49,7 @@ struct hashkit_st {
     bool is_allocated : 1;
   } options;
 
-  void *_key;
+  void *_cryptographic_context;
 };
 
 #ifdef __cplusplus
@@ -75,7 +75,7 @@ HASHKIT_API
 hashkit_string_st *hashkit_decrypt(hashkit_st *, const char *source, size_t source_length);
 
 HASHKIT_API
-bool hashkit_key(hashkit_st *, const char *key, const size_t key_length);
+bool hashkit_key(hashkit_st *kit, const char *key, const size_t key_length);
 
 #ifdef __cplusplus
 } // extern "C"

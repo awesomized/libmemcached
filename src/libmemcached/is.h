@@ -17,7 +17,7 @@
 
 /* These are private */
 #define memcached_is_allocated(__object)        ((__object)->options.is_allocated)
-#define memcached_is_encrypted(__object)        ((__object)->hashkit._key)
+#define memcached_is_encrypted(__object)        (!!(__object)->hashkit._cryptographic_context)
 #define memcached_is_initialized(__object)      ((__object)->options.is_initialized)
 #define memcached_is_purging(__object)          ((__object)->state.is_purging)
 #define memcached_is_processing_input(__object) ((__object)->state.is_processing_input)

@@ -15,6 +15,10 @@
 
 #include "libhashkit/common.h"
 
+#ifdef WITH_OPENSSL
+#  include <openssl/evp.h>
+#endif
+
 static inline void _hashkit_init(hashkit_st *self) {
   self->base_hash.function = hashkit_one_at_a_time;
   self->base_hash.context = NULL;
@@ -23,7 +27,7 @@ static inline void _hashkit_init(hashkit_st *self) {
   self->distribution_hash.context = NULL;
 
   self->flags.is_base_same_distributed = true;
-  self->_key = NULL;
+  self->_cryptographic_context = NULL;
 }
 
 static inline hashkit_st *_hashkit_create(hashkit_st *self) {
@@ -52,11 +56,26 @@ hashkit_st *hashkit_create(hashkit_st *self) {
   return self;
 }
 
+#ifdef WITH_OPENSSL
+static void cryptographic_context_free(encryption_context_t *context) {
+  EVP_CIPHER_CTX_free(context->encryption_context);
+  EVP_CIPHER_CTX_free(context->decryption_context);
+  free(context);
+}
+#endif
+
 void hashkit_free(hashkit_st *self) {
-  if (self and self->_key) {
-    free(self->_key);
-    self->_key = NULL;
+#ifdef WITH_OPENSSL
+  if (self and self->_cryptographic_context) {
+    cryptographic_context_free((encryption_context_t *)self->_cryptographic_context);
+    self->_cryptographic_context = NULL;
   }
+#else
+  if (self and self->_cryptographic_context) {
+    free(self->_cryptographic_context);
+    self->_cryptographic_context = NULL;
+  }
+#endif
 
   if (hashkit_is_allocated(self)) {
     free(self);
@@ -79,7 +98,21 @@ hashkit_st *hashkit_clone(hashkit_st *destination, const hashkit_st *source) {
   destination->base_hash = source->base_hash;
   destination->distribution_hash = source->distribution_hash;
   destination->flags = source->flags;
-  destination->_key = aes_clone_key(static_cast<aes_key_t *>(source->_key));
+#ifdef WITH_OPENSSL
+  if (destination->_cryptographic_context) {
+    cryptographic_context_free((encryption_context_t *)destination->_cryptographic_context);
+    destination->_cryptographic_context = NULL;
+  }
+  if (source->_cryptographic_context) {
+    destination->_cryptographic_context =
+        aes_clone_cryptographic_context(((encryption_context_t *) source->_cryptographic_context));
+    if (destination->_cryptographic_context) {
+      
+    }
+  }
+#else
+  destination->_cryptographic_context = aes_clone_key(static_cast<aes_key_t *>(source->_cryptographic_context));
+#endif
 
   return destination;
 }

@@ -15,12 +15,122 @@
 
 #include "libhashkit/common.h"
 
-#include "libhashkit/rijndael.hpp"
-
 #include <cstring>
 
-#define AES_KEY_LENGTH 256 /* 128, 192, 256 */
-#define AES_BLOCK_SIZE 16
+#ifdef WITH_OPENSSL
+
+#include <openssl/evp.h>
+
+#define DIGEST_ROUNDS 5
+
+#define AES_KEY_NBYTES 32
+#define AES_IV_NBYTES  32
+
+bool aes_initialize(const unsigned char *key, const size_t key_length,
+                    encryption_context_t *crypto_context) {
+  unsigned char aes_key[AES_KEY_NBYTES];
+  unsigned char aes_iv[AES_IV_NBYTES];
+  if (aes_key == NULL || aes_iv == NULL) {
+    return false;
+  }
+
+  int i = EVP_BytesToKey(EVP_aes_256_cbc(), EVP_sha256(), NULL, key, key_length, DIGEST_ROUNDS,
+                         aes_key, aes_iv);
+  if (i != AES_KEY_NBYTES) {
+    return false;
+  }
+
+  EVP_CIPHER_CTX_init(crypto_context->encryption_context);
+  EVP_CIPHER_CTX_init(crypto_context->decryption_context);
+  if (EVP_EncryptInit_ex(crypto_context->encryption_context, EVP_aes_256_cbc(), NULL, key, aes_iv)
+          != 1
+      || EVP_DecryptInit_ex(crypto_context->decryption_context, EVP_aes_256_cbc(), NULL, key,
+                            aes_iv)
+          != 1)
+  {
+    return false;
+  }
+  return true;
+}
+
+hashkit_string_st *aes_encrypt(encryption_context_t *crypto_context, const unsigned char *source,
+                               size_t source_length) {
+EVP_CIPHER_CTX *encryption_context = crypto_context->encryption_context;
+int cipher_length = source_length + EVP_CIPHER_CTX_block_size(encryption_context);
+int final_length = 0;
+unsigned char *cipher_text = (unsigned char *) malloc(cipher_length);
+if (cipher_text == NULL) {
+  return NULL;
+}
+if (EVP_EncryptInit_ex(encryption_context, NULL, NULL, NULL, NULL) != 1
+    || EVP_EncryptUpdate(encryption_context, cipher_text, &cipher_length, source, source_length)
+        != 1
+    || EVP_EncryptFinal_ex(encryption_context, cipher_text + cipher_length, &final_length) != 1)
+{
+  free(cipher_text);
+  return NULL;
+}
+
+hashkit_string_st *destination = hashkit_string_create(cipher_length + final_length);
+if (destination == NULL) {
+  return NULL;
+}
+char *dest = hashkit_string_c_str_mutable(destination);
+memcpy(dest, cipher_text, cipher_length + final_length);
+hashkit_string_set_length(destination, cipher_length + final_length);
+return destination;
+}
+
+hashkit_string_st *aes_decrypt(encryption_context_t *crypto_context, const unsigned char *source,
+                               size_t source_length) {
+EVP_CIPHER_CTX *decryption_context = crypto_context->decryption_context;
+int plain_text_length = source_length;
+int final_length = 0;
+unsigned char *plain_text = (unsigned char *) malloc(plain_text_length);
+if (plain_text == NULL) {
+  return NULL;
+}
+if (EVP_DecryptInit_ex(decryption_context, NULL, NULL, NULL, NULL) != 1
+    || EVP_DecryptUpdate(decryption_context, plain_text, &plain_text_length, source, source_length)
+        != 1
+    || EVP_DecryptFinal_ex(decryption_context, plain_text + plain_text_length, &final_length) != 1)
+{
+  free(plain_text);
+  return NULL;
+}
+
+hashkit_string_st *destination = hashkit_string_create(plain_text_length + final_length);
+if (destination == NULL) {
+  return NULL;
+}
+char *dest = hashkit_string_c_str_mutable(destination);
+memcpy(dest, plain_text, plain_text_length + final_length);
+hashkit_string_set_length(destination, plain_text_length + final_length);
+return destination;
+}
+
+encryption_context_t *aes_clone_cryptographic_context(encryption_context_t *source) {
+  encryption_context_t *new_context = (encryption_context_t *) malloc(sizeof(encryption_context_t));
+  if (new_context == NULL)
+    return NULL;
+
+  new_context->encryption_context = EVP_CIPHER_CTX_new();
+  new_context->decryption_context = EVP_CIPHER_CTX_new();
+  if (new_context->encryption_context == NULL || new_context->decryption_context == NULL) {
+    free(new_context);
+    return NULL;
+  }
+  EVP_CIPHER_CTX_copy(new_context->encryption_context, source->encryption_context);
+  EVP_CIPHER_CTX_copy(new_context->decryption_context, source->decryption_context);
+  return new_context;
+}
+
+#else
+
+#  include "libhashkit/rijndael.hpp"
+
+#  define AES_KEY_LENGTH 256 /* 128, 192, 256 */
+#  define AES_BLOCK_SIZE 16
 
 enum encrypt_t { AES_ENCRYPT, AES_DECRYPT };
 
@@ -49,7 +159,7 @@ aes_key_t *aes_create_key(const char *key, const size_t key_length) {
       if (ptr == rkey_end) {
         ptr = rkey; /*  Just loop over tmp_key until we used all key */
       }
-      *ptr ^= (uint8_t)(*sptr);
+      *ptr ^= (uint8_t) (*sptr);
     }
 
     _aes_key->decode_key.nr = rijndaelKeySetupDec(_aes_key->decode_key.rk, rkey, AES_KEY_LENGTH);
@@ -140,3 +250,4 @@ hashkit_string_st *aes_decrypt(aes_key_t *_aes_key, const char *source, size_t s
 
   return destination;
 }
+#endif

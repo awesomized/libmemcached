@@ -39,6 +39,15 @@ target_include_directories(libhashkit PUBLIC
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
         $<INSTALL_INTERFACE:include>)
+
+find_package(OpenSSL)
+if(NOT OPENSSL_FOUND)
+  message(WARNING "crypto library not found")
+else()
+  add_compile_definitions(WITH_OPENSSL)
+  target_link_libraries(libhashkit PUBLIC OpenSSL::Crypto)
+endif()
+
 configure_file(hashkitcon.h.in hashkitcon.h @ONLY)
 
 install(TARGETS libhashkit EXPORT libhashkit-targets
