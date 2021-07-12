@@ -55,58 +55,60 @@ bool aes_initialize(const unsigned char *key, const size_t key_length,
 
 hashkit_string_st *aes_encrypt(encryption_context_t *crypto_context, const unsigned char *source,
                                size_t source_length) {
-EVP_CIPHER_CTX *encryption_context = crypto_context->encryption_context;
-int cipher_length = source_length + EVP_CIPHER_CTX_block_size(encryption_context);
-int final_length = 0;
-unsigned char *cipher_text = (unsigned char *) malloc(cipher_length);
-if (cipher_text == NULL) {
-  return NULL;
-}
-if (EVP_EncryptInit_ex(encryption_context, NULL, NULL, NULL, NULL) != 1
-    || EVP_EncryptUpdate(encryption_context, cipher_text, &cipher_length, source, source_length)
-        != 1
-    || EVP_EncryptFinal_ex(encryption_context, cipher_text + cipher_length, &final_length) != 1)
-{
-  free(cipher_text);
-  return NULL;
-}
+  EVP_CIPHER_CTX *encryption_context = crypto_context->encryption_context;
+  int cipher_length = source_length + EVP_CIPHER_CTX_block_size(encryption_context);
+  int final_length = 0;
+  unsigned char *cipher_text = (unsigned char *) malloc(cipher_length);
+  if (cipher_text == NULL) {
+    return NULL;
+  }
+  if (EVP_EncryptInit_ex(encryption_context, NULL, NULL, NULL, NULL) != 1
+      || EVP_EncryptUpdate(encryption_context, cipher_text, &cipher_length, source, source_length)
+          != 1
+      || EVP_EncryptFinal_ex(encryption_context, cipher_text + cipher_length, &final_length) != 1)
+  {
+    free(cipher_text);
+    return NULL;
+  }
 
-hashkit_string_st *destination = hashkit_string_create(cipher_length + final_length);
-if (destination == NULL) {
-  return NULL;
-}
-char *dest = hashkit_string_c_str_mutable(destination);
-memcpy(dest, cipher_text, cipher_length + final_length);
-hashkit_string_set_length(destination, cipher_length + final_length);
-return destination;
+  hashkit_string_st *destination = hashkit_string_create(cipher_length + final_length);
+  if (destination == NULL) {
+    return NULL;
+  }
+  char *dest = hashkit_string_c_str_mutable(destination);
+  memcpy(dest, cipher_text, cipher_length + final_length);
+  hashkit_string_set_length(destination, cipher_length + final_length);
+  return destination;
 }
 
 hashkit_string_st *aes_decrypt(encryption_context_t *crypto_context, const unsigned char *source,
                                size_t source_length) {
-EVP_CIPHER_CTX *decryption_context = crypto_context->decryption_context;
-int plain_text_length = source_length;
-int final_length = 0;
-unsigned char *plain_text = (unsigned char *) malloc(plain_text_length);
-if (plain_text == NULL) {
-  return NULL;
-}
-if (EVP_DecryptInit_ex(decryption_context, NULL, NULL, NULL, NULL) != 1
-    || EVP_DecryptUpdate(decryption_context, plain_text, &plain_text_length, source, source_length)
-        != 1
-    || EVP_DecryptFinal_ex(decryption_context, plain_text + plain_text_length, &final_length) != 1)
-{
-  free(plain_text);
-  return NULL;
-}
+  EVP_CIPHER_CTX *decryption_context = crypto_context->decryption_context;
+  int plain_text_length = source_length;
+  int final_length = 0;
+  unsigned char *plain_text = (unsigned char *) malloc(plain_text_length);
+  if (plain_text == NULL) {
+    return NULL;
+  }
+  if (EVP_DecryptInit_ex(decryption_context, NULL, NULL, NULL, NULL) != 1
+      || EVP_DecryptUpdate(decryption_context, plain_text, &plain_text_length, source,
+                           source_length)
+          != 1
+      || EVP_DecryptFinal_ex(decryption_context, plain_text + plain_text_length, &final_length)
+          != 1)
+  {
+    free(plain_text);
+    return NULL;
+  }
 
-hashkit_string_st *destination = hashkit_string_create(plain_text_length + final_length);
-if (destination == NULL) {
-  return NULL;
-}
-char *dest = hashkit_string_c_str_mutable(destination);
-memcpy(dest, plain_text, plain_text_length + final_length);
-hashkit_string_set_length(destination, plain_text_length + final_length);
-return destination;
+  hashkit_string_st *destination = hashkit_string_create(plain_text_length + final_length);
+  if (destination == NULL) {
+    return NULL;
+  }
+  char *dest = hashkit_string_c_str_mutable(destination);
+  memcpy(dest, plain_text, plain_text_length + final_length);
+  hashkit_string_set_length(destination, plain_text_length + final_length);
+  return destination;
 }
 
 encryption_context_t *aes_clone_cryptographic_context(encryption_context_t *source) {
