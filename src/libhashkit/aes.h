@@ -15,7 +15,7 @@
 
 #pragma once
 
-#ifdef WITH_OPENSSL
+#ifdef HAVE_OPENSSL_CRYPTO
 
 #include <openssl/evp.h>
 

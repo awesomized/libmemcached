@@ -15,12 +15,12 @@
 
 #include "libhashkit/common.h"
 
-#ifdef WITH_OPENSSL
+#ifdef HAVE_OPENSSL_CRYPTO
 #  include <openssl/evp.h>
 #endif
 
 hashkit_string_st *hashkit_encrypt(hashkit_st *kit, const char *source, size_t source_length) {
-#ifdef WITH_OPENSSL
+#ifdef HAVE_OPENSSL_CRYPTO
   return aes_encrypt((encryption_context_t *) kit->_cryptographic_context,
                      (const unsigned char *) source, source_length);
 #else
@@ -30,7 +30,7 @@ hashkit_string_st *hashkit_encrypt(hashkit_st *kit, const char *source, size_t s
 }
 
 hashkit_string_st *hashkit_decrypt(hashkit_st *kit, const char *source, size_t source_length) {
-#ifdef WITH_OPENSSL
+#ifdef HAVE_OPENSSL_CRYPTO
   return aes_decrypt((encryption_context_t *) kit->_cryptographic_context,
                      (const unsigned char *) source, source_length);
 #else
@@ -38,7 +38,7 @@ hashkit_string_st *hashkit_decrypt(hashkit_st *kit, const char *source, size_t s
 #endif
 }
 
-#ifdef WITH_OPENSSL
+#ifdef HAVE_OPENSSL_CRYPTO
 bool hashkit_key(hashkit_st *kit, const char *key, const size_t key_length) {
   kit->_cryptographic_context = (encryption_context_t *) malloc(sizeof(encryption_context_t));
   ((encryption_context_t *) kit->_cryptographic_context)->encryption_context = EVP_CIPHER_CTX_new();

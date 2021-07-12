@@ -40,12 +40,16 @@ target_include_directories(libhashkit PUBLIC
         $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
         $<INSTALL_INTERFACE:include>)
 
-find_package(OpenSSL)
-if(NOT OPENSSL_FOUND)
-  message(WARNING "crypto library not found")
-else()
-  add_compile_definitions(WITH_OPENSSL)
-  target_link_libraries(libhashkit PUBLIC OpenSSL::Crypto)
+if(ENABLE_OPENSSL_CRYPTO)
+        find_package(OpenSSL)
+        if(OPENSSL_FOUND)
+                if(OPENSSL_CRYPTO_LIBRARY)
+                        target_compile_definitions(libhashkit PRIVATE HAVE_OPENSSL_CRYPTO)
+                        target_link_libraries(libhashkit PUBLIC OpenSSL::Crypto)
+                else()
+                        message(WARNING "Could not find OpenSSL::Crypto")
+                endif()
+        endif()
 endif()
 
 configure_file(hashkitcon.h.in hashkitcon.h @ONLY)

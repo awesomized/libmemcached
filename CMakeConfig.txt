@@ -65,6 +65,9 @@ if(NOT DEFINED ENV{ENABLE_MEMASLAP})
 endif()
 option(ENABLE_MEMASLAP      "enable memaslap client"
        $ENV{ENABLE_MEMASLAP})
+option(ENABLE_OPENSSL_CRYPTO
+                            "enable OpenSSL's libcrypto instead of bundled AES implementation"
+       $ENV{ENABLE_OPENSSL_CRYPTO})
 
 if(BUILD_TESTING)
     set(MEMCACHED_BINARY "$ENV{MEMCACHED_BINARY}"

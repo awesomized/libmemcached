@@ -15,7 +15,7 @@
 
 #include "libhashkit/common.h"
 
-#ifdef WITH_OPENSSL
+#ifdef HAVE_OPENSSL_CRYPTO
 #  include <openssl/evp.h>
 #endif
 
@@ -56,7 +56,7 @@ hashkit_st *hashkit_create(hashkit_st *self) {
   return self;
 }
 
-#ifdef WITH_OPENSSL
+#ifdef HAVE_OPENSSL_CRYPTO
 static void cryptographic_context_free(encryption_context_t *context) {
   EVP_CIPHER_CTX_free(context->encryption_context);
   EVP_CIPHER_CTX_free(context->decryption_context);
@@ -65,7 +65,7 @@ static void cryptographic_context_free(encryption_context_t *context) {
 #endif
 
 void hashkit_free(hashkit_st *self) {
-#ifdef WITH_OPENSSL
+#ifdef HAVE_OPENSSL_CRYPTO
   if (self and self->_cryptographic_context) {
     cryptographic_context_free((encryption_context_t *)self->_cryptographic_context);
     self->_cryptographic_context = NULL;
@@ -98,7 +98,7 @@ hashkit_st *hashkit_clone(hashkit_st *destination, const hashkit_st *source) {
   destination->base_hash = source->base_hash;
   destination->distribution_hash = source->distribution_hash;
   destination->flags = source->flags;
-#ifdef WITH_OPENSSL
+#ifdef HAVE_OPENSSL_CRYPTO
   if (destination->_cryptographic_context) {
     cryptographic_context_free((encryption_context_t *)destination->_cryptographic_context);
     destination->_cryptographic_context = NULL;
