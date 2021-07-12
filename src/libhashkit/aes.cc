@@ -30,7 +30,7 @@ bool aes_initialize(const unsigned char *key, const size_t key_length,
                     encryption_context_t *crypto_context) {
   unsigned char aes_key[AES_KEY_NBYTES];
   unsigned char aes_iv[AES_IV_NBYTES];
-  if (aes_key == NULL || aes_iv == NULL) {
+  if (!key) {
     return false;
   }
 
