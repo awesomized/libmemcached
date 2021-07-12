@@ -49,7 +49,7 @@ struct hashkit_st {
     bool is_allocated : 1;
   } options;
 
-  void *_cryptographic_context;
+  void *_key;
 };
 
 #ifdef __cplusplus

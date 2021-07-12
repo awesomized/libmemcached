@@ -27,7 +27,7 @@ static inline void _hashkit_init(hashkit_st *self) {
   self->distribution_hash.context = NULL;
 
   self->flags.is_base_same_distributed = true;
-  self->_cryptographic_context = NULL;
+  self->_key = NULL;
 }
 
 static inline hashkit_st *_hashkit_create(hashkit_st *self) {
@@ -66,14 +66,14 @@ static void cryptographic_context_free(encryption_context_t *context) {
 
 void hashkit_free(hashkit_st *self) {
 #ifdef HAVE_OPENSSL_CRYPTO
-  if (self and self->_cryptographic_context) {
-    cryptographic_context_free((encryption_context_t *)self->_cryptographic_context);
-    self->_cryptographic_context = NULL;
+  if (self and self->_key) {
+    cryptographic_context_free((encryption_context_t *)self->_key);
+    self->_key = NULL;
   }
 #else
-  if (self and self->_cryptographic_context) {
-    free(self->_cryptographic_context);
-    self->_cryptographic_context = NULL;
+  if (self and self->_key) {
+    free(self->_key);
+    self->_key = NULL;
   }
 #endif
 
@@ -99,19 +99,19 @@ hashkit_st *hashkit_clone(hashkit_st *destination, const hashkit_st *source) {
   destination->distribution_hash = source->distribution_hash;
   destination->flags = source->flags;
 #ifdef HAVE_OPENSSL_CRYPTO
-  if (destination->_cryptographic_context) {
-    cryptographic_context_free((encryption_context_t *)destination->_cryptographic_context);
-    destination->_cryptographic_context = NULL;
+  if (destination->_key) {
+    cryptographic_context_free((encryption_context_t *)destination->_key);
+    destination->_key = NULL;
   }
-  if (source->_cryptographic_context) {
-    destination->_cryptographic_context =
-        aes_clone_cryptographic_context(((encryption_context_t *) source->_cryptographic_context));
-    if (destination->_cryptographic_context) {
+  if (source->_key) {
+    destination->_key =
+        aes_clone_cryptographic_context(((encryption_context_t *) source->_key));
+    if (destination->_key) {
       
     }
   }
 #else
-  destination->_cryptographic_context = aes_clone_key(static_cast<aes_key_t *>(source->_cryptographic_context));
+  destination->_key = aes_clone_key(static_cast<aes_key_t *>(source->_key));
 #endif
 
   return destination;

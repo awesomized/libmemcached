@@ -21,44 +21,44 @@
 
 hashkit_string_st *hashkit_encrypt(hashkit_st *kit, const char *source, size_t source_length) {
 #ifdef HAVE_OPENSSL_CRYPTO
-  return aes_encrypt((encryption_context_t *) kit->_cryptographic_context,
+  return aes_encrypt((encryption_context_t *) kit->_key,
                      (const unsigned char *) source, source_length);
 #else
-  return aes_encrypt((aes_key_t *) kit->_cryptographic_context, source,
+  return aes_encrypt((aes_key_t *) kit->_key, source,
                      source_length);
 #endif
 }
 
 hashkit_string_st *hashkit_decrypt(hashkit_st *kit, const char *source, size_t source_length) {
 #ifdef HAVE_OPENSSL_CRYPTO
-  return aes_decrypt((encryption_context_t *) kit->_cryptographic_context,
+  return aes_decrypt((encryption_context_t *) kit->_key,
                      (const unsigned char *) source, source_length);
 #else
-  return aes_decrypt((aes_key_t *)kit->_cryptographic_context, source, source_length);
+  return aes_decrypt((aes_key_t *)kit->_key, source, source_length);
 #endif
 }
 
 #ifdef HAVE_OPENSSL_CRYPTO
 bool hashkit_key(hashkit_st *kit, const char *key, const size_t key_length) {
-  kit->_cryptographic_context = (encryption_context_t *) malloc(sizeof(encryption_context_t));
-  ((encryption_context_t *) kit->_cryptographic_context)->encryption_context = EVP_CIPHER_CTX_new();
-  ((encryption_context_t *) kit->_cryptographic_context)->decryption_context = EVP_CIPHER_CTX_new();
-  if (((encryption_context_t *) kit->_cryptographic_context)->encryption_context == NULL
-      || ((encryption_context_t *) kit->_cryptographic_context)->decryption_context == NULL)
+  kit->_key = (encryption_context_t *) malloc(sizeof(encryption_context_t));
+  ((encryption_context_t *) kit->_key)->encryption_context = EVP_CIPHER_CTX_new();
+  ((encryption_context_t *) kit->_key)->decryption_context = EVP_CIPHER_CTX_new();
+  if (((encryption_context_t *) kit->_key)->encryption_context == NULL
+      || ((encryption_context_t *) kit->_key)->decryption_context == NULL)
   {
     return false;
   }
   return aes_initialize((const unsigned char *) key, key_length,
-                        (encryption_context_t *) kit->_cryptographic_context);
+                        (encryption_context_t *) kit->_key);
 }
 #else
 bool hashkit_key(hashkit_st *kit, const char *key, const size_t key_length) {
-  if (kit->_cryptographic_context) {
-    free(kit->_cryptographic_context);
+  if (kit->_key) {
+    free(kit->_key);
   }
 
-  kit->_cryptographic_context = aes_create_key(key, key_length);
+  kit->_key = aes_create_key(key, key_length);
 
-  return bool(kit->_cryptographic_context);
+  return bool(kit->_key);
 }
 #endif
