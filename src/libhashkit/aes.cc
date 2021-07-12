@@ -26,45 +26,60 @@
 #define AES_KEY_NBYTES 32
 #define AES_IV_NBYTES  32
 
-bool aes_initialize(const unsigned char *key, const size_t key_length,
-                    encryption_context_t *crypto_context) {
+struct aes_key_t {
+  EVP_CIPHER_CTX *encryption_context;
+  EVP_CIPHER_CTX *decryption_context;
+};
+
+
+aes_key_t *aes_create_key(const char *key, const size_t key_length) {
   unsigned char aes_key[AES_KEY_NBYTES];
   unsigned char aes_iv[AES_IV_NBYTES];
+  const unsigned char *ukey = (const unsigned char *) key;
+
   if (!key) {
-    return false;
+    return NULL;
   }
 
-  int i = EVP_BytesToKey(EVP_aes_256_cbc(), EVP_sha256(), NULL, key, key_length, DIGEST_ROUNDS,
+  int i = EVP_BytesToKey(EVP_aes_256_cbc(), EVP_sha256(), NULL, ukey, key_length, DIGEST_ROUNDS,
                          aes_key, aes_iv);
   if (i != AES_KEY_NBYTES) {
-    return false;
+    return NULL;
   }
 
-  EVP_CIPHER_CTX_init(crypto_context->encryption_context);
-  EVP_CIPHER_CTX_init(crypto_context->decryption_context);
-  if (EVP_EncryptInit_ex(crypto_context->encryption_context, EVP_aes_256_cbc(), NULL, key, aes_iv)
-          != 1
-      || EVP_DecryptInit_ex(crypto_context->decryption_context, EVP_aes_256_cbc(), NULL, key,
-                            aes_iv)
-          != 1)
-  {
-    return false;
+  aes_key_t *aes_ctx = (aes_key_t *) malloc(sizeof(aes_key_t));
+
+  if (!(aes_ctx->encryption_context = EVP_CIPHER_CTX_new())) {
+    return NULL;
   }
-  return true;
+  if (!(aes_ctx->decryption_context = EVP_CIPHER_CTX_new())) {
+    EVP_CIPHER_CTX_free(aes_ctx->encryption_context);
+    return NULL;
+  }
+
+  EVP_CIPHER_CTX_init(aes_ctx->encryption_context);
+  EVP_CIPHER_CTX_init(aes_ctx->decryption_context);
+  if (EVP_EncryptInit_ex(aes_ctx->encryption_context, EVP_aes_256_cbc(), NULL, ukey, aes_iv) != 1
+      || EVP_DecryptInit_ex(aes_ctx->decryption_context, EVP_aes_256_cbc(), NULL, ukey, aes_iv) != 1)
+  {
+    aes_free_key(aes_ctx);
+    return NULL;
+  }
+
+  return aes_ctx;
 }
 
-hashkit_string_st *aes_encrypt(encryption_context_t *crypto_context, const unsigned char *source,
-                               size_t source_length) {
-  EVP_CIPHER_CTX *encryption_context = crypto_context->encryption_context;
+hashkit_string_st *aes_encrypt(aes_key_t *ctx, const char *source, size_t source_length) {
+  EVP_CIPHER_CTX *encryption_context = ctx->encryption_context;
   int cipher_length = source_length + EVP_CIPHER_CTX_block_size(encryption_context);
   int final_length = 0;
+  const unsigned char *usource = (const unsigned char *) source;
   unsigned char *cipher_text = (unsigned char *) malloc(cipher_length);
-  if (cipher_text == NULL) {
+  if (!cipher_text) {
     return NULL;
   }
   if (EVP_EncryptInit_ex(encryption_context, NULL, NULL, NULL, NULL) != 1
-      || EVP_EncryptUpdate(encryption_context, cipher_text, &cipher_length, source, source_length)
-          != 1
+      || EVP_EncryptUpdate(encryption_context, cipher_text, &cipher_length, usource, source_length) != 1
       || EVP_EncryptFinal_ex(encryption_context, cipher_text + cipher_length, &final_length) != 1)
   {
     free(cipher_text);
@@ -72,7 +87,7 @@ hashkit_string_st *aes_encrypt(encryption_context_t *crypto_context, const unsig
   }
 
   hashkit_string_st *destination = hashkit_string_create(cipher_length + final_length);
-  if (destination == NULL) {
+  if (!destination) {
     return NULL;
   }
   char *dest = hashkit_string_c_str_mutable(destination);
@@ -81,28 +96,25 @@ hashkit_string_st *aes_encrypt(encryption_context_t *crypto_context, const unsig
   return destination;
 }
 
-hashkit_string_st *aes_decrypt(encryption_context_t *crypto_context, const unsigned char *source,
-                               size_t source_length) {
-  EVP_CIPHER_CTX *decryption_context = crypto_context->decryption_context;
+hashkit_string_st *aes_decrypt(aes_key_t *ctx, const char *source, size_t source_length) {
+  EVP_CIPHER_CTX *decryption_context = ctx->decryption_context;
   int plain_text_length = source_length;
   int final_length = 0;
+  const unsigned char *usource = (const unsigned char *) source;
   unsigned char *plain_text = (unsigned char *) malloc(plain_text_length);
-  if (plain_text == NULL) {
+  if (!plain_text) {
     return NULL;
   }
   if (EVP_DecryptInit_ex(decryption_context, NULL, NULL, NULL, NULL) != 1
-      || EVP_DecryptUpdate(decryption_context, plain_text, &plain_text_length, source,
-                           source_length)
-          != 1
-      || EVP_DecryptFinal_ex(decryption_context, plain_text + plain_text_length, &final_length)
-          != 1)
+      || EVP_DecryptUpdate(decryption_context, plain_text, &plain_text_length, usource, source_length) != 1
+      || EVP_DecryptFinal_ex(decryption_context, plain_text + plain_text_length, &final_length) != 1)
   {
     free(plain_text);
     return NULL;
   }
 
   hashkit_string_st *destination = hashkit_string_create(plain_text_length + final_length);
-  if (destination == NULL) {
+  if (!destination) {
     return NULL;
   }
   char *dest = hashkit_string_c_str_mutable(destination);
@@ -111,20 +123,38 @@ hashkit_string_st *aes_decrypt(encryption_context_t *crypto_context, const unsig
   return destination;
 }
 
-encryption_context_t *aes_clone_cryptographic_context(encryption_context_t *source) {
-  encryption_context_t *new_context = (encryption_context_t *) malloc(sizeof(encryption_context_t));
-  if (new_context == NULL)
-    return NULL;
-
-  new_context->encryption_context = EVP_CIPHER_CTX_new();
-  new_context->decryption_context = EVP_CIPHER_CTX_new();
-  if (new_context->encryption_context == NULL || new_context->decryption_context == NULL) {
-    free(new_context);
+aes_key_t *aes_clone_key(aes_key_t *old_context) {
+  if (!old_context) {
     return NULL;
   }
-  EVP_CIPHER_CTX_copy(new_context->encryption_context, source->encryption_context);
-  EVP_CIPHER_CTX_copy(new_context->decryption_context, source->decryption_context);
+
+  aes_key_t *new_context = (aes_key_t *) malloc(sizeof(aes_key_t));
+  if (new_context) {
+    new_context->encryption_context = EVP_CIPHER_CTX_new();
+    new_context->decryption_context = EVP_CIPHER_CTX_new();
+    if (!new_context->encryption_context || !new_context->decryption_context) {
+      aes_free_key(new_context);
+      return NULL;
+    }
+    EVP_CIPHER_CTX_copy(new_context->encryption_context, old_context->encryption_context);
+    EVP_CIPHER_CTX_copy(new_context->decryption_context, old_context->decryption_context);
+  }
+
   return new_context;
+}
+
+void aes_free_key(aes_key_t *context) {
+  if (context) {
+    if (context->encryption_context) {
+      EVP_CIPHER_CTX_free(context->encryption_context);
+      context->encryption_context = NULL;
+    }
+    if (context->decryption_context) {
+      EVP_CIPHER_CTX_free(context->decryption_context);
+      context->decryption_context = NULL;
+    }
+    free(context);
+  }
 }
 
 #else
@@ -172,7 +202,7 @@ aes_key_t *aes_create_key(const char *key, const size_t key_length) {
 }
 
 aes_key_t *aes_clone_key(aes_key_t *_aes_key) {
-  if (_aes_key == NULL) {
+  if (!_aes_key) {
     return NULL;
   }
 
@@ -185,7 +215,7 @@ aes_key_t *aes_clone_key(aes_key_t *_aes_key) {
 }
 
 hashkit_string_st *aes_encrypt(aes_key_t *_aes_key, const char *source, size_t source_length) {
-  if (_aes_key == NULL) {
+  if (!_aes_key) {
     return NULL;
   }
 
@@ -214,7 +244,7 @@ hashkit_string_st *aes_encrypt(aes_key_t *_aes_key, const char *source, size_t s
 }
 
 hashkit_string_st *aes_decrypt(aes_key_t *_aes_key, const char *source, size_t source_length) {
-  if (_aes_key == NULL) {
+  if (!_aes_key) {
     return NULL;
   }
 
@@ -252,4 +282,11 @@ hashkit_string_st *aes_decrypt(aes_key_t *_aes_key, const char *source, size_t s
 
   return destination;
 }
+
+void aes_free_key(aes_key_t *key) {
+  if (key) {
+    free(key);
+  }
+}
+
 #endif

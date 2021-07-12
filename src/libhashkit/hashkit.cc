@@ -15,10 +15,6 @@
 
 #include "libhashkit/common.h"
 
-#ifdef HAVE_OPENSSL_CRYPTO
-#  include <openssl/evp.h>
-#endif
-
 static inline void _hashkit_init(hashkit_st *self) {
   self->base_hash.function = hashkit_one_at_a_time;
   self->base_hash.context = NULL;
@@ -56,26 +52,11 @@ hashkit_st *hashkit_create(hashkit_st *self) {
   return self;
 }
 
-#ifdef HAVE_OPENSSL_CRYPTO
-static void cryptographic_context_free(encryption_context_t *context) {
-  EVP_CIPHER_CTX_free(context->encryption_context);
-  EVP_CIPHER_CTX_free(context->decryption_context);
-  free(context);
-}
-#endif
-
 void hashkit_free(hashkit_st *self) {
-#ifdef HAVE_OPENSSL_CRYPTO
   if (self and self->_key) {
-    cryptographic_context_free((encryption_context_t *)self->_key);
+    aes_free_key((aes_key_t *) self->_key);
     self->_key = NULL;
   }
-#else
-  if (self and self->_key) {
-    free(self->_key);
-    self->_key = NULL;
-  }
-#endif
 
   if (hashkit_is_allocated(self)) {
     free(self);
@@ -98,21 +79,7 @@ hashkit_st *hashkit_clone(hashkit_st *destination, const hashkit_st *source) {
   destination->base_hash = source->base_hash;
   destination->distribution_hash = source->distribution_hash;
   destination->flags = source->flags;
-#ifdef HAVE_OPENSSL_CRYPTO
-  if (destination->_key) {
-    cryptographic_context_free((encryption_context_t *)destination->_key);
-    destination->_key = NULL;
-  }
-  if (source->_key) {
-    destination->_key =
-        aes_clone_cryptographic_context(((encryption_context_t *) source->_key));
-    if (destination->_key) {
-      
-    }
-  }
-#else
-  destination->_key = aes_clone_key(static_cast<aes_key_t *>(source->_key));
-#endif
+  destination->_key = aes_clone_key((aes_key_t *) source->_key);
 
   return destination;
 }
