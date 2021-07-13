@@ -6,7 +6,8 @@
 
 * Fix [gh #113](https://github.com/awesomized/libmemcached/issues/105):
   Build failure with Catch2 < 2.13.5.
-
+* Add [gh #114](https://github.com/awesomized/libmemcached/pull/114):
+  Add possibility to use libcrypto for encryption.
 
 ## v 1.1.0
 
