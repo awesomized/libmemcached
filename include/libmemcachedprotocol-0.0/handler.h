@@ -15,6 +15,7 @@
 
 #pragma once
 
+#include "libmemcachedprotocol-0.0/configure.h"
 #include <sys/types.h>
 #ifndef HAVE_SSIZE_T
 typedef long int ssize_t;
