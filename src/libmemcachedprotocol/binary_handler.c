@@ -933,7 +933,7 @@ stat_command_handler(const void *cookie, protocol_binary_request_header *header,
                       .opaque = header->request.opaque,
                   },
           }};
-      rval = response_handler(cookie, header, &response);
+      rval = response_handler(cookie, header, (void *) &response);
     }
   } else {
     rval = PROTOCOL_BINARY_RESPONSE_UNKNOWN_COMMAND;
