@@ -10,6 +10,8 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/example.cnf
         DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}
         )
 
+pkgconfig_import(REQUIRES)
+pkgconfig_import(REQUIRES_PRIVATE)
 configure_file(libmemcached.pc.in libmemcached.pc @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libmemcached.pc
         COMPONENT dev

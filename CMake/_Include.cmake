@@ -100,12 +100,21 @@ include(CheckThreads)
 include(CheckVisibility)
 include(InstallPublicHeaders)
 
+function(pkgconfig_export VAR VAL)
+    get_property(PREV GLOBAL PROPERTY PKGCONFIG_${VAR})
+    set_property(GLOBAL PROPERTY PKGCONFIG_${VAR} "${PREV} ${VAL}")
+endfunction()
+macro(pkgconfig_import VAR)
+    get_property(PKGCONFIG_${VAR} GLOBAL PROPERTY PKGCONFIG_${VAR})
+endmacro()
+
 ## sasl
 configure_define_01(LIBMEMCACHED_WITH_SASL_SUPPORT)
 if(ENABLE_SASL)
     check_dependency(LIBSASL sasl2)
     if(HAVE_LIBSASL)
         set(LIBMEMCACHED_WITH_SASL_SUPPORT 1)
+        pkgconfig_export(REQUIRES libsasl2)
     endif()
 endif()
 
