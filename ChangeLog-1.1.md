@@ -4,10 +4,20 @@
 
 > released TBD
 
+* Fix [gh #67](https://github.com/awesomized/libmemcached/issues/67):
+  GET returns `NOTFOUND` on `TIMEOUT`.
 * Fix [gh #113](https://github.com/awesomized/libmemcached/issues/105):
   Build failure with Catch2 < 2.13.5.
 * Add [gh #114](https://github.com/awesomized/libmemcached/pull/114):
   Add possibility to use libcrypto for encryption.
+* Add [gh #115](https://github.com/awesomized/libmemcached/pull/115):
+  Add `LIBMEMCACHED_AWESOME` CPP define.
+* Add test for [gh #75](https://github.com/awesomized/libmemcached/issues/75):
+  memcached_clone of SASL connection closes random file descriptor.
+* Fix [gh #116](https://github.com/awesomized/libmemcached/issues/116):
+  Add libmemcachedpotocol-0-0/configure.h guarding `ssize_t` typedef.
+* Fix [gh #120](https://github.com/awesomized/libmemcached/issues/120):
+  libmemcached.pc is missing a `Requires` entry for libsasl2.
 
 ## v 1.1.0
 
@@ -27,7 +37,7 @@ the full list of changes since the last 1.0 release.
 **Changes from beta2:**
 
 * Fix [gh #108](https://github.com/awesomized/libmemcached/issues/105):
-  macOS Big Sur: dtrace does not understand -G switch
+  macOS Big Sur: dtrace does not understand -G switch.
 * Add support for IPv6 bracketed syntax in `memcached_servers_parse`.
 * Make `memcat`'s `--file` option's argument optional defaulting to `<key>`.
 * Fix libmemcachedprotocol's binary `STAT` and `VERSION` handlers.
