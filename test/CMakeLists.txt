@@ -45,6 +45,8 @@ if(NOT MEMCACHED_BINARY)
     set(ENV{INVALID_CONFIGURATION} 1)
 endif()
 
+add_executable(timeout timeout.c)
+
 file(GLOB_RECURSE TESTING_SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
 set(TESTING_ROOT "${CMAKE_CURRENT_BINARY_DIR}")
 set(SOURCES_ROOT "${CMAKE_SOURCE_DIR}")
@@ -66,7 +68,7 @@ if(NOT (thread IN_LIST ENABLE_SANITIZERS))
     endif()
 endif()
 
-add_dependencies(runtests ${CLIENTS})
+add_dependencies(runtests ${CLIENTS} timeout)
 if(TARGET memaslap)
     configure_set(HAVE_MEMASLAP 1)
     add_dependencies(runtests memaslap)

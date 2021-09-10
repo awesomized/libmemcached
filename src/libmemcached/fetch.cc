@@ -141,6 +141,7 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr, memcached_result_
   memcached_instance_st *server;
   memcached_return_t read_ret = MEMCACHED_SUCCESS;
   bool connection_failures = false;
+  bool timeouts = false;
   while ((server = memcached_io_get_readable_server(ptr, read_ret))) {
     char buffer[MEMCACHED_DEFAULT_COMMAND_SIZE];
     *error = memcached_response(server, buffer, sizeof(buffer), result);
@@ -150,6 +151,8 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr, memcached_result_
     } else if (*error == MEMCACHED_CONNECTION_FAILURE) {
       connection_failures = true;
       continue;
+    } else if (*error == MEMCACHED_TIMEOUT) {
+      timeouts = true;
     } else if (*error == MEMCACHED_SUCCESS) {
       result->count++;
       return result;
@@ -175,6 +178,8 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr, memcached_result_
         that.
         */
     *error = MEMCACHED_CONNECTION_FAILURE;
+  } else if (timeouts) {
+    *error = MEMCACHED_TIMEOUT;
   } else if (*error == MEMCACHED_SUCCESS) {
     *error = MEMCACHED_END;
   } else if (result->count == 0) {
