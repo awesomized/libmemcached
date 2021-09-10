@@ -183,10 +183,20 @@
 <blockquote>
 <div>released TBD</div></blockquote>
 <ul class="simple">
+<li>Fix <a class="reference external" href="https://github.com/awesomized/libmemcached/issues/67">gh #67</a>:
+GET returns <code class="docutils literal notranslate"><span class="pre">NOTFOUND</span></code> on <code class="docutils literal notranslate"><span class="pre">TIMEOUT</span></code>.</li>
 <li>Fix <a class="reference external" href="https://github.com/awesomized/libmemcached/issues/105">gh #113</a>:
 Build failure with Catch2 &lt; 2.13.5.</li>
 <li>Add <a class="reference external" href="https://github.com/awesomized/libmemcached/pull/114">gh #114</a>:
 Add possibility to use libcrypto for encryption.</li>
+<li>Add <a class="reference external" href="https://github.com/awesomized/libmemcached/pull/115">gh #115</a>:
+Add <code class="docutils literal notranslate"><span class="pre">LIBMEMCACHED_AWESOME</span></code> CPP define.</li>
+<li>Add test for <a class="reference external" href="https://github.com/awesomized/libmemcached/issues/75">gh #75</a>:
+memcached_clone of SASL connection closes random file descriptor.</li>
+<li>Fix <a class="reference external" href="https://github.com/awesomized/libmemcached/issues/116">gh #116</a>:
+Add libmemcachedpotocol-0-0/configure.h guarding <code class="docutils literal notranslate"><span class="pre">ssize_t</span></code> typedef.</li>
+<li>Fix <a class="reference external" href="https://github.com/awesomized/libmemcached/issues/120">gh #120</a>:
+libmemcached.pc is missing a <code class="docutils literal notranslate"><span class="pre">Requires</span></code> entry for libsasl2.</li>
 </ul>
 </div>
 <div class="section" id="v-1-1-0">
@@ -207,7 +217,7 @@ the full list of changes since the last 1.0 release.</p>
 <p><strong>Changes from beta2:</strong></p>
 <ul class="simple">
 <li>Fix <a class="reference external" href="https://github.com/awesomized/libmemcached/issues/105">gh #108</a>:
-macOS Big Sur: dtrace does not understand -G switch</li>
+macOS Big Sur: dtrace does not understand -G switch.</li>
 <li>Add support for IPv6 bracketed syntax in <code class="docutils literal notranslate"><span class="pre">memcached_servers_parse</span></code>.</li>
 <li>Make <code class="docutils literal notranslate"><span class="pre">memcat</span></code>'s <code class="docutils literal notranslate"><span class="pre">--file</span></code> option's argument optional defaulting to <code class="docutils literal notranslate"><span class="pre">&lt;key&gt;</span></code>.</li>
 <li>Fix libmemcachedprotocol's binary <code class="docutils literal notranslate"><span class="pre">STAT</span></code> and <code class="docutils literal notranslate"><span class="pre">VERSION</span></code> handlers.</li>
