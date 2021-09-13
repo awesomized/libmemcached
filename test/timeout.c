@@ -1,9 +1,17 @@
+#include "mem_config.h"
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <memory.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
+#if HAVE_ARPA_INET_H
+# include <arpa/inet.h>
+#endif
+#if HAVE_SYS_SOCKET_H
+# include <sys/socket.h>
+#endif
+#if HAVE_NETINET_IN_H
+# include <netinet/in.h>
+#endif
 
 // $0 -u nobody -p <port>
 int main(int argc, char **argv) {

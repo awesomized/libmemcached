@@ -46,6 +46,7 @@ if(NOT MEMCACHED_BINARY)
 endif()
 
 add_executable(timeout timeout.c)
+target_include_directories(timeout PRIVATE ${CMAKE_BINARY_DIR})
 
 file(GLOB_RECURSE TESTING_SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
 set(TESTING_ROOT "${CMAKE_CURRENT_BINARY_DIR}")
