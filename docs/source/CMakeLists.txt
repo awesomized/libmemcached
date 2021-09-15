@@ -7,6 +7,12 @@ function(DefaultRstPath MDFILE RSTFILE_VAR)
 endfunction()
 
 function(UpdateRstFromMd RSTFILE MDFILE)
+    if(NOT IS_ABSOLUTE ${MDFILE})
+        set(MDFILE ${CMAKE_CURRENT_SOURCE_DIR}/${MDFILE})
+    endif()
+    if (NOT IS_ABSOLUTE ${RSTFILE})
+        set(RSTFILE ${CMAKE_CURRENT_SOURCE_DIR}/${RSTFILE})
+    endif()
     if(${MDFILE} IS_NEWER_THAN ${RSTFILE})
         message("--   Processing ${MDFILE} ...")
         execute_process(
