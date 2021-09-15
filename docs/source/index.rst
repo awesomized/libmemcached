@@ -20,6 +20,7 @@ memory usage, thread safe, and provide full access to server side methods.
     :maxdepth: 1
 
     changelogs
+    Known issues <issues>
     copyright
 
 Index

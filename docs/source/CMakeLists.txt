@@ -1,25 +1,34 @@
 find_program(M2R NAMES m2r m2r-3)
 
-if(M2R)
-    file(GLOB CHANGELOGS "${CMAKE_SOURCE_DIR}/ChangeLog-*.md")
-    message("-- Checking ChangeLogs ...")
-    foreach(CHANGELOG IN LISTS CHANGELOGS)
-        string(REGEX REPLACE "\\.md$" ".rst" FILEPATH ${CHANGELOG})
-        get_filename_component(FILENAME ${FILEPATH} NAME)
+function(DefaultRstPath MDFILE RSTFILE_VAR)
+    string(REGEX REPLACE "\\.md$" ".rst" FILEPATH ${MDFILE})
+    get_filename_component(FILENAME ${FILEPATH} NAME)
+    set(${RSTFILE_VAR} "${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME}" PARENT_SCOPE)
+endfunction()
 
-        set(RESTFILE "${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME}")
-        if(${CHANGELOG} IS_NEWER_THAN ${RESTFILE})
-            message("--   Processing ${CHANGELOG} ...")
-            execute_process(
-                    COMMAND ${M2R} --overwrite --parse-relative-links ${CHANGELOG}
-                    RESULTS_VARIABLE M2R_STATUS
-            )
-            if(M2R_STATUS)
-                message("     Failed to update ${RESTFILE}: ${M2R_STATUS}")
-            else()
-                file(RENAME ${FILEPATH} ${RESTFILE} )
-                message("     Updated ${RESTFILE}: OK")
-            endif()
+function(UpdateRstFromMd RSTFILE MDFILE)
+    if(${MDFILE} IS_NEWER_THAN ${RSTFILE})
+        message("--   Processing ${MDFILE} ...")
+        execute_process(
+                COMMAND ${M2R} --overwrite --parse-relative-links ${MDFILE}
+                RESULTS_VARIABLE M2R_STATUS
+        )
+        if(M2R_STATUS)
+            message("     Failed to update ${RSTFILE}: ${M2R_STATUS}")
+        else()
+            string(REGEX REPLACE "\\.md$" ".rst" FILEPATH ${MDFILE})
+            file(RENAME ${FILEPATH} ${RSTFILE} )
+            message("     Updated ${RSTFILE}: OK")
         endif()
+    endif()
+endfunction()
+
+if(M2R)
+    message("-- Checking ChangeLogs, BUGS, etc...")
+    file(GLOB CHANGELOGS "${CMAKE_SOURCE_DIR}/ChangeLog-*.md")
+    foreach(CHANGELOG IN LISTS CHANGELOGS)
+        DefaultRstPath(${CHANGELOG} RESTFILE)
+        UpdateRstFromMd(${RESTFILE} ${CHANGELOG})
     endforeach()
+    UpdateRstFromMd(issues.rst "${CMAKE_SOURCE_DIR}/BUGS.md")
 endif()
