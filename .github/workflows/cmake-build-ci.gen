@@ -172,6 +172,7 @@ function steps_getdeps($os_vnd) {
   if ($os_vnd === "macOS") :
 ?>
         run: |
+          brew update # we need at least memcached-1.6.10 for the META proto
           brew install bison flex sphinx-doc ${INSTALL_MEMCACHED}
           brew services stop memcached || true
           echo MEMCACHED_BINARY="/usr/local/bin/memcached" >> ${GITHUB_ENV}
@@ -343,7 +344,7 @@ jobs:
         with:
           repository: memcached/memcached
           path: memcached
-          ref: 1.6.7
+          ref: 1.6.13
 <?php steps("Linux"); ?>
       - uses: codecov/codecov-action@v1.0.13
 
