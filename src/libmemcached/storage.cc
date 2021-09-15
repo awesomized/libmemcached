@@ -183,7 +183,7 @@ memcached_send_meta(memcached_st *ptr, memcached_instance_st *instance,
                     time_t expiration, uint32_t flags, uint64_t cas,
                     bool flush, memcached_storage_action_t verb) {
   static const char modes[] = "SREPAS";
-  char fl_buf[32] = " F", cs_buf[32] = " C", ex_buf[32] = " T", sz_buf[32] = " S";
+  char fl_buf[32] = " F", cs_buf[32] = " C", ex_buf[32] = " T", sz_buf[32] = " ";
   size_t io_num = 0, fl_len = strlen(fl_buf), cs_len = strlen(cs_buf), ex_len = strlen(ex_buf), sz_len = strlen(sz_buf);
   libmemcached_io_vector_st io_vec[16] = {};
 
@@ -191,6 +191,9 @@ memcached_send_meta(memcached_st *ptr, memcached_instance_st *instance,
   io_vec[io_num++] = {memcached_array_string(ptr->_namespace),
                       memcached_array_size(ptr->_namespace)};
   io_vec[io_num++] = {key, key_len};
+
+  sz_len += snprintf(sz_buf + sz_len, sizeof(sz_buf) - sz_len, "%" PRIu64, (uint64_t) val_len);
+  io_vec[io_num++] = {sz_buf, sz_len};
 
   if (verb != SET_OP) {
     io_vec[io_num++] = {memcached_literal_param(" M")};
@@ -213,8 +216,6 @@ memcached_send_meta(memcached_st *ptr, memcached_instance_st *instance,
   }
 
   /* we have to send a data block even if it's empty, else memcached errors out with ITEM TOO BIG */
-  sz_len += snprintf(sz_buf + sz_len, sizeof(sz_buf) - sz_len, "%" PRIu64, (uint64_t) val_len);
-  io_vec[io_num++] = {sz_buf, sz_len};
   io_vec[io_num++] = {memcached_literal_param("\r\n")};
   io_vec[io_num++] = {val, val_len};
   io_vec[io_num++] = {memcached_literal_param("\r\n")};

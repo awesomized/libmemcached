@@ -418,6 +418,13 @@ static memcached_return_t textual_read_one_response(memcached_instance_st *insta
     }
   } break;
 
+  case 'H':
+    // HD
+    if (buffer[1] == 'D') {
+      return MEMCACHED_SUCCESS;
+    }
+    break;
+
   case 'O': {
     // OK
     if (buffer[1] == 'K') {
