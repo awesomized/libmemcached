@@ -1,0 +1,284 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Bugs, Known Issues and Insufficiencies &mdash; libmemcached-awesome 1.1.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="copyright" title="Copyright" href="copyright.html" />
+    <link rel="next" title="Copyright" href="copyright.html" />
+    <link rel="prev" title="ChangeLog v0.x" href="ChangeLog-0.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> libmemcached-awesome
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="libmemcached.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="libmemcached/index.html">libmemcached API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="libmemcachedutil/index.html">libmemcachedutil API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="libhashkit/index.html">libhashkit API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bin/index.html">Client Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="libmemcached/index_misc.html">Miscellaneous</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="changelogs.html">Change Logs</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Known issues</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#libhashkit">libhashkit</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#murmur">MurMur</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#crc32">crc32</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#libmemcached">libmemcached</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#replication">Replication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tls-ssl">TLS/SSL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#coroutines-and-event-loops">Coroutines and event loops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#meta-protocol">META protocol</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="copyright.html">Copyright</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">libmemcached-awesome</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Bugs, Known Issues and Insufficiencies</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/awesomized/libmemcached/blob/v1.x/docs/source/issues.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="bugs-known-issues-and-insufficiencies">
+<h1>Bugs, Known Issues and Insufficiencies<a class="headerlink" href="#bugs-known-issues-and-insufficiencies" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="libhashkit">
+<h2>libhashkit<a class="headerlink" href="#libhashkit" title="Permalink to this headline">¶</a></h2>
+<p>libhashkit is not usable for general purpose hashing, because it is geared to
+usage by libmemcached.</p>
+<div class="section" id="murmur">
+<h3>MurMur<a class="headerlink" href="#murmur" title="Permalink to this headline">¶</a></h3>
+<p>Hashkit's MurMur/MurMur3 are limited to the lower 32 bits.</p>
+</div>
+<div class="section" id="crc32">
+<h3>crc32<a class="headerlink" href="#crc32" title="Permalink to this headline">¶</a></h3>
+<p>Commit &quot;<a class="reference external" href="https://github.com/awesomized/libmemcached/commits/1207354f">More Hashing methods</a>&quot;
+from October 2007 first released in v0.8, which main intention seems to have
+been to add FNV1 hash algos, changed the result of the crc32 hash to only its
+upper 16 bits sans MSB, without any additional comment.</p>
+<p>The implementations referred to in the file header (Postgres and BSD)
+do not exhibit this behavior.</p>
+<p>A <a class="reference external" href="https://bugs.launchpad.net/libmemcached/+bug/604178">bug report</a> was
+filed three years later on launchpad, which was marked <code class="docutils literal notranslate"><span class="pre">Won't</span> <span class="pre">fix</span></code> with
+the comment that it was for compatibility with other &quot;drivers&quot;, which
+supposedly refers to other memcached client libraries.</p>
+</div>
+</div>
+<div class="section" id="libmemcached">
+<h2>libmemcached<a class="headerlink" href="#libmemcached" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="replication">
+<h3>Replication<a class="headerlink" href="#replication" title="Permalink to this headline">¶</a></h3>
+<p>This is a somewhat badly named feature, because it <strong>does not</strong> provide
+any of the guaranties one would expect from a proper replication.</p>
+<p>One can set the intended number of additional servers where data should
+be stored with the behavior <code class="docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS</span></code> and
+specify whether <code class="docutils literal notranslate"><span class="pre">MGET</span></code>s/<code class="docutils literal notranslate"><span class="pre">GET</span></code>s should read from a random server with
+<code class="docutils literal notranslate"><span class="pre">MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ</span></code>. <code class="docutils literal notranslate"><span class="pre">DELETE</span></code>s will try to
+delete the key from all replicas.</p>
+<p>The binary protocol is required and any other command is unaffected.</p>
+</div>
+<div class="section" id="tls-ssl">
+<h3>TLS/SSL<a class="headerlink" href="#tls-ssl" title="Permalink to this headline">¶</a></h3>
+<p>libmemcached does not support TLS/SSL, yet.
+See <a class="reference external" href="https://github.com/awesomized/libmemcached/issues/37">github issue #37</a>.</p>
+</div>
+<div class="section" id="coroutines-and-event-loops">
+<h3>Coroutines and event loops<a class="headerlink" href="#coroutines-and-event-loops" title="Permalink to this headline">¶</a></h3>
+<p>libmemcached does not support explicit asynchronous usage, yet.
+See <a class="reference external" href="https://github.com/awesomized/libmemcached/issues/54">github issue #54</a>.</p>
+</div>
+<div class="section" id="meta-protocol">
+<h3>META protocol<a class="headerlink" href="#meta-protocol" title="Permalink to this headline">¶</a></h3>
+<p>libmemcached deos not support memcached's META protocol, yet.
+See <a class="reference external" href="https://github.com/awesomized/libmemcached/issues/121">github issue #121</a>.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="copyright.html" class="btn btn-neutral float-right" title="Copyright" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="ChangeLog-0.html" class="btn btn-neutral float-left" title="ChangeLog v0.x" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; <a href="copyright.html">Copyright</a> 
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
