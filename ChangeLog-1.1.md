@@ -2,7 +2,7 @@
 
 ## v 1.1.1
 
-> released TBD
+> released 2021-09-16
 
 * Fix [gh #67](https://github.com/awesomized/libmemcached/issues/67):
   GET returns `NOTFOUND` on `TIMEOUT`.
