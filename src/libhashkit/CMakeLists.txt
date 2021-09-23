@@ -17,7 +17,6 @@ set(libhashkit_sources
         murmur3.cc
         murmur3_api.cc
         one_at_a_time.cc
-        rijndael.cc
         str_algorithm.cc
         strerror.cc
         string.cc
@@ -51,6 +50,10 @@ if(ENABLE_OPENSSL_CRYPTO)
                         message(WARNING "Could not find OpenSSL::Crypto")
                 endif()
         endif()
+endif()
+
+if (NOT OPENSSL_CRYPTO_LIBRARY)
+        set (libhashkit_sources ${libhashkit_sources} rijndael.cc)
 endif()
 
 configure_file(hashkitcon.h.in hashkitcon.h @ONLY)
