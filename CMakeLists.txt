@@ -16,6 +16,8 @@ set(PROJECT_CONTACT "Michael Wallner <mike@php.net>")
 set(CXX_STANDARD 11)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+set(GLOBAL_DEFINITIONS _GNU_SOURCE)
+
 include(CMakeConfig.txt)
 include(GNUInstallDirs)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake")

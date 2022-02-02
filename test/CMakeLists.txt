@@ -12,8 +12,6 @@ configure_define_string(LIBMEMCACHED_WITH_SASL_CONF)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
 include(Catch)
 
-add_definitions(-D_GNU_SOURCE)
-set(CMAKE_REQUIRED_DEFINITIONS -D_GNU_SOURCE)
 check_symbol(pipe2 unistd.h)
 check_symbol(SOCK_NONBLOCK sys/socket.h)
 check_symbol(SOCK_CLOEXEC sys/socket.h)

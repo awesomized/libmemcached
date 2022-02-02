@@ -1,5 +1,4 @@
 if(ENABLE_MEMASLAP AND CMAKE_USE_PTHREADS_INIT)
-    add_definitions(-D_GNU_SOURCE)
 
     include(CheckAtomics)
 
