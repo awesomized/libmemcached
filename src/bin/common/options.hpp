@@ -95,9 +95,10 @@ public:
         .apply = [](const client_options &opt, const extended_option &ext, memcached_st *memc) {
       if (auto username = ext.arg) {
 #if !LIBMEMCACHED_WITH_SASL_SUPPORT
+          (void) memc;
           if (!opt.isset("quiet")) {
             std::cerr
-                << "SASL username was supplied, but binary was not built with SASL support.\n";
+                << "SASL username '" << username << "' was supplied, but binary was not built with SASL support.\n";
           }
           return false;
 #else
