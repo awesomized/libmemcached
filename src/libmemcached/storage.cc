@@ -42,7 +42,7 @@ static inline const char *storage_op_string(memcached_storage_action_t verb) {
   return "set ";
 }
 
-static inline bool can_by_encrypted(const memcached_storage_action_t verb) {
+static inline bool can_be_encrypted(const memcached_storage_action_t verb) {
   switch (verb) {
   case SET_OP:
   case ADD_OP:
@@ -296,7 +296,7 @@ memcached_send(memcached_st *shell, const char *group_key, size_t group_key_leng
   hashkit_string_st *destination = NULL;
 
   if (memcached_is_encrypted(ptr)) {
-    if (can_by_encrypted(verb) == false) {
+    if (can_be_encrypted(verb) == false) {
       return memcached_set_error(
           *ptr, MEMCACHED_NOT_SUPPORTED, MEMCACHED_AT,
           memcached_literal_param("Operation not allowed while encyrption is enabled"));
