@@ -5,6 +5,19 @@
 ChangeLog v1.1
 ==============
 
+v 1.1.2
+-------
+
+..
+
+   released 2022-08-08
+
+
+
+* Fix handling of negative expiration values, which are somehow allowed by legacy. 
+  See also `gh #125 <https://github.com/awesomized/libmemcached/issues/125>`_\ ,
+  and `gh #76 <https://github.com/awesomized/libmemcached/issues/76>`_.
+
 v 1.1.1
 -------
 
