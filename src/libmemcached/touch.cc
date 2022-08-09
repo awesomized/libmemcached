@@ -17,9 +17,9 @@
 
 static memcached_return_t ascii_touch(memcached_instance_st *instance, const char *key,
                                       size_t key_length, time_t expiration) {
-  char expiration_buffer[MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH + 1];
-  int expiration_buffer_length = snprintf(expiration_buffer, sizeof(expiration_buffer), " %llu",
-                                          (unsigned long long) expiration);
+  char expiration_buffer[MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH + 1 + 1];
+  int expiration_buffer_length = snprintf(expiration_buffer, sizeof(expiration_buffer), " %lld",
+                                          (long long) expiration);
   if (size_t(expiration_buffer_length) >= sizeof(expiration_buffer) + 1
       or expiration_buffer_length < 0)
   {

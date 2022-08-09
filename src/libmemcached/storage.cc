@@ -189,9 +189,9 @@ memcached_send_ascii(Memcached *ptr, memcached_instance_st *instance, const char
         memcached_literal_param("snprintf(MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH)"));
   }
 
-  char expiration_buffer[MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH + 1];
-  int expiration_buffer_length = snprintf(expiration_buffer, sizeof(expiration_buffer), " %llu",
-                                          (unsigned long long) expiration);
+  char expiration_buffer[MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH + 1 + 1];
+  int expiration_buffer_length = snprintf(expiration_buffer, sizeof(expiration_buffer), " %lld",
+                                          (long long) expiration);
   if (size_t(expiration_buffer_length) >= sizeof(expiration_buffer) or expiration_buffer_length < 0)
   {
     return memcached_set_error(

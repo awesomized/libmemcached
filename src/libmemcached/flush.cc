@@ -61,10 +61,10 @@ static memcached_return_t memcached_flush_binary(Memcached *ptr, time_t expirati
 
 static memcached_return_t memcached_flush_textual(Memcached *ptr, time_t expiration,
                                                   const bool reply) {
-  char buffer[MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH + 1];
+  char buffer[MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH + 1 + 1];
   int send_length = 0;
   if (expiration) {
-    send_length = snprintf(buffer, sizeof(buffer), "%llu", (unsigned long long) expiration);
+    send_length = snprintf(buffer, sizeof(buffer), "%lld", (long long) expiration);
   }
 
   if (size_t(send_length) >= sizeof(buffer) or send_length < 0) {
