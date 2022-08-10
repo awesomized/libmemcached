@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>ChangeLog v1.1 &mdash; libmemcached-awesome 1.1.1 documentation</title>
+  <title>ChangeLog v1.1 &mdash; libmemcached-awesome 1.1.2 documentation</title>
   
 
   
@@ -183,11 +183,16 @@
 <div class="section" id="v-1-1-2">
 <h2>v 1.1.2<a class="headerlink" href="#v-1-1-2" title="Permalink to this headline">¶</a></h2>
 <blockquote>
-<div>released 2022-08-09</div></blockquote>
+<div>released 2022-08-10</div></blockquote>
 <ul class="simple">
 <li>Fix handling of negative expiration values, which are somehow allowed by legacy.<span class="raw-html-m2r"><br></span>
 See also <a class="reference external" href="https://github.com/awesomized/libmemcached/issues/125">gh #125</a>,
 and <a class="reference external" href="https://github.com/awesomized/libmemcached/issues/76">gh #76</a>.</li>
+<li>Fix <a class="reference external" href="https://github.com/awesomized/libmemcached/issues/122">gh #122</a>:
+If libcrypto implementation of AES is used, do not compile internal.</li>
+<li>Fix missing include of <span class="raw-html-m2r"><array></span> in tests.</li>
+<li>Fix warnings with non-SASL builds.</li>
+<li>Fix pthread.h detection.</li>
 </ul>
 </div>
 <div class="section" id="v-1-1-1">
