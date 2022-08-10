@@ -8,8 +8,8 @@ packages:
   - flex
   - libevent
   - pkgconf
-  - py38-sphinx
-  - py38-m2r
+  - py39-sphinx
+  - py39-m2r
   - rsync
   - tbb
 sources:
@@ -33,7 +33,7 @@ tasks:
       cd memcached
       echo bin/memcached > pkg-plist
       maybe make all install PREFIX=/home/build \
-        INSTALL_AS_USER=1 NO_PKG_REGISTER=1 \
+        INSTALL_AS_USER=1 NO_PKG_REGISTER=1 PKG_REGISTER=/usr/bin/true \
         SASLPWDB_CONFIGURE_ENABLE=sasl-pwdb \
         OPTIONS_SET="SASL SASLPWDB" \
         OPTIONS_DEFINE="SASL SASLPWDB"
