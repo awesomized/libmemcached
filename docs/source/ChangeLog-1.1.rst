@@ -10,13 +10,18 @@ v 1.1.2
 
 ..
 
-   released 2022-08-09
+   released 2022-08-10
 
 
 
 * Fix handling of negative expiration values, which are somehow allowed by legacy.\ :raw-html-m2r:`<br>`
   See also `gh #125 <https://github.com/awesomized/libmemcached/issues/125>`_\ ,
   and `gh #76 <https://github.com/awesomized/libmemcached/issues/76>`_.
+* Fix `gh #122 <https://github.com/awesomized/libmemcached/issues/122>`_\ :
+  If libcrypto implementation of AES is used, do not compile internal.
+* Fix missing include of :raw-html-m2r:`<array>` in tests.
+* Fix warnings with non-SASL builds.
+* Fix pthread.h detection.
 
 v 1.1.1
 -------

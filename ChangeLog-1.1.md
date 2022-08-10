@@ -2,11 +2,16 @@
 
 ## v 1.1.2
 
-> released 2022-08-09
+> released 2022-08-10
 
 * Fix handling of negative expiration values, which are somehow allowed by legacy.  
   See also [gh #125](https://github.com/awesomized/libmemcached/issues/125),
   and [gh #76](https://github.com/awesomized/libmemcached/issues/76).
+* Fix [gh #122](https://github.com/awesomized/libmemcached/issues/122):
+  If libcrypto implementation of AES is used, do not compile internal.
+* Fix missing include of <array> in tests.
+* Fix warnings with non-SASL builds.
+* Fix pthread.h detection.
 
 ## v 1.1.1
 
