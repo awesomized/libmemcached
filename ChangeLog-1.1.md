@@ -1,5 +1,13 @@
 # ChangeLog v1.1
 
+## v 1.1.3
+
+> released 2022-11-09
+
+* Fix [gh #130](https://github.com/awesomized/libmemcached/issues/130)
+  with [gh #124](https://github.com/awesomized/libmemcached/issues/124):
+  Server response count can underflow.
+
 ## v 1.1.2
 
 > released 2022-08-10
