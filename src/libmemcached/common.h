@@ -140,11 +140,21 @@ static inline void memcached_server_response_increment(memcached_instance_st *in
 }
 #endif
 
-#define memcached_server_response_decrement(A) (A)->cursor_active_--
-#define memcached_server_response_reset(A)     (A)->cursor_active_ = 0
+#define memcached_server_response_decrement(A) do {     \
+    WATCHPOINT_ASSERT((A)->cursor_active_ > 0);         \
+    if ((A)->cursor_active_ > 0) {                      \
+        (A)->cursor_active_--;                          \
+    }                                                   \
+} while (0)
+#define memcached_server_response_reset(A)       (A)->cursor_active_ = 0
 
 #define memcached_instance_response_increment(A) (A)->cursor_active_++
-#define memcached_instance_response_decrement(A) (A)->cursor_active_--
+#define memcached_instance_response_decrement(A) do {   \
+    WATCHPOINT_ASSERT((A)->cursor_active_ > 0);         \
+    if ((A)->cursor_active_ > 0) {                      \
+        (A)->cursor_active_--;                          \
+    }                                                   \
+} while (0)
 #define memcached_instance_response_reset(A)     (A)->cursor_active_ = 0
 
 #ifdef __cplusplus
