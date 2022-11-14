@@ -51,7 +51,7 @@ jobs:
         with:
           repository: memcached/memcached
           path: memcached
-          ref: 1.6.7
+          ref: 1.6.13
       - name: Prepare environment (for cur gnu on ubuntu-20.04)
         if: (env.OS_VER=='ubuntu-20.04') && (env.CC_VND=='gnu') && (env.CC_VER=='cur')
         run: |
@@ -222,6 +222,7 @@ jobs:
       - name: Install dependencies (macOS)
         if: runner.os == 'macOS'
         run: |
+          brew update # we need at least memcached-1.6.10 for the META proto
           brew install bison flex sphinx-doc ${INSTALL_MEMCACHED}
           brew services stop memcached || true
           echo MEMCACHED_BINARY="/usr/local/bin/memcached" >> ${GITHUB_ENV}
@@ -296,6 +297,7 @@ jobs:
       - name: Install dependencies (macOS)
         if: runner.os == 'macOS'
         run: |
+          brew update # we need at least memcached-1.6.10 for the META proto
           brew install bison flex sphinx-doc ${INSTALL_MEMCACHED}
           brew services stop memcached || true
           echo MEMCACHED_BINARY="/usr/local/bin/memcached" >> ${GITHUB_ENV}
