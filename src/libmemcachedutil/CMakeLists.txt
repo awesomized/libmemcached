@@ -6,7 +6,7 @@ set(libmemcachedutil_sources
         ping.cc
         version.cc
         )
-add_library(libmemcachedutil SHARED)
+add_library(libmemcachedutil)
 add_library(memcachedutil ALIAS libmemcachedutil)
 if(CMAKE_USE_PTHREADS_INIT)
     target_sources(libmemcachedutil PRIVATE pool.cc)

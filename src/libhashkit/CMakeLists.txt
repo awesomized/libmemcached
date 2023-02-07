@@ -21,7 +21,7 @@ set(libhashkit_sources
         strerror.cc
         string.cc
         )
-add_library(libhashkit SHARED)
+add_library(libhashkit)
 add_library(hashkit ALIAS libhashkit)
 set_target_properties(libhashkit PROPERTIES
         CXX_STANDARD ${CXX_STANDARD}

@@ -85,7 +85,7 @@ if(W_NO_DEPRECATED_REGISTER)
         )
 endif()
 
-add_library(libmemcached SHARED)
+add_library(libmemcached)
 add_library(memcached ALIAS libmemcached)
 set_target_properties(libmemcached PROPERTIES
         CXX_STANDARD ${CXX_STANDARD}

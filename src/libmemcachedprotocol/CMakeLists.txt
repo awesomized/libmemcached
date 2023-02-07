@@ -9,7 +9,7 @@ set(libmemcachedprotocol_sources
         pedantic.c
         ../libmemcached/byteorder.cc
         )
-add_library(libmemcachedprotocol SHARED)
+add_library(libmemcachedprotocol)
 add_library(memcachedprotocol ALIAS libmemcachedprotocol)
 set_target_properties(libmemcachedprotocol PROPERTIES
         CXX_STANDARD ${CXX_STANDARD}
