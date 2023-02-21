@@ -33,11 +33,5 @@ tasks:
       maybe cmake --build debug -j2 --target test
   - install: |
       maybe cmake --install debug --prefix /tmp
-  - package: |
-      maybe cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_DOCS_MANGZ=ON -S libmemcached -B release
-      maybe cmake --build release -j2 --target package -- VERBOSE=
-      maybe cmake -DCPACK_COMPONENT_INSTALL=ON release
-      maybe cmake --build release -j2 --target package -- VERBOSE=
-      maybe cmake --build release -j2 --target push-artifacts -- VERBOSE=
   - success:
       notify-gitter success
