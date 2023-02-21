@@ -5,10 +5,10 @@ echo "# Generated file; do not edit!\n";
 
 const DEF = [
   "os" => "Linux",
-  "Linux" => "ubuntu-20.04",
+  "Linux" => "ubuntu-22.04",
   "Windows" => "windows-2019",
   "macOS" => "macos-10.15",
-  "ubuntu-20.04" => "gnu",
+  "ubuntu-22.04" => "gnu",
   "windows-2019" => "msvc",
   "macos-10.15" => "clang",
   "gnu" => [
@@ -34,6 +34,24 @@ const DEF = [
 ];
 const MAP = [
   'env.OS_VER' => [
+    "ubuntu-22.04" => [
+      'env.CC_VND' => [
+        "gnu" => [
+          'env.CC_VER' => [
+            "new"  => "-12",
+            "cur"  => "-11",
+            "old"  => "-10",
+          ]
+        ],
+        "clang" => [
+          'env.CC_VER' => [
+            "new"  => "-14",
+            "cur"  => "-13",
+            "old"  => "-12"
+          ]
+        ]
+      ]
+    ],
     "ubuntu-20.04" => [
       'env.CC_VND' => [
         "gnu" => [
@@ -70,6 +88,22 @@ const MAP = [
   ]
 ];
 const ENV = [
+  "ubuntu-22.04" => [
+    "clang" => [
+      "new" => [
+        "CXXFLAGS" => "-stdlib=libc++",
+        "INSTALL_CXX" => "libc++-14-dev libc++abi-14-dev"
+      ],
+      "cur" => [
+        "CXXFLAGS" => "-stdlib=libc++",
+        "INSTALL_CXX" => "libc++-13-dev libc++abi-13-dev"
+      ],
+      "old" => [
+        "CXXFLAGS" => "-stdlib=libc++",
+        "INSTALL_CXX" => "libc++-12-dev libc++abi-12-dev"
+      ],
+    ]
+  ],
   "ubuntu-20.04" => [
     "clang" => [
       "new" => [
