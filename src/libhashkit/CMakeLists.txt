@@ -25,8 +25,8 @@ add_library(libhashkit)
 add_library(hashkit ALIAS libhashkit)
 set_target_properties(libhashkit PROPERTIES
         CXX_STANDARD ${CXX_STANDARD}
-        LIBRARY_OUTPUT_NAME hashkit
-        LIBRARY_OUTPUT_NAME_DEBUG hashkit-dbg
+        OUTPUT_NAME hashkit
+        OUTPUT_NAME_DEBUG hashkit-dbg
         SOVERSION ${LIBHASHKIT_SO_SOVERSION}
         VERSION ${LIBHASHKIT_SO_VERSION})
 target_compile_options(libhashkit PRIVATE -DBUILDING_HASHKIT)

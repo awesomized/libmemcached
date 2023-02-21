@@ -13,8 +13,8 @@ if(CMAKE_USE_PTHREADS_INIT)
 endif()
 set_target_properties(libmemcachedutil PROPERTIES
         CXX_STANDARD ${CXX_STANDARD}
-        LIBRARY_OUTPUT_NAME memcachedutil
-        LIBRARY_OUTPUT_NAME_DEBUG memcachedutil-dbg
+        OUTPUT_NAME memcachedutil
+        OUTPUT_NAME_DEBUG memcachedutil-dbg
         SOVERSION ${LIBMEMCACHEDUTIL_SO_SOVERSION}
         VERSION ${LIBMEMCACHEDUTIL_SO_VERSION})
 target_compile_definitions(libmemcachedutil PRIVATE -DBUILDING_LIBMEMCACHED)
