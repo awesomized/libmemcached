@@ -338,8 +338,8 @@ jobs:
       MEMCACHED_PREFIX:   "/tmp"
       ENABLE_SASL:        "ON"
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
         with:
           repository: memcached/memcached
           path: memcached
@@ -389,7 +389,7 @@ jobs:
 <?php env_override("macOS")?>
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 <?php steps("macOS", false); ?>
@@ -434,7 +434,7 @@ jobs:
       CC_VND: ${{ matrix.cc_vnd }}
       CC_VER: ${{ matrix.cc_ver }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 <?php steps("Linux", true); ?>

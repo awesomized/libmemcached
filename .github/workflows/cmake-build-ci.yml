@@ -46,8 +46,8 @@ jobs:
       MEMCACHED_PREFIX:   "/tmp"
       ENABLE_SASL:        "ON"
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
         with:
           repository: memcached/memcached
           path: memcached
@@ -290,7 +290,7 @@ jobs:
       CC_VER:   cur #
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Install dependencies (macOS)
@@ -435,7 +435,7 @@ jobs:
       CC_VND: ${{ matrix.cc_vnd }}
       CC_VER: ${{ matrix.cc_ver }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Prepare environment (for new gnu on ubuntu-22.04)
