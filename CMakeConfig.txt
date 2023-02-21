@@ -23,6 +23,8 @@ else()
     set(TARGET_NAMELINK_COMPONENT NAMELINK_COMPONENT dev DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endif()
 
+option(BUILD_SHARED_LIBS    "whether to build shared libraries"
+        ON)
 option(BUILD_TESTING        "whether to enable build of the test suite"
         $ENV{BUILD_TESTING})
 option(BUILD_DOCSONLY       "build *only* documentation"

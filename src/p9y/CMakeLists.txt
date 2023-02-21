@@ -20,6 +20,17 @@ target_include_directories(p9y PRIVATE
     ${CMAKE_BINARY_DIR}/include
     )
 
+install(TARGETS p9y EXPORT p9y-targets
+        RUNTIME COMPONENT bin DESTINATION ${CMAKE_INSTALL_BINDIR}
+        ARCHIVE COMPONENT lib DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY COMPONENT lib DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ${TARGET_NAMELINK_COMPONENT}
+        )
+export(EXPORT p9y-targets NAMESPACE libmemcached::)
+install(EXPORT p9y-targets NAMESPACE libmemcached::
+        COMPONENT dev
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+
 if(NOT HAVE_GETOPT_H)
     target_sources(p9y PRIVATE getopt.c)
 endif()

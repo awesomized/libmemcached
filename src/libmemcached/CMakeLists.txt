@@ -85,12 +85,12 @@ if(W_NO_DEPRECATED_REGISTER)
         )
 endif()
 
-add_library(libmemcached SHARED)
+add_library(libmemcached)
 add_library(memcached ALIAS libmemcached)
 set_target_properties(libmemcached PROPERTIES
         CXX_STANDARD ${CXX_STANDARD}
-        LIBRARY_OUTPUT_NAME memcached
-        LIBRARY_OUTPUT_NAME_DEBUG memcached-dbg
+        OUTPUT_NAME memcached
+        OUTPUT_NAME_DEBUG memcached-dbg
         SOVERSION ${LIBMEMCACHED_SO_SOVERSION}
         VERSION ${LIBMEMCACHED_SO_VERSION})
 target_compile_definitions(libmemcached PRIVATE -DBUILDING_LIBMEMCACHED)
@@ -147,7 +147,7 @@ target_sources(libmemcached PRIVATE
 
 add_library(libmemcachedinternal STATIC)
 add_library(memcachedinternal ALIAS libmemcachedinternal)
-set_target_properties(libmemcachedinternal PROPERTIES CXX_STANDARD ${CXX_STANDARD} LIBRARY_OUTPUT_NAME memcachedinternal)
+set_target_properties(libmemcachedinternal PROPERTIES CXX_STANDARD ${CXX_STANDARD} OUTPUT_NAME memcachedinternal)
 target_compile_definitions(libmemcachedinternal PRIVATE -DBUILDING_LIBMEMCACHEDINTERNAL)
 target_link_libraries(libmemcachedinternal PUBLIC libhashkit Threads::Threads ${CMAKE_DL_LIBS})
 target_link_libraries(libmemcachedinternal PRIVATE p9y)
