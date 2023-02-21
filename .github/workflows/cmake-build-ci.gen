@@ -47,7 +47,6 @@ const MAP = [
           'env.CC_VER' => [
             "new"  => "-14",
             "cur"  => "-13",
-            "old"  => "-12"
           ]
         ]
       ]
@@ -81,10 +80,6 @@ const ENV = [
       "cur" => [
         "CXXFLAGS" => "-stdlib=libc++",
         "INSTALL_CXX" => "libc++-13-dev libc++abi-13-dev"
-      ],
-      "old" => [
-        "CXXFLAGS" => "-stdlib=libc++",
-        "INSTALL_CXX" => "libc++-12-dev libc++abi-12-dev"
       ],
     ]
   ],

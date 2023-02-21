@@ -467,13 +467,6 @@ jobs:
           echo CXX="clang++-13" >> ${GITHUB_ENV}
           echo CXXFLAGS="-stdlib=libc++" >> ${GITHUB_ENV}
           echo INSTALL_CXX="libc++-13-dev libc++abi-13-dev" >> ${GITHUB_ENV}
-      - name: Prepare environment (for old clang on ubuntu-22.04)
-        if: (env.OS_VER=='ubuntu-22.04') && (env.CC_VND=='clang') && (env.CC_VER=='old')
-        run: |
-          echo CC="clang-12" >> ${GITHUB_ENV}
-          echo CXX="clang++-12" >> ${GITHUB_ENV}
-          echo CXXFLAGS="-stdlib=libc++" >> ${GITHUB_ENV}
-          echo INSTALL_CXX="libc++-12-dev libc++abi-12-dev" >> ${GITHUB_ENV}
       - name: Prepare environment (for new gnu on ubuntu-20.04)
         if: (env.OS_VER=='ubuntu-20.04') && (env.CC_VND=='gnu') && (env.CC_VER=='new')
         run: |
