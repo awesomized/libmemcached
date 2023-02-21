@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -eu
 
+test -f ~/.gitter || exit 0
+
 GITTER=$(cat ~/.gitter)
 STATUS=$1
 
