@@ -92,7 +92,11 @@ static memcached_return_t resolve_names(memcached_instance_st &server, char *lad
 extern "C" {
 
 static void sasl_shutdown_function() {
+#if HAVE_SASL_CLIENT_DONE
+  (void) sasl_client_done();
+#else
   sasl_done();
+#endif
 }
 
 static std::atomic<int> sasl_startup_state(SASL_OK);
