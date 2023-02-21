@@ -69,22 +69,6 @@ const MAP = [
         ]
       ]
     ],
-    "ubuntu-18.04" => [
-      'env.CC_VND' => [
-        "gnu" => [
-          'env.CC_VER' => [
-            "new"  => "-10",
-            "cur"  => "-9",
-            "old"  => "-7"
-          ]
-        ],
-        "clang" => [
-          'env.CC_VER' => [
-            "cur"  => "-9",
-          ]
-        ]
-      ]
-    ],
   ]
 ];
 const ENV = [
@@ -120,19 +104,6 @@ const ENV = [
       ],
     ]
   ],
-  "ubuntu-18.04" => [
-    "clang" => [
-      "new" => [
-        "CXXFLAGS" => "-stdlib=libc++"
-      ],
-      "cur" => [
-        "CXXFLAGS" => "-stdlib=libc++"
-      ],
-      "old" => [
-        "CXXFLAGS" => "-stdlib=libc++"
-      ],
-    ]
-  ]
 ];
 
 /**
@@ -455,7 +426,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os_ver: [ubuntu-20.04, ubuntu-18.04]
+        os_ver: [ubuntu-22.04, ubuntu-20.04]
         cc_vnd: [gnu, clang]
         cc_ver: [new, cur, old]
     runs-on: ${{ matrix.os_ver }}
