@@ -32,9 +32,9 @@ env:
 
 jobs:
 
-  # new memcached
-  dbg-new:
-    name: dbg-new (ubuntu-22.04, gnu, cur)
+  # coverage
+  dbg-cov:
+    name: dbg-cov (ubuntu-22.04, gnu, cur)
     runs-on: ubuntu-22.04 #
     env:
       CMAKE_BUILD_TYPE:   "Debug"
@@ -76,7 +76,8 @@ jobs:
           then
             cd memcached
             ./autogen.sh
-            ./configure CFLAGS="-O2 -pipe" \
+            cp configure{,.old} && sed -e 's/-Werror//g' <configure.old >configure
+            ./configure CFLAGS="-O2 -pipe -fcommon" \
               --prefix=${MEMCACHED_PREFIX} \
               --enable-sasl \
               --enable-sasl-pwdb \
@@ -121,7 +122,7 @@ jobs:
         run: bash .github/notify-gitter.sh ${{ job.status }}
       - uses: codecov/codecov-action@v1.0.13
 
-  # sanitizer build
+  # sanitizer
   sanitizer:
     runs-on: ubuntu-22.04 #
     strategy:
@@ -133,7 +134,7 @@ jobs:
       VERBOSE:            "ON"
       ENABLE_SANITIZERS:  ${{ matrix.sanitizer }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Prepare environment (for cur gnu on ubuntu-22.04)
         if: (env.OS_VER=='ubuntu-22.04') && (env.CC_VND=='gnu') && (env.CC_VER=='cur')
         run: |
@@ -158,7 +159,98 @@ jobs:
           then
             cd memcached
             ./autogen.sh
-            ./configure CFLAGS="-O2 -pipe" \
+            cp configure{,.old} && sed -e 's/-Werror//g' <configure.old >configure
+            ./configure CFLAGS="-O2 -pipe -fcommon" \
+              --prefix=${MEMCACHED_PREFIX} \
+              --enable-sasl \
+              --enable-sasl-pwdb \
+              --disable-coverage \
+              --disable-dependency-tracking \
+              --disable-docs \
+              --disable-extstore \
+              --disable-option-checking \
+              ;
+            make -j2
+            make install
+            cd ..
+            echo MEMCACHED_BINARY="${MEMCACHED_PREFIX}/bin/memcached" >> ${GITHUB_ENV}
+          fi
+      - name: Generate build tree (${{ env.CMAKE_BUILD_TYPE }})
+        run: cmake -DCMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }} -S . -B build
+      - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
+        run: cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2
+      - name: Test
+        if: env.BUILD_TESTING == 'ON'
+        run: cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target test
+      - name: Install
+        if: env.BUILD_TESTING == 'ON'
+        run: cmake --install build --config ${{ env.CMAKE_BUILD_TYPE }} --prefix /tmp
+      - name: Failed tests log
+        if: ${{ env.BUILD_TESTING == 'ON' && failure() }}
+        run: cat build/Testing/Temporary/LastTest.log || true
+      - name: Package
+        env:
+          PUSH_ARTIFACTS_ID: ${{ secrets.PUSH_ARTIFACTS_ID }}
+        if: env.PUSH_ARTIFACTS_ID != '' && env.CMAKE_BUILD_TYPE == 'Release' && !(env.OS_VER == 'ubuntu-18.04' && env.CC_VND == 'gnu' && env.CC_VER == 'new  ')
+        run: |
+          cmake -DCMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }} -S . -B build
+          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
+          cmake -DCPACK_COMPONENT_INSTALL=ON build
+          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
+          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target push-artifacts
+      - name: Notify Gitter
+        env:
+          GITTER: ${{ secrets.GITTER }}
+        if: (success() || failure()) && env.GITTER != ''
+        run: bash .github/notify-gitter.sh ${{ job.status }}
+
+# memcached
+  memcached:
+    runs-on: ubuntu-22.04 #
+    continue-on-error: true
+    strategy:
+      matrix:
+        memcached: ['master', '1.6.17', '1.6.9', '1.5.22', '1.5.6']
+    env:
+      CMAKE_BUILD_TYPE:   "Debug"
+      BUILD_TESTING:      "ON"
+      VERBOSE:            "ON"
+      INSTALL_MEMCACHED:  ""
+      MEMCACHED_PREFIX:   "/tmp"
+      ENABLE_SASL:        "ON"
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+        with:
+          repository: memcached/memcached
+          path: memcached
+          ref: ${{ matrix.memcached }}
+      - name: Prepare environment (for cur gnu on ubuntu-22.04)
+        if: (env.OS_VER=='ubuntu-22.04') && (env.CC_VND=='gnu') && (env.CC_VER=='cur')
+        run: |
+          echo CC="gcc-11" >> ${GITHUB_ENV}
+          echo CXX="g++-11" >> ${GITHUB_ENV}
+      - name: Install dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -my \
+            libevent-dev \
+            libsasl2-dev \
+            libtbb-dev \
+            python3-sphinx \
+            ${INSTALL_MEMCACHED} \
+            ${INSTALL_CC} ${INSTALL_CXX}
+          sudo systemctl stop memcached || true
+      - name: Build memcached
+        if: runner.os != 'Windows'
+        run: |
+          if test -d memcached
+          then
+            cd memcached
+            ./autogen.sh
+            cp configure{,.old} && sed -e 's/-Werror//g' <configure.old >configure
+            ./configure CFLAGS="-O2 -pipe -fcommon" \
               --prefix=${MEMCACHED_PREFIX} \
               --enable-sasl \
               --enable-sasl-pwdb \
@@ -232,7 +324,8 @@ jobs:
           then
             cd memcached
             ./autogen.sh
-            ./configure CFLAGS="-O2 -pipe" \
+            cp configure{,.old} && sed -e 's/-Werror//g' <configure.old >configure
+            ./configure CFLAGS="-O2 -pipe -fcommon" \
               --prefix=${MEMCACHED_PREFIX} \
               --enable-sasl \
               --enable-sasl-pwdb \
@@ -306,7 +399,8 @@ jobs:
           then
             cd memcached
             ./autogen.sh
-            ./configure CFLAGS="-O2 -pipe" \
+            cp configure{,.old} && sed -e 's/-Werror//g' <configure.old >configure
+            ./configure CFLAGS="-O2 -pipe -fcommon" \
               --prefix=${MEMCACHED_PREFIX} \
               --enable-sasl \
               --enable-sasl-pwdb \
@@ -517,7 +611,8 @@ jobs:
           then
             cd memcached
             ./autogen.sh
-            ./configure CFLAGS="-O2 -pipe" \
+            cp configure{,.old} && sed -e 's/-Werror//g' <configure.old >configure
+            ./configure CFLAGS="-O2 -pipe -fcommon" \
               --prefix=${MEMCACHED_PREFIX} \
               --enable-sasl \
               --enable-sasl-pwdb \

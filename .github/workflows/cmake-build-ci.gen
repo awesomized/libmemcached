@@ -197,7 +197,8 @@ function steps_getdeps($os_vnd) {
           then
             cd memcached
             ./autogen.sh
-            ./configure CFLAGS="-O2 -pipe" \
+            cp configure{,.old} && sed -e 's/-Werror//g' <configure.old >configure
+            ./configure CFLAGS="-O2 -pipe -fcommon" \
               --prefix=${MEMCACHED_PREFIX} \
               --enable-sasl \
               --enable-sasl-pwdb \
@@ -324,9 +325,9 @@ env:
 
 jobs:
 
-  # new memcached
-  dbg-new:
-    name: dbg-new (<?=defaults()?>)
+  # coverage
+  dbg-cov:
+    name: dbg-cov (<?=defaults()?>)
     runs-on: <?=DEF[DEF["os"]]?> #
     env:
       CMAKE_BUILD_TYPE:   "Debug"
@@ -347,7 +348,7 @@ jobs:
 <?php steps("Linux"); ?>
       - uses: codecov/codecov-action@v1.0.13
 
-  # sanitizer build
+  # sanitizer
   sanitizer:
     runs-on: <?=DEF[DEF["os"]]?> #
     strategy:
@@ -359,7 +360,30 @@ jobs:
       VERBOSE:            "ON"
       ENABLE_SANITIZERS:  ${{ matrix.sanitizer }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+<?php steps("Linux"); ?>
+
+# memcached
+  memcached:
+    runs-on: <?=DEF[DEF["os"]]?> #
+    continue-on-error: true
+    strategy:
+      matrix:
+        memcached: ['master', '1.6.17', '1.6.9', '1.5.22', '1.5.6']
+    env:
+      CMAKE_BUILD_TYPE:   "Debug"
+      BUILD_TESTING:      "ON"
+      VERBOSE:            "ON"
+      INSTALL_MEMCACHED:  ""
+      MEMCACHED_PREFIX:   "/tmp"
+      ENABLE_SASL:        "ON"
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+        with:
+          repository: memcached/memcached
+          path: memcached
+          ref: ${{ matrix.memcached }}
 <?php steps("Linux"); ?>
 
   # mac debug
