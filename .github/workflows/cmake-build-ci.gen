@@ -346,7 +346,7 @@ jobs:
           path: memcached
           ref: 1.6.7
 <?php steps("Linux"); ?>
-      - uses: codecov/codecov-action@v1.0.13
+      - uses: codecov/codecov-action@v3
 
   # sanitizer
   sanitizer:
@@ -388,7 +388,7 @@ jobs:
 
   # mac debug
   dbg-mac:
-    name: dbg-mac (<?=DEF["macOS"]?>, <?=DEF[DEF["macOS"]]?>, <?=DEF[DEF[DEF["macOS"]]]["ver"]?>)
+    name: debug (<?=DEF["macOS"]?>, <?=DEF[DEF["macOS"]]?>, <?=DEF[DEF[DEF["macOS"]]]["ver"]?>)
     runs-on: <?=DEF["macOS"]?> #
     env:
       CMAKE_BUILD_TYPE:   "Debug"
@@ -399,13 +399,13 @@ jobs:
 <?php env_override("macOS")?>
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 <?php steps("macOS", false); ?>
-      - uses: codecov/codecov-action@v1.0.13
+      - uses: codecov/codecov-action@v3
 
   # mac release
   rel-mac:
-    name: rel-mac (<?=DEF["macOS"]?>, <?=DEF[DEF["macOS"]]?>, <?=DEF[DEF[DEF["macOS"]]]["ver"]?>)
+    name: release (<?=DEF["macOS"]?>, <?=DEF[DEF["macOS"]]?>, <?=DEF[DEF[DEF["macOS"]]]["ver"]?>)
     runs-on: <?=DEF["macOS"]?> #
     env:
       CMAKE_BUILD_TYPE:   "Release"
@@ -420,6 +420,7 @@ jobs:
 
   # windows release builds
   windows:
+    name: release
     strategy:
       fail-fast: false
       matrix:
@@ -435,7 +436,7 @@ jobs:
       CC_VND: ${{ matrix.cc_vnd }}
       CC_VER: ${{ matrix.cc_ver }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 <?php steps("Windows", true); ?>

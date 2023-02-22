@@ -120,7 +120,7 @@ jobs:
           GITTER: ${{ secrets.GITTER }}
         if: (success() || failure()) && env.GITTER != ''
         run: bash .github/notify-gitter.sh ${{ job.status }}
-      - uses: codecov/codecov-action@v1.0.13
+      - uses: codecov/codecov-action@v3
 
   # sanitizer
   sanitizer:
@@ -296,7 +296,7 @@ jobs:
 
   # mac debug
   dbg-mac:
-    name: dbg-mac (macos-10.15, clang, cur)
+    name: debug (macos-10.15, clang, cur)
     runs-on: macos-10.15 #
     env:
       CMAKE_BUILD_TYPE:   "Debug"
@@ -310,7 +310,7 @@ jobs:
       CC_VER:   cur #
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install dependencies (macOS)
         if: runner.os == 'macOS'
         run: |
@@ -368,11 +368,11 @@ jobs:
           GITTER: ${{ secrets.GITTER }}
         if: (success() || failure()) && env.GITTER != ''
         run: bash .github/notify-gitter.sh ${{ job.status }}
-      - uses: codecov/codecov-action@v1.0.13
+      - uses: codecov/codecov-action@v3
 
   # mac release
   rel-mac:
-    name: rel-mac (macos-10.15, clang, cur)
+    name: release (macos-10.15, clang, cur)
     runs-on: macos-10.15 #
     env:
       CMAKE_BUILD_TYPE:   "Release"
@@ -446,6 +446,7 @@ jobs:
 
   # windows release builds
   windows:
+    name: release
     strategy:
       fail-fast: false
       matrix:
@@ -461,7 +462,7 @@ jobs:
       CC_VND: ${{ matrix.cc_vnd }}
       CC_VER: ${{ matrix.cc_ver }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Prepare environment (Windows)
