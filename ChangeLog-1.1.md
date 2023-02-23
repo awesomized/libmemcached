@@ -1,5 +1,16 @@
 # ChangeLog v1.1
 
+## v1.1.4
+
+> released TBA
+
+* Fix [gh #132](https://github.com/awesomized/libmemcached/issues/132):
+  macOS: deprecated sasl API (improve detection of `libsasl2`).
+* Fix [gh #132](https://github.com/awesomized/libmemcached/issues/132):
+  Add build of static library (with `cmake -DBUILD_SHARED_LIBS=OFF`).
+* Fix [gh #136](https://github.com/awesomized/libmemcached/issues/136):
+  `libmemcachedutil` is underlinked (link against libmemcached).
+
 ## v 1.1.3
 
 > released 2022-11-09
