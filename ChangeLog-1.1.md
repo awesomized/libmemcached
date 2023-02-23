@@ -1,6 +1,6 @@
 # ChangeLog v1.1
 
-## v1.1.4
+## v 1.1.4
 
 > released TBA
 
