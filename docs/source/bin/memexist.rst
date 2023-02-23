@@ -18,10 +18,8 @@ DESCRIPTION
 OPTIONS
 -------
 
-.. include:: options/all.rst
-.. include:: options/common.rst
+.. include:: options/common_get.rst
 .. include:: options/hash.rst
-.. include:: options/sasl.rst
 
 ENVIRONMENT
 -----------

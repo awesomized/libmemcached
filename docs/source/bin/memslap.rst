@@ -21,8 +21,34 @@ throughput, and so on.
 OPTIONS
 -------
 
-.. include:: options/all.rst
-.. include:: options/common.rst
+.. include:: options/common_get.rst
+.. include:: options/hash.rst
+.. include:: options/udp.rst
+
+.. option:: -R|--noreply
+
+    Enable the NOREPLY behavior for storage commands.
+
+.. option:: -F|--flush
+
+    Flush all servers prior test.
+
+.. option:: -t|--test <arg>
+
+    Test to perform (options: get, mget, set; default: get).
+
+.. option:: -c|--concurrency <num>
+
+    Concurrency (number of threads to start; default: 1).
+
+.. option:: -e|--execute-number <num>
+
+    Number of times to execute the tests (default: 10000).
+
+.. option:: -l|--initial-load <num>
+
+    Number of keys to load before executing tests (default: 10000).
+
 
 ENVIRONMENT
 -----------

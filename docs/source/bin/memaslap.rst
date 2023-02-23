@@ -10,6 +10,7 @@ memaslap [options]
 .. program:: memaslap
 
 .. option:: --help
+.. option:: --servers
 
 .. envvar:: MEMCACHED_SERVERS
 
@@ -29,7 +30,7 @@ the threads don't communicate with each other, and there are several socket
 connections in each thread. Each connection keeps key size distribution,
 value size distribution, and command distribution by itself.
 
-You can specify servers via the :option:`memslap --servers` option or via the
+You can specify servers via the :option:`memaslap --servers` option or via the
 environment variable :envvar:`MEMCACHED_SERVERS`.
 
 FEATURES
@@ -998,6 +999,14 @@ memaslap -s 127.0.0.1:11211 -F config -t 2m -d 50 -a -n 40
 memaslap -s 127.0.0.1:11211,127.0.0.1:11212 -F config -t 2m
 
 memaslap -s 127.0.0.1:11211,127.0.0.1:11212 -F config -t 2m -p 2
+
+NOTE
+----
+
+This is a contributed program.
+
+This program doesn't follow the standard flag/option scheme.
+
 
 SEE ALSO
 --------

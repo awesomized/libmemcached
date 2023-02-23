@@ -21,31 +21,36 @@ The key names will be the names of the files, without any directory path.
 OPTIONS
 -------
 
-.. include:: options/all.rst
-.. include:: options/common.rst
-.. include:: options/expire.rst
-.. include:: options/flag.rst
-.. include:: options/hash.rst
-.. include:: options/sasl.rst
+.. include:: options/common_set.rst
+.. include:: /bin/options/flags_reqarg.rst
 .. include:: options/udp.rst
 
-.. option:: --buffer
-
-    Enable internal buffering of commands.
-
-.. option:: --set
+.. option:: -S|--set
 
     Issue *SET* command(s). This is the default mode.
-    See also :option:`--add` and :option:`--replace`.
+    See also :option:`-A|--add` and :option:`-R|--replace`.
 
-.. option:: --add
+.. option:: -A|--add
 
     Issue *ADD* command(s).
 
-.. option:: --replace
+.. option:: -R|--replace
 
     Issue *REPLACE* command(s).
 
+.. option:: -.|--basename
+
+    Use basename of path as key (default).
+    
+.. option:: -+|--relative
+
+    Use relative path (as passed), instead of basename only.
+    
+.. option:: -/|--absolute
+
+    Use absolute path (real path), instead of basename only.
+    
+    
 ENVIRONMENT
 -----------
 

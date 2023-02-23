@@ -23,13 +23,10 @@ It is similar to the standard UNIX :manpage:`cat(1)` utility.
 OPTIONS
 -------
 
-.. include:: options/all.rst
-.. include:: options/common.rst
+.. include:: options/common_get.rst
+.. include:: options/flags_noarg.rst
 .. include:: options/hash.rst
-
-.. option:: --flag
-
-    Display stored flags.
+.. include:: options/file_out.rst
 
 ENVIRONMENT
 -----------

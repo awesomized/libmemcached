@@ -1,20 +1,11 @@
-.. option:: --quiet
+.. option:: -q|--quiet
 
     Operate quietly.
 
-.. option:: --verbose
+.. option:: -v|--verbose
 
     Operate more verbosely.
 
-.. option:: --debug
+.. option:: -d|--debug
 
-    See :option:`--verbose`.
-
-.. option:: --servers <list of servers>
-
-    Specify the list of servers as *hostname[:port][,hostname[:port]...]*.
-
-.. option:: --binary
-
-    Enable binary protocol.
-
+    See :option:`-v\|--verbose`.

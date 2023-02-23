@@ -22,6 +22,11 @@ OPTIONS
 .. include:: options/common.rst
 .. include:: options/sasl.rst
 
+.. option:: -s|--servers <list of servers>
+
+    Specify the list of servers as *hostname[:port][,hostname[:port]...]*.
+
+
 ENVIRONMENT
 -----------
 

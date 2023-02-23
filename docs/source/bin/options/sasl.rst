@@ -1,8 +1,8 @@
-.. option:: --username <username>
+.. option:: -u|--username <username>
 
     Use *username* for SASL authentication.
 
-.. option:: --password <password>
+.. option:: -p|--password <password>
 
     Use *password* for SASL authentication.
 

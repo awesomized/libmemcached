@@ -39,6 +39,12 @@ OPTIONS
 
     Set the timeout for an IO operation to/from the server to \ *n*\  seconds.
 
+NOTE
+----
+
+This program doesn't follow the standard flag/option scheme.
+
+
 SEE ALSO
 --------
 

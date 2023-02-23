@@ -22,9 +22,7 @@ DESCRIPTION
 OPTIONS
 -------
 
-.. include:: options/all.rst
-.. include:: options/common.rst
-.. include:: options/sasl.rst
+.. include:: options/common_get.rst
 .. include:: options/expire.rst
 
 .. note::

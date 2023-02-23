@@ -1,4 +1,4 @@
-.. option:: --udp
+.. option:: -U|--udp
 
     Enable UDP operation mode.
 

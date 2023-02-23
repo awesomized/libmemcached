@@ -20,6 +20,7 @@ OPTIONS
 -------
 
 .. include:: options/all.rst
+.. include:: options/common.rst
 
 ENVIRONMENT
 -----------

@@ -4,7 +4,7 @@ memstat
 SYNOPSIS
 --------
 
-memstat [options]
+memstat [options] [stat args] 
 
 .. program:: memstat
 
@@ -19,24 +19,35 @@ It prints all data to stdout.
 OPTIONS
 -------
 
-.. include:: options/all.rst
-.. include:: options/common.rst
-.. include:: options/sasl.rst
+.. include:: options/common_get.rst
 
-.. option:: --analyze
+.. option:: -A|--args <stat>
 
-    Analyze and print differences of a server cluster. A memory and uptime comparison is performed by default.
+    Stat args.
 
-    Available additional modes:
+    **DEPRECATED:** use positional arguments.
+
+.. option:: -a|--analyze [<arg>]
+
+    Analyze and print differences of a server cluster.
+    A memory and uptime comparison is performed by default.
+
+    Options:
+    
+    --analyze[=default]
+        Memory and uptime comparison.
 
     --analyze=latency
-        Network latency comparison
+        Network latency comparison.
 
-
-
-.. option:: --server-version
+.. option:: -S|-server-version
 
     Obtain and print server version(s) only.
+
+.. option:: --iterations
+
+    Iteration count of GETs sent by the latency test (default: 1000).
+
 
 ENVIRONMENT
 -----------

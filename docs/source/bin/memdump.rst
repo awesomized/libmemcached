@@ -20,11 +20,9 @@ provide all keys it is not possible to get a complete "dump".
 OPTIONS
 -------
 
-.. include:: options/all.rst
-.. include:: options/common.rst
-.. include:: options/hash.rst
-.. include:: options/sasl.rst
-
+.. include:: options/common_get.rst
+.. include:: options/file_out.rst
+ 
 ENVIRONMENT
 -----------
 

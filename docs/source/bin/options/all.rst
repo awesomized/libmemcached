@@ -1,8 +1,8 @@
-.. option:: --help
+.. option:: -h|--help
 
     Display help.
 
-.. option:: --version
+.. option:: -V|--version
 
     Display version.
 
