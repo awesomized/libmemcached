@@ -198,58 +198,95 @@ stored in a <em class="manpage"><a class="manpage reference external" href="http
 <div class="section" id="options">
 <h2>OPTIONS<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
 <dl class="option">
-<dt id="cmdoption-memcat-help">
-<code class="descname">--help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcat-help" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memcat-h-help">
+<code class="descname">-h|--help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcat-h-help" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display help.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memcat-version">
-<code class="descname">--version</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcat-version" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memcat-v-version">
+<code class="descname">-V|--version</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcat-v-version" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display version.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memcat-quiet">
-<code class="descname">--quiet</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcat-quiet" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memcat-q-quiet">
+<code class="descname">-q|--quiet</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcat-q-quiet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Operate quietly.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memcat-verbose">
-<code class="descname">--verbose</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcat-verbose" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memcat-v-verbose">
+<code class="descname">-v|--verbose</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcat-v-verbose" title="Permalink to this definition">¶</a></dt>
 <dd><p>Operate more verbosely.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memcat-debug">
-<code class="descname">--debug</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcat-debug" title="Permalink to this definition">¶</a></dt>
-<dd><p>See <a class="reference internal" href="#cmdoption-memcat-verbose"><code class="xref std std-option docutils literal notranslate"><span class="pre">--verbose</span></code></a>.</p>
+<dt id="cmdoption-memcat-d-debug">
+<code class="descname">-d|--debug</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcat-d-debug" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <a class="reference internal" href="#cmdoption-memcat-v-verbose"><code class="xref std std-option docutils literal notranslate"><span class="pre">-v|--verbose</span></code></a>.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memcat-servers">
-<code class="descname">--servers</code><code class="descclassname"> &lt;list of servers&gt;</code><a class="headerlink" href="#cmdoption-memcat-servers" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memcat-s-servers">
+<code class="descname">-s|--servers</code><code class="descclassname"> &lt;list of servers&gt;</code><a class="headerlink" href="#cmdoption-memcat-s-servers" title="Permalink to this definition">¶</a></dt>
 <dd><p>Specify the list of servers as <em>hostname[:port][,hostname[:port]...]</em>.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memcat-binary">
-<code class="descname">--binary</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcat-binary" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memcat-n-non-blocking">
+<code class="descname">-n|--non-blocking</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcat-n-non-blocking" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable non-blocking operations.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memcat-n-tcp-nodelay">
+<code class="descname">-N|--tcp-nodelay</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcat-n-tcp-nodelay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disable Nagle's algorithm.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memcat-b-binary">
+<code class="descname">-b|--binary</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcat-b-binary" title="Permalink to this definition">¶</a></dt>
 <dd><p>Enable binary protocol.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memcat-hash">
-<code class="descname">--hash</code><code class="descclassname"> &lt;algorithm&gt;</code><a class="headerlink" href="#cmdoption-memcat-hash" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memcat-b-buffer">
+<code class="descname">-B|--buffer</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcat-b-buffer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Buffer requests.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memcat-u-username">
+<code class="descname">-u|--username</code><code class="descclassname"> &lt;username&gt;</code><a class="headerlink" href="#cmdoption-memcat-u-username" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use <em>username</em> for SASL authentication.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memcat-p-password">
+<code class="descname">-p|--password</code><code class="descclassname"> &lt;password&gt;</code><a class="headerlink" href="#cmdoption-memcat-p-password" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use <em>password</em> for SASL authentication.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memcat-f-flags">
+<code class="descname">-F|--flags</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcat-f-flags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display key's flags.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memcat-h-hash">
+<code class="descname">-H|--hash</code><code class="descclassname"> &lt;algorithm&gt;</code><a class="headerlink" href="#cmdoption-memcat-h-hash" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use <em>algorithm</em> as key hash algo.
 See <a class="reference internal" href="../libmemcached/memcached_behavior.html#_CPPv4N20memcached_behavior_t23MEMCACHED_BEHAVIOR_HASHE" title="memcached_behavior_t::MEMCACHED_BEHAVIOR_HASH"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">memcached_behavior_t::MEMCACHED_BEHAVIOR_HASH</span></code></a>.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memcat-flag">
-<code class="descname">--flag</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcat-flag" title="Permalink to this definition">¶</a></dt>
-<dd><p>Display stored flags.</p>
+<dt id="cmdoption-memcat-f-file">
+<code class="descname">-f|--file</code><code class="descclassname"> [&lt;file&gt;]</code><a class="headerlink" href="#cmdoption-memcat-f-file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Output to file instead of standard output.</p>
+<p><em>NOTE:</em> defaults to &lt;key&gt; if no argument was provided.</p>
 </dd></dl>
 
 </div>

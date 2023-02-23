@@ -185,7 +185,7 @@
 <h1>memstat<a class="headerlink" href="#memstat" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="synopsis">
 <h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p>memstat [options]</p>
+<p>memstat [options] [stat args]</p>
 <p>Gather statistics from a server</p>
 </div>
 <div class="section" id="description">
@@ -196,64 +196,94 @@ It prints all data to stdout.</p>
 <div class="section" id="options">
 <h2>OPTIONS<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
 <dl class="option">
-<dt id="cmdoption-memstat-help">
-<code class="descname">--help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memstat-help" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memstat-h-help">
+<code class="descname">-h|--help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memstat-h-help" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display help.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memstat-version">
-<code class="descname">--version</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memstat-version" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memstat-v-version">
+<code class="descname">-V|--version</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memstat-v-version" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display version.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memstat-quiet">
-<code class="descname">--quiet</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memstat-quiet" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memstat-q-quiet">
+<code class="descname">-q|--quiet</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memstat-q-quiet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Operate quietly.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memstat-verbose">
-<code class="descname">--verbose</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memstat-verbose" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memstat-v-verbose">
+<code class="descname">-v|--verbose</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memstat-v-verbose" title="Permalink to this definition">¶</a></dt>
 <dd><p>Operate more verbosely.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memstat-debug">
-<code class="descname">--debug</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memstat-debug" title="Permalink to this definition">¶</a></dt>
-<dd><p>See <a class="reference internal" href="#cmdoption-memstat-verbose"><code class="xref std std-option docutils literal notranslate"><span class="pre">--verbose</span></code></a>.</p>
+<dt id="cmdoption-memstat-d-debug">
+<code class="descname">-d|--debug</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memstat-d-debug" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <a class="reference internal" href="#cmdoption-memstat-v-verbose"><code class="xref std std-option docutils literal notranslate"><span class="pre">-v|--verbose</span></code></a>.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memstat-servers">
-<code class="descname">--servers</code><code class="descclassname"> &lt;list of servers&gt;</code><a class="headerlink" href="#cmdoption-memstat-servers" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memstat-s-servers">
+<code class="descname">-s|--servers</code><code class="descclassname"> &lt;list of servers&gt;</code><a class="headerlink" href="#cmdoption-memstat-s-servers" title="Permalink to this definition">¶</a></dt>
 <dd><p>Specify the list of servers as <em>hostname[:port][,hostname[:port]...]</em>.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memstat-binary">
-<code class="descname">--binary</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memstat-binary" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memstat-n-non-blocking">
+<code class="descname">-n|--non-blocking</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memstat-n-non-blocking" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable non-blocking operations.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memstat-n-tcp-nodelay">
+<code class="descname">-N|--tcp-nodelay</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memstat-n-tcp-nodelay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disable Nagle's algorithm.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memstat-b-binary">
+<code class="descname">-b|--binary</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memstat-b-binary" title="Permalink to this definition">¶</a></dt>
 <dd><p>Enable binary protocol.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memstat-username">
-<code class="descname">--username</code><code class="descclassname"> &lt;username&gt;</code><a class="headerlink" href="#cmdoption-memstat-username" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memstat-b-buffer">
+<code class="descname">-B|--buffer</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memstat-b-buffer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Buffer requests.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memstat-u-username">
+<code class="descname">-u|--username</code><code class="descclassname"> &lt;username&gt;</code><a class="headerlink" href="#cmdoption-memstat-u-username" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use <em>username</em> for SASL authentication.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memstat-password">
-<code class="descname">--password</code><code class="descclassname"> &lt;password&gt;</code><a class="headerlink" href="#cmdoption-memstat-password" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memstat-p-password">
+<code class="descname">-p|--password</code><code class="descclassname"> &lt;password&gt;</code><a class="headerlink" href="#cmdoption-memstat-p-password" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use <em>password</em> for SASL authentication.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memstat-analyze">
-<code class="descname">--analyze</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memstat-analyze" title="Permalink to this definition">¶</a></dt>
-<dd><p>Analyze and print differences of a server cluster. A memory and uptime comparison is performed by default.</p>
-<p>Available additional modes:</p>
+<dt id="cmdoption-memstat-a-args">
+<code class="descname">-A|--args</code><code class="descclassname"> &lt;stat&gt;</code><a class="headerlink" href="#cmdoption-memstat-a-args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stat args.</p>
+<p><strong>DEPRECATED:</strong> use positional arguments.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memstat-a-analyze">
+<code class="descname">-a|--analyze</code><code class="descclassname"> [&lt;arg&gt;]</code><a class="headerlink" href="#cmdoption-memstat-a-analyze" title="Permalink to this definition">¶</a></dt>
+<dd><p>Analyze and print differences of a server cluster.
+A memory and uptime comparison is performed by default.</p>
+<p>Options:</p>
+<dl class="docutils">
+<dt>--analyze[=default]</dt>
+<dd>Memory and uptime comparison.</dd>
+</dl>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -261,15 +291,21 @@ It prints all data to stdout.</p>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--analyze=<var>latency</var></span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>Network latency comparison</td></tr>
+<tr><td>&#160;</td><td>Network latency comparison.</td></tr>
 </tbody>
 </table>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memstat-server-version">
-<code class="descname">--server-version</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memstat-server-version" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memstat-s-server-version">
+<code class="descname">-S|-server-version</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memstat-s-server-version" title="Permalink to this definition">¶</a></dt>
 <dd><p>Obtain and print server version(s) only.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memstat-iterations">
+<code class="descname">--iterations</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memstat-iterations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iteration count of GETs sent by the latency test (default: 1000).</p>
 </dd></dl>
 
 </div>

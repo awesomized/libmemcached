@@ -195,64 +195,82 @@
 <div class="section" id="options">
 <h2>OPTIONS<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
 <dl class="option">
-<dt id="cmdoption-memexist-help">
-<code class="descname">--help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memexist-help" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memexist-h-help">
+<code class="descname">-h|--help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memexist-h-help" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display help.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memexist-version">
-<code class="descname">--version</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memexist-version" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memexist-v-version">
+<code class="descname">-V|--version</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memexist-v-version" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display version.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memexist-quiet">
-<code class="descname">--quiet</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memexist-quiet" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memexist-q-quiet">
+<code class="descname">-q|--quiet</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memexist-q-quiet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Operate quietly.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memexist-verbose">
-<code class="descname">--verbose</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memexist-verbose" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memexist-v-verbose">
+<code class="descname">-v|--verbose</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memexist-v-verbose" title="Permalink to this definition">¶</a></dt>
 <dd><p>Operate more verbosely.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memexist-debug">
-<code class="descname">--debug</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memexist-debug" title="Permalink to this definition">¶</a></dt>
-<dd><p>See <a class="reference internal" href="#cmdoption-memexist-verbose"><code class="xref std std-option docutils literal notranslate"><span class="pre">--verbose</span></code></a>.</p>
+<dt id="cmdoption-memexist-d-debug">
+<code class="descname">-d|--debug</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memexist-d-debug" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <a class="reference internal" href="#cmdoption-memexist-v-verbose"><code class="xref std std-option docutils literal notranslate"><span class="pre">-v|--verbose</span></code></a>.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memexist-servers">
-<code class="descname">--servers</code><code class="descclassname"> &lt;list of servers&gt;</code><a class="headerlink" href="#cmdoption-memexist-servers" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memexist-s-servers">
+<code class="descname">-s|--servers</code><code class="descclassname"> &lt;list of servers&gt;</code><a class="headerlink" href="#cmdoption-memexist-s-servers" title="Permalink to this definition">¶</a></dt>
 <dd><p>Specify the list of servers as <em>hostname[:port][,hostname[:port]...]</em>.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memexist-binary">
-<code class="descname">--binary</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memexist-binary" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memexist-n-non-blocking">
+<code class="descname">-n|--non-blocking</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memexist-n-non-blocking" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable non-blocking operations.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memexist-n-tcp-nodelay">
+<code class="descname">-N|--tcp-nodelay</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memexist-n-tcp-nodelay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disable Nagle's algorithm.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memexist-b-binary">
+<code class="descname">-b|--binary</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memexist-b-binary" title="Permalink to this definition">¶</a></dt>
 <dd><p>Enable binary protocol.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memexist-hash">
-<code class="descname">--hash</code><code class="descclassname"> &lt;algorithm&gt;</code><a class="headerlink" href="#cmdoption-memexist-hash" title="Permalink to this definition">¶</a></dt>
-<dd><p>Use <em>algorithm</em> as key hash algo.
-See <a class="reference internal" href="../libmemcached/memcached_behavior.html#_CPPv4N20memcached_behavior_t23MEMCACHED_BEHAVIOR_HASHE" title="memcached_behavior_t::MEMCACHED_BEHAVIOR_HASH"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">memcached_behavior_t::MEMCACHED_BEHAVIOR_HASH</span></code></a>.</p>
+<dt id="cmdoption-memexist-b-buffer">
+<code class="descname">-B|--buffer</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memexist-b-buffer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Buffer requests.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memexist-username">
-<code class="descname">--username</code><code class="descclassname"> &lt;username&gt;</code><a class="headerlink" href="#cmdoption-memexist-username" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memexist-u-username">
+<code class="descname">-u|--username</code><code class="descclassname"> &lt;username&gt;</code><a class="headerlink" href="#cmdoption-memexist-u-username" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use <em>username</em> for SASL authentication.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memexist-password">
-<code class="descname">--password</code><code class="descclassname"> &lt;password&gt;</code><a class="headerlink" href="#cmdoption-memexist-password" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memexist-p-password">
+<code class="descname">-p|--password</code><code class="descclassname"> &lt;password&gt;</code><a class="headerlink" href="#cmdoption-memexist-p-password" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use <em>password</em> for SASL authentication.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memexist-h-hash">
+<code class="descname">-H|--hash</code><code class="descclassname"> &lt;algorithm&gt;</code><a class="headerlink" href="#cmdoption-memexist-h-hash" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use <em>algorithm</em> as key hash algo.
+See <a class="reference internal" href="../libmemcached/memcached_behavior.html#_CPPv4N20memcached_behavior_t23MEMCACHED_BEHAVIOR_HASHE" title="memcached_behavior_t::MEMCACHED_BEHAVIOR_HASH"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">memcached_behavior_t::MEMCACHED_BEHAVIOR_HASH</span></code></a>.</p>
 </dd></dl>
 
 </div>

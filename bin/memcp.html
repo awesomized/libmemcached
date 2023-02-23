@@ -197,107 +197,137 @@ It is similar to the standard UNIX <em class="manpage"><a class="manpage referen
 <div class="section" id="options">
 <h2>OPTIONS<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
 <dl class="option">
-<dt id="cmdoption-memcp-help">
-<code class="descname">--help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcp-help" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memcp-h-help">
+<code class="descname">-h|--help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcp-h-help" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display help.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memcp-version">
-<code class="descname">--version</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcp-version" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memcp-v-version">
+<code class="descname">-V|--version</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcp-v-version" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display version.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memcp-quiet">
-<code class="descname">--quiet</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcp-quiet" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memcp-q-quiet">
+<code class="descname">-q|--quiet</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcp-q-quiet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Operate quietly.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memcp-verbose">
-<code class="descname">--verbose</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcp-verbose" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memcp-v-verbose">
+<code class="descname">-v|--verbose</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcp-v-verbose" title="Permalink to this definition">¶</a></dt>
 <dd><p>Operate more verbosely.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memcp-debug">
-<code class="descname">--debug</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcp-debug" title="Permalink to this definition">¶</a></dt>
-<dd><p>See <a class="reference internal" href="#cmdoption-memcp-verbose"><code class="xref std std-option docutils literal notranslate"><span class="pre">--verbose</span></code></a>.</p>
+<dt id="cmdoption-memcp-d-debug">
+<code class="descname">-d|--debug</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcp-d-debug" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <a class="reference internal" href="#cmdoption-memcp-v-verbose"><code class="xref std std-option docutils literal notranslate"><span class="pre">-v|--verbose</span></code></a>.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memcp-servers">
-<code class="descname">--servers</code><code class="descclassname"> &lt;list of servers&gt;</code><a class="headerlink" href="#cmdoption-memcp-servers" title="Permalink to this definition">¶</a></dt>
-<dd><p>Specify the list of servers as <em>hostname[:port][,hostname[:port]...]</em>.</p>
-</dd></dl>
-
-<dl class="option">
-<dt id="cmdoption-memcp-binary">
-<code class="descname">--binary</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcp-binary" title="Permalink to this definition">¶</a></dt>
-<dd><p>Enable binary protocol.</p>
-</dd></dl>
-
-<dl class="option">
-<dt id="cmdoption-memcp-expire">
-<code class="descname">--expire</code><code class="descclassname"> &lt;expiration&gt;</code><a class="headerlink" href="#cmdoption-memcp-expire" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memcp-e-expire">
+<code class="descname">-e|--expire</code><code class="descclassname"> &lt;expiration&gt;</code><a class="headerlink" href="#cmdoption-memcp-e-expire" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use <em>expiration</em> seconds (or a UNIX timestamp).</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memcp-flag">
-<code class="descname">--flag</code><code class="descclassname"> &lt;number&gt;</code><a class="headerlink" href="#cmdoption-memcp-flag" title="Permalink to this definition">¶</a></dt>
-<dd><p>Use <em>number</em> as flag.</p>
-</dd></dl>
-
-<dl class="option">
-<dt id="cmdoption-memcp-hash">
-<code class="descname">--hash</code><code class="descclassname"> &lt;algorithm&gt;</code><a class="headerlink" href="#cmdoption-memcp-hash" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memcp-h-hash">
+<code class="descname">-H|--hash</code><code class="descclassname"> &lt;algorithm&gt;</code><a class="headerlink" href="#cmdoption-memcp-h-hash" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use <em>algorithm</em> as key hash algo.
 See <a class="reference internal" href="../libmemcached/memcached_behavior.html#_CPPv4N20memcached_behavior_t23MEMCACHED_BEHAVIOR_HASHE" title="memcached_behavior_t::MEMCACHED_BEHAVIOR_HASH"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">memcached_behavior_t::MEMCACHED_BEHAVIOR_HASH</span></code></a>.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memcp-username">
-<code class="descname">--username</code><code class="descclassname"> &lt;username&gt;</code><a class="headerlink" href="#cmdoption-memcp-username" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memcp-s-servers">
+<code class="descname">-s|--servers</code><code class="descclassname"> &lt;list of servers&gt;</code><a class="headerlink" href="#cmdoption-memcp-s-servers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specify the list of servers as <em>hostname[:port][,hostname[:port]...]</em>.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memcp-n-non-blocking">
+<code class="descname">-n|--non-blocking</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcp-n-non-blocking" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable non-blocking operations.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memcp-n-tcp-nodelay">
+<code class="descname">-N|--tcp-nodelay</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcp-n-tcp-nodelay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disable Nagle's algorithm.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memcp-b-binary">
+<code class="descname">-b|--binary</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcp-b-binary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable binary protocol.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memcp-b-buffer">
+<code class="descname">-B|--buffer</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcp-b-buffer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Buffer requests.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memcp-u-username">
+<code class="descname">-u|--username</code><code class="descclassname"> &lt;username&gt;</code><a class="headerlink" href="#cmdoption-memcp-u-username" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use <em>username</em> for SASL authentication.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memcp-password">
-<code class="descname">--password</code><code class="descclassname"> &lt;password&gt;</code><a class="headerlink" href="#cmdoption-memcp-password" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memcp-p-password">
+<code class="descname">-p|--password</code><code class="descclassname"> &lt;password&gt;</code><a class="headerlink" href="#cmdoption-memcp-p-password" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use <em>password</em> for SASL authentication.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memcp-udp">
-<code class="descname">--udp</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcp-udp" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memcp-f-flags">
+<code class="descname">-F|--flags</code><code class="descclassname"> &lt;number&gt;</code><a class="headerlink" href="#cmdoption-memcp-f-flags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use <em>number</em> as key's flags.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memcp-u-udp">
+<code class="descname">-U|--udp</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcp-u-udp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Enable UDP operation mode.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memcp-buffer">
-<code class="descname">--buffer</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcp-buffer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Enable internal buffering of commands.</p>
-</dd></dl>
-
-<dl class="option">
-<dt id="cmdoption-memcp-set">
-<code class="descname">--set</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcp-set" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memcp-s-set">
+<code class="descname">-S|--set</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcp-s-set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Issue <em>SET</em> command(s). This is the default mode.
-See also <a class="reference internal" href="#cmdoption-memcp-add"><code class="xref std std-option docutils literal notranslate"><span class="pre">--add</span></code></a> and <a class="reference internal" href="#cmdoption-memcp-replace"><code class="xref std std-option docutils literal notranslate"><span class="pre">--replace</span></code></a>.</p>
+See also <a class="reference internal" href="#cmdoption-memcp-a-add"><code class="xref std std-option docutils literal notranslate"><span class="pre">-A|--add</span></code></a> and <a class="reference internal" href="#cmdoption-memcp-r-replace"><code class="xref std std-option docutils literal notranslate"><span class="pre">-R|--replace</span></code></a>.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memcp-add">
-<code class="descname">--add</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcp-add" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memcp-a-add">
+<code class="descname">-A|--add</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcp-a-add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Issue <em>ADD</em> command(s).</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memcp-replace">
-<code class="descname">--replace</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcp-replace" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memcp-r-replace">
+<code class="descname">-R|--replace</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcp-r-replace" title="Permalink to this definition">¶</a></dt>
 <dd><p>Issue <em>REPLACE</em> command(s).</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memcp-basename">
+<code class="descname">-.|--basename</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcp-basename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use basename of path as key (default).</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memcp-relative">
+<code class="descname">-+|--relative</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcp-relative" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use relative path (as passed), instead of basename only.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memcp-absolute">
+<code class="descname">-/|--absolute</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memcp-absolute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use absolute path (real path), instead of basename only.</p>
 </dd></dl>
 
 </div>

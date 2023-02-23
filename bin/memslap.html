@@ -198,45 +198,124 @@ throughput, and so on.</p>
 <div class="section" id="options">
 <h2>OPTIONS<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
 <dl class="option">
-<dt id="cmdoption-memslap-help">
-<code class="descname">--help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memslap-help" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memslap-h-help">
+<code class="descname">-h|--help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memslap-h-help" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display help.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memslap-version">
-<code class="descname">--version</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memslap-version" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memslap-v-version">
+<code class="descname">-V|--version</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memslap-v-version" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display version.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memslap-quiet">
-<code class="descname">--quiet</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memslap-quiet" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memslap-q-quiet">
+<code class="descname">-q|--quiet</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memslap-q-quiet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Operate quietly.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memslap-verbose">
-<code class="descname">--verbose</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memslap-verbose" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memslap-v-verbose">
+<code class="descname">-v|--verbose</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memslap-v-verbose" title="Permalink to this definition">¶</a></dt>
 <dd><p>Operate more verbosely.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memslap-debug">
-<code class="descname">--debug</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memslap-debug" title="Permalink to this definition">¶</a></dt>
-<dd><p>See <a class="reference internal" href="#cmdoption-memslap-verbose"><code class="xref std std-option docutils literal notranslate"><span class="pre">--verbose</span></code></a>.</p>
+<dt id="cmdoption-memslap-d-debug">
+<code class="descname">-d|--debug</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memslap-d-debug" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <a class="reference internal" href="#cmdoption-memslap-v-verbose"><code class="xref std std-option docutils literal notranslate"><span class="pre">-v|--verbose</span></code></a>.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memslap-servers">
-<code class="descname">--servers</code><code class="descclassname"> &lt;list of servers&gt;</code><a class="headerlink" href="#cmdoption-memslap-servers" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memslap-s-servers">
+<code class="descname">-s|--servers</code><code class="descclassname"> &lt;list of servers&gt;</code><a class="headerlink" href="#cmdoption-memslap-s-servers" title="Permalink to this definition">¶</a></dt>
 <dd><p>Specify the list of servers as <em>hostname[:port][,hostname[:port]...]</em>.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memslap-binary">
-<code class="descname">--binary</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memslap-binary" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memslap-n-non-blocking">
+<code class="descname">-n|--non-blocking</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memslap-n-non-blocking" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable non-blocking operations.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memslap-n-tcp-nodelay">
+<code class="descname">-N|--tcp-nodelay</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memslap-n-tcp-nodelay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disable Nagle's algorithm.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memslap-b-binary">
+<code class="descname">-b|--binary</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memslap-b-binary" title="Permalink to this definition">¶</a></dt>
 <dd><p>Enable binary protocol.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memslap-b-buffer">
+<code class="descname">-B|--buffer</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memslap-b-buffer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Buffer requests.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memslap-u-username">
+<code class="descname">-u|--username</code><code class="descclassname"> &lt;username&gt;</code><a class="headerlink" href="#cmdoption-memslap-u-username" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use <em>username</em> for SASL authentication.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memslap-p-password">
+<code class="descname">-p|--password</code><code class="descclassname"> &lt;password&gt;</code><a class="headerlink" href="#cmdoption-memslap-p-password" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use <em>password</em> for SASL authentication.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memslap-h-hash">
+<code class="descname">-H|--hash</code><code class="descclassname"> &lt;algorithm&gt;</code><a class="headerlink" href="#cmdoption-memslap-h-hash" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use <em>algorithm</em> as key hash algo.
+See <a class="reference internal" href="../libmemcached/memcached_behavior.html#_CPPv4N20memcached_behavior_t23MEMCACHED_BEHAVIOR_HASHE" title="memcached_behavior_t::MEMCACHED_BEHAVIOR_HASH"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">memcached_behavior_t::MEMCACHED_BEHAVIOR_HASH</span></code></a>.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memslap-u-udp">
+<code class="descname">-U|--udp</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memslap-u-udp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable UDP operation mode.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memslap-r-noreply">
+<code class="descname">-R|--noreply</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memslap-r-noreply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable the NOREPLY behavior for storage commands.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memslap-f-flush">
+<code class="descname">-F|--flush</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memslap-f-flush" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flush all servers prior test.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memslap-t-test">
+<code class="descname">-t|--test</code><code class="descclassname"> &lt;arg&gt;</code><a class="headerlink" href="#cmdoption-memslap-t-test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test to perform (options: get, mget, set; default: get).</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memslap-c-concurrency">
+<code class="descname">-c|--concurrency</code><code class="descclassname"> &lt;num&gt;</code><a class="headerlink" href="#cmdoption-memslap-c-concurrency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Concurrency (number of threads to start; default: 1).</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memslap-e-execute-number">
+<code class="descname">-e|--execute-number</code><code class="descclassname"> &lt;num&gt;</code><a class="headerlink" href="#cmdoption-memslap-e-execute-number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of times to execute the tests (default: 10000).</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memslap-l-initial-load">
+<code class="descname">-l|--initial-load</code><code class="descclassname"> &lt;num&gt;</code><a class="headerlink" href="#cmdoption-memslap-l-initial-load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of keys to load before executing tests (default: 10000).</p>
 </dd></dl>
 
 </div>

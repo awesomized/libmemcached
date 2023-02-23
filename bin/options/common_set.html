@@ -147,7 +147,7 @@
         
             
             
-              <a href="https://github.com/awesomized/libmemcached/blob/v1.x/docs/source/bin/options/hash.rst" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/awesomized/libmemcached/blob/v1.x/docs/source/bin/options/common_set.rst" class="fa fa-github"> Edit on GitHub</a>
             
           
         
@@ -162,10 +162,88 @@
            <div itemprop="articleBody">
             
   <dl class="option">
+<dt id="cmdoption-h-help">
+<code class="descname">-h|--help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-h-help" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display help.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-v-version">
+<code class="descname">-V|--version</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-v-version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display version.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-q-quiet">
+<code class="descname">-q|--quiet</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-q-quiet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Operate quietly.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-v-verbose">
+<code class="descname">-v|--verbose</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-v-verbose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Operate more verbosely.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-d-debug">
+<code class="descname">-d|--debug</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-d-debug" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <a class="reference internal" href="#cmdoption-v-verbose"><code class="xref std std-option docutils literal notranslate"><span class="pre">-v|--verbose</span></code></a>.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-e-expire">
+<code class="descname">-e|--expire</code><code class="descclassname"> &lt;expiration&gt;</code><a class="headerlink" href="#cmdoption-e-expire" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use <em>expiration</em> seconds (or a UNIX timestamp).</p>
+</dd></dl>
+
+<dl class="option">
 <dt id="cmdoption-h-hash">
 <code class="descname">-H|--hash</code><code class="descclassname"> &lt;algorithm&gt;</code><a class="headerlink" href="#cmdoption-h-hash" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use <em>algorithm</em> as key hash algo.
 See <a class="reference internal" href="../../libmemcached/memcached_behavior.html#_CPPv4N20memcached_behavior_t23MEMCACHED_BEHAVIOR_HASHE" title="memcached_behavior_t::MEMCACHED_BEHAVIOR_HASH"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">memcached_behavior_t::MEMCACHED_BEHAVIOR_HASH</span></code></a>.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-s-servers">
+<code class="descname">-s|--servers</code><code class="descclassname"> &lt;list of servers&gt;</code><a class="headerlink" href="#cmdoption-s-servers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specify the list of servers as <em>hostname[:port][,hostname[:port]...]</em>.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-n-non-blocking">
+<code class="descname">-n|--non-blocking</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-n-non-blocking" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable non-blocking operations.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-n-tcp-nodelay">
+<code class="descname">-N|--tcp-nodelay</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-n-tcp-nodelay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disable Nagle's algorithm.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-b-binary">
+<code class="descname">-b|--binary</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-b-binary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable binary protocol.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-b-buffer">
+<code class="descname">-B|--buffer</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-b-buffer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Buffer requests.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-u-username">
+<code class="descname">-u|--username</code><code class="descclassname"> &lt;username&gt;</code><a class="headerlink" href="#cmdoption-u-username" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use <em>username</em> for SASL authentication.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-p-password">
+<code class="descname">-p|--password</code><code class="descclassname"> &lt;password&gt;</code><a class="headerlink" href="#cmdoption-p-password" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use <em>password</em> for SASL authentication.</p>
 </dd></dl>
 
 

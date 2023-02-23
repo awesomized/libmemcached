@@ -194,70 +194,88 @@
 <div class="section" id="options">
 <h2>OPTIONS<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
 <dl class="option">
-<dt id="cmdoption-memtouch-help">
-<code class="descname">--help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memtouch-help" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memtouch-h-help">
+<code class="descname">-h|--help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memtouch-h-help" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display help.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memtouch-version">
-<code class="descname">--version</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memtouch-version" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memtouch-v-version">
+<code class="descname">-V|--version</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memtouch-v-version" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display version.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memtouch-quiet">
-<code class="descname">--quiet</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memtouch-quiet" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memtouch-q-quiet">
+<code class="descname">-q|--quiet</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memtouch-q-quiet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Operate quietly.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memtouch-verbose">
-<code class="descname">--verbose</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memtouch-verbose" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memtouch-v-verbose">
+<code class="descname">-v|--verbose</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memtouch-v-verbose" title="Permalink to this definition">¶</a></dt>
 <dd><p>Operate more verbosely.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memtouch-debug">
-<code class="descname">--debug</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memtouch-debug" title="Permalink to this definition">¶</a></dt>
-<dd><p>See <a class="reference internal" href="#cmdoption-memtouch-verbose"><code class="xref std std-option docutils literal notranslate"><span class="pre">--verbose</span></code></a>.</p>
+<dt id="cmdoption-memtouch-d-debug">
+<code class="descname">-d|--debug</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memtouch-d-debug" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <a class="reference internal" href="#cmdoption-memtouch-v-verbose"><code class="xref std std-option docutils literal notranslate"><span class="pre">-v|--verbose</span></code></a>.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memtouch-servers">
-<code class="descname">--servers</code><code class="descclassname"> &lt;list of servers&gt;</code><a class="headerlink" href="#cmdoption-memtouch-servers" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memtouch-s-servers">
+<code class="descname">-s|--servers</code><code class="descclassname"> &lt;list of servers&gt;</code><a class="headerlink" href="#cmdoption-memtouch-s-servers" title="Permalink to this definition">¶</a></dt>
 <dd><p>Specify the list of servers as <em>hostname[:port][,hostname[:port]...]</em>.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memtouch-binary">
-<code class="descname">--binary</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memtouch-binary" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memtouch-n-non-blocking">
+<code class="descname">-n|--non-blocking</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memtouch-n-non-blocking" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable non-blocking operations.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memtouch-n-tcp-nodelay">
+<code class="descname">-N|--tcp-nodelay</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memtouch-n-tcp-nodelay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disable Nagle's algorithm.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memtouch-b-binary">
+<code class="descname">-b|--binary</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memtouch-b-binary" title="Permalink to this definition">¶</a></dt>
 <dd><p>Enable binary protocol.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memtouch-expire">
-<code class="descname">--expire</code><code class="descclassname"> &lt;expiration&gt;</code><a class="headerlink" href="#cmdoption-memtouch-expire" title="Permalink to this definition">¶</a></dt>
-<dd><p>Use <em>expiration</em> seconds (or a UNIX timestamp).</p>
+<dt id="cmdoption-memtouch-b-buffer">
+<code class="descname">-B|--buffer</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memtouch-b-buffer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Buffer requests.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memtouch-hash">
-<code class="descname">--hash</code><code class="descclassname"> &lt;algorithm&gt;</code><a class="headerlink" href="#cmdoption-memtouch-hash" title="Permalink to this definition">¶</a></dt>
+<dt id="cmdoption-memtouch-u-username">
+<code class="descname">-u|--username</code><code class="descclassname"> &lt;username&gt;</code><a class="headerlink" href="#cmdoption-memtouch-u-username" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use <em>username</em> for SASL authentication.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memtouch-p-password">
+<code class="descname">-p|--password</code><code class="descclassname"> &lt;password&gt;</code><a class="headerlink" href="#cmdoption-memtouch-p-password" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use <em>password</em> for SASL authentication.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-memtouch-h-hash">
+<code class="descname">-H|--hash</code><code class="descclassname"> &lt;algorithm&gt;</code><a class="headerlink" href="#cmdoption-memtouch-h-hash" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use <em>algorithm</em> as key hash algo.
 See <a class="reference internal" href="../libmemcached/memcached_behavior.html#_CPPv4N20memcached_behavior_t23MEMCACHED_BEHAVIOR_HASHE" title="memcached_behavior_t::MEMCACHED_BEHAVIOR_HASH"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">memcached_behavior_t::MEMCACHED_BEHAVIOR_HASH</span></code></a>.</p>
 </dd></dl>
 
 <dl class="option">
-<dt id="cmdoption-memtouch-username">
-<code class="descname">--username</code><code class="descclassname"> &lt;username&gt;</code><a class="headerlink" href="#cmdoption-memtouch-username" title="Permalink to this definition">¶</a></dt>
-<dd><p>Use <em>username</em> for SASL authentication.</p>
-</dd></dl>
-
-<dl class="option">
-<dt id="cmdoption-memtouch-password">
-<code class="descname">--password</code><code class="descclassname"> &lt;password&gt;</code><a class="headerlink" href="#cmdoption-memtouch-password" title="Permalink to this definition">¶</a></dt>
-<dd><p>Use <em>password</em> for SASL authentication.</p>
+<dt id="cmdoption-memtouch-e-expire">
+<code class="descname">-e|--expire</code><code class="descclassname"> &lt;expiration&gt;</code><a class="headerlink" href="#cmdoption-memtouch-e-expire" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use <em>expiration</em> seconds (or a UNIX timestamp).</p>
 </dd></dl>
 
 </div>

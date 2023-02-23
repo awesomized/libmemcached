@@ -147,7 +147,7 @@
         
             
             
-              <a href="https://github.com/awesomized/libmemcached/blob/v1.x/docs/source/bin/options/hash.rst" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/awesomized/libmemcached/blob/v1.x/docs/source/bin/options/net.rst" class="fa fa-github"> Edit on GitHub</a>
             
           
         
@@ -162,10 +162,21 @@
            <div itemprop="articleBody">
             
   <dl class="option">
-<dt id="cmdoption-h-hash">
-<code class="descname">-H|--hash</code><code class="descclassname"> &lt;algorithm&gt;</code><a class="headerlink" href="#cmdoption-h-hash" title="Permalink to this definition">¶</a></dt>
-<dd><p>Use <em>algorithm</em> as key hash algo.
-See <a class="reference internal" href="../../libmemcached/memcached_behavior.html#_CPPv4N20memcached_behavior_t23MEMCACHED_BEHAVIOR_HASHE" title="memcached_behavior_t::MEMCACHED_BEHAVIOR_HASH"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">memcached_behavior_t::MEMCACHED_BEHAVIOR_HASH</span></code></a>.</p>
+<dt id="cmdoption-s-servers">
+<code class="descname">-s|--servers</code><code class="descclassname"> &lt;list of servers&gt;</code><a class="headerlink" href="#cmdoption-s-servers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specify the list of servers as <em>hostname[:port][,hostname[:port]...]</em>.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-n-non-blocking">
+<code class="descname">-n|--non-blocking</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-n-non-blocking" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable non-blocking operations.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-n-tcp-nodelay">
+<code class="descname">-N|--tcp-nodelay</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-n-tcp-nodelay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disable Nagle's algorithm.</p>
 </dd></dl>
 
 
