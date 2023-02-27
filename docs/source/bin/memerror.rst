@@ -6,7 +6,7 @@ SYNOPSIS
 
 .. program:: memerror
 
-memerror [options] <error code>
+|client_prefix|\error [options] <error code>
 
 Translate a memcached error code into a string.
 
@@ -22,12 +22,13 @@ OPTIONS
 .. include:: options/all.rst
 .. include:: options/common.rst
 
-ENVIRONMENT
------------
 
-.. envvar:: MEMCACHED_SERVERS
+.. include:: common/env.rst
 
-    Specify the list of servers.
+NOTES
+-----
+
+.. include:: common/note_program_prefix.rst
 
 SEE ALSO
 --------

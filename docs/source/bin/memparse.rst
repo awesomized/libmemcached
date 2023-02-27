@@ -6,7 +6,7 @@ SYNOPSIS
 
 .. program:: memparse
 
-memparse <option string>
+|client_prefix|\parse <option string>
 
 Parse and validate an option string.
 
@@ -19,6 +19,12 @@ OPTIONS
 -------
 
 None.
+
+NOTES
+-----
+ 
+.. include:: common/note_program_prefix.rst
+
 
 SEE ALSO
 --------

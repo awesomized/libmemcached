@@ -28,7 +28,7 @@ structure.
 and sets the result to the `memcached_analysis_st` structure. The return value
 must be freed by the calling application.
 
-.. seealso:: :option:`memstat --analyze`
+.. seealso:: :option:`memstat -a|--analyze [<arg>]`
     A command line tool to analyze a memcached server.
 
 

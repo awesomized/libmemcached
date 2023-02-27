@@ -6,7 +6,7 @@ SYNOPSIS
 
 .. program:: memexist
 
-memexist [options] <key>
+|client_prefix|\exist [options] <key>
 
 Check for the existence of a key.
 
@@ -21,12 +21,12 @@ OPTIONS
 .. include:: options/common_get.rst
 .. include:: options/hash.rst
 
-ENVIRONMENT
------------
+.. include:: common/env.rst
 
-.. envvar:: MEMCACHED_SERVERS
+NOTES
+-----
 
-    Specify the list of servers.
+.. include:: common/note_program_prefix.rst
 
 SEE ALSO
 --------

@@ -50,7 +50,7 @@ else()
                 COMMAND
                     ${CMAKE_COMMAND} -E touch "${SPHINX_HTML_DIR}"
                 BYPRODUCTS ${SPHINX_HTML_DIR}
-                DEPENDS "${DOCS_SOURCE}"
+                DEPENDS "${DOCS_SOURCE}" conf.py.in
                 )
         add_custom_target(html ALL DEPENDS "${SPHINX_HTML_DIR}")
 
@@ -73,7 +73,7 @@ else()
                 COMMAND
                     ${CMAKE_COMMAND} -E touch "${SPHINX_MAN_DIR}"
                 BYPRODUCTS ${SPHINX_MAN_DIR}
-                DEPENDS "${DOCS_SOURCE}"
+                DEPENDS "${DOCS_SOURCE}" conf.py.in
                 )
         add_custom_target(man ALL DEPENDS "${SPHINX_MAN_DIR}")
 

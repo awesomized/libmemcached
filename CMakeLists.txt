@@ -30,19 +30,19 @@ if(NOT BUILD_DOCSONLY)
     include(CMake/_Include.cmake)
 
     set(CLIENTS
-            memcapable
-            memcat
-            memcp
-            memdump
-            memerror
-            memexist
-            memflush
-            memparse
-            memping
-            memrm
-            memslap
-            memstat
-            memtouch
+            capable
+            cat
+            cp
+            dump
+            error
+            exist
+            flush
+            parse
+            ping
+            rm
+            slap
+            stat
+            touch
             )
 
     add_subdirectory(include)

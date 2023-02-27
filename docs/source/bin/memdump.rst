@@ -6,7 +6,7 @@ SYNOPSIS
 
 .. program:: memdump
 
-memdump [options]
+|client_prefix|\dump [options]
 
 Dump a list of keys from a server.
 
@@ -22,13 +22,14 @@ OPTIONS
 
 .. include:: options/common_get.rst
 .. include:: options/file_out.rst
- 
-ENVIRONMENT
------------
 
-.. envvar:: MEMCACHED_SERVERS
 
-    Specify the list of servers.
+.. include:: common/env.rst
+
+NOTES
+-----
+
+.. include:: common/note_program_prefix.rst
 
 SEE ALSO
 --------
