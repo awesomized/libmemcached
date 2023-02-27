@@ -5,7 +5,7 @@ memaslap - Load testing  and benchmarking a server
 SYNOPSIS
 --------
 
-memaslap [options]
+|client_prefix|\aslap [options]
 
 .. program:: memaslap
 
@@ -1000,13 +1000,11 @@ memaslap -s 127.0.0.1:11211,127.0.0.1:11212 -F config -t 2m
 
 memaslap -s 127.0.0.1:11211,127.0.0.1:11212 -F config -t 2m -p 2
 
-NOTE
-----
+NOTES
+-----
 
-This is a contributed program.
-
-This program doesn't follow the standard flag/option scheme.
-
+.. include:: common/note_program_prefix.rst
+.. include:: common/note_contrib_options.rst
 
 SEE ALSO
 --------

@@ -6,7 +6,7 @@ SYNOPSIS
 
 .. program:: memcp
 
-memcp [options] \-\-servers <hostname[:port]...> <file...>
+|client_prefix|\cp [options] \-\-servers <hostname[:port]...> <file...>
 
 Copy files to a collection of memcached servers.
 
@@ -49,14 +49,14 @@ OPTIONS
 .. option:: -/|--absolute
 
     Use absolute path (real path), instead of basename only.
-    
-    
-ENVIRONMENT
------------
 
-.. envvar:: MEMCACHED_SERVERS
 
-    Specify the list of servers.
+.. include:: common/env.rst
+
+NOTES
+-----
+
+.. include:: common/note_program_prefix.rst
 
 SEE ALSO
 --------

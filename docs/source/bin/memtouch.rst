@@ -6,7 +6,7 @@ SYNOPSIS
 
 .. program:: memtouch
 
-memtouch [options] <key>
+|client_prefix|\touch [options] <key>
 
 DESCRIPTION
 -----------
@@ -19,6 +19,13 @@ OPTIONS
 .. include:: options/common_get.rst
 .. include:: options/hash.rst
 .. include:: options/expire.rst
+
+.. include:: common/env.rst
+
+NOTES
+-----
+
+.. include:: common/note_program_prefix.rst
 
 SEE ALSO
 --------

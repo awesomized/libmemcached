@@ -4,7 +4,7 @@ memrm
 SYNOPSIS
 --------
 
-memrm [options] <key ...>
+|client_prefix|\rm [options] <key ...>
 
 .. program:: memrm
 
@@ -20,12 +20,12 @@ OPTIONS
 
 .. include:: options/common_set.rst
 
-ENVIRONMENT
------------
+.. include:: common/env.rst
 
-.. envvar:: MEMCACHED_SERVERS
+NOTES
+-----
 
-    Specify the list of servers.
+.. include:: common/note_program_prefix.rst
 
 SEE ALSO
 --------

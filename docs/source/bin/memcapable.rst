@@ -6,7 +6,7 @@ SYNOPSIS
 
 .. program:: memcapable
 
-memcapable [options]
+|client_prefix|\capable [options]
 
 Check a memcached server's capabilities and compatibility.
 
@@ -39,10 +39,12 @@ OPTIONS
 
     Set the timeout for an IO operation to/from the server to \ *n*\  seconds.
 
-NOTE
-----
 
-This program doesn't follow the standard flag/option scheme.
+NOTES
+-----
+
+.. include:: common/note_program_prefix.rst
+.. include:: common/note_contrib_options.rst
 
 
 SEE ALSO

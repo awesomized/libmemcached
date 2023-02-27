@@ -4,7 +4,7 @@ memstat
 SYNOPSIS
 --------
 
-memstat [options] [stat args] 
+|client_prefix|\stat [options] [stat args] 
 
 .. program:: memstat
 
@@ -49,12 +49,12 @@ OPTIONS
     Iteration count of GETs sent by the latency test (default: 1000).
 
 
-ENVIRONMENT
------------
+.. include:: common/env.rst
 
-.. envvar:: MEMCACHED_SERVERS
+NOTES
+-----
 
-    Specify the list of servers.
+.. include:: common/note_program_prefix.rst
 
 SEE ALSO
 --------

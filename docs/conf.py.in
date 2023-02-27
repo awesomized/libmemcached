@@ -23,6 +23,7 @@ default_role = 'any'
 project = u'libmemcached-awesome'
 version = '@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@'
 release = '@PROJECT_VERSION@'
+client_prefix = '@CLIENT_PREFIX@'
 
 smartquotes = False
 m2r_parse_relative_links = True
@@ -191,23 +192,24 @@ man_pages = [
   ('libmemcachedutil/memcached_pool'           ,'memcached_pool_st'                       ,u'libmemcached Documentation'          ,man_authors,3),
   ('libmemcachedutil/memcached_pool'           ,'memcached_pool'                          ,u'libmemcached Documentation'          ,man_authors,3),
 
-  ('bin/memcapable'                            , 'memcapable'                             , u'libmemcached Documentation'         , man_authors, 1),
-  ('bin/memcat'                                , 'memcat'                                 , u'libmemcached Documentation'         , man_authors, 1),
-  ('bin/memcp'                                 , 'memcp'                                  , u'libmemcached Documentation'         , man_authors, 1),
-  ('bin/memdump'                               , 'memdump'                                , u'libmemcached Documentation'         , man_authors, 1),
-  ('bin/memerror'                              , 'memerror'                               , u'libmemcached Documentation'         , man_authors, 1),
-  ('bin/memflush'                              , 'memflush'                               , u'libmemcached Documentation'         , man_authors, 1),
-  ('bin/memrm'                                 , 'memrm'                                  , u'libmemcached Documentation'         , man_authors, 1),
-  ('bin/memaslap'                              , 'memaslap'                               , u'libmemcached Documentation'         , man_authors, 1),
-  ('bin/memslap'                               , 'memslap'                                , u'libmemcached Documentation'         , man_authors, 1),
-  ('bin/memstat'                               , 'memstat'                                , u'libmemcached Documentation'         , man_authors, 1),
-  ('bin/memexist'                              , 'memexist'                               , u'libmemcached Documentation'         , man_authors, 1),
-  ('bin/memparse'                              , 'memparse'                               , u'libmemcached Documentation'         , man_authors, 1),
-  ('bin/memping'                               , 'memping'                                , u'libmemcached Documentation'         , man_authors, 1),
-  ('bin/memtouch'                              , 'memtouch'                               , u'libmemcached Documentation'         , man_authors, 1),
+  ('bin/memcapable'                            , client_prefix + 'capable'                , u'libmemcached Documentation'         , man_authors, 1),
+  ('bin/memcat'                                , client_prefix + 'cat'                    , u'libmemcached Documentation'         , man_authors, 1),
+  ('bin/memcp'                                 , client_prefix + 'cp'                     , u'libmemcached Documentation'         , man_authors, 1),
+  ('bin/memdump'                               , client_prefix + 'dump'                   , u'libmemcached Documentation'         , man_authors, 1),
+  ('bin/memerror'                              , client_prefix + 'error'                  , u'libmemcached Documentation'         , man_authors, 1),
+  ('bin/memflush'                              , client_prefix + 'flush'                  , u'libmemcached Documentation'         , man_authors, 1),
+  ('bin/memrm'                                 , client_prefix + 'rm'                     , u'libmemcached Documentation'         , man_authors, 1),
+  ('bin/memaslap'                              , client_prefix + 'aslap'                  , u'libmemcached Documentation'         , man_authors, 1),
+  ('bin/memslap'                               , client_prefix + 'slap'                   , u'libmemcached Documentation'         , man_authors, 1),
+  ('bin/memstat'                               , client_prefix + 'stat'                   , u'libmemcached Documentation'         , man_authors, 1),
+  ('bin/memexist'                              , client_prefix + 'exist'                  , u'libmemcached Documentation'         , man_authors, 1),
+  ('bin/memparse'                              , client_prefix + 'parse'                  , u'libmemcached Documentation'         , man_authors, 1),
+  ('bin/memping'                               , client_prefix + 'ping'                   , u'libmemcached Documentation'         , man_authors, 1),
+  ('bin/memtouch'                              , client_prefix + 'touch'                  , u'libmemcached Documentation'         , man_authors, 1),
   ]
 
 rst_prolog = """
+.. |client_prefix| replace:: """ + client_prefix + """
 .. |libhashkit_version| replace:: 1.0
 .. |libmemcached_version| replace:: 1.0
 .. |libmemcachedprotocol_version| replace:: 0.0

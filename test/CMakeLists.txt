@@ -70,7 +70,7 @@ endif()
 add_dependencies(runtests ${CLIENTS} timeout)
 if(TARGET memaslap)
     configure_set(HAVE_MEMASLAP 1)
-    add_dependencies(runtests memaslap)
+    add_dependencies(runtests aslap)
 endif()
 
 configure_file(${CONFIGURE_FILE_IN} ${CONFIGURE_FILE_OUT} @ONLY)

@@ -4,7 +4,7 @@ memflush
 SYNOPSIS
 --------
 
-memflush [options]
+|client_prefix|\flush [options]
 
 .. program:: memflush
 
@@ -51,12 +51,13 @@ OPTIONS
 
 .. _memcached protocol documentation: https://github.com/memcached/memcached/blob/master/doc/protocol.txt
 
-ENVIRONMENT
------------
 
-.. envvar:: MEMCACHED_SERVERS
+.. include:: common/env.rst
 
-    Specify the list of servers.
+NOTES
+-----
+
+.. include:: common/note_program_prefix.rst
 
 SEE ALSO
 --------

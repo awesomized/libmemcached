@@ -4,7 +4,7 @@ memping
 SYNOPSIS
 --------
 
-memping [options] [server]
+|client_prefix|\ping [options] [server]
 
 .. program:: memping
 
@@ -27,12 +27,12 @@ OPTIONS
     Specify the list of servers as *hostname[:port][,hostname[:port]...]*.
 
 
-ENVIRONMENT
------------
+.. include:: common/env.rst
 
-.. envvar:: MEMCACHED_SERVERS
+NOTES
+-----
 
-    Specify the list of servers.
+.. include:: common/note_program_prefix.rst
 
 SEE ALSO
 --------

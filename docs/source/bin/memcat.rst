@@ -6,7 +6,7 @@ SYNOPSIS
 
 .. program:: memcat
 
-memcat [options] key [key...]
+|client_prefix|\cat [options] key [key...]
 
 Read and output the value of one key or the values of a set of keys.
 
@@ -28,12 +28,12 @@ OPTIONS
 .. include:: options/hash.rst
 .. include:: options/file_out.rst
 
-ENVIRONMENT
------------
+.. include:: common/env.rst
 
-.. envvar:: MEMCACHED_SERVERS
+NOTES
+-----
 
-    Specify a list of servers.
+.. include:: common/note_program_prefix.rst
 
 SEE ALSO
 --------

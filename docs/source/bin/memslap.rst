@@ -4,7 +4,7 @@ memslap
 SYNOPSIS
 --------
 
-memslap [options]
+|client_prefix|\slap [options]
 
 .. program::  memslap
 
@@ -50,12 +50,12 @@ OPTIONS
     Number of keys to load before executing tests (default: 10000).
 
 
-ENVIRONMENT
------------
+.. include:: common/env.rst
 
-.. envvar:: MEMCACHED_SERVERS
+NOTES
+-----
 
-    Specify the list of servers.
+.. include:: common/note_program_prefix.rst
 
 SEE ALSO
 --------
