@@ -24,7 +24,7 @@ if(ENABLE_MEMASLAP AND CMAKE_USE_PTHREADS_INIT)
                 ${CMAKE_BINARY_DIR}/src
                 ${CMAKE_BINARY_DIR})
         target_link_libraries(aslap PRIVATE libmemcached Threads::Threads ${LIBEVENT} m)
-        set_property(TARGET aslap PROPERTY C_STANDARD 11 OUTPUT_NAME ${CLIENT_PREFIX}aslap)
+        set_target_properties(aslap PROPERTIES C_STANDARD 11 OUTPUT_NAME ${CLIENT_PREFIX}aslap)
         if(CMAKE_INSTALL_RPATH)
             set_target_properties(aslap PROPERTIES
                     INSTALL_RPATH ${CMAKE_INSTALL_RPATH}/../${CMAKE_INSTALL_LIBDIR})
