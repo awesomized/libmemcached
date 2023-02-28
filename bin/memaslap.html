@@ -216,7 +216,7 @@ the threads don't communicate with each other, and there are several socket
 connections in each thread. Each connection keeps key size distribution,
 value size distribution, and command distribution by itself.</p>
 <p>You can specify servers via the <a class="reference internal" href="#cmdoption-memaslap-servers"><code class="xref std std-option docutils literal notranslate"><span class="pre">memaslap</span> <span class="pre">--servers</span></code></a> option or via the
-environment variable <span class="target" id="index-0"></span><a class="reference internal" href="memstat.html#envvar-MEMCACHED_SERVERS"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">MEMCACHED_SERVERS</span></code></a>.</p>
+environment variable <span class="target" id="index-0"></span><a class="reference internal" href="memtouch.html#envvar-MEMCACHED_SERVERS"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">MEMCACHED_SERVERS</span></code></a>.</p>
 </div>
 <div class="section" id="features">
 <h2>FEATURES<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
@@ -997,8 +997,12 @@ server must be same.</td></tr>
 <p>memaslap -s 127.0.0.1:11211,127.0.0.1:11212 -F config -t 2m</p>
 <p>memaslap -s 127.0.0.1:11211,127.0.0.1:11212 -F config -t 2m -p 2</p>
 </div>
-<div class="section" id="note">
-<h2>NOTE<a class="headerlink" href="#note" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="notes">
+<h2>NOTES<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<p>The prefix of this program is variable, i.e. it can be configured at build time.</p>
+<p>Usually the client programs of <code class="docutils literal notranslate"><span class="pre">libmemcached-awesome</span></code> are prefixed with <code class="docutils literal notranslate"><span class="pre">mem</span></code>, like <code class="docutils literal notranslate"><span class="pre">memcat</span></code> or <code class="docutils literal notranslate"><span class="pre">memcp</span></code>.</p>
+<p>It can be configured, though, to replace the prefix with something else like <code class="docutils literal notranslate"><span class="pre">mc</span></code>, in case of that,
+the client programs of <code class="docutils literal notranslate"><span class="pre">libmemcached-awesome</span></code> would be called <code class="docutils literal notranslate"><span class="pre">mccat</span></code>, <code class="docutils literal notranslate"><span class="pre">mccp</span></code>, etc. respectively.</p>
 <p>This is a contributed program.</p>
 <p>This program doesn't follow the standard flag/option scheme.</p>
 </div>

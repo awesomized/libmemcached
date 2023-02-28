@@ -279,9 +279,19 @@ See <a class="reference internal" href="../libmemcached/memcached_behavior.html#
 <dl class="envvar">
 <dt id="envvar-MEMCACHED_SERVERS">
 <code class="descname">MEMCACHED_SERVERS</code><a class="headerlink" href="#envvar-MEMCACHED_SERVERS" title="Permalink to this definition">¶</a></dt>
-<dd><p>Specify the list of servers.</p>
+<dd><p>Specify a list of servers.</p>
 </dd></dl>
 
+</div>
+<div class="section" id="notes">
+<h2>NOTES<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="program-prefix">
+<h3>PROGRAM PREFIX<a class="headerlink" href="#program-prefix" title="Permalink to this headline">¶</a></h3>
+<p>The prefix of this program is variable, i.e. it can be configured at build time.</p>
+<p>Usually the client programs of <code class="docutils literal notranslate"><span class="pre">libmemcached-awesome</span></code> are prefixed with <code class="docutils literal notranslate"><span class="pre">mem</span></code>, like <code class="docutils literal notranslate"><span class="pre">memcat</span></code> or <code class="docutils literal notranslate"><span class="pre">memcp</span></code>.</p>
+<p>It can be configured, though, to replace the prefix with something else like <code class="docutils literal notranslate"><span class="pre">mc</span></code>, in case of that,
+the client programs of <code class="docutils literal notranslate"><span class="pre">libmemcached-awesome</span></code> would be called <code class="docutils literal notranslate"><span class="pre">mccat</span></code>, <code class="docutils literal notranslate"><span class="pre">mccp</span></code>, etc. respectively.</p>
+</div>
 </div>
 <div class="section" id="see-also">
 <h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
