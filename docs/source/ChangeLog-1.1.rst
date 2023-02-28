@@ -16,8 +16,10 @@ v 1.1.4
 
 * Fix `gh #107 <https://github.com/awesomized/libmemcached/issues/107>`_\ :
   macOS: deprecated sasl API (improve detection of ``libsasl2``\ ).
+* Fix `gh #131 <https://github.com/awesomized/libmemcached/issues/131>`_\ :
+  Consider renaming tools (add ``CLIENT_PREFIX`` build option; default: ``mem``\ )
 * Fix `gh #132 <https://github.com/awesomized/libmemcached/issues/132>`_\ :
-  Add build of static library (with ``cmake -DBUILD_SHARED_LIBS=OFF``\ ).
+  Add build of static library (add ``BUILD_SHARED_LIBS`` build option; default: ``ON``\ ).
 * Fix `gh #134 <https://github.com/awesomized/libmemcached/issues/134>`_\ :
   Update client option documentation.
 * Fix `gh #136 <https://github.com/awesomized/libmemcached/issues/136>`_\ :
