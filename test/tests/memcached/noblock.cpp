@@ -23,9 +23,6 @@ TEST_CASE("memcached_noblock") {
       break;
     case MEMCACHED_TIMEOUT:
     case MEMCACHED_WRITE_FAILURE:
-      if(!timeout) {
-        --i;
-      }
       ++hit;
       REQUIRE(true);
       break;
