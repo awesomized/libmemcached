@@ -24,7 +24,7 @@ ReturnMatcher &ReturnMatcher::operator=(memcached_st *memc_) {
 }
 
 string ReturnMatcher::describe() const {
-  return "is " + to_string(expected)
-         + "\n  actual: " + memcached_last_error_message(memc);
+  return "// but '" + to_string(expected) + "' was expected\n"
+         + "last error: " + memcached_last_error_message(memc);
 }
 
