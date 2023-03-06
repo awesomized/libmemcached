@@ -10,7 +10,7 @@ v 1.1.4
 
 ..
 
-   released TBA
+   released 2022-03-06
 
 
 
@@ -24,6 +24,8 @@ v 1.1.4
   Update client option documentation.
 * Fix `gh #136 <https://github.com/awesomized/libmemcached/issues/136>`_\ :
   ``libmemcachedutil`` is underlinked (link against libmemcached).
+* Fix `gh php-memcached#531 <https://github.com/php-memcached-dev/php-memcached/issues/531>`_\ :
+  ``get`` returns random values when lower than default ``OPT_POLL_TIMEOUT`` is set.
 
 v 1.1.3
 -------
