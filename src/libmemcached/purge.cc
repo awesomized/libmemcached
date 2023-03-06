@@ -108,9 +108,6 @@ bool memcached_purge(memcached_instance_st *ptr) {
         WATCHPOINT_ERROR(rc);
         is_successful = false;
       }
-      if (rc == MEMCACHED_TIMEOUT) {
-        break;
-      }
 
       if (ptr->root->callbacks) {
         memcached_callback_st cb = *ptr->root->callbacks;

@@ -10,7 +10,7 @@ TEST_CASE("memcached_noblock") {
   REQUIRE_SUCCESS(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_TCP_NODELAY, 1));
   REQUIRE_SUCCESS(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, timeout));
 
-  auto num = timeout ? 10'000 : 1'000'000;
+  auto num = 10000;
   auto hit = 0u;
   auto rnd = random_ascii_string(512);
   for (auto i = 0; i < num; ++i) {
@@ -23,20 +23,16 @@ TEST_CASE("memcached_noblock") {
       break;
     case MEMCACHED_TIMEOUT:
     case MEMCACHED_WRITE_FAILURE:
-      if(!timeout) {
-        --i;
-      }
       ++hit;
-      REQUIRE(true);
       break;
     default:
       REQUIRE(false);
     }
   }
-  INFO("failures triggered: " << hit);
+  INFO("timeout=" << timeout << " failures triggered: " << hit);
   if (timeout) {
-    CHECK_FALSE(hit);
+    REQUIRE_FALSE(hit);
   } else {
-    CHECK(hit > 0);
+    REQUIRE(hit > 0);
   }
 }
