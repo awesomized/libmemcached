@@ -2,7 +2,7 @@
 
 ## v 1.1.4
 
-> released 2022-03-06
+> released 2023-03-06
 
 * Fix [gh #107](https://github.com/awesomized/libmemcached/issues/107):
   macOS: deprecated sasl API (improve detection of `libsasl2`).
@@ -15,7 +15,9 @@
 * Fix [gh #136](https://github.com/awesomized/libmemcached/issues/136):
   `libmemcachedutil` is underlinked (link against libmemcached).
 * Fix [gh php-memcached#531](https://github.com/php-memcached-dev/php-memcached/issues/531):
-  `get` returns random values when lower than default `OPT_POLL_TIMEOUT` is set.
+  `get` returns random values when lower than default `OPT_POLL_TIMEOUT` is set.  
+  **NOTE:** This is a security related fix; more information can be found at:
+  https://github.com/awesomized/libmemcached/security/advisories/GHSA-wwmh-39wj-fx59
 
 ## v 1.1.3
 
