@@ -185,7 +185,7 @@
 <div class="section" id="v-1-1-4">
 <h2>v 1.1.4<a class="headerlink" href="#v-1-1-4" title="Permalink to this headline">¶</a></h2>
 <blockquote>
-<div>released 2022-03-06</div></blockquote>
+<div>released 2023-03-06</div></blockquote>
 <ul class="simple">
 <li>Fix <a class="reference external" href="https://github.com/awesomized/libmemcached/issues/107">gh #107</a>:
 macOS: deprecated sasl API (improve detection of <code class="docutils literal notranslate"><span class="pre">libsasl2</span></code>).</li>
@@ -198,7 +198,9 @@ Update client option documentation.</li>
 <li>Fix <a class="reference external" href="https://github.com/awesomized/libmemcached/issues/136">gh #136</a>:
 <code class="docutils literal notranslate"><span class="pre">libmemcachedutil</span></code> is underlinked (link against libmemcached).</li>
 <li>Fix <a class="reference external" href="https://github.com/php-memcached-dev/php-memcached/issues/531">gh php-memcached#531</a>:
-<code class="docutils literal notranslate"><span class="pre">get</span></code> returns random values when lower than default <code class="docutils literal notranslate"><span class="pre">OPT_POLL_TIMEOUT</span></code> is set.</li>
+<code class="docutils literal notranslate"><span class="pre">get</span></code> returns random values when lower than default <code class="docutils literal notranslate"><span class="pre">OPT_POLL_TIMEOUT</span></code> is set.<span class="raw-html-m2r"><br></span>
+<strong>NOTE:</strong> This is a security related fix; more information can be found at:
+<a class="reference external" href="https://github.com/awesomized/libmemcached/security/advisories/GHSA-wwmh-39wj-fx59">https://github.com/awesomized/libmemcached/security/advisories/GHSA-wwmh-39wj-fx59</a></li>
 </ul>
 </div>
 <div class="section" id="v-1-1-3">
