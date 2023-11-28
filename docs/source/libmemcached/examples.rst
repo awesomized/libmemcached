@@ -18,7 +18,7 @@ Connecting to servers
     "--SERVER=host10.example.com "
     "--SERVER=host11.example.com "
     "--SERVER=host10.example.com";
-  memcached_st *memc= memcached(config_string, strlen(config_string);
+  memcached_st *memc= memcached(config_string, strlen(config_string));
   {
     // ...
   }
