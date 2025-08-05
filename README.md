@@ -94,8 +94,8 @@ CI/Testing is performed on the following system matrix:
 | Windows          | MSVC 16, MinGW               | amd64                   | no sasl, no tests          |
 | Solaris          | SunPro 12.5                  | amd64                   | no sasl, no tests, manually|
 
-libmemcached-awesome has been tested against [memcached](https://github.
-com/memcached/memcached) v1.5 and v1.6.
+libmemcached-awesome has been tested against [memcached](https://github.com/memcached/memcached)
+v1.5 and v1.6.
 
 ## ChangeLog
 
