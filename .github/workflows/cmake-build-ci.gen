@@ -242,7 +242,7 @@ function steps_getdeps($os_vnd) {
             flex
             rsync
             openssh
-            mingw-w64-nsis
+            nsis
 <?php
   endif;
   if ($os_vnd != "Windows") :
