@@ -84,7 +84,8 @@ jobs:
             flex
             rsync
             openssh
-            nsis
+          pacboy: >-
+            nsis:p
       - name: Generate build tree (${{ env.CMAKE_BUILD_TYPE }})
         run: cmake -DCMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }} -S . -B build
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}

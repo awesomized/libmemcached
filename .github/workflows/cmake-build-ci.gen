@@ -242,7 +242,8 @@ function steps_getdeps($os_vnd) {
             flex
             rsync
             openssh
-            nsis
+          pacboy: >-
+            nsis:p
 <?php
   endif;
   if ($os_vnd != "Windows") :
