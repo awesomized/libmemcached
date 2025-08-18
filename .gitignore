@@ -11,6 +11,7 @@
 .idea/
 .project
 .settings/
+build-*/
 cmake-build-*/
 ccmake-*/
 tags
