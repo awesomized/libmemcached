@@ -381,7 +381,7 @@ env:
   CC_VER:   cur
 
 jobs:
-<?php goto skipped; ?>
+
   # sanitizer
   debug-sanitizer:
     name: debug sanitizer
@@ -454,7 +454,7 @@ jobs:
           ref: 1.6.39
 <?php steps("Linux"); ?>
       - uses: codecov/codecov-action@v3
-<?php skipped: ?>
+
   # coverage mac
   debug-coverage-mac:
     name: debug coverage (<?=defaults("macOS")?>)
@@ -490,7 +490,6 @@ jobs:
         with:
           fetch-depth: 0
 <?php steps("macOS", false); ?>
-<?php return; ?>
 
   # windows release builds
   windows:
