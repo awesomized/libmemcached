@@ -51,7 +51,7 @@ jobs:
       - name: Install dependencies (macOS)
         if: runner.os == 'macOS'
         run: |
-          brew install bison flex libevent pkg-config sphinx-doc ${INSTALL_MEMCACHED}
+          brew install bison flex libevent pkg-config rsync sphinx-doc ${INSTALL_MEMCACHED}
           brew services stop memcached || true
           echo MEMCACHED_BINARY="/usr/local/bin/memcached" >> ${GITHUB_ENV}
       - name: Build memcached
@@ -130,7 +130,7 @@ jobs:
       - name: Install dependencies (macOS)
         if: runner.os == 'macOS'
         run: |
-          brew install bison flex libevent pkg-config sphinx-doc ${INSTALL_MEMCACHED}
+          brew install bison flex libevent pkg-config rsync sphinx-doc ${INSTALL_MEMCACHED}
           brew services stop memcached || true
           echo MEMCACHED_BINARY="/usr/local/bin/memcached" >> ${GITHUB_ENV}
       - name: Build memcached

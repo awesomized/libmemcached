@@ -226,7 +226,7 @@ function steps_getdeps($os_vnd) {
   if ($os_vnd === "macOS") :
 ?>
         run: |
-          brew install bison flex libevent pkg-config sphinx-doc ${INSTALL_MEMCACHED}
+          brew install bison flex libevent pkg-config rsync sphinx-doc ${INSTALL_MEMCACHED}
           brew services stop memcached || true
           echo MEMCACHED_BINARY="/usr/local/bin/memcached" >> ${GITHUB_ENV}
 <?php
