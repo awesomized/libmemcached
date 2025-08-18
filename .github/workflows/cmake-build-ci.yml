@@ -84,6 +84,7 @@ jobs:
             flex
             rsync
             openssh
+            mingw-w64-nsis
       - name: Generate build tree (${{ env.CMAKE_BUILD_TYPE }})
         run: cmake -DCMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }} -S . -B build
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
