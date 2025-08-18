@@ -8,7 +8,7 @@ const DEF = [
 
   "Linux"   => "ubuntu-24.04", "ubuntu-24.04" => "gnu",
   "Windows" => "windows-2022", "windows-2022" => "msvc",
-  "macOS"   => "macos-12",     "macos-12"     => "clang",
+  "macOS"   => "macos-13",     "macos-13"     => "clang",
 
   "gnu" => [
     "CC"  => "gcc",
@@ -454,7 +454,7 @@ jobs:
           ref: 1.6.39
 <?php steps("Linux"); ?>
       - uses: codecov/codecov-action@v3
-
+<?php skipped: ?>
   # coverage mac
   debug-coverage-mac:
     name: debug coverage (<?=defaults("macOS")?>)
@@ -478,7 +478,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os_ver: [macos-12, macos-11, macos-10.15]
+        os_ver: [macos-13, macos-14, macos-15]
     runs-on: ${{ matrix.os_ver }}
     env:
       CMAKE_BUILD_TYPE:   "Release"
@@ -490,7 +490,7 @@ jobs:
         with:
           fetch-depth: 0
 <?php steps("macOS", false); ?>
-<?php skipped: ?>
+<?php return; ?>
 
   # windows release builds
   windows:
@@ -514,7 +514,7 @@ jobs:
         with:
           fetch-depth: 0
 <?php steps("Windows", true); ?>
-<?php return; ?>
+
   # linux release builds
   release:
     strategy:
