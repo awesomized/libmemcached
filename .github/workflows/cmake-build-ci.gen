@@ -242,6 +242,7 @@ function steps_getdeps($os_vnd) {
             flex
             rsync
             openssh
+            mingw-w64-nsis
 <?php
   endif;
   if ($os_vnd != "Windows") :
@@ -264,7 +265,7 @@ function steps_getdeps($os_vnd) {
               --disable-extstore \
               --disable-option-checking \
               ;
-            make -j2
+            make -j4
             make install
             cd ..
             echo MEMCACHED_BINARY="${MEMCACHED_PREFIX}/bin/memcached" >> ${GITHUB_ENV}
@@ -278,7 +279,7 @@ function steps_build() {
       - name: Generate build tree (${{ env.CMAKE_BUILD_TYPE }})
         run: cmake -DCMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }} -S . -B build
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
-        run: cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2
+        run: cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j4
 <?php
 }
 
@@ -286,7 +287,7 @@ function steps_test() {
 ?>
       - name: Test
         if: env.BUILD_TESTING == 'ON'
-        run: cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target test
+        run: cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j4 --target test
       - name: Install
         if: env.BUILD_TESTING == 'ON'
         run: cmake --install build --config ${{ env.CMAKE_BUILD_TYPE }} --prefix /tmp
@@ -304,10 +305,10 @@ function steps_package() {
         if: env.PUSH_ARTIFACTS_ID != '' && env.CMAKE_BUILD_TYPE == 'Release'
         run: |
           cmake -DCMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }} -S . -B build
-          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
+          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j4 --target package
           cmake -DCPACK_COMPONENT_INSTALL=ON build
-          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
-          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target push-artifacts
+          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j4 --target package
+          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j4 --target push-artifacts
 <?php
 }
 

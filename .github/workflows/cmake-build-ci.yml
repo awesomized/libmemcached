@@ -87,10 +87,10 @@ jobs:
       - name: Generate build tree (${{ env.CMAKE_BUILD_TYPE }})
         run: cmake -DCMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }} -S . -B build
       - name: Build all with ${{ env.CXX }} ${{ env.CXXFLAGS }}
-        run: cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2
+        run: cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j4
       - name: Test
         if: env.BUILD_TESTING == 'ON'
-        run: cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target test
+        run: cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j4 --target test
       - name: Install
         if: env.BUILD_TESTING == 'ON'
         run: cmake --install build --config ${{ env.CMAKE_BUILD_TYPE }} --prefix /tmp
@@ -103,10 +103,10 @@ jobs:
         if: env.PUSH_ARTIFACTS_ID != '' && env.CMAKE_BUILD_TYPE == 'Release'
         run: |
           cmake -DCMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }} -S . -B build
-          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
+          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j4 --target package
           cmake -DCPACK_COMPONENT_INSTALL=ON build
-          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target package
-          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j2 --target push-artifacts
+          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j4 --target package
+          cmake --build build --config ${{ env.CMAKE_BUILD_TYPE }} -j4 --target push-artifacts
       - name: Notify Gitter
         env:
           GITTER: ${{ secrets.GITTER }}
