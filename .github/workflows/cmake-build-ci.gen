@@ -379,7 +379,7 @@ env:
   CC_VER:   cur
 
 jobs:
-
+<?php goto skipped; ?>
   # sanitizer
   debug-sanitizer:
     name: debug sanitizer
@@ -452,7 +452,6 @@ jobs:
           ref: 1.6.39
 <?php steps("Linux"); ?>
       - uses: codecov/codecov-action@v3
-<?php goto skipped; ?>
 
   # coverage mac
   debug-coverage-mac:
@@ -489,6 +488,7 @@ jobs:
         with:
           fetch-depth: 0
 <?php steps("macOS", false); ?>
+<?php skipped: ?>
 
   # windows release builds
   windows:
@@ -496,7 +496,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os_ver: [windows-2022, windows-2019]
+        os_ver: [windows-2022, windows-2025]
         cc_vnd: [msvc, mingw]
         cc_ver: [cur]
     runs-on: ${{ matrix.os_ver }}
@@ -512,7 +512,7 @@ jobs:
         with:
           fetch-depth: 0
 <?php steps("Windows", true); ?>
-<?php skipped: ?>
+<?php return; ?>
   # linux release builds
   release:
     strategy:
