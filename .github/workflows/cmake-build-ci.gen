@@ -6,7 +6,7 @@ echo "# Generated file; do not edit!\n";
 const DEF = [
   "os" => "Linux",
 
-  "Linux"   => "ubuntu-22.04", "ubuntu-22.04" => "gnu",
+  "Linux"   => "ubuntu-24.04", "ubuntu-24.04" => "gnu",
   "Windows" => "windows-2022", "windows-2022" => "msvc",
   "macOS"   => "macos-12",     "macos-12"     => "clang",
 
@@ -39,25 +39,26 @@ const MAP = [
           ],
           "clang" => [
             'env.CC_VER' => [
-              "new"  => "-14",
-              "cur"  => "-13",
+              "new"  => "-15",
+              "cur"  => "-14",
+              "old"  => "-13",
             ]
           ]
         ]
       ],
-      "ubuntu-20.04" => [
+      "ubuntu-24.04" => [
         'env.CC_VND' => [
           "gnu" => [
             'env.CC_VER' => [
-              "new"  => "-10",
-              "cur"  => "-9",
+              "new"  => "-14",
+              "cur"  => "-13",
             ]
           ],
           "clang" => [
             'env.CC_VER' => [
-              "new"  => "-12",
-              "cur"  => "-11",
-              "old"  => "-10"
+              "new"  => "-18",
+              "cur"  => "-17",
+              "old"  => "-16"
             ]
           ]
         ]
@@ -80,11 +81,11 @@ const MAP = [
           ]
         ]
       ],
-      "windows-2019" => [
+      "windows-2025" => [
         'env.CC_VND' => [
           "msvc" => [
             "env.CC_VER" => [
-              "cur" => " 16 2019"
+              "cur" => " 17 2022"
             ]
           ],
           "mingw" => [
@@ -103,27 +104,31 @@ const ENV = [
     "clang" => [
       "new" => [
         "CXXFLAGS" => "-stdlib=libc++",
-        "INSTALL_CXX" => "libc++-14-dev libc++abi-14-dev"
+        "INSTALL_CXX" => "libc++-15-dev libc++abi-15-dev"
       ],
       "cur" => [
+        "CXXFLAGS" => "-stdlib=libc++",
+        "INSTALL_CXX" => "libc++-14-dev libc++abi-14-dev"
+      ],
+      "old" => [
         "CXXFLAGS" => "-stdlib=libc++",
         "INSTALL_CXX" => "libc++-13-dev libc++abi-13-dev"
       ],
     ]
   ],
-  "ubuntu-20.04" => [
+  "ubuntu-24.04" => [
     "clang" => [
       "new" => [
         "CXXFLAGS" => "-stdlib=libc++",
-        "INSTALL_CXX" => "libc++-12-dev libc++abi-12-dev"
+        "INSTALL_CXX" => "libc++-18-dev libc++abi-18-dev"
       ],
       "cur" => [
         "CXXFLAGS" => "-stdlib=libc++",
-        "INSTALL_CXX" => "libc++-11-dev libc++abi-11-dev"
+        "INSTALL_CXX" => "libc++-17-dev libc++abi-17-dev"
       ],
       "old" => [
         "CXXFLAGS" => "-stdlib=libc++",
-        "INSTALL_CXX" => "libc++-10-dev libc++abi-10-dev"
+        "INSTALL_CXX" => "libc++-16-dev libc++abi-16-dev"
       ],
     ]
   ],
@@ -437,7 +442,7 @@ jobs:
           ref: 1.6.7
 <?php steps("Linux"); ?>
       - uses: codecov/codecov-action@v3
-
+<?php goto skipped; ?>
 
   # coverage mac
   debug-coverage-mac:
@@ -497,13 +502,13 @@ jobs:
         with:
           fetch-depth: 0
 <?php steps("Windows", true); ?>
-
+<?php skipped: ?>
   # linux release builds
   release:
     strategy:
       fail-fast: false
       matrix:
-        os_ver: [ubuntu-22.04, ubuntu-20.04]
+        os_ver: [ubuntu-22.04, ubuntu-24.04]
         cc_vnd: [gnu, clang]
         cc_ver: [new, cur, old]
     runs-on: ${{ matrix.os_ver }}

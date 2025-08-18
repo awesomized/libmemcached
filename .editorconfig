@@ -10,7 +10,7 @@ trim_trailing_whitespace = true
 indent_style = space
 indent_size = 2
 
-[*.{yml,yaml}]
+[*.{yml,yaml,gen}]
 indent_style = space
 indent_size = 2
 
@@ -25,5 +25,3 @@ indent_size = 4
 
 [{Makefile,*.mk}]
 indent_style = tab
-
-
