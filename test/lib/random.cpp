@@ -50,7 +50,7 @@ string random_socket_or_port_flag(const string &binary) {
 }
 
 char random_ascii(char min, char max) {
-  return static_cast<char>(random_num(min, max));
+  return static_cast<char>(random_num(int(min), int(max)));
 }
 
 string random_ascii_string(size_t len, char min, char max) {
@@ -77,7 +77,7 @@ pair<string, string> random_ascii_pair(size_t minlen, size_t maxlen) {
 #include <climits>
 
 char random_binary() {
-  return random_num(CHAR_MIN, CHAR_MAX);
+  return random_num(int(CHAR_MIN), int(CHAR_MAX));
 }
 
 string random_binary_string(size_t len) {
