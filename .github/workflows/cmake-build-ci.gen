@@ -8,7 +8,7 @@ const DEF = [
 
   "Linux"   => "ubuntu-24.04", "ubuntu-24.04" => "gnu",
   "Windows" => "windows-2022", "windows-2022" => "msvc",
-  "macOS"   => "macos-13",     "macos-13"     => "clang",
+  "macOS"   => "macos-15",     "macos-15"     => "clang",
 
   "gnu" => [
     "CC"  => "gcc",
