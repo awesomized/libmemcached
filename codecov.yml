@@ -18,8 +18,3 @@ coverage:
   range: 50..80
   round: nearest
   precision: 0
-  notify:
-    gitter:
-      default:
-        url: "https://webhooks.gitter.im/e/a6210fd7fb7b5105b2b0"
-        threshold: 1%

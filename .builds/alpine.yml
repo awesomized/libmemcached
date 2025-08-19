@@ -28,5 +28,3 @@ tasks:
       maybe cmake --build debug -j2 --target test
   - install: |
       maybe cmake --install debug --prefix /tmp
-  - success: |
-      notify-gitter success

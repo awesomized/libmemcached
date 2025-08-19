@@ -313,23 +313,12 @@ function steps_package() {
 <?php
 }
 
-function steps_notify($os_vnd) {
-?>
-      - name: Notify Gitter
-        env:
-          GITTER: ${{ secrets.GITTER }}
-        if: (success() || failure()) && env.GITTER != ''
-        run: bash .github/notify-gitter.sh ${{ job.status }}
-<?php
-}
-
 function steps($os_vnd, $splat_map = null) {
   steps_setenv($os_vnd, $splat_map);
   steps_getdeps($os_vnd);
   steps_build();
   steps_test();
   steps_package();
-  steps_notify($os_vnd);
 }
 
 function defaults($os_vnd = DEF["os"]) {

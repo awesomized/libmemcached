@@ -4,6 +4,6 @@ ERROR=$?
 
 if test $ERROR -ne 0
 then
-	notify-gitter failure
+	# notify-gitter failure
 	exit $ERROR
 fi
