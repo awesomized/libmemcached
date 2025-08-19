@@ -85,14 +85,14 @@ Enable the `BUILD_TESTING` setting for a build and run `make test`.
 
 CI/Testing is performed on the following system matrix:
 
-| OS               | Compiler                     | Arch                    | Comments                   |
-|------------------|------------------------------|-------------------------|----------------------------|
-| Linux            | GNU 7/9/10, Clang 9/10/11/12 | amd64                   | sasl, coverage, sanitizers |
-| MacOS            | AppleClang 12                | amd64                   | sasl, coverage             |
-| FreeBSD          | Clang 11                     | amd64                   | sasl, coverage             |
-| OpenBSD          | Clang 10                     | amd64                   | sasl, coverage             |
-| Windows          | MSVC 16, MinGW               | amd64                   | no sasl, no tests          |
-| Solaris          | SunPro 12.5                  | amd64                   | no sasl, no tests, manually|
+| OS               | Compiler    | Arch       | Comments                     |
+|------------------|-------------|------------|------------------------------|
+| Linux            | GNU, Clang  | amd64      | sasl, sanitizers             |
+| MacOS            | AppleClang  | amd64, arm | sasl                         |
+| FreeBSD          | Clang       | amd64      | sasl                         |
+| OpenBSD          | Clang       | amd64      | sasl                         |
+| Windows          | MSVC, MinGW | amd64      | no sasl, no tests            |
+| Solaris          | SunPro      | amd64      | no sasl, no tests, manually  |
 
 libmemcached-awesome has been tested against [memcached](https://github.com/memcached/memcached)
 v1.5 and v1.6.

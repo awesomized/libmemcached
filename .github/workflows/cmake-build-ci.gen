@@ -421,46 +421,6 @@ jobs:
           fetch-depth: ${{ matrix.memcached != 'master' }}
 <?php steps("Linux"); ?>
 
-# coverage linux
-  debug-coverage-linux:
-    name: debug coverage (<?=defaults()?>)
-    runs-on: <?=DEF[DEF["os"]]?> #
-    env:
-      CMAKE_BUILD_TYPE:   "Debug"
-      BUILD_TESTING:      "ON"
-      VERBOSE:            "ON"
-      CFLAGS:             "-O0 --coverage"
-      CXXFLAGS:           "-O0 --coverage"
-      INSTALL_MEMCACHED:  ""
-      MEMCACHED_PREFIX:   "/tmp"
-      ENABLE_SASL:        "ON"
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/checkout@v3
-        with:
-          repository: memcached/memcached
-          path: memcached
-          ref: 1.6.39
-<?php steps("Linux"); ?>
-      - uses: codecov/codecov-action@v3
-
-  # coverage mac
-  debug-coverage-mac:
-    name: debug coverage (<?=defaults("macOS")?>)
-    runs-on: <?=DEF["macOS"]?> #
-    env:
-      CMAKE_BUILD_TYPE:   "Debug"
-      BUILD_TESTING:      "ON"
-      VERBOSE:            "ON"
-      CFLAGS:             "-O0 --coverage"
-      CXXFLAGS:           "-O0 --coverage"
-<?php env_override("macOS")?>
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@v3
-<?php steps("macOS", false); ?>
-      - uses: codecov/codecov-action@v3
-
   # mac release builds
   mac:
     name: release
