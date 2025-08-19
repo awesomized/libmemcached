@@ -22,7 +22,7 @@ environment:
   ENABLE_MEMASLAP:    "ON"
   ENABLE_SASL:        "ON"
   VERBOSE:            "ON"
-  MEMCACHED_BINARY:   "/home/build/memcached/work/stage/home/build/bin/memcached"
+  MEMCACHED_BINARY:   "/home/build/memcached/work/stage/usr/local/bin/memcached"
 tasks:
   - prepare: |
       ./libmemcached/.builds/scripts/prepare
