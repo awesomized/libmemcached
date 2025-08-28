@@ -21,6 +21,10 @@
 #  include <netdb.h>
 #endif
 
+#ifdef HAVE_IN_PORT_T
+#  include <netinet/in.h>
+#endif
+
 #ifdef NI_MAXHOST
 #  define MEMCACHED_NI_MAXHOST NI_MAXHOST
 #else
