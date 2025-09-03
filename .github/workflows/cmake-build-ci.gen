@@ -436,9 +436,9 @@ jobs:
     env:
       CMAKE_BUILD_TYPE:   "Release"
       BUILD_DOCS_MANGZ:   "ON"
+<?php env_override("macOS")?>
     permissions:
       contents: read
-<?php env_override("macOS")?>
     continue-on-error: true
     steps:
       - uses: actions/checkout@v5

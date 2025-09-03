@@ -221,12 +221,12 @@ jobs:
     env:
       CMAKE_BUILD_TYPE:   "Release"
       BUILD_DOCS_MANGZ:   "ON"
-    permissions:
-      contents: read
       OS_VND:   macOS #
       OS_VER:   macos-15 #
       CC_VND:   clang #
       CC_VER:   cur
+    permissions:
+      contents: read
     continue-on-error: true
     steps:
       - uses: actions/checkout@v5
