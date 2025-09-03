@@ -16,7 +16,7 @@ env:
 
 jobs:
   publish:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
@@ -38,4 +38,4 @@ jobs:
           jekyll: false
           keep_history: true
           allow_empty_commit: false
-          build_dir: build/docs/html
+          build_dir: build/docs/build/html

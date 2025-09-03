@@ -18,7 +18,7 @@ else()
     set(SPHINX_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/source")
 
     # configured documentation tools and intermediate build results
-    set(SPHINX_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}")
+    set(SPHINX_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/build")
 
     # Sphinx cache with pickled ReST documents
     set(SPHINX_CACHE_DIR "${SPHINX_BUILD_DIR}/_doctrees")
@@ -29,7 +29,7 @@ else()
     # MAN output directory
     set(SPHINX_MAN_DIR "${SPHINX_BUILD_DIR}/man")
 
-    configure_file("conf.py.in" "conf.py" @ONLY)
+    configure_file("conf.py.in" "${SPHINX_BUILD_DIR}/conf.py" @ONLY)
     add_subdirectory(source)
 
     file(GLOB_RECURSE DOCS_SOURCE
@@ -49,7 +49,6 @@ else()
                     "${SPHINX_HTML_DIR}"
                 COMMAND
                     ${CMAKE_COMMAND} -E touch "${SPHINX_HTML_DIR}"
-                BYPRODUCTS ${SPHINX_HTML_DIR}
                 DEPENDS "${DOCS_SOURCE}" conf.py.in
                 )
         add_custom_target(html ALL DEPENDS "${SPHINX_HTML_DIR}")
@@ -72,7 +71,6 @@ else()
                     "${SPHINX_MAN_DIR}"
                 COMMAND
                     ${CMAKE_COMMAND} -E touch "${SPHINX_MAN_DIR}"
-                BYPRODUCTS ${SPHINX_MAN_DIR}
                 DEPENDS "${DOCS_SOURCE}" conf.py.in
                 )
         add_custom_target(man ALL DEPENDS "${SPHINX_MAN_DIR}")
