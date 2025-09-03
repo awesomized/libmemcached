@@ -616,8 +616,9 @@ static memcached_return_t call_stat_fn(memcached_st *memc, memcached_instance_st
 memcached_return_t memcached_stat_execute(memcached_st *shell, const char *args,
                                           memcached_stat_fn func, void *context) {
   Memcached *memc = memcached2Memcached(shell);
-  if (memcached_fatal(memcached_version(memc))) {
-    return memcached_last_error(memc);
+  memcached_return_t rc = memcached_version(memc);
+  if (memcached_fatal(rc)) {
+    return rc;
   }
 
   local_context check(func, context, args, args ? strlen(args) : 0);
