@@ -1,38 +1,21 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Managing the servers used by memcached_st &mdash; libmemcached-awesome 1.1.4 documentation</title>
-  
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=86f27845" />
 
   
   
-  
-  
-
-  
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+        <script src="../_static/jquery.js?v=8dae8fb0"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=fba64e7c"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="copyright" title="Copyright" href="../copyright.html" />
@@ -40,51 +23,28 @@
     <link rel="prev" title="Managing lists of servers" href="memcached_server_st.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="../index.html" class="icon icon-home"> libmemcached-awesome
           
-
-          
+          <a href="../index.html" class="icon icon-home">
+            libmemcached-awesome
           </a>
-
-          
-            
-            
               <div class="version">
                 1.1
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../libmemcached.html">Introduction</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">libmemcached API</a><ul class="current">
@@ -117,264 +77,191 @@
 <li class="toctree-l1"><a class="reference internal" href="../copyright.html">Copyright</a></li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">libmemcached-awesome</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html">Docs</a> &raquo;</li>
-        
-          <li><a href="index.html">libmemcached API</a> &raquo;</li>
-        
-          <li><a href="index_advanced.html">Advanced Topics</a> &raquo;</li>
-        
-          <li><a href="index_advanced_servers.html">Servers and Server Lists</a> &raquo;</li>
-        
-      <li>Managing the servers used by memcached_st</li>
-    
-    
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">libmemcached API</a></li>
+          <li class="breadcrumb-item"><a href="index_advanced.html">Advanced Topics</a></li>
+          <li class="breadcrumb-item"><a href="index_advanced_servers.html">Servers and Server Lists</a></li>
+      <li class="breadcrumb-item active">Managing the servers used by memcached_st</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
-            
               <a href="https://github.com/awesomized/libmemcached/blob/v1.x/docs/source/libmemcached/memcached_servers.rst" class="fa fa-github"> Edit on GitHub</a>
-            
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="managing-the-servers-used-by-memcached-st">
-<h1>Managing the servers used by memcached_st<a class="headerlink" href="#managing-the-servers-used-by-memcached-st" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="synopsis">
-<h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>#include &lt;libmemcached/memcached.h&gt;</dt>
-<dd>Compile and link with -lmemcached</dd>
+             
+  <section id="managing-the-servers-used-by-memcached-st">
+<h1>Managing the servers used by memcached_st<a class="headerlink" href="#managing-the-servers-used-by-memcached-st" title="Link to this heading"></a></h1>
+<section id="synopsis">
+<h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt>#include &lt;libmemcached/memcached.h&gt;</dt><dd><p>Compile and link with -lmemcached</p>
+</dd>
 </dl>
-<dl class="function">
-<dt id="_CPPv422memcached_server_countP12memcached_st">
-<span id="_CPPv322memcached_server_countP12memcached_st"></span><span id="_CPPv222memcached_server_countP12memcached_st"></span><span id="memcached_server_count__memcached_stP"></span>uint32_t <code class="descname">memcached_server_count</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422memcached_server_countP12memcached_st" title="Permalink to this definition">¶</a><br /></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ptr</strong> -- pointer to initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">number of configured servers</td>
-</tr>
-</tbody>
-</table>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422memcached_server_countP12memcached_st">
+<span id="_CPPv322memcached_server_countP12memcached_st"></span><span id="_CPPv222memcached_server_countP12memcached_st"></span><span id="memcached_server_count__memcached_stP"></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">memcached_server_count</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><span class="n"><span class="pre">memcached_st</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422memcached_server_countP12memcached_st" title="Link to this definition"></a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ptr</strong> -- pointer to initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>number of configured servers</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="_CPPv420memcached_server_addP12memcached_stPKc9in_port_t">
-<span id="_CPPv320memcached_server_addP12memcached_stPKc9in_port_t"></span><span id="_CPPv220memcached_server_addP12memcached_stPKc9in_port_t"></span><span id="memcached_server_add__memcached_stP.cCP.in_port_t"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="descname">memcached_server_add</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <em class="property">const</em> char *<em>hostname</em>, in_port_t <em>port</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420memcached_server_addP12memcached_stPKc9in_port_t" title="Permalink to this definition">¶</a><br /></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>ptr</strong> -- pointer to initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</li>
-<li><strong>hostname</strong> -- hostname or IP address of the TCP server to add</li>
-<li><strong>port</strong> -- port of the TCP server</li>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420memcached_server_addP12memcached_stPKc9in_port_t">
+<span id="_CPPv320memcached_server_addP12memcached_stPKc9in_port_t"></span><span id="_CPPv220memcached_server_addP12memcached_stPKc9in_port_t"></span><span id="memcached_server_add__memcached_stP.cCP.in_port_t"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><span class="n"><span class="pre">memcached_return_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">memcached_server_add</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><span class="n"><span class="pre">memcached_st</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ptr</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">hostname</span></span>, <span class="n"><span class="pre">in_port_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">port</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420memcached_server_addP12memcached_stPKc9in_port_t" title="Link to this definition"></a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ptr</strong> -- pointer to initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</p></li>
+<li><p><strong>hostname</strong> -- hostname or IP address of the TCP server to add</p></li>
+<li><p><strong>port</strong> -- port of the TCP server</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="_CPPv424memcached_server_add_udpP12memcached_stPKc9in_port_t">
-<span id="_CPPv324memcached_server_add_udpP12memcached_stPKc9in_port_t"></span><span id="_CPPv224memcached_server_add_udpP12memcached_stPKc9in_port_t"></span><span id="memcached_server_add_udp__memcached_stP.cCP.in_port_t"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="descname">memcached_server_add_udp</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <em class="property">const</em> char *<em>hostname</em>, in_port_t <em>port</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424memcached_server_add_udpP12memcached_stPKc9in_port_t" title="Permalink to this definition">¶</a><br /></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>ptr</strong> -- pointer to initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</li>
-<li><strong>hostname</strong> -- hostname or IP address of the UDP server to add</li>
-<li><strong>port</strong> -- port of the UDP server</li>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424memcached_server_add_udpP12memcached_stPKc9in_port_t">
+<span id="_CPPv324memcached_server_add_udpP12memcached_stPKc9in_port_t"></span><span id="_CPPv224memcached_server_add_udpP12memcached_stPKc9in_port_t"></span><span id="memcached_server_add_udp__memcached_stP.cCP.in_port_t"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><span class="n"><span class="pre">memcached_return_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">memcached_server_add_udp</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><span class="n"><span class="pre">memcached_st</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ptr</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">hostname</span></span>, <span class="n"><span class="pre">in_port_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">port</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424memcached_server_add_udpP12memcached_stPKc9in_port_t" title="Link to this definition"></a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ptr</strong> -- pointer to initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</p></li>
+<li><p><strong>hostname</strong> -- hostname or IP address of the UDP server to add</p></li>
+<li><p><strong>port</strong> -- port of the UDP server</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="_CPPv432memcached_server_add_unix_socketP12memcached_stPKc">
-<span id="_CPPv332memcached_server_add_unix_socketP12memcached_stPKc"></span><span id="_CPPv232memcached_server_add_unix_socketP12memcached_stPKc"></span><span id="memcached_server_add_unix_socket__memcached_stP.cCP"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="descname">memcached_server_add_unix_socket</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <em class="property">const</em> char *<em>socket</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv432memcached_server_add_unix_socketP12memcached_stPKc" title="Permalink to this definition">¶</a><br /></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>ptr</strong> -- pointer to initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</li>
-<li><strong>socket</strong> -- path to the UNIX socket of the server to add</li>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv432memcached_server_add_unix_socketP12memcached_stPKc">
+<span id="_CPPv332memcached_server_add_unix_socketP12memcached_stPKc"></span><span id="_CPPv232memcached_server_add_unix_socketP12memcached_stPKc"></span><span id="memcached_server_add_unix_socket__memcached_stP.cCP"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><span class="n"><span class="pre">memcached_return_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">memcached_server_add_unix_socket</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><span class="n"><span class="pre">memcached_st</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ptr</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">socket</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv432memcached_server_add_unix_socketP12memcached_stPKc" title="Link to this definition"></a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ptr</strong> -- pointer to initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</p></li>
+<li><p><strong>socket</strong> -- path to the UNIX socket of the server to add</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="_CPPv421memcached_server_pushP12memcached_stPK19memcached_server_st">
-<span id="_CPPv321memcached_server_pushP12memcached_stPK19memcached_server_st"></span><span id="_CPPv221memcached_server_pushP12memcached_stPK19memcached_server_st"></span><span id="memcached_server_push__memcached_stP.memcached_server_stCP"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="descname">memcached_server_push</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <em class="property">const</em> memcached_server_st *<em>list</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421memcached_server_pushP12memcached_stPK19memcached_server_st" title="Permalink to this definition">¶</a><br /></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>ptr</strong> -- pointer to initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</li>
-<li><strong>list</strong> -- pre-configured list of servers to push</li>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421memcached_server_pushP12memcached_stPK19memcached_server_st">
+<span id="_CPPv321memcached_server_pushP12memcached_stPK19memcached_server_st"></span><span id="_CPPv221memcached_server_pushP12memcached_stPK19memcached_server_st"></span><span id="memcached_server_push__memcached_stP.memcached_server_stCP"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><span class="n"><span class="pre">memcached_return_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">memcached_server_push</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><span class="n"><span class="pre">memcached_st</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ptr</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">memcached_server_st</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">list</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421memcached_server_pushP12memcached_stPK19memcached_server_st" title="Link to this definition"></a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ptr</strong> -- pointer to initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</p></li>
+<li><p><strong>list</strong> -- pre-configured list of servers to push</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="_CPPv423memcached_server_by_keyP12memcached_stPKc6size_tP18memcached_return_t">
-<span id="_CPPv323memcached_server_by_keyP12memcached_stPKc6size_tP18memcached_return_t"></span><span id="_CPPv223memcached_server_by_keyP12memcached_stPKc6size_tP18memcached_return_t"></span><span id="memcached_server_by_key__memcached_stP.cCP.s.memcached_return_tP"></span><em class="property">const</em> memcached_instance_st *<code class="descname">memcached_server_by_key</code><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <em class="property">const</em> char *<em>key</em>, size_t <em>key_length</em>, <a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> *<em>error</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423memcached_server_by_keyP12memcached_stPKc6size_tP18memcached_return_t" title="Permalink to this definition">¶</a><br /></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>ptr</strong> -- pointer to initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</li>
-<li><strong>key</strong> -- key to hash and lookup a server</li>
-<li><strong>key_length</strong> -- length of <a class="reference internal" href="#_CPPv423memcached_server_by_keyP12memcached_stPKc6size_tP18memcached_return_t" title="memcached_server_by_key::key"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">key</span></code></a> without any terminating zero</li>
-<li><strong>error</strong> -- pointer to <a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</li>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423memcached_server_by_keyP12memcached_stPKc6size_tP18memcached_return_t">
+<span id="_CPPv323memcached_server_by_keyP12memcached_stPKc6size_tP18memcached_return_t"></span><span id="_CPPv223memcached_server_by_keyP12memcached_stPKc6size_tP18memcached_return_t"></span><span id="memcached_server_by_key__memcached_stP.cCP.s.memcached_return_tP"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">memcached_instance_st</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">memcached_server_by_key</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><span class="n"><span class="pre">memcached_st</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ptr</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">key</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">key_length</span></span>, <a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><span class="n"><span class="pre">memcached_return_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">error</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423memcached_server_by_keyP12memcached_stPKc6size_tP18memcached_return_t" title="Link to this definition"></a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ptr</strong> -- pointer to initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</p></li>
+<li><p><strong>key</strong> -- key to hash and lookup a server</p></li>
+<li><p><strong>key_length</strong> -- length of <a class="reference internal" href="#_CPPv423memcached_server_by_keyP12memcached_stPKc6size_tP18memcached_return_t" title="memcached_server_by_key::key"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">key</span></code></a> without any terminating zero</p></li>
+<li><p><strong>error</strong> -- pointer to <a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">the server instance to be used for storing/retrieving <a class="reference internal" href="#_CPPv423memcached_server_by_keyP12memcached_stPKc6size_tP18memcached_return_t" title="memcached_server_by_key::key"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">key</span></code></a></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the server instance to be used for storing/retrieving <a class="reference internal" href="#_CPPv423memcached_server_by_keyP12memcached_stPKc6size_tP18memcached_return_t" title="memcached_server_by_key::key"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">key</span></code></a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="_CPPv436memcached_server_get_last_disconnectPK12memcached_st">
-<span id="_CPPv336memcached_server_get_last_disconnectPK12memcached_st"></span><span id="_CPPv236memcached_server_get_last_disconnectPK12memcached_st"></span><span id="memcached_server_get_last_disconnect__memcached_stCP"></span><em class="property">const</em> memcached_instance_st *<code class="descname">memcached_server_get_last_disconnect</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv436memcached_server_get_last_disconnectPK12memcached_st" title="Permalink to this definition">¶</a><br /></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ptr</strong> -- pointer to initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the instance of the last server for which there was a connection problem</td>
-</tr>
-</tbody>
-</table>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv436memcached_server_get_last_disconnectPK12memcached_st">
+<span id="_CPPv336memcached_server_get_last_disconnectPK12memcached_st"></span><span id="_CPPv236memcached_server_get_last_disconnectPK12memcached_st"></span><span id="memcached_server_get_last_disconnect__memcached_stCP"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">memcached_instance_st</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">memcached_server_get_last_disconnect</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><span class="n"><span class="pre">memcached_st</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv436memcached_server_get_last_disconnectPK12memcached_st" title="Link to this definition"></a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ptr</strong> -- pointer to initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the instance of the last server for which there was a connection problem</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="_CPPv423memcached_server_cursorPK12memcached_stPK19memcached_server_fnPv8uint32_t">
-<span id="_CPPv323memcached_server_cursorPK12memcached_stPK19memcached_server_fnPv8uint32_t"></span><span id="_CPPv223memcached_server_cursorPK12memcached_stPK19memcached_server_fnPv8uint32_t"></span><span id="memcached_server_cursor__memcached_stCP.memcached_server_fnCP.voidP.uint32_t"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> <code class="descname">memcached_server_cursor</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *<em>ptr</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv419memcached_server_fn" title="memcached_server_fn">memcached_server_fn</a> *<em>callback</em>, void *<em>context</em>, uint32_t <em>number_of_callbacks</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423memcached_server_cursorPK12memcached_stPK19memcached_server_fnPv8uint32_t" title="Permalink to this definition">¶</a><br /></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>ptr</strong> -- pointer to initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</li>
-<li><strong>callback</strong> -- list of <a class="reference internal" href="#_CPPv419memcached_server_fn" title="memcached_server_fn"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_server_fn</span></code></a> to be called for each server instance</li>
-<li><strong>context</strong> -- pointer to user supplied context for the callback</li>
-<li><strong>number_of_callbacks</strong> -- number of callbacks supplied</li>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423memcached_server_cursorPK12memcached_stPK19memcached_server_fnPv8uint32_t">
+<span id="_CPPv323memcached_server_cursorPK12memcached_stPK19memcached_server_fnPv8uint32_t"></span><span id="_CPPv223memcached_server_cursorPK12memcached_stPK19memcached_server_fnPv8uint32_t"></span><span id="memcached_server_cursor__memcached_stCP.memcached_server_fnCP.voidP.uint32_t"></span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><span class="n"><span class="pre">memcached_return_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">memcached_server_cursor</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><span class="n"><span class="pre">memcached_st</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ptr</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv419memcached_server_fn" title="memcached_server_fn"><span class="n"><span class="pre">memcached_server_fn</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">callback</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">context</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">number_of_callbacks</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423memcached_server_cursorPK12memcached_stPK19memcached_server_fnPv8uint32_t" title="Link to this definition"></a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ptr</strong> -- pointer to initialized <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</p></li>
+<li><p><strong>callback</strong> -- list of <a class="reference internal" href="#_CPPv419memcached_server_fn" title="memcached_server_fn"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_server_fn</span></code></a> to be called for each server instance</p></li>
+<li><p><strong>context</strong> -- pointer to user supplied context for the callback</p></li>
+<li><p><strong>number_of_callbacks</strong> -- number of callbacks supplied</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="type">
-<dt id="_CPPv419memcached_server_fn">
-<span id="_CPPv319memcached_server_fn"></span><span id="_CPPv219memcached_server_fn"></span><span id="memcached_server_fn"></span><em class="property">typedef </em><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t">memcached_return_t</a> (*<code class="descname">memcached_server_fn</code>)<span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st">memcached_st</a> *ptr, <em class="property">const</em> memcached_instance_st *server, void *context<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419memcached_server_fn" title="Permalink to this definition">¶</a><br /></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>ptr</strong> -- pointer to the <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</li>
-<li><strong>server</strong> -- pointer to <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_instance_st</span></code></li>
-<li><strong>context</strong> -- pointer to user supplied context</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</p>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv419memcached_server_fn">
+<span id="_CPPv319memcached_server_fn"></span><span id="_CPPv219memcached_server_fn"></span><span id="memcached_server_fn"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><span class="n"><span class="pre">memcached_return_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">memcached_server_fn</span></span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><span class="n"><span class="pre">memcached_st</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">ptr</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">memcached_instance_st</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">server</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#_CPPv419memcached_server_fn" title="Link to this definition"></a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Param ptr<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pointer to the <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> struct</p>
+</dd>
+<dt class="field-even">Param server<span class="colon">:</span></dt>
+<dd class="field-even"><p>pointer to <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_instance_st</span></code></p>
+</dd>
+<dt class="field-odd">Param context<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pointer to user supplied context</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_return_t</span></code></a> indicating success</p>
+</dd>
+</dl>
 </dd></dl>
 
-</div>
-<div class="section" id="description">
-<h2>DESCRIPTION<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="description">
+<h2>DESCRIPTION<a class="headerlink" href="#description" title="Link to this heading"></a></h2>
 <p><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">libmemcached</span></code> performs operations on a list of hosts. The order of
 these hosts determine routing to keys. Functions are provided to add keys to
 <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memcached_st</span></code></a> structures. To manipulate lists of servers see
@@ -413,69 +300,51 @@ context which will be provided to each callback function. An error
 return from any callback will terminate the loop.
 <a class="reference internal" href="#_CPPv423memcached_server_cursorPK12memcached_stPK19memcached_server_fnPv8uint32_t" title="memcached_server_cursor"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">memcached_server_cursor()</span></code></a> is passed the original caller
 <a class="reference internal" href="memcached_create.html#_CPPv412memcached_st" title="memcached_st"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">memcached_st</span></code></a> in its current state.</p>
-</div>
-<div class="section" id="return-value">
-<h2>RETURN VALUE<a class="headerlink" href="#return-value" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="return-value">
+<h2>RETURN VALUE<a class="headerlink" href="#return-value" title="Link to this heading"></a></h2>
 <p>Varies, see particular functions.</p>
-</div>
-<div class="section" id="see-also">
-<h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="see-also">
+<h2>SEE ALSO<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><em class="manpage"><a class="manpage reference external" href="https://linux.die.net/man/1/memcached">memcached(1)</a></em></li>
-<li><a class="reference internal" href="../libmemcached.html"><span class="doc">C/C++ Client Library for memcached</span></a></li>
-<li><a class="reference internal" href="memcached_server_st.html"><span class="doc">Managing lists of servers</span></a></li>
-<li><a class="reference internal" href="memcached_strerror.html"><span class="doc">Converting Error Codes to Messages</span></a></li>
+<li><p><em class="manpage"><a class="manpage reference external" href="https://linux.die.net/man/1/memcached">memcached(1)</a></em></p></li>
+<li><p><a class="reference internal" href="../libmemcached.html"><span class="doc">C/C++ Client Library for memcached</span></a></p></li>
+<li><p><a class="reference internal" href="memcached_server_st.html"><span class="doc">Managing lists of servers</span></a></p></li>
+<li><p><a class="reference internal" href="memcached_strerror.html"><span class="doc">Converting Error Codes to Messages</span></a></p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="index_advanced_daemon.html" class="btn btn-neutral float-right" title="Affecting the memcached Daemon" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="memcached_server_st.html" class="btn btn-neutral float-left" title="Managing lists of servers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="memcached_server_st.html" class="btn btn-neutral float-left" title="Managing lists of servers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="index_advanced_daemon.html" class="btn btn-neutral float-right" title="Affecting the memcached Daemon" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; <a href="../copyright.html">Copyright</a> 
-
-    </p>
+    <p>&#169; <a href="../copyright.html">Copyright</a> .</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

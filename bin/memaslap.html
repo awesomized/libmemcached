@@ -1,38 +1,21 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>memaslap - Load testing and benchmarking a server &mdash; libmemcached-awesome 1.1.4 documentation</title>
-  
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=86f27845" />
 
   
   
-  
-  
-
-  
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+        <script src="../_static/jquery.js?v=8dae8fb0"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=fba64e7c"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="copyright" title="Copyright" href="../copyright.html" />
@@ -40,51 +23,28 @@
     <link rel="prev" title="memrm" href="memrm.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="../index.html" class="icon icon-home"> libmemcached-awesome
           
-
-          
+          <a href="../index.html" class="icon icon-home">
+            libmemcached-awesome
           </a>
-
-          
-            
-            
               <div class="version">
                 1.1
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../libmemcached.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../libmemcached/index.html">libmemcached API</a></li>
@@ -115,95 +75,54 @@
 <li class="toctree-l1"><a class="reference internal" href="../copyright.html">Copyright</a></li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">libmemcached-awesome</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html">Docs</a> &raquo;</li>
-        
-          <li><a href="index.html">Client Applications</a> &raquo;</li>
-        
-      <li>memaslap - Load testing  and benchmarking a server</li>
-    
-    
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Client Applications</a></li>
+      <li class="breadcrumb-item active">memaslap - Load testing  and benchmarking a server</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
-            
               <a href="https://github.com/awesomized/libmemcached/blob/v1.x/docs/source/bin/memaslap.rst" class="fa fa-github"> Edit on GitHub</a>
-            
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="memaslap-load-testing-and-benchmarking-a-server">
-<h1>memaslap - Load testing  and benchmarking a server<a class="headerlink" href="#memaslap-load-testing-and-benchmarking-a-server" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="synopsis">
-<h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+             
+  <section id="memaslap-load-testing-and-benchmarking-a-server">
+<h1>memaslap - Load testing  and benchmarking a server<a class="headerlink" href="#memaslap-load-testing-and-benchmarking-a-server" title="Link to this heading"></a></h1>
+<section id="synopsis">
+<h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
 <p>memaslap [options]</p>
-<dl class="option">
-<dt id="cmdoption-memaslap-help">
-<code class="descname">--help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memaslap-help" title="Permalink to this definition">¶</a></dt>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-memaslap-help">
+<span class="sig-name descname"><span class="pre">--help</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-memaslap-help" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="option">
-<dt id="cmdoption-memaslap-servers">
-<code class="descname">--servers</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-memaslap-servers" title="Permalink to this definition">¶</a></dt>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-memaslap-servers">
+<span class="sig-name descname"><span class="pre">--servers</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-memaslap-servers" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="envvar">
-<dt id="envvar-MEMCACHED_SERVERS">
-<code class="descname">MEMCACHED_SERVERS</code><a class="headerlink" href="#envvar-MEMCACHED_SERVERS" title="Permalink to this definition">¶</a></dt>
+<dl class="std envvar">
+<dt class="sig sig-object std" id="envvar-MEMCACHED_SERVERS">
+<span class="sig-name descname"><span class="pre">MEMCACHED_SERVERS</span></span><a class="headerlink" href="#envvar-MEMCACHED_SERVERS" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
-</div>
-<div class="section" id="description">
-<h2>DESCRIPTION<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="description">
+<h2>DESCRIPTION<a class="headerlink" href="#description" title="Link to this heading"></a></h2>
 <p><strong class="program">memaslap</strong> is a load generation and benchmark tool for memcached
 servers. It generates configurable workload such as threads, concurrency,
 connections, run time, overwrite, miss rate, key size, value size, get/set
@@ -217,9 +136,9 @@ connections in each thread. Each connection keeps key size distribution,
 value size distribution, and command distribution by itself.</p>
 <p>You can specify servers via the <a class="reference internal" href="#cmdoption-memaslap-servers"><code class="xref std std-option docutils literal notranslate"><span class="pre">memaslap</span> <span class="pre">--servers</span></code></a> option or via the
 environment variable <span class="target" id="index-0"></span><a class="reference internal" href="memtouch.html#envvar-MEMCACHED_SERVERS"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">MEMCACHED_SERVERS</span></code></a>.</p>
-</div>
-<div class="section" id="features">
-<h2>FEATURES<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="features">
+<h2>FEATURES<a class="headerlink" href="#features" title="Link to this heading"></a></h2>
 <p>Memslap is developed to for the following purposes:</p>
 <p>Manages network connections with libevent asynchronously.</p>
 <p>Set both TCP and UDP up to use non-blocking IO.</p>
@@ -233,18 +152,18 @@ environment variable <span class="target" id="index-0"></span><a class="referenc
 <p>Supports thousands of TCP connections.</p>
 <p>Supports binary protocol.</p>
 <p>Supports facebook test (set with TCP and multi-get with UDP) and replication test.</p>
-</div>
-<div class="section" id="details">
-<h2>DETAILS<a class="headerlink" href="#details" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="effective-implementation-of-network">
-<h3>Effective implementation of network.<a class="headerlink" href="#effective-implementation-of-network" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="details">
+<h2>DETAILS<a class="headerlink" href="#details" title="Link to this heading"></a></h2>
+<section id="effective-implementation-of-network">
+<h3>Effective implementation of network.<a class="headerlink" href="#effective-implementation-of-network" title="Link to this heading"></a></h3>
 <p>For memaslap, both TCP and UDP use non-blocking network IO. All
 the network events are managed by libevent as memcached. The network module
 of memaslap is similar to memcached. Libevent can ensure
 memaslap can handle network very efficiently.</p>
-</div>
-<div class="section" id="effective-implementation-of-multi-threads-and-concurrency">
-<h3>Effective implementation of multi-threads and concurrency<a class="headerlink" href="#effective-implementation-of-multi-threads-and-concurrency" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="effective-implementation-of-multi-threads-and-concurrency">
+<h3>Effective implementation of multi-threads and concurrency<a class="headerlink" href="#effective-implementation-of-multi-threads-and-concurrency" title="Link to this heading"></a></h3>
 <p>Memslap has the similar implementation of multi-threads to
 memcached. Memslap creates one or more self-governed threads;
 each thread is bound with one CPU core if the system tests setting CPU
@@ -260,9 +179,9 @@ to run, so memaslap can ensure each concurrency handles one
 socket connection at any given time. Users can specify the number of
 concurrency and socket connections of each concurrency according to their
 expected workload.</p>
-</div>
-<div class="section" id="effective-implementation-of-generating-key-and-value">
-<h3>Effective implementation of generating key and value<a class="headerlink" href="#effective-implementation-of-generating-key-and-value" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="effective-implementation-of-generating-key-and-value">
+<h3>Effective implementation of generating key and value<a class="headerlink" href="#effective-implementation-of-generating-key-and-value" title="Link to this heading"></a></h3>
 <p>In order to improve time efficiency and space efficiency,
 memaslap creates a random characters table with 10M characters. All the
 suffixes of keys and values are generated from this random characters table.</p>
@@ -282,9 +201,9 @@ length, value offset in the character table, and value length.</p>
 object from the window to do set operation or get operation. At the same
 time, each concurrency kicks objects out of its window and adds new object
 into it.</p>
-</div>
-<div class="section" id="simple-but-useful-task-scheduling">
-<h3>Simple but useful task scheduling<a class="headerlink" href="#simple-but-useful-task-scheduling" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="simple-but-useful-task-scheduling">
+<h3>Simple but useful task scheduling<a class="headerlink" href="#simple-but-useful-task-scheduling" title="Link to this heading"></a></h3>
 <p>Memslap uses libevent to schedule all concurrent tasks of
 threads, and each concurrency schedules tasks based on the local task
 window. Memslap assumes that if each concurrency keeps the same
@@ -309,9 +228,9 @@ initialized, then memaslap will get some objects from the second
 cache layer. It causes the first cache layer to miss. So the user can
 specify the window size to get the expected miss rate of the first cache
 layer.</p>
-</div>
-<div class="section" id="useful-implementation-of-multi-servers-udp-tcp-multi-get-and-binary-protocol">
-<h3>Useful implementation of multi-servers , UDP, TCP, multi-get and binary protocol<a class="headerlink" href="#useful-implementation-of-multi-servers-udp-tcp-multi-get-and-binary-protocol" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="useful-implementation-of-multi-servers-udp-tcp-multi-get-and-binary-protocol">
+<h3>Useful implementation of multi-servers , UDP, TCP, multi-get and binary protocol<a class="headerlink" href="#useful-implementation-of-multi-servers-udp-tcp-multi-get-and-binary-protocol" title="Link to this heading"></a></h3>
 <p>Because each thread is self-governed, memaslap can assign
 different threads to handle different memcached servers. This is just one of
 the ways in which memaslap tests multiple servers. The only
@@ -332,10 +251,10 @@ these problems. Memslap tries to read all the response data of
 one command from the server and reorders the response data. If some packages
 get lost, the waiting timeout mechanism can ensure half-baked packages will
 be discarded and the next command will be sent.</p>
-</div>
-</div>
-<div class="section" id="usage">
-<h2>USAGE<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="usage">
+<h2>USAGE<a class="headerlink" href="#usage" title="Link to this heading"></a></h2>
 <p>Below are some usage samples:</p>
 <p>memaslap -s 127.0.0.1:11211 -S 5s</p>
 <p>memaslap -s 127.0.0.1:11211 -t 2m -v 0.2 -e 0.05 -b</p>
@@ -358,8 +277,8 @@ rest of the parameters have default values, as shown below:</p>
 <p>Overwrite proportion = 0%             UDP = false</p>
 <p>TCP = true                            Limit throughput = false</p>
 <p>Facebook test = false                 Replication test = false</p>
-<div class="section" id="key-size-value-size-and-command-distribution">
-<h3>Key size, value size and command distribution.<a class="headerlink" href="#key-size-value-size-and-command-distribution" title="Permalink to this headline">¶</a></h3>
+<section id="key-size-value-size-and-command-distribution">
+<h3>Key size, value size and command distribution.<a class="headerlink" href="#key-size-value-size-and-command-distribution" title="Link to this heading"></a></h3>
 <p>All the distributions are read from the configuration file specified by user
 with &quot;—cfg_cmd&quot; option. If the user does not specify a configuration file,
 memaslap will run with the default distribution (key size = 64,
@@ -374,9 +293,9 @@ rounded to 3 decimal places.
 Currently, memaslap only tests set and get commands. And it
 testss 100% set and 100% get. For 100% get, it will preset some objects to
 the server.</p>
-</div>
-<div class="section" id="multi-thread-and-concurrency">
-<h3>Multi-thread and concurrency<a class="headerlink" href="#multi-thread-and-concurrency" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="multi-thread-and-concurrency">
+<h3>Multi-thread and concurrency<a class="headerlink" href="#multi-thread-and-concurrency" title="Link to this heading"></a></h3>
 <p>The high performance of memaslap benefits from the special
 schedule of thread and concurrency. It's important to specify the proper
 number of them. The default number of threads is 1; the default number of
@@ -391,7 +310,7 @@ the user can also be less or greater than the number of CPU cores. Because
 of the limitation of implementation, the number of concurrencies could be
 the multiple of the number of threads.</p>
 <ol class="arabic simple">
-<li>For 8 CPU cores system</li>
+<li><p>For 8 CPU cores system</p></li>
 </ol>
 <p>For example:</p>
 <p>--threads=2 --concurrency=128</p>
@@ -399,7 +318,7 @@ the multiple of the number of threads.</p>
 <p>--threads=8 --concurrency=256</p>
 <p>--threads=12 --concurrency=144</p>
 <ol class="arabic simple" start="2">
-<li>For 16 CPU cores system</li>
+<li><p>For 16 CPU cores system</p></li>
 </ol>
 <p>For example:</p>
 <p>--threads=8 --concurrency=128</p>
@@ -420,9 +339,9 @@ example, assume that the maximum throughput is 50
 kops/s for a specific configuration, you can specify
 the throughput equal to or less than the maximum
 throughput using &quot;--tps&quot; option.</p>
-</div>
-<div class="section" id="window-size">
-<h3>Window size<a class="headerlink" href="#window-size" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="window-size">
+<h3>Window size<a class="headerlink" href="#window-size" title="Link to this heading"></a></h3>
 <p>Most of the time, the user does not need to specify the window size. The
 default window size is 10k. For Schooner Memcached, the user can specify
 different window sizes to get different cache miss rates based on the test
@@ -435,14 +354,14 @@ concurrency=128.</p>
 <p>1. Small cache cache_size=1M, 100% cache miss (all data get from SSD).
 win_size=10k</p>
 <ol class="arabic simple" start="2">
-<li>cache_size=4G</li>
+<li><p>cache_size=4G</p></li>
 </ol>
 <p>(1). cache miss rate 0%</p>
 <p>win_size=8k</p>
 <p>(2). cache miss rate 5%</p>
 <p>win_size=11k</p>
 <ol class="arabic simple" start="3">
-<li>cache_size=16G</li>
+<li><p>cache_size=16G</p></li>
 </ol>
 <p>(1). cache miss rate 0%</p>
 <p>win_size=32k</p>
@@ -453,9 +372,9 @@ win_size=10k</p>
 <p>cache_size / concurrency / (key_size + value_size) * 0.5</p>
 <p>The formula for calculating window size for cache miss rate 5%:</p>
 <p>cache_size / concurrency / (key_size + value_size) * 0.7</p>
-</div>
-<div class="section" id="verification">
-<h3>Verification<a class="headerlink" href="#verification" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="verification">
+<h3>Verification<a class="headerlink" href="#verification" title="Link to this heading"></a></h3>
 <p>Memslap testss both data verification and expire-time
 verification. The user can use &quot;--verify=&quot; or &quot;-v&quot; to specify the proportion
 of data verification. In theory, it testss 100% data verification. The
@@ -467,9 +386,9 @@ information.</p>
 set with expire-time, 10% of the objects gotten will be verified. If the
 objects are gotten, memaslap will verify the expire-time and
 value.</p>
-</div>
-<div class="section" id="multi-servers-and-multi-config">
-<h3>multi-servers and multi-config<a class="headerlink" href="#multi-servers-and-multi-config" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="multi-servers-and-multi-config">
+<h3>multi-servers and multi-config<a class="headerlink" href="#multi-servers-and-multi-config" title="Link to this heading"></a></h3>
 <p>Memslap testss multi-servers based on self-governed thread.
 There is a limitation that the number of servers cannot be greater than the
 number of threads. Memslap assigns one thread to handle one
@@ -487,9 +406,9 @@ memaslap instances. The user can run memaslap on different client
 machines to communicate with the same memcached server at the same. It is
 recommended that the user start different memaslap on different
 machines using the same configuration.</p>
-</div>
-<div class="section" id="run-with-execute-number-mode-or-time-mode">
-<h3>Run with execute number mode or time mode<a class="headerlink" href="#run-with-execute-number-mode-or-time-mode" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="run-with-execute-number-mode-or-time-mode">
+<h3>Run with execute number mode or time mode<a class="headerlink" href="#run-with-execute-number-mode-or-time-mode" title="Link to this heading"></a></h3>
 <p>The default memaslap runs with time mode. The default run time
 is 10 minutes. If it times out, memaslap will exit. Do not
 specify both execute number mode and time mode at the same time; just
@@ -497,18 +416,18 @@ specify one instead.</p>
 <p>For example:</p>
 <p>--time=30s (It means the test will run 30 seconds.)</p>
 <p>--execute_number=100000 (It means that after running 100000 commands, the test will exit.)</p>
-</div>
-<div class="section" id="dump-statistic-information-periodically">
-<h3>Dump statistic information periodically.<a class="headerlink" href="#dump-statistic-information-periodically" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="dump-statistic-information-periodically">
+<h3>Dump statistic information periodically.<a class="headerlink" href="#dump-statistic-information-periodically" title="Link to this heading"></a></h3>
 <p>The user can use &quot;--stat_freq=&quot; or &quot;-S&quot; to specify the frequency.</p>
 <p>For example:</p>
 <p>--stat_freq=20s</p>
 <p>Memslap will dump the statistics of the commands (get and set) at the frequency of every 20
 seconds.</p>
 <p>For more information on the format of dumping statistic information, refer to &quot;Format of Output&quot; section.</p>
-</div>
-<div class="section" id="multi-get">
-<h3>Multi-get<a class="headerlink" href="#multi-get" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="multi-get">
+<h3>Multi-get<a class="headerlink" href="#multi-get" title="Link to this heading"></a></h3>
 <p>The user can use &quot;--division=&quot; or &quot;-d&quot; to specify multi-get keys count.
 Memslap by default does single get with TCP. Memslap also testss data
 verification and expire-time verification for multi-get.</p>
@@ -518,9 +437,9 @@ there are some differences between the two. For the ASCII protocol,
 memaslap sends one &quot;multi-get&quot; to the server once. For the
 binary protocol, memaslap sends several single get commands
 together as &quot;multi-get&quot; to the server.</p>
-</div>
-<div class="section" id="udp-and-tcp">
-<h3>UDP and TCP<a class="headerlink" href="#udp-and-tcp" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="udp-and-tcp">
+<h3>UDP and TCP<a class="headerlink" href="#udp-and-tcp" title="Link to this heading"></a></h3>
 <p>Memslap testss both UDP and TCP. For TCP,
 memaslap does not reconnect the memcached server if socket connections are
 lost. If all the socket connections are lost or memcached server crashes,
@@ -532,9 +451,9 @@ limitations:</p>
 <p>UDP is not tested by the binary protocol because the binary protocol of
 memcached does not tests that.</p>
 <p>UDP doesn't tests reconnection.</p>
-</div>
-<div class="section" id="facebook-test">
-<h3>Facebook test<a class="headerlink" href="#facebook-test" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="facebook-test">
+<h3>Facebook test<a class="headerlink" href="#facebook-test" title="Link to this heading"></a></h3>
 <p>Set data with TCP and multi-get with UDP. Specify the following options:</p>
 <p>&quot;--facebook --division=50&quot;</p>
 <p>If you want to create thousands of TCP connections, specify the</p>
@@ -546,9 +465,9 @@ each concurrency has 200 socket TCP connections and one UDP socket.</p>
 objects once with the UDP socket.</p>
 <p>If you specify &quot;--division=50&quot;, the key size must be less that 25 bytes
 because the UDP packet size is 1400 bytes.</p>
-</div>
-<div class="section" id="replication-test">
-<h3>Replication test<a class="headerlink" href="#replication-test" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="replication-test">
+<h3>Replication test<a class="headerlink" href="#replication-test" title="Link to this heading"></a></h3>
 <p>For replication test, the user must specify at least two memcached servers.
 The user can use &quot;—rep_write=&quot; option to enable feature.</p>
 <p>For example:</p>
@@ -560,9 +479,9 @@ which are set to server 1 before from server 0. If server 0 crashes,
 memaslap will only get objects from server 1. If server 0 comes
 back to life again, memaslap will reconnect server 0. If both
 server 0 and server 1 crash, memaslap will exit.</p>
-</div>
-<div class="section" id="supports-thousands-of-tcp-connections">
-<h3>Supports thousands of TCP connections<a class="headerlink" href="#supports-thousands-of-tcp-connections" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="supports-thousands-of-tcp-connections">
+<h3>Supports thousands of TCP connections<a class="headerlink" href="#supports-thousands-of-tcp-connections" title="Link to this heading"></a></h3>
 <p>Start memaslap with &quot;--conn_sock=&quot; or &quot;-n&quot; to enable this
 feature. Make sure that your system can tests opening thousands of files
 and creating thousands of sockets. However, this feature does not tests
@@ -573,9 +492,9 @@ reconnection if sockets disconnect.</p>
 thread has 16 concurrencies, each concurrency has 128 TCP socket
 connections, and the total number of TCP socket connections is 128 * 128 =
 16384.</p>
-</div>
-<div class="section" id="supports-binary-protocol">
-<h3>Supports binary protocol<a class="headerlink" href="#supports-binary-protocol" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="supports-binary-protocol">
+<h3>Supports binary protocol<a class="headerlink" href="#supports-binary-protocol" title="Link to this heading"></a></h3>
 <p>Start memaslap with &quot;--binary&quot; or &quot;-B&quot; options to enable this
 feature. It testss all the above features except UDP, because the latest
 memcached 1.3.3 does not implement binary UDP protocol.</p>
@@ -585,10 +504,10 @@ memcached 1.3.3 does not implement binary UDP protocol.</p>
 memaslap does not tests UDP. In addition, memcached 1.3.3 does not tests
 multi-get. If you specify &quot;--division=50&quot; option, it just sends 50 get
 commands together as &quot;multi-get&quot; to the server.</p>
-</div>
-</div>
-<div class="section" id="configuration-file">
-<h2>Configuration file<a class="headerlink" href="#configuration-file" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="configuration-file">
+<h2>Configuration file<a class="headerlink" href="#configuration-file" title="Link to this heading"></a></h2>
 <p>This section describes the format of the configuration file.  By default
 when no configuration file is specified memaslap reads the default
 one located at ~/.memaslap.cnf.</p>
@@ -604,7 +523,7 @@ one located at ~/.memaslap.cnf.</p>
 <span class="c1">#start_len must be equal to or greater than end_len</span>
 <span class="c1">#memaslap will generate keys according to the key range</span>
 <span class="c1">#proportion: indicates keys generated from one range accounts for the total</span>
-<span class="n">generated</span> <span class="nb">keys</span>
+<span class="n">generated</span><span class="w"> </span><span class="nb">keys</span>
 <span class="c1">#</span>
 <span class="c1">#example1: key range 16~100 accounts for 80%</span>
 <span class="c1">#          key range 101~200 accounts for 10%</span>
@@ -619,7 +538,7 @@ one located at ~/.memaslap.cnf.</p>
 <span class="c1">#</span>
 <span class="c1">#          128 128 1</span>
 <span class="n">key</span>
-<span class="mi">128</span> <span class="mi">128</span> <span class="mi">1</span>
+<span class="mi">128</span><span class="w"> </span><span class="mi">128</span><span class="w"> </span><span class="mi">1</span>
 <span class="c1">#value</span>
 <span class="c1">#start_len end_len proportion</span>
 <span class="c1">#</span>
@@ -629,7 +548,7 @@ one located at ~/.memaslap.cnf.</p>
 <span class="c1">#start_len must be equal to or greater than end_len</span>
 <span class="c1">#memaslap will generate values according to the value range</span>
 <span class="c1">#proportion: indicates values generated from one range accounts for the</span>
-<span class="n">total</span> <span class="n">generated</span> <span class="nb">values</span>
+<span class="n">total</span><span class="w"> </span><span class="n">generated</span><span class="w"> </span><span class="nb">values</span>
 <span class="c1">#</span>
 <span class="c1">#example1: value range 1~1000 accounts for 80%</span>
 <span class="c1">#          value range 1001~10000 accounts for 10%</span>
@@ -644,7 +563,7 @@ one located at ~/.memaslap.cnf.</p>
 <span class="c1">#</span>
 <span class="c1">#          128 128 1</span>
 <span class="n">value</span>
-<span class="mi">2048</span> <span class="mi">2048</span> <span class="mi">1</span>
+<span class="mi">2048</span><span class="w"> </span><span class="mi">2048</span><span class="w"> </span><span class="mi">1</span>
 <span class="c1">#cmd</span>
 <span class="c1">#cmd_type cmd_proportion</span>
 <span class="c1">#</span>
@@ -662,13 +581,13 @@ one located at ~/.memaslap.cnf.</p>
 <span class="c1">#         0    0.5</span>
 <span class="c1">#         1    0.5</span>
 <span class="n">cmd</span>
-<span class="mi">0</span>    <span class="mf">0.1</span>
-<span class="mf">1.0</span> <span class="mf">0.9</span>
+<span class="mi">0</span><span class="w">    </span><span class="mf">0.1</span>
+<span class="mf">1.0</span><span class="w"> </span><span class="mf">0.9</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="format-of-output">
-<h2>Format of output<a class="headerlink" href="#format-of-output" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="format-of-output">
+<h2>Format of output<a class="headerlink" href="#format-of-output" title="Link to this heading"></a></h2>
 <p>At the beginning, memaslap displays some configuration information as follows:</p>
 <p>servers : 127.0.0.1:11211</p>
 <p>threads count: 1</p>
@@ -677,318 +596,355 @@ one located at ~/.memaslap.cnf.</p>
 <p>windows size: 10k</p>
 <p>set proportion: set_prop=0.10</p>
 <p>get proportion: get_prop=0.90</p>
-<div class="section" id="where">
-<h3>Where<a class="headerlink" href="#where" title="Permalink to this headline">¶</a></h3>
+<section id="where">
+<h3>Where<a class="headerlink" href="#where" title="Link to this heading"></a></h3>
 <p>servers : &quot;servers&quot;</p>
 <blockquote>
-<div>The servers used by memaslap.</div></blockquote>
+<div><p>The servers used by memaslap.</p>
+</div></blockquote>
 <p>threads count</p>
 <blockquote>
-<div>The number of threads memaslap runs with.</div></blockquote>
+<div><p>The number of threads memaslap runs with.</p>
+</div></blockquote>
 <p>concurrency</p>
 <blockquote>
-<div>The number of concurrencies memaslap runs with.</div></blockquote>
+<div><p>The number of concurrencies memaslap runs with.</p>
+</div></blockquote>
 <p>run time</p>
 <blockquote>
-<div>How long to run memaslap.</div></blockquote>
+<div><p>How long to run memaslap.</p>
+</div></blockquote>
 <p>windows size</p>
 <blockquote>
-<div>The task window size of each concurrency.</div></blockquote>
+<div><p>The task window size of each concurrency.</p>
+</div></blockquote>
 <p>set proportion</p>
 <blockquote>
-<div>The proportion of set command.</div></blockquote>
+<div><p>The proportion of set command.</p>
+</div></blockquote>
 <p>get proportion</p>
 <blockquote>
-<div>The proportion of get command.</div></blockquote>
+<div><p>The proportion of get command.</p>
+</div></blockquote>
 <p>The output of dynamic statistics is something like this:</p>
 <div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="o">---------------------------------------------------------------------------------------------------------------------------------</span>
-<span class="n">Get</span> <span class="n">Statistics</span>
-<span class="n">Type</span>  <span class="n">Time</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>  <span class="n">Ops</span>   <span class="n">TPS</span><span class="p">(</span><span class="n">ops</span><span class="sr">/s)  Net(M/s</span><span class="p">)</span>  <span class="n">Get_miss</span>  <span class="n">Min</span><span class="p">(</span><span class="n">us</span><span class="p">)</span>  <span class="n">Max</span><span class="p">(</span><span class="n">us</span><span class="p">)</span>
-<span class="n">Avg</span><span class="p">(</span><span class="n">us</span><span class="p">)</span>  <span class="n">Std_dev</span>    <span class="n">Geo_dist</span>
-<span class="n">Period</span>   <span class="mi">5</span>   <span class="mi">345826</span>  <span class="mi">69165</span>     <span class="mf">65.3</span>      <span class="mi">0</span>         <span class="mi">27</span>      <span class="mi">2198</span>     <span class="mi">203</span>
-<span class="mf">95.43</span>      <span class="mf">177.29</span>
-<span class="n">Global</span>  <span class="mi">20</span>  <span class="mi">1257935</span>  <span class="mi">62896</span>     <span class="mf">71.8</span>      <span class="mi">0</span>         <span class="mi">26</span>      <span class="mi">3791</span>     <span class="mi">224</span>
-<span class="mf">117.79</span>     <span class="mf">192.60</span>
-<span class="n">Set</span> <span class="n">Statistics</span>
+<span class="n">Get</span><span class="w"> </span><span class="n">Statistics</span>
+<span class="n">Type</span><span class="w">  </span><span class="n">Time</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="w">  </span><span class="n">Ops</span><span class="w">   </span><span class="n">TPS</span><span class="p">(</span><span class="n">ops</span><span class="sr">/s)  Net(M/s</span><span class="p">)</span><span class="w">  </span><span class="n">Get_miss</span><span class="w">  </span><span class="n">Min</span><span class="p">(</span><span class="n">us</span><span class="p">)</span><span class="w">  </span><span class="n">Max</span><span class="p">(</span><span class="n">us</span><span class="p">)</span>
+<span class="n">Avg</span><span class="p">(</span><span class="n">us</span><span class="p">)</span><span class="w">  </span><span class="n">Std_dev</span><span class="w">    </span><span class="n">Geo_dist</span>
+<span class="n">Period</span><span class="w">   </span><span class="mi">5</span><span class="w">   </span><span class="mi">345826</span><span class="w">  </span><span class="mi">69165</span><span class="w">     </span><span class="mf">65.3</span><span class="w">      </span><span class="mi">0</span><span class="w">         </span><span class="mi">27</span><span class="w">      </span><span class="mi">2198</span><span class="w">     </span><span class="mi">203</span>
+<span class="mf">95.43</span><span class="w">      </span><span class="mf">177.29</span>
+<span class="n">Global</span><span class="w">  </span><span class="mi">20</span><span class="w">  </span><span class="mi">1257935</span><span class="w">  </span><span class="mi">62896</span><span class="w">     </span><span class="mf">71.8</span><span class="w">      </span><span class="mi">0</span><span class="w">         </span><span class="mi">26</span><span class="w">      </span><span class="mi">3791</span><span class="w">     </span><span class="mi">224</span>
+<span class="mf">117.79</span><span class="w">     </span><span class="mf">192.60</span>
+<span class="n">Set</span><span class="w"> </span><span class="n">Statistics</span>
 
-<span class="n">Type</span>  <span class="n">Time</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>  <span class="n">Ops</span>   <span class="n">TPS</span><span class="p">(</span><span class="n">ops</span><span class="sr">/s)  Net(M/s</span><span class="p">)</span>  <span class="n">Get_miss</span>  <span class="n">Min</span><span class="p">(</span><span class="n">us</span><span class="p">)</span>  <span class="n">Max</span><span class="p">(</span><span class="n">us</span><span class="p">)</span>
-<span class="n">Avg</span><span class="p">(</span><span class="n">us</span><span class="p">)</span>  <span class="n">Std_dev</span>    <span class="n">Geo_dist</span>
-<span class="n">Period</span>   <span class="mi">5</span>    <span class="mi">38425</span>   <span class="mi">7685</span>      <span class="mf">7.3</span>       <span class="mi">0</span>         <span class="mi">42</span>      <span class="mi">628</span>     <span class="mi">240</span>
-<span class="mf">88.05</span>      <span class="mf">220.21</span>
-<span class="n">Global</span>   <span class="mi">20</span>   <span class="mi">139780</span>  <span class="mi">6989</span>      <span class="mf">8.0</span>       <span class="mi">0</span>         <span class="mi">37</span>      <span class="mi">3790</span>    <span class="mi">253</span>
-<span class="mf">117.93</span>     <span class="mf">224.83</span>
-<span class="n">Total</span> <span class="n">Statistics</span>
+<span class="n">Type</span><span class="w">  </span><span class="n">Time</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="w">  </span><span class="n">Ops</span><span class="w">   </span><span class="n">TPS</span><span class="p">(</span><span class="n">ops</span><span class="sr">/s)  Net(M/s</span><span class="p">)</span><span class="w">  </span><span class="n">Get_miss</span><span class="w">  </span><span class="n">Min</span><span class="p">(</span><span class="n">us</span><span class="p">)</span><span class="w">  </span><span class="n">Max</span><span class="p">(</span><span class="n">us</span><span class="p">)</span>
+<span class="n">Avg</span><span class="p">(</span><span class="n">us</span><span class="p">)</span><span class="w">  </span><span class="n">Std_dev</span><span class="w">    </span><span class="n">Geo_dist</span>
+<span class="n">Period</span><span class="w">   </span><span class="mi">5</span><span class="w">    </span><span class="mi">38425</span><span class="w">   </span><span class="mi">7685</span><span class="w">      </span><span class="mf">7.3</span><span class="w">       </span><span class="mi">0</span><span class="w">         </span><span class="mi">42</span><span class="w">      </span><span class="mi">628</span><span class="w">     </span><span class="mi">240</span>
+<span class="mf">88.05</span><span class="w">      </span><span class="mf">220.21</span>
+<span class="n">Global</span><span class="w">   </span><span class="mi">20</span><span class="w">   </span><span class="mi">139780</span><span class="w">  </span><span class="mi">6989</span><span class="w">      </span><span class="mf">8.0</span><span class="w">       </span><span class="mi">0</span><span class="w">         </span><span class="mi">37</span><span class="w">      </span><span class="mi">3790</span><span class="w">    </span><span class="mi">253</span>
+<span class="mf">117.93</span><span class="w">     </span><span class="mf">224.83</span>
+<span class="n">Total</span><span class="w"> </span><span class="n">Statistics</span>
 
-<span class="n">Type</span>  <span class="n">Time</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>  <span class="n">Ops</span>   <span class="n">TPS</span><span class="p">(</span><span class="n">ops</span><span class="sr">/s)  Net(M/s</span><span class="p">)</span>  <span class="n">Get_miss</span>  <span class="n">Min</span><span class="p">(</span><span class="n">us</span><span class="p">)</span>  <span class="n">Max</span><span class="p">(</span><span class="n">us</span><span class="p">)</span>
-<span class="n">Avg</span><span class="p">(</span><span class="n">us</span><span class="p">)</span>  <span class="n">Std_dev</span>    <span class="n">Geo_dist</span>
-<span class="n">Period</span>   <span class="mi">5</span>   <span class="mi">384252</span>   <span class="mi">76850</span>     <span class="mf">72.5</span>      <span class="mi">0</span>        <span class="mi">27</span>      <span class="mi">2198</span>     <span class="mi">207</span>
-<span class="mf">94.72</span>      <span class="mf">181.18</span>
-<span class="n">Global</span>  <span class="mi">20</span>  <span class="mi">1397720</span>   <span class="mi">69886</span>     <span class="mf">79.7</span>      <span class="mi">0</span>        <span class="mi">26</span>      <span class="mi">3791</span>     <span class="mi">227</span>
-<span class="mf">117.93</span>     <span class="mf">195.60</span>
+<span class="n">Type</span><span class="w">  </span><span class="n">Time</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="w">  </span><span class="n">Ops</span><span class="w">   </span><span class="n">TPS</span><span class="p">(</span><span class="n">ops</span><span class="sr">/s)  Net(M/s</span><span class="p">)</span><span class="w">  </span><span class="n">Get_miss</span><span class="w">  </span><span class="n">Min</span><span class="p">(</span><span class="n">us</span><span class="p">)</span><span class="w">  </span><span class="n">Max</span><span class="p">(</span><span class="n">us</span><span class="p">)</span>
+<span class="n">Avg</span><span class="p">(</span><span class="n">us</span><span class="p">)</span><span class="w">  </span><span class="n">Std_dev</span><span class="w">    </span><span class="n">Geo_dist</span>
+<span class="n">Period</span><span class="w">   </span><span class="mi">5</span><span class="w">   </span><span class="mi">384252</span><span class="w">   </span><span class="mi">76850</span><span class="w">     </span><span class="mf">72.5</span><span class="w">      </span><span class="mi">0</span><span class="w">        </span><span class="mi">27</span><span class="w">      </span><span class="mi">2198</span><span class="w">     </span><span class="mi">207</span>
+<span class="mf">94.72</span><span class="w">      </span><span class="mf">181.18</span>
+<span class="n">Global</span><span class="w">  </span><span class="mi">20</span><span class="w">  </span><span class="mi">1397720</span><span class="w">   </span><span class="mi">69886</span><span class="w">     </span><span class="mf">79.7</span><span class="w">      </span><span class="mi">0</span><span class="w">        </span><span class="mi">26</span><span class="w">      </span><span class="mi">3791</span><span class="w">     </span><span class="mi">227</span>
+<span class="mf">117.93</span><span class="w">     </span><span class="mf">195.60</span>
 <span class="o">---------------------------------------------------------------------------------------------------------------------------------</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="id1">
-<h3>Where<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id1">
+<h3>Where<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
 <p>Get Statistics</p>
 <blockquote>
-<div>Statistics information of get command</div></blockquote>
+<div><p>Statistics information of get command</p>
+</div></blockquote>
 <p>Set Statistics</p>
 <blockquote>
-<div>Statistics information of set command</div></blockquote>
+<div><p>Statistics information of set command</p>
+</div></blockquote>
 <p>Total Statistics</p>
 <blockquote>
-<div>Statistics information of both get and set command</div></blockquote>
+<div><p>Statistics information of both get and set command</p>
+</div></blockquote>
 <p>Period</p>
 <blockquote>
-<div>Result within a period</div></blockquote>
+<div><p>Result within a period</p>
+</div></blockquote>
 <p>Global</p>
 <blockquote>
-<div>Accumulated results</div></blockquote>
+<div><p>Accumulated results</p>
+</div></blockquote>
 <p>Ops</p>
 <blockquote>
-<div>Total operations</div></blockquote>
+<div><p>Total operations</p>
+</div></blockquote>
 <p>TPS</p>
 <blockquote>
-<div>Throughput, operations/second</div></blockquote>
+<div><p>Throughput, operations/second</p>
+</div></blockquote>
 <p>Net</p>
 <blockquote>
-<div>The rate of network</div></blockquote>
+<div><p>The rate of network</p>
+</div></blockquote>
 <p>Get_miss</p>
 <blockquote>
-<div>How many objects can't be gotten</div></blockquote>
+<div><p>How many objects can't be gotten</p>
+</div></blockquote>
 <p>Min</p>
 <blockquote>
-<div>The minimum response time</div></blockquote>
+<div><p>The minimum response time</p>
+</div></blockquote>
 <p>Max</p>
 <blockquote>
-<div>The maximum response time</div></blockquote>
+<div><p>The maximum response time</p>
+</div></blockquote>
 <p>Avg:</p>
 <blockquote>
-<div>The average response time</div></blockquote>
+<div><p>The average response time</p>
+</div></blockquote>
 <p>Std_dev</p>
 <blockquote>
-<div>Standard deviation of response time</div></blockquote>
+<div><p>Standard deviation of response time</p>
+</div></blockquote>
 <p>Geo_dist</p>
 <blockquote>
-<div>Geometric distribution based on natural exponential function</div></blockquote>
+<div><p>Geometric distribution based on natural exponential function</p>
+</div></blockquote>
 <p>At the end, memaslap will output something like this:</p>
 <div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="o">---------------------------------------------------------------------------------------------------------------------------------</span>
-<span class="n">Get</span> <span class="n">Statistics</span> <span class="p">(</span><span class="mi">1257956</span> <span class="n">events</span><span class="p">)</span>
-  <span class="n">Min:</span>        <span class="mi">26</span>
-  <span class="n">Max:</span>      <span class="mi">3791</span>
-  <span class="n">Avg:</span>       <span class="mi">224</span>
-  <span class="n">Geo:</span>    <span class="mf">192.60</span>
-  <span class="n">Std:</span>    <span class="mf">116.23</span>
-                  <span class="n">Log2</span> <span class="n">Dist:</span>
-                    <span class="mi">4</span><span class="p">:</span>        <span class="mi">0</span>       <span class="mi">10</span>    <span class="mi">84490</span>   <span class="mi">215345</span>
-                    <span class="mi">8</span><span class="p">:</span>   <span class="mi">484890</span>   <span class="mi">459823</span>    <span class="mi">12543</span>      <span class="mi">824</span>
-                   <span class="mi">12</span><span class="p">:</span>       <span class="mi">31</span>
+<span class="n">Get</span><span class="w"> </span><span class="n">Statistics</span><span class="w"> </span><span class="p">(</span><span class="mi">1257956</span><span class="w"> </span><span class="n">events</span><span class="p">)</span>
+<span class="w">  </span><span class="n">Min:</span><span class="w">        </span><span class="mi">26</span>
+<span class="w">  </span><span class="n">Max:</span><span class="w">      </span><span class="mi">3791</span>
+<span class="w">  </span><span class="n">Avg:</span><span class="w">       </span><span class="mi">224</span>
+<span class="w">  </span><span class="n">Geo:</span><span class="w">    </span><span class="mf">192.60</span>
+<span class="w">  </span><span class="n">Std:</span><span class="w">    </span><span class="mf">116.23</span>
+<span class="w">                  </span><span class="n">Log2</span><span class="w"> </span><span class="n">Dist:</span>
+<span class="w">                    </span><span class="mi">4</span><span class="p">:</span><span class="w">        </span><span class="mi">0</span><span class="w">       </span><span class="mi">10</span><span class="w">    </span><span class="mi">84490</span><span class="w">   </span><span class="mi">215345</span>
+<span class="w">                    </span><span class="mi">8</span><span class="p">:</span><span class="w">   </span><span class="mi">484890</span><span class="w">   </span><span class="mi">459823</span><span class="w">    </span><span class="mi">12543</span><span class="w">      </span><span class="mi">824</span>
+<span class="w">                   </span><span class="mi">12</span><span class="p">:</span><span class="w">       </span><span class="mi">31</span>
 
- <span class="n">Set</span> <span class="n">Statistics</span> <span class="p">(</span><span class="mi">139782</span> <span class="n">events</span><span class="p">)</span>
-    <span class="n">Min:</span>        <span class="mi">37</span>
-    <span class="n">Max:</span>      <span class="mi">3790</span>
-    <span class="n">Avg:</span>       <span class="mi">253</span>
-    <span class="n">Geo:</span>    <span class="mf">224.84</span>
-    <span class="n">Std:</span>    <span class="mf">116.83</span>
-    <span class="n">Log2</span> <span class="n">Dist:</span>
-      <span class="mi">4</span><span class="p">:</span>        <span class="mi">0</span>        <span class="mi">0</span>     <span class="mi">4200</span> <span class="mi">16988</span>
-      <span class="mi">8</span><span class="p">:</span>    <span class="mi">50784</span>    <span class="mi">65574</span> <span class="mi">2064</span>      <span class="mi">167</span>
-      <span class="mi">12</span><span class="p">:</span>        <span class="mi">5</span>
+<span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="n">Statistics</span><span class="w"> </span><span class="p">(</span><span class="mi">139782</span><span class="w"> </span><span class="n">events</span><span class="p">)</span>
+<span class="w">    </span><span class="n">Min:</span><span class="w">        </span><span class="mi">37</span>
+<span class="w">    </span><span class="n">Max:</span><span class="w">      </span><span class="mi">3790</span>
+<span class="w">    </span><span class="n">Avg:</span><span class="w">       </span><span class="mi">253</span>
+<span class="w">    </span><span class="n">Geo:</span><span class="w">    </span><span class="mf">224.84</span>
+<span class="w">    </span><span class="n">Std:</span><span class="w">    </span><span class="mf">116.83</span>
+<span class="w">    </span><span class="n">Log2</span><span class="w"> </span><span class="n">Dist:</span>
+<span class="w">      </span><span class="mi">4</span><span class="p">:</span><span class="w">        </span><span class="mi">0</span><span class="w">        </span><span class="mi">0</span><span class="w">     </span><span class="mi">4200</span><span class="w"> </span><span class="mi">16988</span>
+<span class="w">      </span><span class="mi">8</span><span class="p">:</span><span class="w">    </span><span class="mi">50784</span><span class="w">    </span><span class="mi">65574</span><span class="w"> </span><span class="mi">2064</span><span class="w">      </span><span class="mi">167</span>
+<span class="w">      </span><span class="mi">12</span><span class="p">:</span><span class="w">        </span><span class="mi">5</span>
 
-  <span class="n">Total</span> <span class="n">Statistics</span> <span class="p">(</span><span class="mi">1397738</span> <span class="n">events</span><span class="p">)</span>
-      <span class="n">Min:</span>        <span class="mi">26</span>
-      <span class="n">Max:</span>      <span class="mi">3791</span>
-      <span class="n">Avg:</span>       <span class="mi">227</span>
-      <span class="n">Geo:</span>    <span class="mf">195.60</span>
-      <span class="n">Std:</span>    <span class="mf">116.60</span>
-      <span class="n">Log2</span> <span class="n">Dist:</span>
-        <span class="mi">4</span><span class="p">:</span>        <span class="mi">0</span>       <span class="mi">10</span>    <span class="mi">88690</span>   <span class="mi">232333</span>
-        <span class="mi">8</span><span class="p">:</span>   <span class="mi">535674</span>   <span class="mi">525397</span>    <span class="mi">14607</span>      <span class="mi">991</span>
-        <span class="mi">12</span><span class="p">:</span>       <span class="mi">36</span>
+<span class="w">  </span><span class="n">Total</span><span class="w"> </span><span class="n">Statistics</span><span class="w"> </span><span class="p">(</span><span class="mi">1397738</span><span class="w"> </span><span class="n">events</span><span class="p">)</span>
+<span class="w">      </span><span class="n">Min:</span><span class="w">        </span><span class="mi">26</span>
+<span class="w">      </span><span class="n">Max:</span><span class="w">      </span><span class="mi">3791</span>
+<span class="w">      </span><span class="n">Avg:</span><span class="w">       </span><span class="mi">227</span>
+<span class="w">      </span><span class="n">Geo:</span><span class="w">    </span><span class="mf">195.60</span>
+<span class="w">      </span><span class="n">Std:</span><span class="w">    </span><span class="mf">116.60</span>
+<span class="w">      </span><span class="n">Log2</span><span class="w"> </span><span class="n">Dist:</span>
+<span class="w">        </span><span class="mi">4</span><span class="p">:</span><span class="w">        </span><span class="mi">0</span><span class="w">       </span><span class="mi">10</span><span class="w">    </span><span class="mi">88690</span><span class="w">   </span><span class="mi">232333</span>
+<span class="w">        </span><span class="mi">8</span><span class="p">:</span><span class="w">   </span><span class="mi">535674</span><span class="w">   </span><span class="mi">525397</span><span class="w">    </span><span class="mi">14607</span><span class="w">      </span><span class="mi">991</span>
+<span class="w">        </span><span class="mi">12</span><span class="p">:</span><span class="w">       </span><span class="mi">36</span>
 
-<span class="n">cmd_get:</span> <span class="mi">1257969</span>
-<span class="n">cmd_set:</span> <span class="mi">139785</span>
-<span class="n">get_misses:</span> <span class="mi">0</span>
-<span class="n">verify_misses:</span> <span class="mi">0</span>
-<span class="n">verify_failed:</span> <span class="mi">0</span>
-<span class="n">expired_get:</span> <span class="mi">0</span>
-<span class="n">unexpired_unget:</span> <span class="mi">0</span>
-<span class="n">written_bytes:</span> <span class="mi">242516030</span>
-<span class="n">read_bytes:</span> <span class="mi">1003702556</span>
-<span class="n">object_bytes:</span> <span class="mi">152086080</span>
-<span class="n">packet_disorder:</span> <span class="mi">0</span>
-<span class="n">packet_drop:</span> <span class="mi">0</span>
-<span class="n">udp_timeout:</span> <span class="mi">0</span>
+<span class="n">cmd_get:</span><span class="w"> </span><span class="mi">1257969</span>
+<span class="n">cmd_set:</span><span class="w"> </span><span class="mi">139785</span>
+<span class="n">get_misses:</span><span class="w"> </span><span class="mi">0</span>
+<span class="n">verify_misses:</span><span class="w"> </span><span class="mi">0</span>
+<span class="n">verify_failed:</span><span class="w"> </span><span class="mi">0</span>
+<span class="n">expired_get:</span><span class="w"> </span><span class="mi">0</span>
+<span class="n">unexpired_unget:</span><span class="w"> </span><span class="mi">0</span>
+<span class="n">written_bytes:</span><span class="w"> </span><span class="mi">242516030</span>
+<span class="n">read_bytes:</span><span class="w"> </span><span class="mi">1003702556</span>
+<span class="n">object_bytes:</span><span class="w"> </span><span class="mi">152086080</span>
+<span class="n">packet_disorder:</span><span class="w"> </span><span class="mi">0</span>
+<span class="n">packet_drop:</span><span class="w"> </span><span class="mi">0</span>
+<span class="n">udp_timeout:</span><span class="w"> </span><span class="mi">0</span>
 
-<span class="n">Run</span> <span class="nb">time</span><span class="p">:</span> <span class="mf">20.0</span><span class="n">s</span> <span class="n">Ops:</span> <span class="mi">1397754</span> <span class="n">TPS:</span> <span class="mi">69817</span> <span class="n">Net_rate:</span> <span class="mf">59.4</span><span class="n">M</span><span class="o">/</span><span class="n">s</span>
+<span class="n">Run</span><span class="w"> </span><span class="nb">time</span><span class="p">:</span><span class="w"> </span><span class="mf">20.0</span><span class="n">s</span><span class="w"> </span><span class="n">Ops:</span><span class="w"> </span><span class="mi">1397754</span><span class="w"> </span><span class="n">TPS:</span><span class="w"> </span><span class="mi">69817</span><span class="w"> </span><span class="n">Net_rate:</span><span class="w"> </span><span class="mf">59.4</span><span class="n">M</span><span class="o">/</span><span class="n">s</span>
 <span class="o">---------------------------------------------------------------------------------------------------------------------------------</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="id2">
-<h3>Where<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id2">
+<h3>Where<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
 <p>Get Statistics</p>
 <blockquote>
-<div>Get statistics of response time</div></blockquote>
+<div><p>Get statistics of response time</p>
+</div></blockquote>
 <p>Set Statistics</p>
 <blockquote>
-<div>Set statistics of response time</div></blockquote>
+<div><p>Set statistics of response time</p>
+</div></blockquote>
 <p>Total Statistics</p>
 <blockquote>
-<div>Both get and set statistics of response time</div></blockquote>
+<div><p>Both get and set statistics of response time</p>
+</div></blockquote>
 <p>Min</p>
 <blockquote>
-<div>The accumulated and minimum response time</div></blockquote>
+<div><p>The accumulated and minimum response time</p>
+</div></blockquote>
 <p>Max</p>
 <blockquote>
-<div>The accumulated and maximum response time</div></blockquote>
+<div><p>The accumulated and maximum response time</p>
+</div></blockquote>
 <p>Avg</p>
 <blockquote>
-<div>The accumulated and average response time</div></blockquote>
+<div><p>The accumulated and average response time</p>
+</div></blockquote>
 <p>Std</p>
 <blockquote>
-<div>Standard deviation of response time</div></blockquote>
+<div><p>Standard deviation of response time</p>
+</div></blockquote>
 <p>Log2 Dist</p>
 <blockquote>
-<div>Geometric distribution based on logarithm 2</div></blockquote>
+<div><p>Geometric distribution based on logarithm 2</p>
+</div></blockquote>
 <p>cmd_get</p>
 <blockquote>
-<div>Total get commands done</div></blockquote>
+<div><p>Total get commands done</p>
+</div></blockquote>
 <p>cmd_set</p>
 <blockquote>
-<div>Total set commands done</div></blockquote>
+<div><p>Total set commands done</p>
+</div></blockquote>
 <p>get_misses</p>
 <blockquote>
-<div>How many objects can't be gotten from server</div></blockquote>
+<div><p>How many objects can't be gotten from server</p>
+</div></blockquote>
 <p>verify_misses</p>
 <blockquote>
-<div>How many objects need to verify but can't get them</div></blockquote>
+<div><p>How many objects need to verify but can't get them</p>
+</div></blockquote>
 <p>verify_failed</p>
 <blockquote>
-<div>How many objects with insistent value</div></blockquote>
+<div><p>How many objects with insistent value</p>
+</div></blockquote>
 <p>expired_get</p>
 <blockquote>
-<div>How many objects are expired but we get them</div></blockquote>
+<div><p>How many objects are expired but we get them</p>
+</div></blockquote>
 <p>unexpired_unget</p>
 <blockquote>
-<div>How many objects are unexpired but we can't get them</div></blockquote>
+<div><p>How many objects are unexpired but we can't get them</p>
+</div></blockquote>
 <p>written_bytes</p>
 <blockquote>
-<div>Total written bytes</div></blockquote>
+<div><p>Total written bytes</p>
+</div></blockquote>
 <p>read_bytes</p>
 <blockquote>
-<div>Total read bytes</div></blockquote>
+<div><p>Total read bytes</p>
+</div></blockquote>
 <p>object_bytes</p>
 <blockquote>
-<div>Total object bytes</div></blockquote>
+<div><p>Total object bytes</p>
+</div></blockquote>
 <p>packet_disorder</p>
 <blockquote>
-<div>How many UDP packages are disorder</div></blockquote>
+<div><p>How many UDP packages are disorder</p>
+</div></blockquote>
 <p>packet_drop</p>
 <blockquote>
-<div>How many UDP packages are lost</div></blockquote>
+<div><p>How many UDP packages are lost</p>
+</div></blockquote>
 <p>udp_timeout</p>
 <blockquote>
-<div>How many times UDP time out happen</div></blockquote>
+<div><p>How many times UDP time out happen</p>
+</div></blockquote>
 <p>Run time</p>
 <blockquote>
-<div>Total run time</div></blockquote>
+<div><p>Total run time</p>
+</div></blockquote>
 <p>Ops</p>
 <blockquote>
-<div>Total operations</div></blockquote>
+<div><p>Total operations</p>
+</div></blockquote>
 <p>TPS</p>
 <blockquote>
-<div>Throughput, operations/second</div></blockquote>
+<div><p>Throughput, operations/second</p>
+</div></blockquote>
 <p>Net_rate</p>
 <blockquote>
-<div>The average rate of network</div></blockquote>
-</div>
-</div>
-<div class="section" id="options">
-<h2>OPTIONS<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>-s, --servers=</dt>
-<dd>List one or more servers to connect. Servers count must be less than
-threads count. e.g.: --servers=localhost:1234,localhost:11211</dd>
-<dt>-T, --threads=</dt>
-<dd>Number of threads to startup, better equal to CPU numbers. Default 8.</dd>
-<dt>-c, --concurrency=</dt>
-<dd>Number of concurrency to simulate with load. Default 128.</dd>
-<dt>-n, --conn_sock=</dt>
-<dd>Number of TCP socks per concurrency. Default 1.</dd>
-<dt>-x, --execute_number=</dt>
-<dd>Number of operations(get and set) to execute for the
-given test. Default 1000000.</dd>
-<dt>-t, --time=</dt>
-<dd>How long the test to run, suffix: s-seconds, m-minutes, h-hours,
-d-days e.g.: --time=2h.</dd>
-<dt>-F, --cfg_cmd=</dt>
-<dd>Load the configure file to get command,key and value distribution list.</dd>
-<dt>-w, --win_size=</dt>
-<dd>Task window size of each concurrency, suffix: K, M e.g.: --win_size=10k.
-Default 10k.</dd>
-<dt>-X, --fixed_size=</dt>
-<dd>Fixed length of value.</dd>
-<dt>-v, --verify=</dt>
-<dd>The proportion of date verification, e.g.: --verify=0.01</dd>
-<dt>-d, --division=</dt>
-<dd>Number of keys to multi-get once. Default 1, means single get.</dd>
-<dt>-S, --stat_freq=</dt>
-<dd>Frequency of dumping statistic information. suffix: s-seconds,
-m-minutes, e.g.: --resp_freq=10s.</dd>
-<dt>-e, --exp_verify=</dt>
-<dd>The proportion of objects with expire time, e.g.: --exp_verify=0.01.
-Default no object with expire time</dd>
-<dt>-o, --overwrite=</dt>
-<dd>The proportion of objects need overwrite, e.g.: --overwrite=0.01.
-Default never overwrite object.</dd>
+<div><p>The average rate of network</p>
+</div></blockquote>
+</section>
+</section>
+<section id="options">
+<h2>OPTIONS<a class="headerlink" href="#options" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt>-s, --servers=</dt><dd><p>List one or more servers to connect. Servers count must be less than
+threads count. e.g.: --servers=localhost:1234,localhost:11211</p>
+</dd>
+<dt>-T, --threads=</dt><dd><p>Number of threads to startup, better equal to CPU numbers. Default 8.</p>
+</dd>
+<dt>-c, --concurrency=</dt><dd><p>Number of concurrency to simulate with load. Default 128.</p>
+</dd>
+<dt>-n, --conn_sock=</dt><dd><p>Number of TCP socks per concurrency. Default 1.</p>
+</dd>
+<dt>-x, --execute_number=</dt><dd><p>Number of operations(get and set) to execute for the
+given test. Default 1000000.</p>
+</dd>
+<dt>-t, --time=</dt><dd><p>How long the test to run, suffix: s-seconds, m-minutes, h-hours,
+d-days e.g.: --time=2h.</p>
+</dd>
+<dt>-F, --cfg_cmd=</dt><dd><p>Load the configure file to get command,key and value distribution list.</p>
+</dd>
+<dt>-w, --win_size=</dt><dd><p>Task window size of each concurrency, suffix: K, M e.g.: --win_size=10k.
+Default 10k.</p>
+</dd>
+<dt>-X, --fixed_size=</dt><dd><p>Fixed length of value.</p>
+</dd>
+<dt>-v, --verify=</dt><dd><p>The proportion of date verification, e.g.: --verify=0.01</p>
+</dd>
+<dt>-d, --division=</dt><dd><p>Number of keys to multi-get once. Default 1, means single get.</p>
+</dd>
+<dt>-S, --stat_freq=</dt><dd><p>Frequency of dumping statistic information. suffix: s-seconds,
+m-minutes, e.g.: --resp_freq=10s.</p>
+</dd>
+<dt>-e, --exp_verify=</dt><dd><p>The proportion of objects with expire time, e.g.: --exp_verify=0.01.
+Default no object with expire time</p>
+</dd>
+<dt>-o, --overwrite=</dt><dd><p>The proportion of objects need overwrite, e.g.: --overwrite=0.01.
+Default never overwrite object.</p>
+</dd>
 </dl>
-<table class="docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">-R</span>, <span class="option">--reconnect</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Reconnect tests, when connection is closed it will be reconnected.</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">-U</span>, <span class="option">--udp</span></kbd></td>
-<td>UDP tests, default memaslap uses TCP, TCP port and UDP port of
-server must be same.</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">-a</span>, <span class="option">--facebook</span></kbd></td>
-<td>Whether it enables facebook test feature, set with TCP and multi-get with UDP.</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">-B</span>, <span class="option">--binary</span></kbd></td>
-<td>Whether it enables binary protocol. Default with ASCII protocol.</td></tr>
-</tbody>
-</table>
-<dl class="docutils">
-<dt>-P, --tps=</dt>
-<dd>Expected throughput, suffix: K, e.g.: --tps=10k.</dd>
-<dt>-p, --rep_write=</dt>
-<dd>The first nth servers can write data, e.g.: --rep_write=2.</dd>
+<dl class="option-list">
+<dt><kbd><span class="option">-R</span>, <span class="option">--reconnect</span></kbd></dt>
+<dd><p>Reconnect tests, when connection is closed it will be reconnected.</p>
+</dd>
+<dt><kbd><span class="option">-U</span>, <span class="option">--udp</span></kbd></dt>
+<dd><p>UDP tests, default memaslap uses TCP, TCP port and UDP port of
+server must be same.</p>
+</dd>
+<dt><kbd><span class="option">-a</span>, <span class="option">--facebook</span></kbd></dt>
+<dd><p>Whether it enables facebook test feature, set with TCP and multi-get with UDP.</p>
+</dd>
+<dt><kbd><span class="option">-B</span>, <span class="option">--binary</span></kbd></dt>
+<dd><p>Whether it enables binary protocol. Default with ASCII protocol.</p>
+</dd>
 </dl>
-<table class="docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group">
-<kbd><span class="option">-b</span>, <span class="option">--verbose</span></kbd></td>
-<td>Whether it outputs detailed information when verification fails.</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">-h</span>, <span class="option">--help</span></kbd></td>
-<td>Display this message and then exit.</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">-V</span>, <span class="option">--version</span></kbd></td>
-<td>Display the version of the application and then exit.</td></tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="examples">
-<h2>EXAMPLES<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<dl class="simple">
+<dt>-P, --tps=</dt><dd><p>Expected throughput, suffix: K, e.g.: --tps=10k.</p>
+</dd>
+<dt>-p, --rep_write=</dt><dd><p>The first nth servers can write data, e.g.: --rep_write=2.</p>
+</dd>
+</dl>
+<dl class="option-list">
+<dt><kbd><span class="option">-b</span>, <span class="option">--verbose</span></kbd></dt>
+<dd><p>Whether it outputs detailed information when verification fails.</p>
+</dd>
+<dt><kbd><span class="option">-h</span>, <span class="option">--help</span></kbd></dt>
+<dd><p>Display this message and then exit.</p>
+</dd>
+<dt><kbd><span class="option">-V</span>, <span class="option">--version</span></kbd></dt>
+<dd><p>Display the version of the application and then exit.</p>
+</dd>
+</dl>
+</section>
+<section id="examples">
+<h2>EXAMPLES<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
 <p>memaslap -s 127.0.0.1:11211 -S 5s</p>
 <p>memaslap -s 127.0.0.1:11211 -t 2m -v 0.2 -e 0.05 -b</p>
 <p>memaslap -s 127.0.0.1:11211 -F config -t 2m -w 40k -S 20s -o 0.2</p>
@@ -996,68 +952,50 @@ server must be same.</td></tr>
 <p>memaslap -s 127.0.0.1:11211 -F config -t 2m -d 50 -a -n 40</p>
 <p>memaslap -s 127.0.0.1:11211,127.0.0.1:11212 -F config -t 2m</p>
 <p>memaslap -s 127.0.0.1:11211,127.0.0.1:11212 -F config -t 2m -p 2</p>
-</div>
-<div class="section" id="notes">
-<h2>NOTES<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="notes">
+<h2>NOTES<a class="headerlink" href="#notes" title="Link to this heading"></a></h2>
 <p>The prefix of this program is variable, i.e. it can be configured at build time.</p>
 <p>Usually the client programs of <code class="docutils literal notranslate"><span class="pre">libmemcached-awesome</span></code> are prefixed with <code class="docutils literal notranslate"><span class="pre">mem</span></code>, like <code class="docutils literal notranslate"><span class="pre">memcat</span></code> or <code class="docutils literal notranslate"><span class="pre">memcp</span></code>.</p>
 <p>It can be configured, though, to replace the prefix with something else like <code class="docutils literal notranslate"><span class="pre">mc</span></code>, in case of that,
 the client programs of <code class="docutils literal notranslate"><span class="pre">libmemcached-awesome</span></code> would be called <code class="docutils literal notranslate"><span class="pre">mccat</span></code>, <code class="docutils literal notranslate"><span class="pre">mccp</span></code>, etc. respectively.</p>
 <p>This is a contributed program.</p>
 <p>This program doesn't follow the standard flag/option scheme.</p>
-</div>
-<div class="section" id="see-also">
-<h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
-</div>
-</div>
+</section>
+<section id="see-also">
+<h2>SEE ALSO<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="memslap.html" class="btn btn-neutral float-right" title="memslap" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="memrm.html" class="btn btn-neutral float-left" title="memrm" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="memrm.html" class="btn btn-neutral float-left" title="memrm" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="memslap.html" class="btn btn-neutral float-right" title="memslap" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; <a href="../copyright.html">Copyright</a> 
-
-    </p>
+    <p>&#169; <a href="../copyright.html">Copyright</a> .</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
