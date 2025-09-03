@@ -28,7 +28,7 @@ public:
 
   Cluster(Cluster &&c) noexcept
   : proto{} {
-    *this = move(c);
+    *this = std::move(c);
   };
   Cluster &operator=(Cluster &&c) noexcept {
     count = exchange(c.count, 0);

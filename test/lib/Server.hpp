@@ -37,7 +37,7 @@ public:
   Server &operator=(const Server &s);
 
   Server(Server &&s) noexcept {
-    *this = move(s);
+    *this = std::move(s);
   };
   Server &operator=(Server &&s) noexcept {
     binary = exchange(s.binary, "false");

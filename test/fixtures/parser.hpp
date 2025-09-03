@@ -66,7 +66,7 @@ struct test_group {
 
   test_group(const char *name_, check_func check_, test_case *tests_, size_t ntests_) noexcept
   : name{name_}
-  , check{move(check_)}
+  , check{std::move(check_)}
   , tests{tests_}
   , ntests{ntests_} {}
 };

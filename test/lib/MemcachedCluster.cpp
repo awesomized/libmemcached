@@ -60,8 +60,8 @@ MemcachedCluster::MemcachedCluster()
 }
 
 MemcachedCluster::MemcachedCluster(Cluster &&cluster_, behaviors_t to_set_)
-: cluster{move(cluster_)}
-, to_set{move(to_set_)}
+: cluster{std::move(cluster_)}
+, to_set{std::move(to_set_)}
 {
   init();
 }
@@ -69,11 +69,11 @@ MemcachedCluster::MemcachedCluster(Cluster &&cluster_, behaviors_t to_set_)
 MemcachedCluster::MemcachedCluster(MemcachedCluster &&mc) noexcept
     : cluster{Server{}}
 {
-  *this = move(mc);
+  *this = std::move(mc);
 }
 
 MemcachedCluster &MemcachedCluster::operator=(MemcachedCluster &&mc) noexcept {
-  cluster = move(mc.cluster);
+  cluster = std::move(mc.cluster);
   memcached_clone(&memc, &mc.memc);
   returns = &memc;
   return *this;

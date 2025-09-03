@@ -104,7 +104,7 @@ Connection::Connection(Connection &&conn) noexcept {
 }
 
 Connection &Connection::operator=(Connection &&conn) noexcept {
-  Connection copy(move(conn));
+  Connection copy(std::move(conn));
   copy.swap(*this);
   return *this;
 }

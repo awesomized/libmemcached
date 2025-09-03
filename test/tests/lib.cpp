@@ -90,7 +90,7 @@ TEST_CASE("lib/Connection") {
           REQUIRE(conn.isWritable());
           REQUIRE_FALSE(conn.getError());
         } else {
-          again.emplace_back(move(conn));
+          again.emplace_back(std::move(conn));
         }
       }
       conns.swap(again);

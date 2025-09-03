@@ -47,7 +47,7 @@ Shell::Shell(bool redirect_stderr)
 }
 
 Shell::Shell(string prefix_, bool redirect_stderr)
-: prefix{move(prefix_)}
+: prefix{std::move(prefix_)}
 , redirect{redirect_stderr}
 {
   if (!system(nullptr)) {

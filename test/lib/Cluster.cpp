@@ -9,7 +9,7 @@
 
 Cluster::Cluster(Server serv, size_t cnt)
 : count{cnt}
-, proto{move(serv)}
+, proto{std::move(serv)}
 {
   if (!count) {
     count = 1;

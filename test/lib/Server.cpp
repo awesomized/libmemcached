@@ -8,8 +8,8 @@
 #endif
 
 Server::Server(string binary_, Server::argv_t args_)
-    : binary{move(binary_)}
-    , args{move(args_)}
+    : binary{std::move(binary_)}
+    , args{std::move(args_)}
 {}
 
 Server::~Server() {
