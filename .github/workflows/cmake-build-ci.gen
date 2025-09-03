@@ -383,8 +383,10 @@ jobs:
       BUILD_TESTING:      "ON"
       VERBOSE:            "ON"
       ENABLE_SANITIZERS:  ${{ matrix.sanitizer }}
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
 <?php steps("Linux"); ?>
 
 # memcached
@@ -411,9 +413,11 @@ jobs:
       INSTALL_MEMCACHED:  ""
       MEMCACHED_PREFIX:   "/tmp"
       ENABLE_SASL:        "ON"
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
+      - uses: actions/checkout@v5
         with:
           repository: memcached/memcached
           path: memcached
@@ -432,10 +436,12 @@ jobs:
     env:
       CMAKE_BUILD_TYPE:   "Release"
       BUILD_DOCS_MANGZ:   "ON"
+    permissions:
+      contents: read
 <?php env_override("macOS")?>
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 <?php steps("macOS", false); ?>
@@ -458,7 +464,7 @@ jobs:
       CC_VND: ${{ matrix.cc_vnd }}
       CC_VER: ${{ matrix.cc_ver }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 <?php steps("Windows", true); ?>
@@ -480,8 +486,10 @@ jobs:
       OS_VER: ${{ matrix.os_ver }}
       CC_VND: ${{ matrix.cc_vnd }}
       CC_VER: ${{ matrix.cc_ver }}
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 <?php steps("Linux", true); ?>

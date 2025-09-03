@@ -17,8 +17,10 @@ env:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v5
       - name: Install dependencies
         run: |
           sudo apt-get update -y
@@ -32,7 +34,7 @@ jobs:
       - name: Build
         run: |
           make -C build html
-      - uses: crazy-max/ghaction-github-pages@v2
+      - uses: crazy-max/ghaction-github-pages@v4
         if: success()
         with:
           jekyll: false
