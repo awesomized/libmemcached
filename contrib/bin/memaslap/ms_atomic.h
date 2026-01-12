@@ -22,7 +22,7 @@
 #  define ATOMIC volatile
 #  define _KERNEL
 #  include <atomic.h>
-#  if SIZEOF_SIZE_T == 8
+#  if SIZEOF_SIZE_T == 8 || __SIZEOF_SIZE_T__ == 8
 #    define atomic_add_size(X, Y) atomic_add_64((X), (Y))
 #  else
 #    define atomic_add_size(X, Y) atomic_add_32((X), (Y))
