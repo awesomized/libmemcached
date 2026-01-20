@@ -3,7 +3,7 @@ Working with statistical information from a server
 
 Get memcached statistics
 
-.. index:: object: memcached_st
+.. index:: pair: object; memcached_st
 
 SYNOPSIS
 --------
