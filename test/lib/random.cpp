@@ -5,7 +5,7 @@
 #  include <unistd.h> // getpid()
 #endif
 mt19937_64 rnd_eng;
-mutex rnd_mtx;
+std::mutex rnd_mtx;
 
 void random_setup() {
   using namespace chrono;
