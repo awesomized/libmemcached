@@ -1,7 +1,7 @@
 Storing data on the server
 ==========================
 
-.. index:: object: memcached_st
+.. index:: pair: object; memcached_st
 
 SYNOPSIS
 --------

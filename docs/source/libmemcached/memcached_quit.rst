@@ -1,7 +1,7 @@
 Disconnecting a client from a server
 ====================================
 
-.. index:: object: memcached_st
+.. index:: pair: object; memcached_st
 
 SYNOPSIS
 --------
