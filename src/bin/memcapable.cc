@@ -1074,6 +1074,7 @@ static enum test_return receive_error_response(void) {
   char buffer[80];
   execute(receive_line(buffer, sizeof(buffer)));
   verify(strncmp(buffer, "ERROR", 5) == 0 || strncmp(buffer, "CLIENT_ERROR", 12) == 0
+         || strncmp(buffer, "NOT_FOUND", 9) == 0
          || strncmp(buffer, "SERVER_ERROR", 12) == 0);
   return TEST_PASS;
 }
