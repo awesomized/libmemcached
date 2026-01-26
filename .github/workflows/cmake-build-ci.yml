@@ -121,6 +121,7 @@ jobs:
       matrix:
         memcached:
           - 'master'
+          - '1.6.40'
           - '1.6.38' # Debian 13, FreeBSD 14
 #          - '1.6.37' # Ubuntu 25.04
           - '1.6.24' # Ubuntu 24.04
@@ -216,7 +217,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os_ver: [macos-13, macos-14, macos-15]
+        os_ver: [macos-14, macos-15]
     runs-on: ${{ matrix.os_ver }}
     env:
       CMAKE_BUILD_TYPE:   "Release"
