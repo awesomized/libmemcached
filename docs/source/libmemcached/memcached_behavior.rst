@@ -133,13 +133,6 @@ SYNOPSIS
 
         Sets the `hashing algorithm <memcached_hash_t>` for host mapping on continuum.
 
-    .. enumerator:: MEMCACHED_BEHAVIOR_KETAMA_COMPAT
-
-        Sets the compatibility mode. The value can be set to either
-        `MEMCACHED_KETAMA_COMPAT_LIBMEMCACHED` (this is the default) or
-        `MEMCACHED_KETAMA_COMPAT_SPY` to be compatible with the SPY Memcached
-        client for Java.
-
     .. enumerator:: MEMCACHED_BEHAVIOR_POLL_TIMEOUT
 
         Modify the timeout in milliseconds value that is used by poll. The
