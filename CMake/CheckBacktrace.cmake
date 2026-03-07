@@ -1,4 +1,6 @@
-find_package(Backtrace)
+if(ENABLE_BACKTRACE)
+    find_package(Backtrace)
+endif()
 if(Backtrace_FOUND)
     configure_set(HAVE_BACKTRACE 1)
     configure_define_header(Backtrace_HEADER)
