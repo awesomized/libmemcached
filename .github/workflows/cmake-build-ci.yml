@@ -47,7 +47,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Prepare environment (for cur gnu on ubuntu-24.04)
         if: (env.OS_VER=='ubuntu-24.04') && (env.CC_VND=='gnu') && (env.CC_VER=='cur')
         run: |
@@ -140,8 +140,8 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6
         with:
           repository: memcached/memcached
           path: memcached
@@ -230,7 +230,7 @@ jobs:
       contents: read
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Install dependencies (macOS)
@@ -304,7 +304,7 @@ jobs:
       CC_VND: ${{ matrix.cc_vnd }}
       CC_VER: ${{ matrix.cc_ver }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Prepare environment (Windows)
@@ -384,7 +384,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Prepare environment (for new gnu on ubuntu-22.04)
