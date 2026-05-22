@@ -1079,6 +1079,14 @@ static enum test_return receive_error_response(void) {
   return TEST_PASS;
 }
 
+static enum test_return receive_delete_with_extra_args_response(void) {
+  char buffer[80];
+  execute(receive_line(buffer, sizeof(buffer)));
+  verify(strncmp(buffer, "ERROR", 5) == 0 || strncmp(buffer, "CLIENT_ERROR", 12) == 0
+         || strcmp(buffer, "NOT_FOUND\r\n") == 0);
+  return TEST_PASS;
+}
+
 static enum test_return test_ascii_quit(void) {
   if (!v16x_or_greater) {
     /* Verify that quit handles unknown options */
@@ -1452,9 +1460,13 @@ static enum test_return test_ascii_delete_impl(const char *key, bool noreply) {
 
   execute(send_string("delete\r\n"));
   execute(receive_error_response());
-  /* BUG: the server accepts delete a b */
+
+  /*
+   * Some servers reject extra delete arguments, while memcached 1.6 treats
+   * them as accepted option tokens and returns the result for key "a".
+   */
   execute(send_string("delete a b c d e\r\n"));
-  execute(receive_error_response());
+  execute(receive_delete_with_extra_args_response());
 
   char buffer[1024];
   snprintf(buffer, sizeof(buffer), "delete %s%s\r\n", key, noreply ? " noreply" : "");
