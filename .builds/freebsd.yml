@@ -9,7 +9,7 @@ packages:
   - libevent
   - pkgconf
   - rsync
-  - tbb
+  - onetbb
 sources:
   - https://github.com/awesomized/libmemcached
 secrets:
