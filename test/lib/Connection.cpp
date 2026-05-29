@@ -49,17 +49,29 @@ Connection::Connection(socket_or_port_t socket_or_port) {
     size = UNIX;
 
   } else {
+    const auto port = get<int>(socket_or_port);
+
+    bool useIPv6 = true;
     if (0 > (sock = socket_ex(AF_INET6, SOCK_STREAM, 0, SOCK_NONBLOCK|SOCK_CLOEXEC))) {
-      throw runtime_error(error({"socket(): ", strerror(errno)}));
+      useIPv6 = false;
+      if (0 > (sock = socket_ex(AF_INET, SOCK_STREAM, 0, SOCK_NONBLOCK|SOCK_CLOEXEC))) {
+        throw runtime_error(error({"socket(): ", strerror(errno)}));
+      }
     }
 
-    const auto port = get<int>(socket_or_port);
-    auto sa = reinterpret_cast<struct sockaddr_in6 *>(&addr);
-    sa->sin6_family = AF_INET6;
-    sa->sin6_port = htons(static_cast<unsigned short>(port));
-    sa->sin6_addr = IN6ADDR_LOOPBACK_INIT;
-
-    size = INET6;
+    if (useIPv6) {
+      auto sa = reinterpret_cast<struct sockaddr_in6 *>(&addr);
+      sa->sin6_family = AF_INET6;
+      sa->sin6_port = htons(static_cast<unsigned short>(port));
+      sa->sin6_addr = IN6ADDR_LOOPBACK_INIT;
+      size = INET6;
+    } else {
+      auto sa = reinterpret_cast<struct sockaddr_in *>(&addr);
+      sa->sin_family = AF_INET;
+      sa->sin_port = htons(static_cast<unsigned short>(port));
+      sa->sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+      size = INET;
+    }
   }
 }
 
