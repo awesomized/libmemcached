@@ -720,7 +720,7 @@ static memcached_return_t binary_read_one_response(memcached_instance_st *instan
       break;
 
     case PROTOCOL_BINARY_RESPONSE_ENOMEM:
-      rc = MEMCACHED_MEMORY_ALLOCATION_FAILURE;
+      rc = MEMCACHED_SERVER_MEMORY_ALLOCATION_FAILURE;
       break;
 
     case PROTOCOL_BINARY_RESPONSE_AUTH_CONTINUE:
