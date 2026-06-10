@@ -64,6 +64,7 @@
 #include "libmemcached-1.0/fetch.h"
 #include "libmemcached-1.0/flush.h"
 #include "libmemcached-1.0/flush_buffers.h"
+#include "libmemcached-1.0/gat.h"
 #include "libmemcached-1.0/get.h"
 #include "libmemcached-1.0/hash.h"
 #include "libmemcached-1.0/options.h"

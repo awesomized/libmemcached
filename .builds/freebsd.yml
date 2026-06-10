@@ -11,7 +11,7 @@ packages:
   - py311-sphinx
   - py311-m2r
   - rsync
-  - tbb
+  - onetbb
 sources:
   - https://github.com/awesomized/libmemcached
 secrets:
