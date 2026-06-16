@@ -7,7 +7,7 @@ Name: libmemcached
 URL: https://awesomized.github.io/libmemcached/
 Description: libmemcached C/C++ library
 Version: @PROJECT_VERSION@
-Libs: -L@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@ -lmemcached -lmemcachedutil
+Libs: -L@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@ -lmemcached -lmemcachedutil -lhashkit
 Cflags: -I@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_INCLUDEDIR@
 Requires: @PKGCONFIG_REQUIRES@
 Requires.private: @PKGCONFIG_REQUIRES_PRIVATE@
