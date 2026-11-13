@@ -25,6 +25,7 @@ install_public_headers(
         fetch.h
         flush_buffers.h
         flush.h
+        gat.h
         get.h
         hash.h
         limits.h

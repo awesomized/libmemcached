@@ -47,6 +47,7 @@ set(libmemcached_sources
         flag.cc
         flush.cc
         flush_buffers.cc
+        gat.cc
         get.cc
         hash.cc
         hosts.cc
