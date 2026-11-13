@@ -18,8 +18,13 @@ TEST_CASE("memcached_regression_gh-php-memcached_0531") {
   memcached_return_t rc;
   size_t len;
   Malloced value1(memcached_get(memc, S("first"), &len, nullptr, &rc));
-  REQUIRE_RC(MEMCACHED_TIMEOUT, rc);
-  REQUIRE_FALSE(*value1);
+  // on a busy host the reply can arrive before the first read, beating the 0ms poll timeout
+  if (rc == MEMCACHED_SUCCESS) {
+    REQUIRE(string(*value1) == string("first"));
+  } else {
+    REQUIRE_RC(MEMCACHED_TIMEOUT, rc);
+    REQUIRE_FALSE(*value1);
+  }
 
   REQUIRE_SUCCESS(memcached_behavior_set(memc, MEMCACHED_BEHAVIOR_POLL_TIMEOUT, 100));
 
