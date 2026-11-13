@@ -8,8 +8,6 @@ packages:
   - flex
   - libevent
   - pkgconf
-  - py311-sphinx
-  - py311-m2r
   - rsync
   - tbb
 sources:
