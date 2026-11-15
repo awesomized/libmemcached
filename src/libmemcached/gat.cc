@@ -28,16 +28,8 @@ static memcached_return_t ascii_gat(memcached_instance_st *instance, const char 
         memcached_literal_param("snprintf(MEMCACHED_MAXIMUM_INTEGER_DISPLAY_LENGTH)"));
   }
 
-  /* Use "gats" when CAS support is requested so the VALUE response includes the CAS token */
-  const char *gat_command;
-  uint8_t gat_command_length;
-  if (instance->root->flags.support_cas) {
-    gat_command = "gats ";
-    gat_command_length = 5;
-  } else {
-    gat_command = "gat ";
-    gat_command_length = 4;
-  }
+  const char *gat_command = "gat ";
+  uint8_t gat_command_length = 4;
 
   libmemcached_io_vector_st vector[] = {
       {NULL, 0},
@@ -149,6 +141,11 @@ char *memcached_gat_by_key(memcached_st *shell, const char *group_key, size_t gr
       *value_length = 0;
     }
     return NULL;
+  }
+
+  // gat replies even with MEMCACHED_BEHAVIOR_NOREPLY, but memcached_vdo() only counts replies without it
+  if (memcached_is_replying(ptr) == false) {
+    memcached_server_response_increment(instance);
   }
 
   char *value = memcached_fetch(ptr, NULL, NULL, value_length, flags, error);
