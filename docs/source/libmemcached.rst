@@ -155,6 +155,7 @@ SEE ALSO
     :manpage:`memcached_fetch(3)`
     :manpage:`memcached_flush(3)`
     :manpage:`memcached_flush_buffers(3)`
+    :manpage:`memcached_gat(3)`
     :manpage:`memcached_generate_hash_value(3)`
     :manpage:`memcached_get(3)`
     :manpage:`memcached_last_error_message(3)`
