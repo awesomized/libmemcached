@@ -111,6 +111,8 @@ man_pages = [
   ('libmemcached/memcached_fetch'              ,'memcached_fetch'                         ,u'Retrieving data from the server'     ,man_authors,3),
   ('libmemcached/memcached_flush_buffers'      ,'memcached_flush_buffers'                 ,u'libmemcached Documentation'          ,man_authors,3),
   ('libmemcached/memcached_flush'              ,'memcached_flush'                         ,u'libmemcached Documentation'          ,man_authors,3),
+  ('libmemcached/memcached_gat'                ,'memcached_gat'                           ,u'libmemcached Documentation'          ,man_authors,3),
+  ('libmemcached/memcached_gat'                ,'memcached_gat_by_key'                    ,u'libmemcached Documentation'          ,man_authors,3),
   ('libmemcached/memcached_generate_hash_value','memcached_generate_hash'                 ,u'Generating hash values directly'     ,man_authors,3),
   ('libmemcached/memcached_generate_hash_value','memcached_generate_hash_value'           ,u'Generating hash values directly'     ,man_authors,3),
   ('libmemcached/memcached_get'                ,'memcached_fetch_execute'                 ,u'Retrieving data from the server'     ,man_authors,3),

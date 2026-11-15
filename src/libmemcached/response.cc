@@ -476,6 +476,8 @@ static memcached_return_t binary_read_one_response(memcached_instance_st *instan
        */
       memcached_server_response_increment(instance);
       /* fall through */
+    case PROTOCOL_BINARY_CMD_GATK:
+      /* fall through */
     case PROTOCOL_BINARY_CMD_GETK: {
       uint16_t keylen = header.response.keylen;
       memcached_result_reset(result);
