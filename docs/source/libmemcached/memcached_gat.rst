@@ -43,9 +43,10 @@ the current value is returned to the caller while the TTL is refreshed.
 that controls which server the key is located on, enabling key partitioning.
 
 Both functions support the text protocol (``gat``/``gats``) and the binary
-protocol (``GATK`` opcode).  When `MEMCACHED_BEHAVIOR_SUPPORT_CAS` is
-enabled the text protocol uses ``gats``, and the response includes a CAS
-token accessible via :func:`memcached_result_cas`.
+protocol (``GATK`` opcode).
+
+The text protocol needs memcached 1.5.3 or later. Older servers answer ERROR,
+which memcached_gat() reports as MEMCACHED_NOTFOUND, so it looks like a miss.
 
 The returned value must be released by the caller using :manpage:`free(3)`.
 
@@ -61,8 +62,8 @@ to `MEMCACHED_SUCCESS`.  The caller must free this pointer with
 
 ``NULL`` is returned when:
 
-* The key does not exist â `*error` is set to `MEMCACHED_NOTFOUND`.
-* A network or protocol error occurred â `*error` describes the failure.
+* The key does not exist - `*error` is set to `MEMCACHED_NOTFOUND`.
+* A network or protocol error occurred - `*error` describes the failure.
 
 Use :func:`memcached_strerror` to convert a :type:`memcached_return_t` value
 to a human-readable string.
