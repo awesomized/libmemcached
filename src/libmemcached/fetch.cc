@@ -159,6 +159,11 @@ memcached_result_st *memcached_fetch_result(memcached_st *ptr, memcached_result_
     } else if (*error == MEMCACHED_END) {
       memcached_server_response_reset(server);
     } else if (*error != MEMCACHED_NOTFOUND) {
+      /* An error reply (e.g. a SERVER_ERROR that a memcached proxy injected for one key of a
+         multi-get) ends this fetch while the server may still be sending the rest of the reply.
+         Left on the socket, that would be read as the reply to the next command, so close the
+         connection and let the next command reconnect. */
+      memcached_io_reset(server);
       break;
     }
   }

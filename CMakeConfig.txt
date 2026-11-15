@@ -51,6 +51,11 @@ set(ENABLE_SANITIZERS "$ENV{ENABLE_SANITIZERS}"
         CACHE STRING "sanitizers to enable (e.g. address;undefined ...)")
 option(ENABLE_SASL          "enable SASL support"
         $ENV{ENABLE_SASL})
+if(NOT DEFINED ENV{ENABLE_BACKTRACE})
+    set(ENV{ENABLE_BACKTRACE} ON)
+endif()
+option(ENABLE_BACKTRACE     "enable backtrace support"
+        $ENV{ENABLE_BACKTRACE})
 option(ENABLE_DTRACE        "enable dtrace support"
         $ENV{ENABLE_DTRACE})
 option(ENABLE_HASH_HSIEH    "enable hsieh hash support"
