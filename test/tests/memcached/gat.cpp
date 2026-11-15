@@ -67,7 +67,7 @@ TEST_CASE("memcached_gat") {
     REQUIRE(string("world") == string(*val, len));
     REQUIRE(flags == 42);
 
-    Malloced val_get(memcached_gat_by_key(memc, S("group"), S("gat_by_key"), 120,
+    Malloced val_get(memcached_get_by_key(memc, S("group"), S("gat_by_key"),
                                        &len, &flags, &rc));
     REQUIRE_SUCCESS(rc);
     REQUIRE(*val_get);
