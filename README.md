@@ -100,7 +100,7 @@ v1.5 and v1.6.
 ## ChangeLog
 
 Check out the latest [releases](https://github.com/awesomized/libmemcached/releases)
-or the bundled [ChangeLog](./ChangeLog-1.1.md) for a comprehensive list of changes.
+or the bundled [ChangeLog](./ChangeLog-1.2.md) for a comprehensive list of changes.
 
 ## License
 

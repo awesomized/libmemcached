@@ -69,6 +69,7 @@ install(FILES
             ChangeLog-0.md
             ChangeLog-1.0.md
             ChangeLog-1.1.md
+            ChangeLog-1.2.md
             CONTRIBUTING.md
             LICENSE
             NEWS

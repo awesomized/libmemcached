@@ -1,1 +1,1 @@
-ChangeLog-1.1.md
+ChangeLog-1.2.md
