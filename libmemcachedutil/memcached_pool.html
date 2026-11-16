@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../">
 <head>
@@ -5,16 +7,15 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Working with memcached pools &mdash; libmemcached-awesome 1.1.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=86f27845" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=98b44b8a" />
 
   
-  
-        <script src="../_static/jquery.js?v=8dae8fb0"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=fba64e7c"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
-        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/jquery.js?v=958b65b0"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=fba64e7c"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -34,9 +35,6 @@
           <a href="../index.html" class="icon icon-home">
             libmemcached-awesome
           </a>
-              <div class="version">
-                1.1
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -133,7 +131,7 @@
 <dt class="sig sig-object cpp" id="_CPPv420memcached_pool_fetchP17memcached_pool_stP8timespecP18memcached_return_t">
 <span id="_CPPv320memcached_pool_fetchP17memcached_pool_stP8timespecP18memcached_return_t"></span><span id="_CPPv220memcached_pool_fetchP17memcached_pool_stP8timespecP18memcached_return_t"></span><span id="memcached_pool_fetch__memcached_pool_stP.timespecP.memcached_return_tP"></span><a class="reference internal" href="../libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st"><span class="n"><span class="pre">memcached_st</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">memcached_pool_fetch</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st"><span class="n"><span class="pre">memcached_pool_st</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">pool</span></span>, <span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">timespec</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">relative_time</span></span>, <a class="reference internal" href="../libmemcached/memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><span class="n"><span class="pre">memcached_return_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">rc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420memcached_pool_fetchP17memcached_pool_stP8timespecP18memcached_return_t" title="Link to this definition"></a><br /></dt>
 <dd><div class="versionadded">
-<p><span class="versionmodified added">New in version 0.53: </span>Synonym for memcached_pool_pop</p>
+<p><span class="versionmodified added">Added in version 0.53: </span>Synonym for memcached_pool_pop</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -153,7 +151,7 @@
 <dt class="sig sig-object cpp" id="_CPPv422memcached_pool_releaseP17memcached_pool_stP12memcached_st">
 <span id="_CPPv322memcached_pool_releaseP17memcached_pool_stP12memcached_st"></span><span id="_CPPv222memcached_pool_releaseP17memcached_pool_stP12memcached_st"></span><span id="memcached_pool_release__memcached_pool_stP.memcached_stP"></span><a class="reference internal" href="../libmemcached/memcached_return_t.html#_CPPv418memcached_return_t" title="memcached_return_t"><span class="n"><span class="pre">memcached_return_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">memcached_pool_release</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv417memcached_pool_st" title="memcached_pool_st"><span class="n"><span class="pre">memcached_pool_st</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">pool</span></span>, <a class="reference internal" href="../libmemcached/memcached_create.html#_CPPv412memcached_st" title="memcached_st"><span class="n"><span class="pre">memcached_st</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">mmc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422memcached_pool_releaseP17memcached_pool_stP12memcached_st" title="Link to this definition"></a><br /></dt>
 <dd><div class="versionadded">
-<p><span class="versionmodified added">New in version 0.53: </span>Synonym for memcached_pool_push.</p>
+<p><span class="versionmodified added">Added in version 0.53: </span>Synonym for memcached_pool_push.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
