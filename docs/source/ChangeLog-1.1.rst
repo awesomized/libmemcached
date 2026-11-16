@@ -5,6 +5,53 @@
 ChangeLog v1.1
 ==============
 
+v 1.1.5
+-------
+
+..
+
+   released 2026-11-16
+
+
+
+* Fix `gh #141 <https://github.com/awesomized/libmemcached/issues/141>`_\ :
+  Missing ``)`` in the C/C++ example of the documentation.
+* Fix `gh #143 <https://github.com/awesomized/libmemcached/pull/143>`_\ :
+  Build failure with libbacktrace (add ``ENABLE_BACKTRACE`` build option; default: ``ON``\ ).
+* Fix `gh #150 <https://github.com/awesomized/libmemcached/pull/150>`_\ :
+  Build failure on Android (include ``<netinet/in.h>`` for ``in_port_t``\ ).
+* Fix `gh #152 <https://github.com/awesomized/libmemcached/pull/152>`_\ :
+  The exported CMake config misses ``p9y-targets.cmake`` with static libraries.
+* Fix `gh #153 <https://github.com/awesomized/libmemcached/pull/153>`_\ :
+  SASL: a mutex stays locked when ``sasl_startup_function`` fails.
+* Fix `gh #157 <https://github.com/awesomized/libmemcached/pull/157>`_\ :
+  memaslap picks 32-bit atomics on 64-bit Solaris with GCC, which doesn't define ``SIZEOF_SIZE_T``.
+* Fix `gh #158 <https://github.com/awesomized/libmemcached/pull/158>`_\ :
+  A failed non-blocking connect is reported as ``MEMCACHED_SYSTEM_ERROR``
+  instead of ``MEMCACHED_CONNECTION_FAILURE``.
+* Fix `gh #159 <https://github.com/awesomized/libmemcached/pull/159>`_\ :
+  Docs build fails with Sphinx 9.
+* Fix `gh #160 <https://github.com/awesomized/libmemcached/pull/160>`_\ :
+  Test build fails on Solaris (ambiguous ``mutex``\ ).
+* Fix `gh #161 <https://github.com/awesomized/libmemcached/issues/161>`_\ :
+  memcapable's delete test fails with memcached 1.6.40 and later, which return ``NOT_FOUND``.
+* Fix `gh #165 <https://github.com/awesomized/libmemcached/issues/165>`_\ :
+  Tests fail on hosts with IPv6 disabled.
+* Fix `gh #166 <https://github.com/awesomized/libmemcached/pull/166>`_\ :
+  The binary protocol reports a server's out of memory error as ``MEMCACHED_MEMORY_ALLOCATION_FAILURE``
+  (now ``MEMCACHED_SERVER_MEMORY_ALLOCATION_FAILURE``\ , like the text protocol).
+* Fix `gh #168 <https://github.com/awesomized/libmemcached/pull/168>`_\ :
+  Static linking: ``libmemcached.pc`` misses ``-lhashkit``.
+* Fix `gh #169 <https://github.com/awesomized/libmemcached/pull/169>`_\ :
+  After a multi-get stops on an error reply, e.g. from memcached's proxy,
+  the following gets return wrong values (reset the connection).
+* Fix version and stat commands failing on ``MEMCACHED_SOME_ERRORS``
+  (\ ``memcached_fatal()`` no longer considers it fatal).
+* Fix the test of `gh php-memcached#531 <https://github.com/php-memcached-dev/php-memcached/issues/531>`_
+  on busy hosts.
+* Fix docs build with Ninja.
+* Remove the non-existent ``MEMCACHED_BEHAVIOR_KETAMA_COMPAT`` from the docs.
+
 v 1.1.4
 -------
 
